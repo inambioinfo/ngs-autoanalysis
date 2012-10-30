@@ -150,9 +150,9 @@ LSF_SCRIPT_TEMPLATE = '''
 # Shell script for executing run-pipeline on the cluster
 #
 
-export MEM_VALUE=1024
+export MEM_VALUE=2048
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
-export JAVA_OPTS="-Xmx$[${MEM_VALUE}-16]M -Xms$[${MEM_VALUE}-16]M"
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
 
 echo "ssh %(cluster)s \\"cd %(work_dir)s; utils.touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s\\""
 
