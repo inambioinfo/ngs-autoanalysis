@@ -154,9 +154,9 @@ export MEM_VALUE=2048
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
 
-echo "ssh %(cluster)s \\"cd %(work_dir)s; utils.touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s\\""
+echo "ssh %(cluster)s \\"cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s\\""
 
-ssh %(cluster)s "cd %(work_dir)s; utils.touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s"
+ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s"
 
 '''
 
@@ -225,7 +225,7 @@ def _run_pipelines(run_folder, run_number, pipelines, soft_path, cluster_host, d
                 command = "%s/%s/bin/%s --mode=lsf %s" % (soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
                 run_script_file.write(LSF_SCRIPT_TEMPLATE % {'cluster': cluster_host, 'work_dir':pipeline_directory, 'job_name':job_name, 'cmd':command})
             else:
-                command = "cd %s; utils.touch %s; %s/%s/bin/%s --mode=local %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
+                command = "cd %s; touch %s; %s/%s/bin/%s --mode=local %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
                 run_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             run_script_file.close()
             log.info('%s created' % run_script_path)
@@ -286,7 +286,7 @@ def _setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True)
                     else:
                         rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_directory, dest_run_folder, rsync_log)
                     copy_finished = "%s %s/." % (rsync_finished, dest_pipeline_directory)
-                    command = "utils.touch %s; utils.touch %s; rsync %s; utils.touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
+                    command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
                     rsync_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
                     rsync_script_file.close()
                     log.info('%s created' % rsync_script_path)
