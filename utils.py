@@ -55,7 +55,7 @@ def get_smallest_volume(archive_glob):
     if volumes:
         volume_sizes = {}
         for volume in volumes:
-            device, size, used, available, percent, mountpoint = utils.run_process(['df', '%s' % volume], False).split("\n")[1].split()
+            device, size, used, available, percent, mountpoint = run_process(['df', '%s' % volume], False).split("\n")[1].split()
             volume_sizes[volume]=used
         min_volume = min(volume_sizes, key=lambda x: volume_sizes.get(x))
         return min_volume
