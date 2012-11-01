@@ -98,10 +98,30 @@ def install_data():
                 dest = os.path.join(run_analysis_folder, file_location.filename)
                 _copy_file(orig, dest)
                                         
-def setup_pipeline(annotated_sample_file):
+def setup_pipeline():
+    # current host
+    log.debug("################################################################################")
+    log.debug(env.host)
+    log.debug("################################################################################")
+
     runs = MultiplexedRuns()
     for run in runs.runs:
-        _create_meta(run)
+        run_analysis_folder = os.path.join(env.root_path, run.pipelinePath)
+        primary_folder = os.path.join(run_analysis_folder, 'primary')
+        # create primary folder
+        _create_dir(primary_folder)
+        # create symlink for fastq files in primary directory
+        file_locations = runs.getSeqFileLocations(run)
+        for file_location in file_locations:
+            new_fastq_filename = runs.getNewSeqFileName(file_location)
+            link_name = "%s/%s" % (primary_folder, new_fastq_filename)
+            fastq_path = os.path.join(run_analysis_folder, file_location.filename)
+            log.debug(fastq_path)
+            if os.path.lexists(link_name):
+                os.remove(link_name)
+            os.symlink(fastq_path, link_name)
+
+        #_create_meta(run)
 
 def _create_dir(dir):
     if not exists(dir):
@@ -140,29 +160,40 @@ class MultiplexedRuns():
         for run in runs:
             # select runs that have been successful
             if run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE'):
-                # select multiplex runs
+                # select multiplexed runs
                 if run.multiplexed == 1:
-                    # create folder in ROOT_PATH for analysis
                     self.runs.append(run)
                     
     def getSeqFileLocations(self, run):
         sequence_files = []
         lanes = self.solexa_db.lane.filter_by(run_id=run.id)
         for lane in lanes:
-            if lane.multiplex == 'Other':
-                # select all files for demultiplexed lanes
-                file_locations = self.lims_db.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
-                for file_location in file_locations:
-                    file_type = self.lims_db.analysisfiletype.filter_by(id=file_location.type_id).one()
-                    # select only FastQ files 
-                    if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
-                        sequence_files.append(file_location)
+            if lane.isControl == 0 and lane.multiplexing_id != None:
+                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
+                if multiplex_type.name != 'Other':
+                    # select all files for multiplexed lanes of known type
+                    file_locations = self.lims_db.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
+                    for file_location in file_locations:
+                        file_type = self.lims_db.analysisfiletype.filter_by(id=file_location.type_id).one()
+                        # select only FastQ files 
+                        if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
+                            sequence_files.append(file_location)
         return sequence_files
-
+    
+    def getNewSeqFileName(self, analysisfileuri):
+        lane = self.solexa_db.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
+        run = self.solexa_db.solexarun.filter_by(id=lane.run_id).one()
+        file_name = analysisfileuri.filename
+        read_number = file_name[file_name.find('s_')+4:file_name.find('_sequence.txt.gz')]
+        if read_number == '':
+            read_number = '1'
+        new_file_name = "%s.%s.s_%s.r_%s.fq.gz" % (run.runNumber, lane.genomicsSampleId, lane.lane, read_number)
+        return new_file_name
+        
     def printSampleDetails(self, run):
         lanes = self.solexa_db.lane.filter_by(run_id=run.id)
         for lane in lanes:
-            if lane.isControl == 0 and lane.multiplex != 'None':
+            if lane.isControl == 0 and lane.multiplexing_id != 'None':
                 # user
                 user = self.general_db.user.filter_by(email=lane.userEmail).one()
                 username = "%s.%s" % (user.firstname, user.surname)
