@@ -82,13 +82,19 @@ def local():
 # -- Fabric instructions
 
 def install():
-    """Setup demultiplex statistic analysis
+    """Setup demultiplex statistic analysis on all multiplexed run
     """
     install_data()
     setup_pipeline()
-    #run_pipeline()
+    
+def run():
+    """Run demultiplex statistic analysis on all multiplexed run
+    """
+    run_pipeline()
     
 def list_samples():
+    """Print list of multiplexed samples with extra information
+    """
     runs = MultiplexedRuns()
     for run in runs.runs:
         runs.printSampleDetails(run)
@@ -165,7 +171,7 @@ def setup_pipeline():
         # set specific demux-stats pipeline options
         autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
         autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
-        # call setup_pipelines to create setup script
+        # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
         autoanalysis.setup_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.SOAP_URL, False)
         # remove run script if already exists
         if os.path.exists(run_scrip_path):
@@ -186,7 +192,17 @@ def setup_pipeline():
             index_file.close()
             log.info('%s created' % index_path)
             
-
+def run_pipeline():
+    # current host
+    log.debug("################################################################################")
+    log.debug(env.host)
+    log.debug("################################################################################")
+    runs = MultiplexedRuns()
+    for run in runs.runs:
+        run_folder = os.path.join(env.root_path, run.pipelinePath)
+        # call run_pipelines to run the demultiplex pipeline (dry-run=False)
+        autoanalysis.run_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.CLUSTER_HOST, False)
+    
 def _create_dir(dir):
     if not exists(dir):
         run("mkdir %s" % dir)
