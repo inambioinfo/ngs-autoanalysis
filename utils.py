@@ -50,6 +50,28 @@ def output_job_success(output_files):
                     return True
     return False
 
+def locate_run_folder(run_folder_name, archive_glob, create=True):
+    run_folders = glob.glob("%s/%s" % (archive_glob,run_folder_name))
+    if run_folders:
+        if len(run_folders) == 1:
+            log.debug("run folder %s already exists" % run_folders)
+            return run_folders[0]
+        else:
+            log.error("more than one run folders %s found in %s" % (run_folder_name, run_folders))
+    else:
+        if create:
+            volume_name = get_smallest_volume(archive_glob)
+            if volume_name:
+                run_folder = os.path.join(volume_name, run_folder_name)
+                os.makedirs(run_folder)
+                log.debug("run folder %s created" % run_folder)
+                return run_folder
+            else:
+                log.error('no volume %s found' % archive_glob)
+        else:
+            log.error('no run folder %s found in %s' % (run_folder_name, archive_glob))
+    return None
+
 def get_smallest_volume(archive_glob):
     volumes = glob.glob(archive_glob)
     if volumes:
@@ -67,7 +89,12 @@ def set_analysis_status(solexa_soap, run, status):
     else:
         log.info('analysis status in lims already set to %s for process id %s' % (status, run.process_id))
 
-
+def set_run_complete(solexa_soap, run, status):
+    if not run.status == status:
+        solexa_soap.service.setRunComplete(run.process_id)
+        log.info('run status in lims set to %s for process id %s' % (status, run.process_id))
+    else:
+        log.info('run status in lims already set to %s for process id %s' % (status, run.process_id))
 
 class utils:
 	def __init__(self):

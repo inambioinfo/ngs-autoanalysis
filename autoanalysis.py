@@ -409,24 +409,6 @@ def process_completed(run_folder, list_pipelines):
             return False
     return True
         
-def locate_archive_run_folder(run_folder_name, archive_glob):
-    run_folders = glob.glob("%s/%s" % (archive_glob,run_folder_name))
-    if run_folders:
-        if len(run_folders) == 1:
-            log.debug("archive run folder %s already exists" % run_folders)
-            return run_folders[0]
-        else:
-            log.error("more than one archive run folders %s found %s" % (run_folder_name, run_folders))
-    else:
-        volume_name = utils.get_smallest_volume(archive_glob)
-        if volume_name:
-            run_folder = os.path.join(volume_name, run_folder_name)
-            os.makedirs(run_folder)
-            log.debug("archive run folder %s created" % run_folder)
-            return run_folder
-        else:
-            log.error('no archive run folder %s found' % archive_glob)
-
 ################################################################################
 # CLASS DEFINITION
 ################################################################################
@@ -512,7 +494,7 @@ def main(argv=None):
             analysis_ignore = os.path.join(run_folder, ANALYSIS_IGNORE_FILENAME)
             if os.path.exists(sequencing_completed) and not os.path.exists(analysis_ignore):
                 # get/create dest folder to synchronize run folder
-                dest_run_folder = locate_archive_run_folder(os.path.basename(run_folder), options.archivedir)
+                dest_run_folder = utils.locate_run_folder(os.path.basename(run_folder), options.archivedir)
 
                 # get list of pipeline names for processing and completion
                 if run.multiplexed == 1:
