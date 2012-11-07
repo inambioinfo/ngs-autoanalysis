@@ -173,7 +173,7 @@ RSYNC_EXCLUDE = {
 # PIPELINE METHODS
 ################################################################################
 
-def _setup_pipelines(run_folder, run_number, pipelines, soft_path, soap_url, dry_run=True):        
+def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=SOAP_URL, dry_run=True):        
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -208,7 +208,7 @@ def _setup_pipelines(run_folder, run_number, pipelines, soft_path, soap_url, dry
             # TODO: check output file for errors
             log.debug('%s already exists' % run_meta)
             
-def _run_pipelines(run_folder, run_number, pipelines, soft_path, cluster_host, dry_run=True):
+def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True):
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -264,7 +264,7 @@ def _run_pipelines(run_folder, run_number, pipelines, soft_path, cluster_host, d
         else:
             log.warn("%s is missing" % run_meta)
             
-def _setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True): 
+def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True): 
     for pipeline_name in list(pipelines.viewkeys()):       
         pipeline_directory = os.path.join(run_folder, pipeline_name)
         rsync_script_path = os.path.join(pipeline_directory, RSYNC_SCRIPT_FILENAME)
@@ -295,7 +295,7 @@ def _setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True)
             else:
                 log.error('%s is missing' % pipeline_directory)
 
-def _rsync_pipelines(run_folder, pipelines, dry_run=True):
+def rsync_pipelines(run_folder, pipelines, dry_run=True):
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -333,7 +333,7 @@ def _rsync_pipelines(run_folder, pipelines, dry_run=True):
         else:
             log.warn('%s is missing' % rsync_script_path)
 
-def _register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, pipelines):
+def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, pipelines):
     primary_completed_path = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
     dest_primary_completed_path = os.path.join(dest_run_folder, PRIMARY_COMPLETED_FILENAME)
     process_completed_path = os.path.join(run_folder, PROCESS_COMPLETED_FILENAME)
@@ -525,15 +525,15 @@ def main(argv=None):
                     pipelines = {options.step : ""}
                 
                 log.info('--- SETUP PIPELINES ------------------------------------------------------------')
-                _setup_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.soapurl, options.dry_run)
+                setup_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.soapurl, options.dry_run)
                 log.info('--- SETUP RSYNC ----------------------------------------------------------------')
-                _setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, options.dry_run)
+                setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, options.dry_run)
                 log.info('--- RUN PIPELINES --------------------------------------------------------------')
-                _run_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.cluster, options.dry_run)
+                run_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.cluster, options.dry_run)
                 log.info('--- RUN RSYNC ------------------------------------------------------------------')
-                _rsync_pipelines(run_folder, pipelines, options.dry_run)
+                rsync_pipelines(run_folder, pipelines, options.dry_run)
                 log.info('--- UPDATE STATUS --------------------------------------------------------------')
-                _register_process_completed(options.update_status, options.soapurl, run, run_folder, dest_run_folder, pipelines_for_completion)
+                register_process_completed(options.update_status, options.soapurl, run, run_folder, dest_run_folder, pipelines_for_completion)
             else:
                 if not os.path.exists(sequencing_completed):
                     log.warning('%s does not exists' % sequencing_completed)

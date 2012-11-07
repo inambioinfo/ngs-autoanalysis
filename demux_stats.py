@@ -9,8 +9,10 @@ Usage:
     fab -f demux_stats.py local install
 """
 
-import sys, os
-import logging as log
+import sys, os, glob
+import optparse
+import logging
+import urllib2
 
 try:
     from fabric.api import *
@@ -30,14 +32,34 @@ except ImportError:
  '''
     sys.exit()
 
+# import logging module first
+import log as logger
+log = logger.set_custom_logger()
+# then import other custom modules
+import utils
+import autoanalysis
+
+
+# database urls
 HOST = "mysql://readonly@uk-cri-lbio04"
 SOLEXA = "%s/cri_solexa" % HOST
 LIMS = "%s/cri_lims" % HOST
 REQUEST = "%s/cri_request" % HOST
 GENERAL = "%s/cri_general" % HOST
 
+# index file names
+MULTIPLEX_KIT={
+    'TruSeq RNA High Throughput' : 'truseq_rna_ht.csv',
+    'Nextera Dual Index' : 'nextera.csv',
+    'Fluidigm' : 'fluidigm.csv',
+    'TruSeq Small RNA' : 'truseq_smallrna.csv',
+    'TruSeq RNA Low Throughput' : 'truseq_rna_lt.csv',
+    'TruSeq DNA Low Throughput' : 'truseq_dna_lt.csv',
+    'TruSeq DNA High Throughput' : 'truseq_dna_ht.csv'
+}
+
 # logging configuration
-log.basicConfig(format='%(levelname)s: %(message)s', level=log.DEBUG)
+log.setLevel(logging.DEBUG)        
 
 # -- Host specific setup
 
@@ -47,7 +69,7 @@ def remote():
     env.user = 'solexa'
     env.hosts = ['uk-cri-lsol03.crnet.org', 'uk-cri-lsol01.crnet.org']
     env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
-    env.demux_path = '/home/mib-cri/software/pipelines/demultiplex/'
+    env.soft_pipeline_path = autoanalysis.SOFT_PIPELINE_PATH
     
 def local():    
     """Setup environment for demultiplex statistic analysis locally
@@ -55,7 +77,7 @@ def local():
     env.user = 'pajon01'
     env.hosts = ['localhost']
     env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
-    env.demux_path = ''
+    env.soft_pipeline_path = '/Users/pajon01/software/pipelines'
 
 # -- Fabric instructions
 
@@ -69,7 +91,6 @@ def install():
 def list_samples():
     runs = MultiplexedRuns()
     for run in runs.runs:
-        print("========== %s\t%s" % (run.runNumber, run.pipelinePath))
         runs.printSampleDetails(run)
         
 def install_data():
@@ -88,14 +109,14 @@ def install_data():
         # create folder in ROOT_PATH for analysis
         run_analysis_folder = os.path.join(env.root_path, run.pipelinePath)
         _create_dir(run_analysis_folder)
-        # get all file locations associated to demultiplexed lanes for this run
-        file_locations = runs.getSeqFileLocations(run)
-        for file_location in file_locations:
+        # get all fastq files associated to demultiplexed lanes for this run
+        fastq_files = runs.getKnownMultiplexSeqFiles(run)
+        for fastq_file in fastq_files:
             # checking which host to copy the data from sol01 or sol03
-            if env.host == file_location.host or env.host == 'localhost':
-                log.info("%s\t%s\t%s\t%s" % (run.runNumber, file_location.host, file_location.path, file_location.filename))
-                orig = os.path.join(file_location.path, file_location.filename)
-                dest = os.path.join(run_analysis_folder, file_location.filename)
+            if env.host == fastq_file.host or env.host == 'localhost':
+                log.info("%s\t%s\t%s\t%s" % (run.runNumber, fastq_file.host, fastq_file.path, fastq_file.filename))
+                orig = os.path.join(fastq_file.path, fastq_file.filename)
+                dest = os.path.join(run_analysis_folder, fastq_file.filename)
                 _copy_file(orig, dest)
                                         
 def setup_pipeline():
@@ -104,24 +125,67 @@ def setup_pipeline():
     log.debug(env.host)
     log.debug("################################################################################")
 
+    ### load index templates for all multiplex kits
+    multiplex_templates={}
+    for multiplex_name in list(MULTIPLEX_KIT.viewkeys()):
+        barcodes_url = "http://uk-cri-ldmz02.crnet.org/shared/multiplexing/%s" % MULTIPLEX_KIT[multiplex_name]
+        barcodes = urllib2.urlopen(barcodes_url)
+        template = {}
+        for barcode in barcodes:
+            barcode_name, barcode_num, barcode_sequence = barcode.rstrip().split(',')
+            template[barcode_sequence] = barcode_name
+        multiplex_templates[multiplex_name] = template
+    
     runs = MultiplexedRuns()
     for run in runs.runs:
-        run_analysis_folder = os.path.join(env.root_path, run.pipelinePath)
-        primary_folder = os.path.join(run_analysis_folder, 'primary')
+        run_folder = os.path.join(env.root_path, run.pipelinePath)
+        fastq_files = runs.getKnownMultiplexSeqFiles(run)
+
+        ### configure fastq files
         # create primary folder
+        primary_folder = os.path.join(run_folder, 'primary')
         _create_dir(primary_folder)
         # create symlink for fastq files in primary directory
-        file_locations = runs.getSeqFileLocations(run)
-        for file_location in file_locations:
-            new_fastq_filename = runs.getNewSeqFileName(file_location)
+        for fastq_file in fastq_files:
+            new_fastq_filename = runs.getNewSeqFileName(fastq_file)
             link_name = "%s/%s" % (primary_folder, new_fastq_filename)
-            fastq_path = os.path.join(run_analysis_folder, file_location.filename)
+            fastq_path = os.path.join(run_folder, fastq_file.filename)
             log.debug(fastq_path)
             if os.path.lexists(link_name):
                 os.remove(link_name)
             os.symlink(fastq_path, link_name)
 
-        #_create_meta(run)
+        ### setup demux pipeline
+        pipeline_directory = os.path.join(run_folder, 'demultiplex')
+        setup_script_path = os.path.join(pipeline_directory, autoanalysis.SETUP_SCRIPT_FILENAME)
+        run_scrip_path = os.path.join(pipeline_directory, autoanalysis.RUN_SCRIPT_FILENAME)
+        # remove setup script if already exists
+        if os.path.exists(setup_script_path):
+            os.remove(setup_script_path)
+        # set specific demux-stats pipeline options
+        autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
+        autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
+        # call setup_pipelines to create setup script
+        autoanalysis.setup_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.SOAP_URL, False)
+        # remove run script if already exists
+        if os.path.exists(run_scrip_path):
+            os.remove(run_scrip_path)
+        # call run_pipelines to create run script
+        autoanalysis.run_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.CLUSTER_HOST)
+            
+        ### create index files
+        for fastq_file in fastq_files:
+            index_filename = runs.getIndexFileName(fastq_file)
+            multiplex_type = runs.getMultiplexTypeFromSeqFile(fastq_file)
+            barcodes = multiplex_templates[multiplex_type.name]
+            log.debug(multiplex_type.name)
+            index_path = os.path.join(pipeline_directory, index_filename)
+            index_file = open(index_path, 'w')
+            for barcode_seq in list(barcodes.viewkeys()):
+                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcode_seq, runs.getSlxSampleId(fastq_file), barcodes[barcode_seq], runs.getRunLaneRead(fastq_file)))
+            index_file.close()
+            log.info('%s created' % index_path)
+            
 
 def _create_dir(dir):
     if not exists(dir):
@@ -139,10 +203,7 @@ def _copy_file(orig, dest):
         log.debug("File %s copied to %s" % (orig, dest))
     else:
         log.debug('File %s already exists' % dest)
-        
-def _create_meta():
-    run("/home/mib-cri/software/pipelines/demultiplex/bin/create-metafile -l 3 939 > run-meta.xml")
-            
+                    
 class MultiplexedRuns():
     
     def __init__(self):
@@ -164,10 +225,11 @@ class MultiplexedRuns():
                 if run.multiplexed == 1:
                     self.runs.append(run)
                     
-    def getSeqFileLocations(self, run):
+    def getKnownMultiplexSeqFiles(self, run):
         sequence_files = []
         lanes = self.solexa_db.lane.filter_by(run_id=run.id)
         for lane in lanes:
+            # select multiplexed lane
             if lane.isControl == 0 and lane.multiplexing_id != None:
                 multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
                 if multiplex_type.name != 'Other':
@@ -177,23 +239,49 @@ class MultiplexedRuns():
                         file_type = self.lims_db.analysisfiletype.filter_by(id=file_location.type_id).one()
                         # select only FastQ files 
                         if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
-                            sequence_files.append(file_location)
+                            # select only non-demultiplexed fastQ files
+                            if 'Data/Intensities/' in file_location.path or 'primary' in file_location.path:
+                                sequence_files.append(file_location)
         return sequence_files
     
-    def getNewSeqFileName(self, analysisfileuri):
-        lane = self.solexa_db.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
-        run = self.solexa_db.solexarun.filter_by(id=lane.run_id).one()
-        file_name = analysisfileuri.filename
-        read_number = file_name[file_name.find('s_')+4:file_name.find('_sequence.txt.gz')]
-        if read_number == '':
-            read_number = '1'
-        new_file_name = "%s.%s.s_%s.r_%s.fq.gz" % (run.runNumber, lane.genomicsSampleId, lane.lane, read_number)
-        return new_file_name
+    def getMultiplexTypeFromSeqFile(self, analysisfileuri):
+        lane = self.getLaneFromSeqFile(analysisfileuri)
+        return self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
+    
+    def getLaneFromSeqFile(self, analysisfileuri):
+        return self.solexa_db.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
         
+    def getNewSeqFileName(self, analysisfileuri):
+        return "%s.%s.fq.gz" % (self.getSlxSampleId(analysisfileuri), self.getRunLaneRead(analysisfileuri))
+        
+    def getIndexFileName(self, analysisfileuri):
+        return "index.%s.txt" % self.getRunLaneRead(analysisfileuri)
+    
+    def getSlxSampleId(self, analysisfileuri):
+        lane = self.getLaneFromSeqFile(analysisfileuri)
+        return lane.genomicsSampleId
+        
+    def getRunLaneRead(self, analysisfileuri):
+        lane = self.getLaneFromSeqFile(analysisfileuri)
+        run = self.solexa_db.solexarun.filter_by(id=lane.run_id).one()
+        read_number = self.getReadNumber(analysisfileuri.filename)
+        return "%s.s_%s.r_%s" % (run.runNumber, lane.lane, read_number)
+
+    def getReadNumber(self, file_name):
+        if 'sequence.txt.gz' in file_name:
+            read_number = file_name[file_name.find('s_')+4:file_name.find('_sequence.txt.gz')]
+            if read_number == '':
+                read_number = '1'
+            return read_number
+        else:
+            log.warning('sequence.txt.gz not found in %s' % file_name)
+            return 1
+
     def printSampleDetails(self, run):
         lanes = self.solexa_db.lane.filter_by(run_id=run.id)
         for lane in lanes:
-            if lane.isControl == 0 and lane.multiplexing_id != 'None':
+            # select multiplexed lanes
+            if lane.isControl == 0 and lane.multiplexing_id != None:
                 # user
                 user = self.general_db.user.filter_by(email=lane.userEmail).one()
                 username = "%s.%s" % (user.firstname, user.surname)
@@ -205,7 +293,13 @@ class MultiplexedRuns():
                     comments = self.request_db.requestfieldvalue.filter_by(id=request_requestfieldvalue.fieldValues_id,type_id=requestfieldtype_comments.id)
                     for comment in comments:
                         str_comment = comment.strValue
+                # multiplex type
+                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
+                if multiplex_type.name == 'Other':
+                    multiplex_type_name = "*** %s ***" % multiplex_type.shortName
+                else:
+                    multiplex_type_name = multiplex_type.shortName
 
-                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))
+                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (multiplex_type_name, run.runNumber, lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))
                 
       
