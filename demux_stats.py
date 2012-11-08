@@ -127,12 +127,36 @@ def setup_pipeline():
     ### load index templates for all multiplex kits
     multiplex_templates={}
     for multiplex_name in list(MULTIPLEX_KIT.viewkeys()):
+        # barcode id to sequence mapping: barcode_id,barcode_num,barcode_sequence
         barcodes_url = "http://uk-cri-ldmz02.crnet.org/shared/multiplexing/%s" % MULTIPLEX_KIT[multiplex_name]
         barcodes = urllib2.urlopen(barcodes_url)
-        template = {}
+        barcodes_sequence = {}
         for barcode in barcodes:
-            barcode_name, barcode_num, barcode_sequence = barcode.rstrip().split(',')
-            template[barcode_sequence] = barcode_name
+            barcode_id, barcode_num, barcode_sequence = barcode.rstrip().split(',')
+            barcodes_sequence[barcode_id] = barcode_sequence
+
+        # barcode templates: barcode_id1,barcode_id2,sample_name with header
+        samplesheet_url = "http://uk-cri-ldmz02.crnet.org/shared/multiplexing/defaults/%s" % MULTIPLEX_KIT[multiplex_name]
+        samplesheet = urllib2.urlopen(samplesheet_url)
+        template = {}
+        header = True
+        for sample in samplesheet:
+            if header:
+                header = False
+            else:
+                columns = sample.rstrip().split(',')
+                if len(columns) == 2:
+                    barcode_id=columns[0]
+                    sample_name=columns[1]
+                    template[sample_name] = barcodes_sequence[barcode_id]
+                else: 
+                    if len(columns) == 3:
+                        barcode_id1=columns[0]
+                        barcode_id2=columns[1]
+                        sample_name=columns[2]
+                        template[sample_name] = "%s\t%s" % (barcodes_sequence[barcode_id1], barcodes_sequence[barcode_id1])
+                    else:
+                        log.error('number of columns in %s not equal to 2 or 3.' % samplesheet_url)
         multiplex_templates[multiplex_name] = template
     
     runs = lims.MultiplexedRuns()
@@ -180,8 +204,8 @@ def setup_pipeline():
             log.debug(multiplex_type.name)
             index_path = os.path.join(pipeline_directory, index_filename)
             index_file = open(index_path, 'w')
-            for barcode_seq in list(barcodes.viewkeys()):
-                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcode_seq, runs.getSlxSampleId(fastq_file), barcodes[barcode_seq], runs.getRunLaneRead(fastq_file)))
+            for barcode_name in list(barcodes.viewkeys()):
+                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], runs.getSlxSampleId(fastq_file), barcode_name, runs.getRunLaneRead(fastq_file)))
             index_file.close()
             log.info('%s created' % index_path)
             
