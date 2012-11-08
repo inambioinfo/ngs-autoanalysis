@@ -232,7 +232,7 @@ def main(argv=None):
             rsync_ignore = os.path.join(run_folder, RSYNC_IGNORE_FILENAME)
             if not os.path.exists(rsync_ignore):
                 # get/create dest folder to synchronize run folder
-                dest_run_folder = utils.locate_run_folder(os.path.basename(run_folder), options.lustredir)
+                dest_run_folder = utils.locate_run_folder(run.pipelinePath, options.lustredir)
                 log.info('--- REGISTER RUN COMPLETED -----------------------------------------------------')
                 register_run_completed(run_folder)
                 log.info('--- SETUP RSYNC ----------------------------------------------------------------')
