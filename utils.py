@@ -94,14 +94,14 @@ def locate_run_folder(run_folder_name, archive_glob, create=True):
             log.error("more than one run folders %s found in %s" % (run_folder_name, run_folders))
     else:
         if create:
-            volume_name = get_smallest_volume(archive_glob)
-            if volume_name:
-                run_folder = os.path.join(volume_name, run_folder_name)
-                os.makedirs(run_folder)
-                log.debug("run folder %s created" % run_folder)
-                return run_folder
-            else:
-                log.error('no volume %s found' % archive_glob)
+                volume_name = get_smallest_volume(archive_glob)
+                if volume_name:
+                    run_folder = os.path.join(volume_name, run_folder_name)
+                    os.makedirs(run_folder)
+                    log.debug("run folder %s created" % run_folder)
+                    return run_folder
+                else:
+                    log.error('no volume %s found' % archive_glob)
         else:
             log.error('no run folder %s found in %s' % (run_folder_name, archive_glob))
     return None
@@ -109,12 +109,15 @@ def locate_run_folder(run_folder_name, archive_glob, create=True):
 def get_smallest_volume(archive_glob):
     volumes = glob.glob(archive_glob)
     if volumes:
-        volume_sizes = {}
-        for volume in volumes:
-            device, size, used, available, percent, mountpoint = run_process(['df', '%s' % volume], False).split("\n")[1].split()
-            volume_sizes[volume]=used
-        min_volume = min(volume_sizes, key=lambda x: volume_sizes.get(x))
-        return min_volume
+        try:
+            volume_sizes = {}
+            for volume in volumes:
+                device, size, used, available, percent, mountpoint = run_process(['df', '%s' % volume], False).split("\n")[1].split()
+                volume_sizes[volume]=used
+            min_volume = min(volume_sizes, key=lambda x: volume_sizes.get(x))
+            return min_volume
+        except ValueError:
+            return volumes[0]
 
 def set_analysis_status(solexa_soap, run, status):
     if not run.analysisStatus == status:
