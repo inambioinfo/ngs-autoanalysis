@@ -4,11 +4,9 @@
 utils.py
 
 Created by Anne Pajon on 2012-10-26.
-Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 """
 
 import sys, os, glob
-import optparse
 import logging
 import subprocess 
 from collections import OrderedDict
@@ -17,6 +15,42 @@ import unittest
 # logging definition
 log = logging.getLogger('root.utils')
 
+################################################################################
+# CONSTANTS
+################################################################################
+# Template for local shell script
+LOCAL_SCRIPT_TEMPLATE = '''
+#!/bin/bash
+#
+# Shell script for running command(s) locally
+#
+
+echo "%(cmd)s"
+
+%(cmd)s
+
+'''
+
+# Template for lsf shell script
+LSF_SCRIPT_TEMPLATE = '''
+#!/bin/bash
+# 
+# Shell script for executing run-pipeline on the cluster
+#
+
+export MEM_VALUE=%(mem_value)s
+export MEM_LIMIT=$[${MEM_VALUE}*1024]
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
+
+echo "ssh %(cluster)s \\"cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s\\""
+
+ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s"
+
+'''
+
+################################################################################
+# METHODS
+################################################################################
 def run_process(cmd, dry_run=True):
     if not dry_run:
         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -96,15 +130,12 @@ def set_run_complete(solexa_soap, run, status):
     else:
         log.info('run status in lims already set to %s for process id %s' % (status, run.process_id))
 
-class utils:
-	def __init__(self):
-		pass
-
-
+################################################################################
+# UNIT TESTS
+################################################################################
 class utilsTests(unittest.TestCase):
-	def setUp(self):
-		pass
-
+    def setUp(self):
+        pass
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

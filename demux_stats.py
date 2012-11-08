@@ -37,15 +37,8 @@ import log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import utils
+import lims
 import autoanalysis
-
-
-# database urls
-HOST = "mysql://readonly@uk-cri-lbio04"
-SOLEXA = "%s/cri_solexa" % HOST
-LIMS = "%s/cri_lims" % HOST
-REQUEST = "%s/cri_request" % HOST
-GENERAL = "%s/cri_general" % HOST
 
 # index file names
 MULTIPLEX_KIT={
@@ -95,8 +88,8 @@ def run():
 def list_samples():
     """Print list of multiplexed samples with extra information
     """
-    runs = MultiplexedRuns()
-    for run in runs.runs:
+    runs = lims.MultiplexedRuns()
+    for run in runs.filtered_runs:
         runs.printSampleDetails(run)
         
 def install_data():
@@ -110,8 +103,8 @@ def install_data():
         run("mkdir %s" % env.root_path)
     
     # get all multiplexed runs
-    runs = MultiplexedRuns()
-    for run in runs.runs:
+    runs = lims.MultiplexedRuns()
+    for run in runs.filtered_runs:
         # create folder in ROOT_PATH for analysis
         run_analysis_folder = os.path.join(env.root_path, run.pipelinePath)
         _create_dir(run_analysis_folder)
@@ -142,8 +135,8 @@ def setup_pipeline():
             template[barcode_sequence] = barcode_name
         multiplex_templates[multiplex_name] = template
     
-    runs = MultiplexedRuns()
-    for run in runs.runs:
+    runs = lims.MultiplexedRuns()
+    for run in runs.filtered_runs:
         run_folder = os.path.join(env.root_path, run.pipelinePath)
         fastq_files = runs.getKnownMultiplexSeqFiles(run)
 
@@ -172,7 +165,7 @@ def setup_pipeline():
         autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
         autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
         # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
-        autoanalysis.setup_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.SOAP_URL, False)
+        autoanalysis.setup_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, lims.SOAP_URL, False)
         # remove run script if already exists
         if os.path.exists(run_scrip_path):
             os.remove(run_scrip_path)
@@ -197,8 +190,8 @@ def run_pipeline():
     log.debug("################################################################################")
     log.debug(env.host)
     log.debug("################################################################################")
-    runs = MultiplexedRuns()
-    for run in runs.runs:
+    runs = lims.MultiplexedRuns()
+    for run in runs.filtered_runs:
         run_folder = os.path.join(env.root_path, run.pipelinePath)
         # call run_pipelines to run the demultiplex pipeline (dry-run=False)
         autoanalysis.run_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.CLUSTER_HOST, False)
@@ -220,102 +213,4 @@ def _copy_file(orig, dest):
     else:
         log.debug('File %s already exists' % dest)
                     
-class MultiplexedRuns():
-    
-    def __init__(self):
-        # CRI lims database connection
-        self.solexa_db = SqlSoup(SOLEXA)
-        self.lims_db = SqlSoup(LIMS)
-        self.request_db = SqlSoup(REQUEST)
-        self.general_db = SqlSoup(GENERAL)
-        self.runs = []
-        self.populateRuns()
-        
-    def populateRuns(self):
-        # get All runs
-        runs = self.solexa_db.solexarun.all()
-        for run in runs:
-            # select runs that have been successful
-            if run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE'):
-                # select multiplexed runs
-                if run.multiplexed == 1:
-                    self.runs.append(run)
-                    
-    def getKnownMultiplexSeqFiles(self, run):
-        sequence_files = []
-        lanes = self.solexa_db.lane.filter_by(run_id=run.id)
-        for lane in lanes:
-            # select multiplexed lane
-            if lane.isControl == 0 and lane.multiplexing_id != None:
-                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
-                if multiplex_type.name != 'Other':
-                    # select all files for multiplexed lanes of known type
-                    file_locations = self.lims_db.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
-                    for file_location in file_locations:
-                        file_type = self.lims_db.analysisfiletype.filter_by(id=file_location.type_id).one()
-                        # select only FastQ files 
-                        if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
-                            # select only non-demultiplexed fastQ files
-                            if 'Data/Intensities/' in file_location.path or 'primary' in file_location.path:
-                                sequence_files.append(file_location)
-        return sequence_files
-    
-    def getMultiplexTypeFromSeqFile(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        return self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
-    
-    def getLaneFromSeqFile(self, analysisfileuri):
-        return self.solexa_db.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
-        
-    def getNewSeqFileName(self, analysisfileuri):
-        return "%s.%s.fq.gz" % (self.getSlxSampleId(analysisfileuri), self.getRunLaneRead(analysisfileuri))
-        
-    def getIndexFileName(self, analysisfileuri):
-        return "index.%s.txt" % self.getRunLaneRead(analysisfileuri)
-    
-    def getSlxSampleId(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        return lane.genomicsSampleId
-        
-    def getRunLaneRead(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        run = self.solexa_db.solexarun.filter_by(id=lane.run_id).one()
-        read_number = self.getReadNumber(analysisfileuri.filename)
-        return "%s.s_%s.r_%s" % (run.runNumber, lane.lane, read_number)
-
-    def getReadNumber(self, file_name):
-        if 'sequence.txt.gz' in file_name:
-            read_number = file_name[file_name.find('s_')+4:file_name.find('_sequence.txt.gz')]
-            if read_number == '':
-                read_number = '1'
-            return read_number
-        else:
-            log.warning('sequence.txt.gz not found in %s' % file_name)
-            return 1
-
-    def printSampleDetails(self, run):
-        lanes = self.solexa_db.lane.filter_by(run_id=run.id)
-        for lane in lanes:
-            # select multiplexed lanes
-            if lane.isControl == 0 and lane.multiplexing_id != None:
-                # user
-                user = self.general_db.user.filter_by(email=lane.userEmail).one()
-                username = "%s.%s" % (user.firstname, user.surname)
-                # comments
-                str_comment = ''
-                request_requestfieldvalues = self.request_db.request_requestfieldvalue.filter_by(Request_id=lane.request_id)
-                requestfieldtype_comments = self.request_db.requestfieldtype.filter_by(name='Comments').one()
-                for request_requestfieldvalue in request_requestfieldvalues:
-                    comments = self.request_db.requestfieldvalue.filter_by(id=request_requestfieldvalue.fieldValues_id,type_id=requestfieldtype_comments.id)
-                    for comment in comments:
-                        str_comment = comment.strValue
-                # multiplex type
-                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
-                if multiplex_type.name == 'Other':
-                    multiplex_type_name = "*** %s ***" % multiplex_type.shortName
-                else:
-                    multiplex_type_name = multiplex_type.shortName
-
-                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (multiplex_type_name, run.runNumber, lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))
-                
       

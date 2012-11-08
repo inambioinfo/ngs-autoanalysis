@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-solexa_autopipe.py
+autoanalysis.py
 
-Made as a temporary replacement of solexa_autoanalysis.pl
+Made as a simplified replacement of solexa_autoanalysis.pl
 
 Created by Anne Pajon on 2012-10-05.
 
 -----------------------------------------------
-INFO TO INSTALL DEPENDENCIES ON SOLs
+INFO FOR INSTALLING DEPENDENCIES ON SOLs
 -----------------------------------------------
 cd /home/mib-cri/software/Python-2.7.3/
 
@@ -49,6 +49,7 @@ import log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import utils
+import lims
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
@@ -64,17 +65,13 @@ except ImportError:
  > wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
  > python virtualenv.py `pwd`
  > source bin/activate
- > pip install mysql-python sqlalchemy
+ > pip install mysql-python sqlalchemy suds
  '''
     sys.exit()
 
-
-# Database url
-DB_URL = "mysql://readonly@uk-cri-lbio04/cri_solexa"
-
-# Soap url
-SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
-
+################################################################################
+# CONSTANTS
+################################################################################
 # Pipeline definitions
 PIPELINES = {
     "primary": [],
@@ -126,40 +123,6 @@ PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
 PROCESS_COMPLETED_FILENAME = "Run.all.completed"
 ANALYSIS_IGNORE_FILENAME = "analysis.ignore"
 
-# Default lims status
-PRIMARY_COMPLETE = 'PRIMARY COMPLETE'
-ALL_COMPLETE = 'COMPLETE'
-
-# Template for setup-pipeline.sh
-LOCAL_SCRIPT_TEMPLATE = '''
-#!/bin/bash
-#
-# Shell script for running command(s) locally
-#
-
-echo "%(cmd)s"
-
-%(cmd)s
-
-'''
-
-# Template for run-pipeline.sh
-LSF_SCRIPT_TEMPLATE = '''
-#!/bin/bash
-# 
-# Shell script for executing run-pipeline on the cluster
-#
-
-export MEM_VALUE=2048
-export MEM_LIMIT=$[${MEM_VALUE}*1024]
-export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
-
-echo "ssh %(cluster)s \\"cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s\\""
-
-ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s"
-
-'''
-
 # rsync exclude list
 RSYNC_EXCLUDE = { 
     "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=*/temp/* --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
@@ -172,8 +135,7 @@ RSYNC_EXCLUDE = {
 ################################################################################
 # PIPELINE METHODS
 ################################################################################
-
-def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=SOAP_URL, dry_run=True):        
+def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=lims.SOAP_URL, dry_run=True):        
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -191,7 +153,7 @@ def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_P
         if not os.path.exists(setup_script_path):    
             setup_script_file = open(setup_script_path, 'w')
             command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --notifications %s %s %s" % (soft_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(run_folder), soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], run_number, run_meta)
-            setup_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+            setup_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             # TODO: copy pipeline definition
             setup_script_file.close()
             log.info('%s created' % setup_script_path)
@@ -223,10 +185,10 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
             run_script_file = open(run_script_path, 'w')
             if cluster_host:
                 command = "%s/%s/bin/%s --mode=lsf %s" % (soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
-                run_script_file.write(LSF_SCRIPT_TEMPLATE % {'cluster': cluster_host, 'work_dir':pipeline_directory, 'job_name':job_name, 'cmd':command})
+                run_script_file.write(utils.LSF_SCRIPT_TEMPLATE % {'mem_value': '2048', 'cluster': cluster_host, 'work_dir':pipeline_directory, 'job_name':job_name, 'cmd':command})
             else:
                 command = "cd %s; touch %s; %s/%s/bin/%s --mode=local %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
-                run_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+                run_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             run_script_file.close()
             log.info('%s created' % run_script_path)
         else:
@@ -287,7 +249,7 @@ def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True):
                         rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_directory, dest_run_folder, rsync_log)
                     copy_finished = "%s %s/." % (rsync_finished, dest_pipeline_directory)
                     command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
-                    rsync_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+                    rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
                     rsync_script_file.close()
                     log.info('%s created' % rsync_script_path)
                 else:
@@ -364,7 +326,7 @@ def register_process_completed(update_status, soap_url, run, run_folder, dest_ru
         log.info('*** PROCESS COMPLETED **********************************************************')
         # update analysis status in lims
         if update_status:
-            utils.set_analysis_status(soap_client, run, ALL_COMPLETE)
+            utils.set_analysis_status(soap_client, run, lims.ANALYSIS_COMPLETE_STATUS)
         else:
             log.debug('lims not updated - use --update-status option to turn it on')
     else:
@@ -372,7 +334,7 @@ def register_process_completed(update_status, soap_url, run, run_folder, dest_ru
         if process_completed(run_folder, ['primary']):
             # update analysis status in lims
             if update_status:
-                utils.set_analysis_status(soap_client, run, PRIMARY_COMPLETE)
+                utils.set_analysis_status(soap_client, run, lims.PRIMARY_ANALYSIS_COMPLETE_STATUS)
             else:
                 log.debug('lims not updated - use --update-status option to turn it on')
         # remove Run.all.complete when process not completed and file exists
@@ -384,7 +346,6 @@ def register_process_completed(update_status, soap_url, run, run_folder, dest_ru
 ################################################################################
 # UTILITY METHODS
 ################################################################################
-        
 def dependencies_satisfied(run_folder, pipeline_name, pipelines):
     pipeline_dependencies = pipelines[pipeline_name]
     log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
@@ -410,33 +371,6 @@ def process_completed(run_folder, list_pipelines):
     return True
         
 ################################################################################
-# CLASS DEFINITION
-################################################################################
-
-class Runs:
-    def __init__(self, _db_url, _run_number=None):
-        # CRI lims database connection
-        self.solexa_db = SqlSoup(_db_url)
-        self.runs = []
-        self.populateRuns(_run_number)
-
-    def populateRuns(self, _run_number=None):
-        # get one run
-        if _run_number:
-            run = self.solexa_db.solexarun.filter_by(runNumber=_run_number).one()
-            if run.status == 'COMPLETE':
-                self.runs.append(run)
-            else:
-                log.warning('Run %s has not been completed, its current status is %s.' % (run.runNumber, run.status))
-        # get all runs
-        else:
-            runs = self.solexa_db.solexarun.all()
-            for run in runs:
-                # select completed runs that have not been analysed
-                if run.status == 'COMPLETE' and not (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE'):
-                    self.runs.append(run)
-            
-################################################################################
 # MAIN
 ################################################################################
 def main(argv=None):
@@ -446,8 +380,8 @@ def main(argv=None):
     parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
     parser.add_option("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'")
     parser.add_option("--softdir", dest="softdir", action="store", default=SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % SOFT_PIPELINE_PATH)
-    parser.add_option("--dburl", dest="dburl", action="store", default=DB_URL, help="database url [read only access] - default set to '%s'" % DB_URL)
-    parser.add_option("--soapurl", dest="soapurl", action="store", default=SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % SOAP_URL)
+    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_option("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
     parser.add_option("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % CLUSTER_HOST)
     parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_option("--step", dest="step", action="store", choices=list(MULTIPLEX_PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(MULTIPLEX_PIPELINES.viewkeys()))
@@ -480,8 +414,8 @@ def main(argv=None):
         sys.exit(1)
         
     # get all completed runs that have not been analysed or just one run
-    runs = Runs(options.dburl, options.run_number)
-    for run in runs.runs:
+    runs = lims.CompleteRuns(options.dburl, options.run_number)
+    for run in runs.filtered_runs:
         # check run folder in basedir for analysis
         run_folder = os.path.join(options.basedir, run.pipelinePath)
         log.info('--------------------------------------------------------------------------------')

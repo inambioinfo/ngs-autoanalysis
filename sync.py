@@ -16,6 +16,7 @@ import log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import utils
+import lims
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
@@ -31,16 +32,13 @@ except ImportError:
  > wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
  > python virtualenv.py `pwd`
  > source bin/activate
- > pip install mysql-python sqlalchemy
+ > pip install mysql-python sqlalchemy suds
  '''
     sys.exit()
 
-# Database url
-DB_URL = "mysql://readonly@uk-cri-lbio04/cri_solexa"
-
-# Soap url
-SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
-
+################################################################################
+# CONSTANTS
+################################################################################
 # Instrument names with their run completed dependencies
 INSTRUMENTS = {
     'HWI-ST230' : ['RTAComplete.txt'],
@@ -60,9 +58,6 @@ RSYNC_LOCK_FILENAME = "rsync.lock"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_IGNORE_FILENAME = 'rsync.ignore'
 
-# Default lims status
-COMPLETE = 'COMPLETE'
-
 # rsync exclude list
 RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
@@ -70,20 +65,6 @@ RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
     "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME
 ]
-
-# Template for rsync script
-LOCAL_SCRIPT_TEMPLATE = '''
-#!/bin/bash
-#
-# Shell script for running command(s) locally
-#
-
-echo "%(cmd)s"
-
-%(cmd)s
-
-'''
-
 
 ################################################################################
 # METHODS
@@ -114,7 +95,7 @@ def setup_rsync(run_folder, dest_run_folder):
         copy_finished = "%s %s/." % (rsync_finished, dest_rsync_directory)
         copy_run_completed = "%s %s/." % (run_completed, dest_run_folder)
         command = "touch %s; touch %s; rsync %s; touch %s; cp %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_lock)
-        rsync_script_file.write(LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+        rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
         rsync_script_file.close()
         log.info('%s created' % rsync_script_path)
     else:
@@ -165,7 +146,7 @@ def update_status(update_status, soap_url, run, run_folder, dest_run_folder):
         log.info('*** RSYNC AND RUN COMPLETED ****************************************************')
         # update status in lims
         if update_status:
-            utils.set_run_complete(soap_client, run, COMPLETE)
+            utils.set_run_complete(soap_client, run, lims.SEQUENCING_COMPLETE_STATUS)
         else:
             log.debug('lims status not updated - use --update-status option to turn it on')
     else:
@@ -199,33 +180,6 @@ def rsync_and_run_completed(run_folder):
     return True    
 
 ################################################################################
-# CLASS DEFINITION
-################################################################################
-
-class StartedRuns:
-    def __init__(self, _db_url, _run_number=None):
-        # CRI lims database connection
-        self.solexa_db = SqlSoup(_db_url)
-        self.runs = []
-        self.populateRuns(_run_number)
-
-    def populateRuns(self, _run_number=None):
-        # get one run
-        if _run_number:
-            run = self.solexa_db.solexarun.filter_by(runNumber=_run_number).one()
-            if run.status == 'STARTED':
-                self.runs.append(run)
-            else:
-                log.warning('Run %s has not been completed, its current status is %s.' % (run.runNumber, run.status))
-        # get all runs
-        else:
-            runs = self.solexa_db.solexarun.all()
-            for run in runs:
-                # select started runs
-                if run.status == 'STARTED':
-                    self.runs.append(run)
-
-################################################################################
 # MAIN
 ################################################################################
 def main(argv=None):
@@ -234,8 +188,8 @@ def main(argv=None):
     parser = optparse.OptionParser()
     parser.add_option("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'")
     parser.add_option("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
-    parser.add_option("--dburl", dest="dburl", action="store", default=DB_URL, help="database url [read only access] - default set to '%s'" % DB_URL)
-    parser.add_option("--soapurl", dest="soapurl", action="store", default=SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % SOAP_URL)
+    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_option("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
     parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_option("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
@@ -266,8 +220,8 @@ def main(argv=None):
         sys.exit(1)
         
     # get all started runs
-    runs = StartedRuns(options.dburl, options.run_number)
-    for run in runs.runs:
+    runs = lims.StartedRuns(options.dburl, options.run_number)
+    for run in runs.filtered_runs:
         log.info('--------------------------------------------------------------------------------')
         log.info('--- RUN: %s' % run.runNumber)
         log.info('--------------------------------------------------------------------------------')
@@ -290,7 +244,7 @@ def main(argv=None):
             else:
                 log.info('%s is present' % rsync_ignore)
         else:
-            log.error('%s does not exists in %s' % (run.pipelinePath, options.basedir))
+            log.debug('%s does not exists in %s' % (run.pipelinePath, options.basedir))
 
 if __name__ == "__main__":
 	sys.exit(main())
