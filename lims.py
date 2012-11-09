@@ -83,7 +83,8 @@ class StartedRuns(AllRuns):
         self.filterRuns(_run_number, SEQUENCING_STARTED_STATUS)
 
     def filterCondition(self, _run, _run_number, _status):
-        if _run.status == _status:
+        # status could be STARTED or RE-STARTED
+        if _status in _run.status:
             self.filtered_runs.append(_run)
             if _run_number:
                 log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
