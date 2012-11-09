@@ -61,7 +61,7 @@ RSYNC_IGNORE_FILENAME = 'rsync.ignore'
 # rsync exclude list
 RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
-    "--exclude=Data/Thumbnail_Images", # thumbnail images
+    "--exclude=Thumbnail_Images", # thumbnail images
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
     "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME
 ]
