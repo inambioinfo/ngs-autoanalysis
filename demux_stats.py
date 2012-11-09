@@ -7,6 +7,7 @@ Created by Anne Pajon on 2012-10-01.
 
 Usage:
     fab -f demux_stats.py local install
+or  fab -f demux_stats.py remote install
 """
 
 import sys, os, glob
@@ -55,9 +56,16 @@ MULTIPLEX_KIT={
 log.setLevel(logging.DEBUG)        
 
 # -- Host specific setup
-
-def remote():
+def cluster():
     """Setup environment for demultiplex statistic analysis on lustre
+    """
+    env.user = 'solexa'
+    env.hosts = ['localhost']
+    env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
+    env.soft_pipeline_path = autoanalysis.SOFT_PIPELINE_PATH
+    
+def remote():
+    """Setup environment for installing data on lustre
     """
     env.user = 'solexa'
     env.hosts = ['uk-cri-lsol03.crnet.org', 'uk-cri-lsol01.crnet.org']
@@ -74,17 +82,6 @@ def local():
 
 # -- Fabric instructions
 
-def install():
-    """Setup demultiplex statistic analysis on all multiplexed run
-    """
-    install_data()
-    setup_pipeline()
-    
-def run():
-    """Run demultiplex statistic analysis on all multiplexed run
-    """
-    run_pipeline()
-    
 def list_samples():
     """Print list of multiplexed samples with extra information
     """
@@ -93,6 +90,8 @@ def list_samples():
         runs.printSampleDetails(run)
         
 def install_data():
+    """Install fastq file on lustre
+    """
     # current host
     log.debug("################################################################################")
     log.debug(env.host)
@@ -118,7 +117,9 @@ def install_data():
                 dest = os.path.join(run_analysis_folder, fastq_file.filename)
                 _copy_file(orig, dest)
                                         
-def setup_pipeline():
+def setup_demux():
+    """Setup demultiplex statistic analysis on all multiplexed run
+    """
     # current host
     log.debug("################################################################################")
     log.debug(env.host)
@@ -209,7 +210,9 @@ def setup_pipeline():
             index_file.close()
             log.info('%s created' % index_path)
             
-def run_pipeline():
+def run_demux():
+    """Run demultiplex statistic analysis on all multiplexed run
+    """
     # current host
     log.debug("################################################################################")
     log.debug(env.host)
