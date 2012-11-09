@@ -412,6 +412,10 @@ def main(argv=None):
     if not glob.glob(options.archivedir):
         log.error("%s does not exists - check your '--archivedir' option" % options.archivedir)
         sys.exit(1)
+    
+    # turn off update-status for dry-run
+    if options.dry_run:
+        options.update_status = False
         
     # get all completed runs that have not been analysed or just one run
     runs = lims.CompleteRuns(options.dburl, options.run_number)
