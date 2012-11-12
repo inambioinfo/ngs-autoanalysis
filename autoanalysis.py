@@ -39,7 +39,7 @@ cd /home/mib-cri/bin/
 ln -s /home/mib-cri/software/python2.7/bin/python python
 """
 
-import sys, os, glob
+import sys, os, glob, stat
 import optparse
 import logging
 from collections import OrderedDict
@@ -156,6 +156,7 @@ def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_P
             setup_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             # TODO: copy pipeline definition
             setup_script_file.close()
+            os.chmod(setup_script_path, 0755)
             log.info('%s created' % setup_script_path)
         else:
             log.debug('%s already exists' % setup_script_path)
@@ -190,6 +191,7 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
                 command = "cd %s; touch %s; %s/%s/bin/%s --mode=local %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
                 run_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             run_script_file.close()
+            os.chmod(run_script_path, 0755)
             log.info('%s created' % run_script_path)
         else:
             log.debug('%s already exists' % run_script_path)
@@ -251,6 +253,7 @@ def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True):
                     command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
                     rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
                     rsync_script_file.close()
+                    os.chmod(rsync_script_path, 0755)
                     log.info('%s created' % rsync_script_path)
                 else:
                     log.debug('%s already exists' % rsync_script_path)
