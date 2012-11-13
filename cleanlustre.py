@@ -94,8 +94,8 @@ def main():
                 log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
                 if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status):
                     log.info('*** run folder will be moved to trash')
-                    cmd = 'mv %s %s' % (run_folder, options.trashdir)
-                    utils.run_bg_process([cmd], options.dry_run)
+                    cmd = ['mv', run_folder, options.trashdir]
+                    utils.run_bg_process(cmd, options.dry_run)
             except (NoResultFound):
                 log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
             except:
