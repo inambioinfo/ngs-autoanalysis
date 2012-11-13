@@ -350,7 +350,7 @@ def publish_external_data(run_folder, samples, dry_run=True):
                         dest = "%s/%s/current/" % (FTP_URL, institute)
                         rsync_log = "%s/rsync_%s.log" % (external_directory, institute)
                         rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
-                    command = "touch %s; touch %s; %s; touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
+                    command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
                     rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
                     rsync_script_file.close()
                     os.chmod(rsync_script_path, 0755)
