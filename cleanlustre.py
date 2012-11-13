@@ -92,7 +92,7 @@ def main():
             try:
                 run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
                 log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
-                if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status):
+                if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
                     log.info('*** run folder will be moved to trash')
                     cmd = ['mv', run_folder, options.trashdir]
                     utils.run_bg_process(cmd, options.dry_run)
