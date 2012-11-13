@@ -19,6 +19,7 @@ import lims
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
+    from sqlalchemy.orm.exc import NoResultFound
 except ImportError:
     print '''
  --------------------------------------------------------------------------------
@@ -95,7 +96,7 @@ def main():
                     log.info('*** run folder will be moved to trash')
                     cmd = 'mv %s %s' % (run_folder, options.trashdir)
                     utils.run_bg_process([cmd], options.dry_run)
-            except (sqlalchemy.orm.exc.NoResultFound):
+            except (NoResultFound):
                 log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
             except:
                 log.error("Unexpected error:", sys.exc_info()[0])
