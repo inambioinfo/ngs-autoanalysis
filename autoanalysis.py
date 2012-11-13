@@ -297,6 +297,52 @@ def rsync_pipelines(run_folder, pipelines, dry_run=True):
                 log.debug("nothing to rsync yet - %s and/or %s missing" % (PIPELINE_STARTED_FILENAME, PIPELINE_FINISHED_FILENAME))
         else:
             log.warn('%s is missing' % rsync_script_path)
+            
+def rsync_external_data(run_folder, sample_ids, dry_run=True):
+    """publish external data - rsync to ldmz01
+    (1) create external directory with symlink to fastq files
+    (2) rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/SLX_????_CRIRUN_???.${fastq_filename}
+    """
+    external_directory = os.path.join(run_folder, 'external')
+    rsync_script_path = os.path.join(external_directory, RSYNC_SCRIPT_FILENAME)
+    rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+    rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
+    rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
+    
+    if len(samples_ids) > 0:
+        # create external directory
+        if not os.path.exists(external_directory):
+            os.makedirs(external_directory)
+            log.info('%s created' % external_directory)
+        else:
+            log.debug('%s already exists' % external_directory)
+            
+        # symlink matching files from primary directory
+        for sample_id in sample_ids:
+            file_names = glob.glob("%s/%s.*" % os.path.join(run_folder, 'primary'), sample_id)
+            for file_name in file_names:
+                link_name = os.path.join(external_directory, os.path.basename(file_name))                
+                if os.path.lexists(link_name):
+                    os.remove(link_name)
+                os.symlink(file_name, link_name)
+                log.debug("%s symlink created" % link_name)
+        
+        # create rsync script
+        if os.path.exists(rsync_script_path):
+            if not os.path.exists(rsync_script_path):
+                rsync_script_file = open(rsync_script_path, 'w')
+                rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], run_folder, dest_basedir, rsync_log)
+                command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
+                rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+                rsync_script_file.close()
+                os.chmod(rsync_script_path, 0755)
+                log.info('%s created' % rsync_script_path)
+            else:
+                log.debug('%s already exists' % rsync_script_path)
+        
+        # run rsync
+    else:
+        log.debug('No external samples')
 
 def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, pipelines):
     primary_completed_path = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
@@ -376,8 +422,7 @@ def process_completed(run_folder, list_pipelines):
 ################################################################################
 # MAIN
 ################################################################################
-def main(argv=None):
-    
+def main():
     # get the options
     parser = optparse.OptionParser()
     parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
@@ -465,18 +510,8 @@ def main(argv=None):
         else:
             log.error('%s does not exists' % run_folder)
     
-    # TODO: publish external data - rsync to ldmz01
-    # (1) create external directory with symlink to fastq files
-    # (2) rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/SLX_????_CRIRUN_???.${fastq_filename}
-    # TODO: remove data from lustre when process finished (currently done with solexa_cleanlustre.pl)
-    # - when process completed - all pipelines finished and all rsync finished
-    # - when lims status complete
-    # - when no dont.delete file
-    # remove Data/* ${pipeline_name}/* on lustre 
-    
-
 if __name__ == "__main__":
-	sys.exit(main())
+	main()
 
 
         
