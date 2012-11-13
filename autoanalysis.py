@@ -100,6 +100,9 @@ SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 # Cluster host
 CLUSTER_HOST = "uk-cri-lcst01"
 
+# ftp server
+FTP_URL = "solexadmin@uk-cri-ldmz01:/dmz01/solexa"
+
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
 RUN_SCRIPT_FILENAME = "run-pipeline.sh"
@@ -298,51 +301,83 @@ def rsync_pipelines(run_folder, pipelines, dry_run=True):
         else:
             log.warn('%s is missing' % rsync_script_path)
             
-def rsync_external_data(run_folder, sample_ids, dry_run=True):
+def publish_external_data(run_folder, samples, dry_run=True):
     """publish external data - rsync to ldmz01
     (1) create external directory with symlink to fastq files
     (2) rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/SLX_????_CRIRUN_???.${fastq_filename}
     """
     external_directory = os.path.join(run_folder, 'external')
+    primary_completed = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
     rsync_script_path = os.path.join(external_directory, RSYNC_SCRIPT_FILENAME)
     rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
     rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     
-    if len(samples_ids) > 0:
-        # create external directory
-        if not os.path.exists(external_directory):
-            os.makedirs(external_directory)
-            log.info('%s created' % external_directory)
-        else:
-            log.debug('%s already exists' % external_directory)
+    if samples:
+        if run_folder:
+            if os.path.exists(primary_completed):
+                # create external directory
+                if not os.path.exists(external_directory):
+                    os.makedirs(external_directory)
+                    log.info('%s created' % external_directory)
+                else:
+                    log.debug('%s already exists' % external_directory)
             
-        # symlink matching files from primary directory
-        for sample_id in sample_ids:
-            file_names = glob.glob("%s/%s.*" % os.path.join(run_folder, 'primary'), sample_id)
-            for file_name in file_names:
-                link_name = os.path.join(external_directory, os.path.basename(file_name))                
-                if os.path.lexists(link_name):
-                    os.remove(link_name)
-                os.symlink(file_name, link_name)
-                log.debug("%s symlink created" % link_name)
+                # symlink matching files from primary directory
+                for sample_id in list(samples.viewkeys()):
+                    institute_directory = os.path.join(external_directory, samples[sample_id])
+                    # create institute directory
+                    if not os.path.exists(institute_directory):
+                        os.makedirs(institute_directory)
+                        log.info('%s created' % institute_directory)
+                    else:
+                        log.debug('%s already exists' % institute_directory)
+                    file_names = glob.glob("%s/%s.*" % (os.path.join(run_folder, 'primary'), sample_id))
+                    for file_name in file_names:
+                        # create symlink
+                        link_name = os.path.join(institute_directory, os.path.basename(file_name))                
+                        if os.path.lexists(link_name):
+                            os.remove(link_name)
+                        os.symlink(file_name, link_name)
+                        log.debug("%s symlink created" % link_name)
         
-        # create rsync script
-        if os.path.exists(rsync_script_path):
-            if not os.path.exists(rsync_script_path):
-                rsync_script_file = open(rsync_script_path, 'w')
-                rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], run_folder, dest_basedir, rsync_log)
-                command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, rsync_lock)
-                rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-                rsync_script_file.close()
-                os.chmod(rsync_script_path, 0755)
-                log.info('%s created' % rsync_script_path)
+                # create rsync script
+                if not os.path.exists(rsync_script_path):
+                    rsync_script_file = open(rsync_script_path, 'w')
+                    rsync = ""
+                    for institute in set(samples.viewvalues()):
+                        src = os.path.join(external_directory, institute)
+                        dest = "%s/%s/current/" % (FTP_URL, institute)
+                        rsync = rsync + "rsync -av --copy-links %s/ %s > rsync_%s.log 2>&1; " % (src, dest, institute)
+                    command = "touch %s; touch %s; %s; touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
+                    rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+                    rsync_script_file.close()
+                    os.chmod(rsync_script_path, 0755)
+                    log.info('%s created' % rsync_script_path)
+                else:
+                    log.debug('%s already exists' % rsync_script_path)
+        
+                # run rsync
+                if os.path.exists(rsync_script_path):
+                    if not os.path.exists(rsync_started):
+                        if not os.path.exists(rsync_lock):
+                            utils.touch(rsync_lock)
+                            utils.run_bg_process(['sh', '%s' % rsync_script_path], dry_run)
+                        else:
+                            log.info('%s presents - another rsync process is running' % rsync_lock)
+                    else:
+                        if not os.path.exists(rsync_finished):
+                            log.info('external data is currently being synchronised')
+                        else:
+                            log.info('external data has been synchronised')
+                else:
+                    log.warn('%s is missing' % rsync_script_path)
             else:
-                log.debug('%s already exists' % rsync_script_path)
-        
-        # run rsync
+                log.info('Primary not completed')
+        else:
+            log.warn('%s does not exist' % run_folder)
     else:
-        log.debug('No external samples')
+        log.info('No external samples to publish')
 
 def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, pipelines):
     primary_completed_path = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
@@ -500,6 +535,8 @@ def main():
                 run_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.cluster, options.dry_run)
                 log.info('--- RUN RSYNC ------------------------------------------------------------------')
                 rsync_pipelines(run_folder, pipelines, options.dry_run)
+                log.info('--- PUBLISH EXTERNAL DATA ------------------------------------------------------')
+                publish_external_data(dest_run_folder, runs.getExternalSampleIds(run), options.dry_run)
                 log.info('--- UPDATE STATUS --------------------------------------------------------------')
                 register_process_completed(options.update_status, options.soapurl, run, run_folder, dest_run_folder, pipelines_for_completion)
             else:

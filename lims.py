@@ -104,13 +104,14 @@ class CompleteRuns(AllRuns):
                 if not (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE'):
                     self.filtered_runs.append(_run)
                     
-    def getExternalSampleIds(self, run):
-        sample_ids = []
-        lanes = self.solexa_db.lane.filter_by(run_id=run.id)
+    def getExternalSampleIds(self, _run):
+        samples = {}
+        lanes = self.solexa_db.lane.filter_by(run_id=_run.id)
         for lane in lanes:
             # select external lane
             if lane.isControl == 0 and lane.isExternal == 1:
-                sample_ids.append(lane.genomicsSampleId)
+                samples[lane.genomicsSampleId] = lane.institute.lower()
+        return samples
 
 class MultiplexedRuns(AllRuns):
     def __init__(self, _db_url=DB_SOLEXA):
