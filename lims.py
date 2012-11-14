@@ -101,7 +101,7 @@ class CompleteRuns(AllRuns):
                 log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
             else:
                 # select completed runs that have not been analysed
-                if not (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE'):
+                if not (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE' or _run.analysisStatus == 'ABANDONED'):
                     self.filtered_runs.append(_run)
                     
     def getExternalSampleIds(self, _run):
