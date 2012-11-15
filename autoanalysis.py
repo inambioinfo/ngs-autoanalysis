@@ -155,7 +155,7 @@ def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_P
         # create setup-pipeline script 
         if not os.path.exists(setup_script_path):    
             setup_script_file = open(setup_script_path, 'w')
-            command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --clean --notifications %s %s %s" % (soft_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(run_folder), soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], run_number, run_meta)
+            command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --notifications %s %s %s" % (soft_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(run_folder), soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], run_number, run_meta)
             setup_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             # TODO: copy pipeline definition
             setup_script_file.close()
@@ -191,7 +191,7 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
                 command = "%s/%s/bin/%s --mode=lsf %s" % (soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
                 run_script_file.write(utils.LSF_SCRIPT_TEMPLATE % {'mem_value': '2048', 'cluster': cluster_host, 'work_dir':pipeline_directory, 'job_name':job_name, 'cmd':command})
             else:
-                command = "cd %s; touch %s; %s/%s/bin/%s --mode=local %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
+                command = "cd %s; touch %s; %s/%s/bin/%s --mode=local --clean %s" % (pipeline_directory, PIPELINE_STARTED_FILENAME, soft_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
                 run_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
             run_script_file.close()
             os.chmod(run_script_path, 0755)
