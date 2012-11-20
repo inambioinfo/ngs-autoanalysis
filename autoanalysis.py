@@ -55,7 +55,7 @@ try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
     from suds.client import Client
 except ImportError:
-    print '''
+    sys.exit('''
  --------------------------------------------------------------------------------
  --- Use this python on the sols to call the script
  > /home/mib-cri/software/python2.7/bin/python
@@ -66,8 +66,7 @@ except ImportError:
  > python virtualenv.py `pwd`
  > source bin/activate
  > pip install mysql-python sqlalchemy suds
- '''
-    sys.exit()
+ ''')
 
 ################################################################################
 # CONSTANTS
@@ -107,6 +106,7 @@ FTP_URL = "solexadmin@uk-cri-ldmz01:/dmz01/solexa"
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
 RUN_SCRIPT_FILENAME = "run-pipeline.sh"
 RSYNC_SCRIPT_FILENAME = "rsync.sh"
+RSYNC_DEMUX_SCRIPT_FILENAME = "rsync_demux.sh"
 
 CREATE_METAFILE_FILENAME = "create-metafile"
 RUN_META_FILENAME = "run-meta.xml"
@@ -118,8 +118,10 @@ PIPELINE_FAILED_FILENAME = "pipeline.failed"
 
 RSYNC_STARTED_FILENAME = "rsync.started"
 RSYNC_FINISHED_FILENAME = "rsync.ended"
-RSYNC_LOCK_FILENAME = "rsync.lock"
 RSYNC_LOG_FILENAME = "rsync.log"
+RSYNC_LOCK_FILENAME = "rsync.lock"
+RSYNC_DEMUX_STARTED_FILENAME = "rsync_demux.started"
+RSYNC_DEMUX_FINISHED_FILENAME = "rsync_demux.ended"
 
 SEQUENCING_COMPLETED_FILENAME = "Run.completed"
 PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
@@ -138,7 +140,7 @@ RSYNC_EXCLUDE = {
 ################################################################################
 # PIPELINE METHODS
 ################################################################################
-def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=lims.SOAP_URL, dry_run=True):        
+def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=lims.SOAP_URL, dry_run=True):
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -146,11 +148,7 @@ def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_P
         run_meta = os.path.join(pipeline_directory, RUN_META_FILENAME)  
         
         # create pipeline folder
-        if not os.path.exists(pipeline_directory):
-            os.makedirs(pipeline_directory)
-            log.info('%s created' % pipeline_directory)
-        else:
-            log.debug('%s already exists' % pipeline_directory)
+        utils.create_directory(pipeline_directory)
             
         # create setup-pipeline script 
         if not os.path.exists(setup_script_path):    
@@ -210,7 +208,7 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
                     else:
                         log.info('%s pipeline dependencies not satisfied' % pipeline_name)
                 else:
-                    log.error("%s presents with no %s" % (pipeline_finished, PIPELINE_STARTED_FILENAME))
+                    log.warn("%s presents with no %s" % (pipeline_finished, PIPELINE_STARTED_FILENAME))
             # pipeline started
             else:
                 # pipeline not finished
@@ -221,8 +219,8 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
                         if utils.output_job_success(job_output):
                             log.info("%s pipeline finished successfully. %s do not exist yet." % (pipeline_name, pipeline_finished))
                         else:
-                            log.error(">>> %s pipeline in %s has failed." % (pipeline_name, run_folder))
-                            log.error(">>> please investigate %s." % job_output)
+                            log.warn(">>> %s pipeline in %s has failed." % (pipeline_name, run_folder))
+                            log.warn(">>> please investigate %s." % job_output)
                     else:
                         log.info("%s pipeline in %s has not finished." % (pipeline_name, run_folder))
                 # pipeline finished
@@ -261,7 +259,7 @@ def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True):
                 else:
                     log.debug('%s already exists' % rsync_script_path)
             else:
-                log.error('%s is missing' % pipeline_directory)
+                log.warn('%s is missing' % pipeline_directory)
 
 def rsync_pipelines(run_folder, pipelines, dry_run=True):
     for pipeline_name in list(pipelines.viewkeys()):
@@ -301,37 +299,33 @@ def rsync_pipelines(run_folder, pipelines, dry_run=True):
         else:
             log.warn('%s is missing' % rsync_script_path)
             
-def publish_external_data(run_folder, samples, dry_run=True):
+def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=True):
     """publish external data - rsync to ldmz01
-    (1) create external directory with symlink to fastq files
-    (2) rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/SLX_????_CRIRUN_???.${fastq_filename}
+    - create external directory with symlink to fastq files on sol03 not lustre
+    - rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
     """
     external_directory = os.path.join(run_folder, 'external')
     primary_completed = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
     rsync_script_path = os.path.join(external_directory, RSYNC_SCRIPT_FILENAME)
     rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
+    rsync_demux_script_path = os.path.join(external_directory, RSYNC_DEMUX_SCRIPT_FILENAME)
+    rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
+    rsync_demux_finished = os.path.join(external_directory, RSYNC_DEMUX_FINISHED_FILENAME)
     rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     
     if samples:
         if run_folder:
-            if os.path.exists(primary_completed):
-                # create external directory
-                if not os.path.exists(external_directory):
-                    os.makedirs(external_directory)
-                    log.info('%s created' % external_directory)
-                else:
-                    log.debug('%s already exists' % external_directory)
-            
+            # create external directory
+            utils.create_directory(external_directory)
+
+            # rsync fastq files at the end of primary
+            if os.path.exists(primary_completed):            
                 # symlink matching files from primary directory
                 for sample_id in list(samples.viewkeys()):
                     institute_directory = os.path.join(external_directory, samples[sample_id])
                     # create institute directory
-                    if not os.path.exists(institute_directory):
-                        os.makedirs(institute_directory)
-                        log.info('%s created' % institute_directory)
-                    else:
-                        log.debug('%s already exists' % institute_directory)
+                    utils.create_directory(institute_directory)
                     file_names = glob.glob("%s/%s.*" % (os.path.join(run_folder, 'primary'), sample_id))
                     for file_name in file_names:
                         # create symlink
@@ -340,47 +334,47 @@ def publish_external_data(run_folder, samples, dry_run=True):
                             os.remove(link_name)
                         os.symlink(file_name, link_name)
                         log.debug("%s symlink created" % link_name)
-        
                 # create rsync script
-                if not os.path.exists(rsync_script_path):
-                    rsync_script_file = open(rsync_script_path, 'w')
-                    rsync = ""
-                    for institute in set(samples.viewvalues()):
-                        src = os.path.join(external_directory, institute)
-                        dest = "%s/%s/current/" % (FTP_URL, institute)
-                        rsync_log = "%s/rsync_%s.log" % (external_directory, institute)
-                        rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
-                    command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
-                    rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-                    rsync_script_file.close()
-                    os.chmod(rsync_script_path, 0755)
-                    log.info('%s created' % rsync_script_path)
-                else:
-                    log.debug('%s already exists' % rsync_script_path)
-        
+                create_external_rsync_script(external_directory, samples, rsync_script_path, rsync_started, rsync_finished, 'rsync', rsync_lock)
                 # run rsync
-                if os.path.exists(rsync_script_path):
-                    if not os.path.exists(rsync_started):
-                        if not os.path.exists(rsync_lock):
-                            utils.touch(rsync_lock)
-                            utils.run_bg_process(['sh', '%s' % rsync_script_path], dry_run)
-                        else:
-                            log.info('%s presents - another rsync process is running' % rsync_lock)
-                    else:
-                        if not os.path.exists(rsync_finished):
-                            log.info('external data is currently being synchronised')
-                        else:
-                            log.info('external data has been synchronised')
-                else:
-                    log.warn('%s is missing' % rsync_script_path)
+                run_external_rsync_script(rsync_script_path, rsync_started, rsync_finished, rsync_lock, dry_run)
             else:
                 log.info('Primary not completed')
+                
+            # rsync demux fastq files at the end of demultiplex
+            if multiplexed_run:
+                if process_completed(run_folder, ['demultiplex']):
+                    # symlink matching files from demultiplex directory
+                    for sample_id in list(samples.viewkeys()):
+                        institute_directory = os.path.join(external_directory, samples[sample_id])
+                        demux_directory = os.path.join(institute_directory, '%s.demux' % sample_id)
+                        # create sample demux directory
+                        utils.create_directory(demux_directory)
+                        file_names = glob.glob("%s/*%s*" % (os.path.join(run_folder, 'demultiplex'), sample_id))
+                        for file_name in file_names:
+                            # create symlink
+                            link_name = os.path.join(demux_directory, os.path.basename(file_name))                
+                            if os.path.lexists(link_name):
+                                os.remove(link_name)
+                            os.symlink(file_name, link_name)
+                            log.debug("%s symlink created" % link_name)
+                    
+                    # create rsync_demux script
+                    create_external_rsync_script(external_directory, samples, rsync_demux_script_path, rsync_demux_started, rsync_demux_finished, 'rsync_demux', rsync_lock)
+                    
+                    # run rsync_demux
+                    run_external_rsync_script(rsync_demux_script_path, rsync_demux_started, rsync_demux_finished, rsync_lock, dry_run)
+                else:
+                    log.info('Demultiplex not completed')
+            else:
+                log.info('Not a demultiplexed run')
+                
         else:
             log.warn('%s does not exist' % run_folder)
     else:
         log.info('No external samples to publish')
 
-def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, pipelines):
+def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, external_samples, multiplexed_run, pipelines):
     primary_completed_path = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
     dest_primary_completed_path = os.path.join(dest_run_folder, PRIMARY_COMPLETED_FILENAME)
     process_completed_path = os.path.join(run_folder, PROCESS_COMPLETED_FILENAME)
@@ -403,7 +397,7 @@ def register_process_completed(update_status, soap_url, run, run_folder, dest_ru
             os.remove(dest_primary_completed_path)
         
     # update lims analysis status when all processes completed and rsynced
-    if process_completed(run_folder, list(pipelines.viewkeys())):
+    if process_completed(run_folder, list(pipelines.viewkeys())) and external_data_published(dest_run_folder, external_samples, multiplexed_run):
         if not os.path.exists(process_completed_path):
             utils.touch(process_completed_path)
         if not os.path.exists(dest_process_completed_path):
@@ -454,7 +448,56 @@ def process_completed(run_folder, list_pipelines):
         if not os.path.exists(rsync_finished) or not os.path.exists(rsync_started):
             return False
     return True
+     
+def external_data_published(run_folder, external_samples, multiplexed_run):
+    external_directory = os.path.join(run_folder, 'external')
+    rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+    rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
+    rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
+    rsync_demux_finished = os.path.join(external_directory, RSYNC_DEMUX_FINISHED_FILENAME)
+    if external_samples:
+        # rsync external data not finished or started
+        if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
+            return False
+        if multiplexed_run:
+            if not os.path.exists(rsync_demux_started) or not os.path.exists(rsync_demux_finished):
+                return False
+    return True
+    
+def create_external_rsync_script(external_directory, samples, rsync_script_path, rsync_started, rsync_finished, rsync_log, rsync_lock):
+    if not os.path.exists(rsync_script_path):
+        rsync_script_file = open(rsync_script_path, 'w')
+        rsync = ""
+        for institute in set(samples.viewvalues()):
+            src = os.path.join(external_directory, institute)
+            dest = "%s/%s/current/" % (FTP_URL, institute)
+            rsync_log = "%s/%s_%s.log" % (external_directory, rsync_log, institute)
+            rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+        command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
+        rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+        rsync_script_file.close()
+        os.chmod(rsync_script_path, 0755)
+        log.info('%s created' % rsync_script_path)
+    else:
+        log.debug('%s already exists' % rsync_script_path)
         
+def run_external_rsync_script(rsync_script_path, rsync_started, rsync_finished, rsync_lock, dry_run):
+    if os.path.exists(rsync_script_path):
+        if not os.path.exists(rsync_started):
+            if not os.path.exists(rsync_lock):
+                utils.touch(rsync_lock)
+                utils.run_bg_process(['sh', '%s' % rsync_script_path], dry_run)
+            else:
+                log.info('%s presents - another rsync process is running' % rsync_lock)
+        else:
+            if not os.path.exists(rsync_finished):
+                log.info('external data is currently being synchronised')
+            else:
+                log.info('external data has been synchronised')
+    else:
+        log.warn('%s is missing' % rsync_script_path)
+    
+    
 ################################################################################
 # MAIN
 ################################################################################
@@ -486,16 +529,13 @@ def main():
     for option in ['basedir', 'archivedir']:
         if getattr(options, option) == None:
             print "Please supply a --%s parameter.\n" % (option)
-            parser.print_help()
-            sys.exit()
+            sys.exit(parser.print_help())
             
     if not os.path.exists(options.basedir):
-        log.error("%s does not exists - check your '--basedir' option" % options.basedir)
-        sys.exit(1)
+        sys.exit("%s does not exists - check your '--basedir' option" % options.basedir)
     
     if not glob.glob(options.archivedir):
-        log.error("%s does not exists - check your '--archivedir' option" % options.archivedir)
-        sys.exit(1)
+        sys.exit("%s does not exists - check your '--archivedir' option" % options.archivedir)
     
     # turn off update-status for dry-run
     if options.dry_run:
@@ -522,11 +562,16 @@ def main():
                 if run.multiplexed == 1:
                     pipelines = MULTIPLEX_PIPELINES
                     pipelines_for_completion = MULTIPLEX_PIPELINES
+                    multiplexed_run = True
                 else:
                     pipelines = PIPELINES
                     pipelines_for_completion = PIPELINES
+                    multiplexed_run = False
                 if options.step:
                     pipelines = {options.step : ""}
+                    
+                # get list of external samples
+                external_samples = runs.getExternalSampleIds(run)
                 
                 log.info('--- SETUP PIPELINES ------------------------------------------------------------')
                 setup_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.soapurl, options.dry_run)
@@ -537,16 +582,16 @@ def main():
                 log.info('--- RUN RSYNC ------------------------------------------------------------------')
                 rsync_pipelines(run_folder, pipelines, options.dry_run)
                 log.info('--- PUBLISH EXTERNAL DATA ------------------------------------------------------')
-                publish_external_data(dest_run_folder, runs.getExternalSampleIds(run), options.dry_run)
+                publish_external_data(dest_run_folder, external_samples, multiplexed_run, options.dry_run)
                 log.info('--- UPDATE STATUS --------------------------------------------------------------')
-                register_process_completed(options.update_status, options.soapurl, run, run_folder, dest_run_folder, pipelines_for_completion)
+                register_process_completed(options.update_status, options.soapurl, run, run_folder, dest_run_folder, external_samples, multiplexed_run, pipelines_for_completion)
             else:
                 if not os.path.exists(sequencing_completed):
-                    log.warning('%s does not exists' % sequencing_completed)
+                    log.warn('%s does not exists' % sequencing_completed)
                 if os.path.exists(analysis_ignore):
                     log.info('%s is present' % analysis_ignore)
         else:
-            log.error('%s does not exists' % run_folder)
+            log.warn('run folder %s does not exists - autoanalysis will not run' % run_folder)
     
 if __name__ == "__main__":
 	main()

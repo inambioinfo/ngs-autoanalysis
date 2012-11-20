@@ -105,6 +105,13 @@ def locate_run_folder(run_folder_name, archive_glob, create=True):
         else:
             log.error('no run folder %s found in %s' % (run_folder_name, archive_glob))
     return None
+    
+def create_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        log.info('%s created' % directory)
+    else:
+        log.debug('%s already exists' % directory)
 
 def get_smallest_volume(archive_glob):
     volumes = glob.glob(archive_glob)
