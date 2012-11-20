@@ -85,7 +85,7 @@ class StartedRuns(AllRuns):
     def filterCondition(self, _run, _run_number, _status):
         if _run_number:
             self.filtered_runs.append(_run)
-            log.info('Run %s is current status is %s and not .' % (_run.runNumber, _run.status, _status))
+            log.info('Run %s is current status is %s and not %s' % (_run.runNumber, _run.status, _status))
         else:
             # status could be STARTED or RE-STARTED
             if _status in _run.status:
