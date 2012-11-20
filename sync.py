@@ -42,7 +42,8 @@ except ImportError:
 # Instrument names with their run completed dependencies
 INSTRUMENTS = {
     'HWI-ST230' : ['RTAComplete.txt'],
-    'M00225' : ['RTAComplete.txt'],
+#    'M00225' : ['RTAComplete.txt'], # old MiSeq
+    'M01214' : ['RTAComplete.txt'], # new MiSeq
     'HWI-EAS350' : ['Basecalling_Netcopy_complete.txt'],
     'HWI-EAS202' : ['Basecalling_Netcopy_complete.txt']
 }
