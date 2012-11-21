@@ -219,8 +219,8 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
                         if utils.output_job_success(job_output):
                             log.info("%s pipeline finished successfully. %s do not exist yet." % (pipeline_name, pipeline_finished))
                         else:
-                            log.warn(">>> %s pipeline in %s has failed." % (pipeline_name, run_folder))
-                            log.warn(">>> please investigate %s." % job_output)
+                            log.warn("[***FAIL***] %s pipeline in %s has failed." % (pipeline_name, run_folder))
+                            log.warn("please investigate %s." % job_output)
                     else:
                         log.info("%s pipeline in %s has not finished." % (pipeline_name, run_folder))
                 # pipeline finished
@@ -323,7 +323,7 @@ def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=Tr
             if os.path.exists(primary_completed):            
                 # symlink matching files from primary directory
                 for sample_id in list(samples.viewkeys()):
-                    institute_directory = os.path.join(external_directory, samples[sample_id])
+                    institute_directory = os.path.join(external_directory, samples[sample_id]['institute'])
                     # create institute directory
                     utils.create_directory(institute_directory)
                     file_names = glob.glob("%s/%s.*" % (os.path.join(run_folder, 'primary'), sample_id))
@@ -346,8 +346,8 @@ def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=Tr
                 if process_completed(run_folder, ['demultiplex']):
                     # symlink matching files from demultiplex directory
                     for sample_id in list(samples.viewkeys()):
-                        institute_directory = os.path.join(external_directory, samples[sample_id])
-                        demux_directory = os.path.join(institute_directory, '%s.demux' % sample_id)
+                        institute_directory = os.path.join(external_directory, samples[sample_id]['institute'])
+                        demux_directory = os.path.join(institute_directory, '%s.%s.s_%s.demux' % (sample_id, samples[sample_id]['run_number'], samples[sample_id]['lane_number']))
                         # create sample demux directory
                         utils.create_directory(demux_directory)
                         file_names = glob.glob("%s/*%s*" % (os.path.join(run_folder, 'demultiplex'), sample_id))
@@ -464,14 +464,18 @@ def external_data_published(run_folder, external_samples, multiplexed_run):
                 return False
     return True
     
-def create_external_rsync_script(external_directory, samples, rsync_script_path, rsync_started, rsync_finished, rsync_log, rsync_lock):
+def create_external_rsync_script(external_directory, samples, rsync_script_path, rsync_started, rsync_finished, log_prefix, rsync_lock):
     if not os.path.exists(rsync_script_path):
         rsync_script_file = open(rsync_script_path, 'w')
         rsync = ""
-        for institute in set(samples.viewvalues()):
+        # set of institutes
+        institutes = set()
+        for sample_id in list(samples.viewkeys()):
+            institutes.add(samples[sample_id]['institute'])
+        for institute in institutes:
             src = os.path.join(external_directory, institute)
             dest = "%s/%s/current/" % (FTP_URL, institute)
-            rsync_log = "%s/%s_%s.log" % (external_directory, rsync_log, institute)
+            rsync_log = "%s/%s_%s.log" % (external_directory, log_prefix, institute)
             rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
         command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
         rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})

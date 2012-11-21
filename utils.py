@@ -78,8 +78,11 @@ def touch(fname, times=None):
 def output_job_success(output_files):
     for output_file in output_files:
         with open(output_file) as output:
-            head=[output.next() for x in xrange(25)]
-            for line in head:
+            i = 0
+            for line in output:
+                i += 1
+                if i >= 50:
+                    break
                 if 'Successfully completed' in line:
                     return True
     return False
