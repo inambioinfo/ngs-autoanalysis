@@ -346,18 +346,19 @@ def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=Tr
                 if process_completed(run_folder, ['demultiplex']):
                     # symlink matching files from demultiplex directory
                     for sample_id in list(samples.viewkeys()):
-                        institute_directory = os.path.join(external_directory, samples[sample_id]['institute'])
-                        demux_directory = os.path.join(institute_directory, '%s.%s.s_%s.demux' % (sample_id, samples[sample_id]['run_number'], samples[sample_id]['lane_number']))
-                        # create sample demux directory
-                        utils.create_directory(demux_directory)
-                        file_names = glob.glob("%s/*%s*" % (os.path.join(run_folder, 'demultiplex'), sample_id))
-                        for file_name in file_names:
-                            # create symlink
-                            link_name = os.path.join(demux_directory, os.path.basename(file_name))                
-                            if os.path.lexists(link_name):
-                                os.remove(link_name)
-                            os.symlink(file_name, link_name)
-                            log.debug("%s symlink created" % link_name)
+                        if samples[sample_id]['is_multiplexed']:
+                            institute_directory = os.path.join(external_directory, samples[sample_id]['institute'])
+                            demux_directory = os.path.join(institute_directory, '%s.%s.s_%s.demux' % (sample_id, samples[sample_id]['run_number'], samples[sample_id]['lane_number']))
+                            # create sample demux directory
+                            utils.create_directory(demux_directory)
+                            file_names = glob.glob("%s/*%s*" % (os.path.join(run_folder, 'demultiplex'), sample_id))
+                            for file_name in file_names:
+                                # create symlink
+                                link_name = os.path.join(demux_directory, os.path.basename(file_name))                
+                                if os.path.lexists(link_name):
+                                    os.remove(link_name)
+                                os.symlink(file_name, link_name)
+                                log.debug("%s symlink created" % link_name)
                     
                     # create rsync_demux script
                     create_external_rsync_script(external_directory, samples, rsync_demux_script_path, rsync_demux_started, rsync_demux_finished, 'rsync_demux', rsync_lock)

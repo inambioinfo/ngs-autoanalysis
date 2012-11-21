@@ -114,8 +114,10 @@ class CompleteRuns(AllRuns):
         for lane in lanes:
             # select external lane
             if lane.isControl == 0 and lane.isExternal == 1:
-                #samples[lane.genomicsSampleId] = lane.institute.lower()
-                samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower(), 'run_number' : _run.runNumber, 'lane_number' : lane.lane}
+                is_multiplexed = False
+                if lane.multiplexing_id != None:
+                    is_multiplexed = True
+                samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower(), 'run_number' : _run.runNumber, 'lane_number' : lane.lane, 'is_multiplexed': is_multiplexed}
         return samples
 
 class MultiplexedRuns(AllRuns):
