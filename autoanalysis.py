@@ -3,7 +3,7 @@
 """
 autoanalysis.py
 
-$Id: $
+$Id$
 
 Made as a simplified replacement of solexa_autoanalysis.pl
 
