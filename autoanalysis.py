@@ -5,46 +5,43 @@ autoanalysis.py
 
 $Id$
 
-Made as a simplified replacement of solexa_autoanalysis.pl
-
 Created by Anne Pajon on 2012-10-05.
 
------------------------------------------------
-INFO FOR INSTALLING DEPENDENCIES ON SOLs
------------------------------------------------
-cd /home/mib-cri/software/Python-2.7.3/
+--------------------------------------------------------------------------------
 
-wget http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz
-tar -zxvf setuptools-0.6c11.tar.gz
-cd setuptools-0.6c11
-/home/mib-cri/software/python2.7/bin/python setup.py install
+This script has firstly been made to replace the old Perl solexa_autoanalysis.pl 
+written by Kevin Howe and modified by Ben Davis mainly because all steps of the 
+sequencing pipeline have been standardised and are now using the workflow engine 
+written by Richard Bowers.
 
-cd ..
-wget http://sourceforge.net/projects/mysql-python/files/mysql-python/1.2.3/MySQL-python-1.2.3.tar.gz
-tar -zxvf MySQL-python-1.2.3.tar.gz
-cd MySQL-python-1.2.3
-emacs site.cfg # change threadsafe = True to threadsafe = False
-/home/mib-cri/software/python2.7/bin/python setup.py build
-/home/mib-cri/software/python2.7/bin/python setup.py install
-
-cd ..
-wget http://prdownloads.sourceforge.net/sqlalchemy/SQLAlchemy-0.7.9.tar.gz
-cd SQLAlchemy-0.7.9
-/home/mib-cri/software/python2.7/bin/python setup.py install
-
-cd ..
-wget https://fedorahosted.org/releases/s/u/suds/python-suds-0.4.tar.gz
-tar -zxvf python-suds-0.4.tar.gz
-/home/mib-cri/software/python2.7/bin/python setup.py install
-
-cd /home/mib-cri/bin/
-ln -s /home/mib-cri/software/python2.7/bin/python python
+This script automatised the creation of the run-meta.xml needed for the pipeline
+to run; runs the pipeline; synchronises the data back to the archive; publishes 
+external data onto the ftp server; and updates the analysis status in the lims. 
+The list of runs is obtained from the lims when sequencing has finished and
+status set to COMPLETE.
 """
 
-import sys, os, glob, stat
-import optparse
+################################################################################
+# IMPORTS
+################################################################################
+import sys
+import os
+import glob
 import logging
-from collections import OrderedDict
+import optparse
+
+try:
+    from sqlalchemy.ext.sqlsoup import SqlSoup
+    from suds.client import Client
+except ImportError:
+    sys.exit('''
+--------------------------------------------------------------------------------
+>>> modules { mysql-python | sqlalchemy | suds } not installed.
+--------------------------------------------------------------------------------
+[on sols] use /home/mib-cri/software/python2.7/bin/python
+[locally] install virtualenv; source bin/activate and pip install modules
+--------------------------------------------------------------------------------
+''')
 
 # import logging module first
 import log as logger
@@ -52,23 +49,6 @@ log = logger.set_custom_logger()
 # then import other custom modules
 import utils
 import lims
-
-try:
-    from sqlalchemy.ext.sqlsoup import SqlSoup
-    from suds.client import Client
-except ImportError:
-    sys.exit('''
- --------------------------------------------------------------------------------
- --- Use this python on the sols to call the script
- > /home/mib-cri/software/python2.7/bin/python
- --------------------------------------------------------------------------------
- --- Or locally install these python modules { mysql-python | sqlalchemy | suds } first 
- --- and activate your python virtual environment
- > wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
- > python virtualenv.py `pwd`
- > source bin/activate
- > pip install mysql-python sqlalchemy suds
- ''')
 
 ################################################################################
 # CONSTANTS
@@ -143,6 +123,8 @@ RSYNC_EXCLUDE = {
 # PIPELINE METHODS
 ################################################################################
 def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, soap_url=lims.SOAP_URL, dry_run=True):
+    """Setup pipelines by creating and running shell script to generate run-meta.xml for each pipeline
+    """
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -175,6 +157,8 @@ def setup_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_P
             log.debug('%s already exists' % run_meta)
             
 def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True):
+    """Run pipelines by creating and running a shell script to run run-pipeline for each pipeline
+    """
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -232,6 +216,8 @@ def run_pipelines(run_folder, run_number, pipelines, soft_path=SOFT_PIPELINE_PAT
             log.warn("%s is missing" % run_meta)
             
 def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True): 
+    """ Create an rsync script for each pipeline to synchronise data from lustre
+    """
     for pipeline_name in list(pipelines.viewkeys()):       
         pipeline_directory = os.path.join(run_folder, pipeline_name)
         rsync_script_path = os.path.join(pipeline_directory, RSYNC_SCRIPT_FILENAME)
@@ -264,6 +250,9 @@ def setup_rsync_pipelines(dest_run_folder, run_folder, pipelines, dry_run=True):
                 log.warn('%s is missing' % pipeline_directory)
 
 def rsync_pipelines(run_folder, pipelines, dry_run=True):
+    """Run rsync script to synchronise data from lustre to lbio03
+    Synchronise primary directory first, and then all the other pipeline folders
+    """
     for pipeline_name in list(pipelines.viewkeys()):
         log.info('--- %s' % pipeline_name.upper())
         pipeline_directory = os.path.join(run_folder, pipeline_name)
@@ -274,7 +263,6 @@ def rsync_pipelines(run_folder, pipelines, dry_run=True):
         rsync_finished = os.path.join(pipeline_directory, RSYNC_FINISHED_FILENAME)
         rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     
-        # run rsync-pipeline script to synchronise data from lustre to lbio03
         # rsync primary first
         if os.path.exists(rsync_script_path):            
             if os.path.exists(pipeline_started) and os.path.exists(pipeline_finished):
@@ -303,8 +291,8 @@ def rsync_pipelines(run_folder, pipelines, dry_run=True):
             
 def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=True):
     """publish external data - rsync to ldmz01
-    - create external directory with symlink to fastq files on sol03 not lustre
-    - rsync to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
+    Create external directory with symlink to fastq files on sol03 - not lustre -
+    Synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
     """
     external_directory = os.path.join(run_folder, 'external')
     primary_completed = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
@@ -378,6 +366,10 @@ def publish_external_data(run_folder, samples, multiplexed_run=False, dry_run=Tr
         log.info('No external samples to publish')
 
 def register_process_completed(update_status, soap_url, run, run_folder, dest_run_folder, external_samples, multiplexed_run, pipelines):
+    """Update lims status if --update-status is on
+    Update lims analysis status to PRIMARY COMPLETE when just primary completed and rsynced
+    Update lims analysis status to COMPLETE when all processes completed and rsynced, even external data publication
+    """
     primary_completed_path = os.path.join(run_folder, PRIMARY_COMPLETED_FILENAME)
     dest_primary_completed_path = os.path.join(dest_run_folder, PRIMARY_COMPLETED_FILENAME)
     process_completed_path = os.path.join(run_folder, PROCESS_COMPLETED_FILENAME)
@@ -429,15 +421,26 @@ def register_process_completed(update_status, soap_url, run, run_folder, dest_ru
 # UTILITY METHODS
 ################################################################################
 def dependencies_satisfied(run_folder, pipeline_name, pipelines):
+    """For a given pipeline, checks that all dependent pipelines have finished
+    Both pipeline.started and pipeline.ended need to be present
+    """
     pipeline_dependencies = pipelines[pipeline_name]
     log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
     for dep_pipeline_name in pipeline_dependencies:
         pipeline_directory = os.path.join(run_folder, dep_pipeline_name)
-        if not os.path.exists("%s/%s" % (pipeline_directory, PIPELINE_FINISHED_FILENAME)):
+        pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
+        pipeline_finished = os.path.join(pipeline_directory, PIPELINE_FINISHED_FILENAME)
+        # pipeline not finished or started
+        if not os.path.exists(pipeline_finished) or not os.path.exists(pipeline_started):
             return False
     return True
 
 def process_completed(run_folder, list_pipelines):
+    """Checks for all pipeline in the list that each of them has finished and has
+    been synchronised.
+    pipeline.started and pipeline.ended need to be present as well as 
+    rsync.started and rsync.ended need to be present
+    """
     for pipeline_name in list_pipelines:
         pipeline_directory = os.path.join(run_folder, pipeline_name)
         pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
@@ -453,6 +456,8 @@ def process_completed(run_folder, list_pipelines):
     return True
      
 def external_data_published(run_folder, external_samples, multiplexed_run):
+    """Checks that external data has been published
+    """
     external_directory = os.path.join(run_folder, 'external')
     rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
@@ -468,6 +473,8 @@ def external_data_published(run_folder, external_samples, multiplexed_run):
     return True
     
 def create_external_rsync_script(external_directory, samples, rsync_script_path, rsync_started, rsync_finished, log_prefix, rsync_lock):
+    """Create rsync script for external data
+    """
     if not os.path.exists(rsync_script_path):
         rsync_script_file = open(rsync_script_path, 'w')
         rsync = ""
@@ -489,6 +496,8 @@ def create_external_rsync_script(external_directory, samples, rsync_script_path,
         log.debug('%s already exists' % rsync_script_path)
         
 def run_external_rsync_script(rsync_script_path, rsync_started, rsync_finished, rsync_lock, dry_run):
+    """Run rsync script for external data
+    """
     if os.path.exists(rsync_script_path):
         if not os.path.exists(rsync_started):
             if not os.path.exists(rsync_lock):

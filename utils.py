@@ -8,10 +8,14 @@ $Id$
 Created by Anne Pajon on 2012-10-26.
 """
 
-import sys, os, glob
+################################################################################
+# IMPORTS
+################################################################################
+import sys
+import os
+import glob
 import logging
 import subprocess 
-from collections import OrderedDict
 import unittest
 
 # logging definition

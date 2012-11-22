@@ -8,7 +8,12 @@ $Id$
 Created by Anne Pajon on 2012-11-08.
 """
 
-import sys, os, glob
+################################################################################
+# IMPORTS
+################################################################################
+import sys
+import os
+import glob
 import logging
 import unittest
 from sqlalchemy.ext.sqlsoup import SqlSoup

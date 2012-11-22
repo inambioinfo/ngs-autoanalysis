@@ -8,9 +8,27 @@ $Id$
 Created by Anne Pajon on 2012-11-13.
 """
 
-import sys, os, glob
-import optparse
+################################################################################
+# IMPORTS
+################################################################################
+import sys
+import os
+import glob
 import logging
+import optparse
+
+try:
+    from sqlalchemy.ext.sqlsoup import SqlSoup
+    from sqlalchemy.orm.exc import NoResultFound
+except ImportError:
+    sys.exit("""
+--------------------------------------------------------------------------------
+>>> modules { mysql-python | sqlalchemy } not installed.
+--------------------------------------------------------------------------------
+[on sols] use /home/mib-cri/software/python2.7/bin/python
+[locally] install virtualenv; source bin/activate and pip install modules
+--------------------------------------------------------------------------------
+""")
 
 # import logging module first
 import log as logger
@@ -18,24 +36,6 @@ log = logger.set_custom_logger()
 # then import other custom modules
 import utils
 import lims
-
-try:
-    from sqlalchemy.ext.sqlsoup import SqlSoup
-    from sqlalchemy.orm.exc import NoResultFound
-except ImportError:
-    print '''
- --------------------------------------------------------------------------------
- --- Use this python on the sols to call the script
- > /home/mib-cri/software/python2.7/bin/python
- --------------------------------------------------------------------------------
- --- Or locally install these python modules { mysql-python | sqlalchemy | suds } first 
- --- and activate your python virtual environment
- > wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
- > python virtualenv.py `pwd`
- > source bin/activate
- > pip install mysql-python sqlalchemy suds
- '''
-    sys.exit()
 
 ################################################################################
 # CONSTANTS
