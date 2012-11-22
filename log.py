@@ -3,6 +3,8 @@
 """
 log.py
 
+$Id$
+
 Created by Anne Pajon on 2012-10-26.
 """
  
