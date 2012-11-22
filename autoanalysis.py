@@ -3,6 +3,8 @@
 """
 autoanalysis.py
 
+$Id $
+
 Made as a simplified replacement of solexa_autoanalysis.pl
 
 Created by Anne Pajon on 2012-10-05.
