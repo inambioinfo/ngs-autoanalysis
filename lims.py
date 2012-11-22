@@ -3,6 +3,8 @@
 """
 lims.py
 
+$Id$
+
 Created by Anne Pajon on 2012-11-08.
 """
 
