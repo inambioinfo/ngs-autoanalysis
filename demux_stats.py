@@ -154,7 +154,7 @@ def setup_demux(runs, run_folder, run_number, multiplex_templates, fastq_files, 
     setup_script_path = os.path.join(pipeline_directory, autoanalysis.SETUP_SCRIPT_FILENAME)
     run_scrip_path = os.path.join(pipeline_directory, autoanalysis.RUN_SCRIPT_FILENAME)
     # set specific demux-stats pipeline options
-    autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
+    autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '--pipeline=/home/mib-cri/software/pipelines/demultiplex/demuxstatspipeline.xml' # do not generate index-files
     autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
     # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
     autoanalysis.setup_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, lims.SOAP_URL, False)
