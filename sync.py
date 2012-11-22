@@ -3,8 +3,9 @@
 """
 sync.py
 
-Created by Anne Pajon on 2012-10-26.
+$Id$
 
+Created by Anne Pajon on 2012-10-26.
 """
 
 import sys, os, glob
