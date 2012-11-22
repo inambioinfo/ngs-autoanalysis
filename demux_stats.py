@@ -3,35 +3,33 @@
 """
 demux_stats.py
 
-Created by Anne Pajon on 2012-10-01.
+$Id$
 
-Usage:
-    fab -f demux_stats.py local install
-or  fab -f demux_stats.py remote install
+Created by Anne Pajon on 2012-10-01.
 """
 
-import sys, os, glob
-import optparse
+################################################################################
+# IMPORTS
+################################################################################
+import sys
+import os
+import glob
 import logging
+import optparse
 import urllib2
 
 try:
-    from fabric.api import *
-    from fabric.contrib.files import *
     from sqlalchemy.ext.sqlsoup import SqlSoup
+    from suds.client import Client
 except ImportError:
-    print '''
- Please (a) install python modules { fabric | mysql-python | sqlalchemy } first 
- or (b) activate your python virtual environment.
- (a) ----------    
- wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
- python virtualenv.py `pwd`
- source bin/activate
- pip install fabric mysql-python sqlalchemy
- (b) ----------
- source bin/activate
- '''
-    sys.exit()
+    sys.exit('''
+--------------------------------------------------------------------------------
+>>> modules { mysql-python | sqlalchemy | suds } not installed.
+--------------------------------------------------------------------------------
+[on sols] use /home/mib-cri/software/python2.7/bin/python
+[locally] install virtualenv; source bin/activate and pip install modules
+--------------------------------------------------------------------------------
+''')
 
 # import logging module first
 import log as logger
@@ -41,6 +39,9 @@ import utils
 import lims
 import autoanalysis
 
+################################################################################
+# CONSTANTS
+################################################################################
 # index file names
 MULTIPLEX_KIT={
     'TruSeq RNA High Throughput' : 'truseq_rna_ht.csv',
@@ -52,80 +53,49 @@ MULTIPLEX_KIT={
     'TruSeq DNA High Throughput' : 'truseq_dna_ht.csv'
 }
 
-# logging configuration
-log.setLevel(logging.DEBUG)        
+# Default filenames
+LOCK_FILENAME = "demux-stats.lock"
 
-# -- Host specific setup
-def cluster():
-    """Setup environment for demultiplex statistic analysis on lustre
+COPY_SCRIPT_FILENAME = 'copy.sh'
+COPY_STARTED_FILENAME = 'copy.started'
+COPY_FINISHED_FILENAME = 'copy.ended'
+
+CLEAN_SCRIPT_FILENAME = 'clean.sh'
+CLEAN_STARTED_FILENAME = 'clean.started'
+CLEAN_FINISHED_FILENAME = 'clean.ended'
+
+################################################################################
+# DEMUX STATS PIPELINE METHODS
+################################################################################
+def manage_data(run_folder, fastq_files, dry_run):
+    """Create and run scripts to copy and clean fastq file on lustre
     """
-    env.user = 'solexa'
-    env.hosts = ['localhost']
-    env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
-    env.soft_pipeline_path = autoanalysis.SOFT_PIPELINE_PATH
+    copy_script_path = os.path.join(run_folder, COPY_SCRIPT_FILENAME)
+    copy_started = os.path.join(run_folder, COPY_STARTED_FILENAME)
+    copy_finished = os.path.join(run_folder, COPY_FINISHED_FILENAME)
+    lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
+    clean_script_path = os.path.join(run_folder, CLEAN_SCRIPT_FILENAME)
+    clean_started = os.path.join(run_folder, CLEAN_STARTED_FILENAME)
+    clean_finished = os.path.join(run_folder, CLEAN_FINISHED_FILENAME)
     
-def remote():
-    """Setup environment for installing data on lustre
-    """
-    env.user = 'solexa'
-    env.hosts = ['uk-cri-lsol03.crnet.org', 'uk-cri-lsol01.crnet.org']
-    env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
-    env.soft_pipeline_path = autoanalysis.SOFT_PIPELINE_PATH
-    
-def local():    
-    """Setup environment for demultiplex statistic analysis locally
-    """
-    env.user = 'pajon01'
-    env.hosts = ['localhost']
-    env.root_path = '/lustre/mib-cri/solexa/DemuxStats'
-    env.soft_pipeline_path = '/Users/pajon01/software/pipelines'
-
-# -- Fabric instructions
-
-def list_samples():
-    """Print list of multiplexed samples with extra information
-    """
-    runs = lims.MultiplexedRuns()
-    for run in runs.filtered_runs:
-        runs.printSampleDetails(run)
+    copy = ""
+    clean = ""
+    for fastq_file in fastq_files:
+        log.info("%s\t%s\t%s" % (fastq_file.host, fastq_file.path, fastq_file.filename))
+        orig = os.path.join(fastq_file.path, fastq_file.filename)
+        dest = os.path.join(run_folder, fastq_file.filename)
+        copy = copy + "scp %s:%s %s; " % (fastq_file.host, orig, dest)
+        clean = clean + "rm -f %s; " % dest
         
-def install_data():
-    """Install fastq file on lustre
-    """
-    # current host
-    log.debug("################################################################################")
-    log.debug(env.host)
-    log.debug("################################################################################")
-    
-    # create root_path if not exists
-    if not exists(env.root_path):
-        run("mkdir %s" % env.root_path)
-    
-    # get all multiplexed runs
-    runs = lims.MultiplexedRuns()
-    for run in runs.filtered_runs:
-        # create folder in ROOT_PATH for analysis
-        run_analysis_folder = os.path.join(env.root_path, run.pipelinePath)
-        _create_dir(run_analysis_folder)
-        # get all fastq files associated to demultiplexed lanes for this run
-        fastq_files = runs.getKnownMultiplexSeqFiles(run)
-        for fastq_file in fastq_files:
-            # checking which host to copy the data from sol01 or sol03
-            if env.host == fastq_file.host or env.host == 'localhost':
-                log.info("%s\t%s\t%s\t%s" % (run.runNumber, fastq_file.host, fastq_file.path, fastq_file.filename))
-                orig = os.path.join(fastq_file.path, fastq_file.filename)
-                dest = os.path.join(run_analysis_folder, fastq_file.filename)
-                _copy_file(orig, dest)
-                                        
-def setup_demux():
-    """Setup demultiplex statistic analysis on all multiplexed run
-    """
-    # current host
-    log.debug("################################################################################")
-    log.debug(env.host)
-    log.debug("################################################################################")
+    create_script(copy_script_path, copy, copy_started, copy_finished, lock)
+    run_script(copy_script_path, copy_started, copy_finished, lock, dry_run)
+    create_script(clean_script_path, clean, clean_started, clean_finished) 
+    if process_completed(run_folder):
+        run_script(clean_script_path, clean_started, clean_finished, dry_run)   
 
-    ### load index templates for all multiplex kits
+def get_multiplex_templates():
+    """Load index templates for all multiplex kits
+    """
     multiplex_templates={}
     for multiplex_name in list(MULTIPLEX_KIT.viewkeys()):
         # barcode id to sequence mapping: barcode_id,barcode_num,barcode_sequence
@@ -159,17 +129,17 @@ def setup_demux():
                     else:
                         log.error('number of columns in %s not equal to 2 or 3.' % samplesheet_url)
         multiplex_templates[multiplex_name] = template
-    
-    runs = lims.MultiplexedRuns()
-    for run in runs.filtered_runs:
-        run_folder = os.path.join(env.root_path, run.pipelinePath)
-        fastq_files = runs.getKnownMultiplexSeqFiles(run)
-
-        ### configure fastq files
-        # create primary folder
-        primary_folder = os.path.join(run_folder, 'primary')
-        _create_dir(primary_folder)
-        # create symlink for fastq files in primary directory
+    return multiplex_templates
+                     
+def setup_demux(runs, run_folder, run_number, multiplex_templates, fastq_files, cluster, software_path):
+    """Setup demultiplex statistic analysis
+    """
+    ### configure fastq files
+    # create primary folder
+    primary_folder = os.path.join(run_folder, 'primary')
+    utils.create_directory(primary_folder)
+    # create symlink for fastq files in primary directory
+    if data_copied(run_folder):
         for fastq_file in fastq_files:
             new_fastq_filename = runs.getNewSeqFileName(fastq_file)
             link_name = "%s/%s" % (primary_folder, new_fastq_filename)
@@ -179,65 +149,162 @@ def setup_demux():
                 os.remove(link_name)
             os.symlink(fastq_path, link_name)
 
-        ### setup demux pipeline
-        pipeline_directory = os.path.join(run_folder, 'demultiplex')
-        setup_script_path = os.path.join(pipeline_directory, autoanalysis.SETUP_SCRIPT_FILENAME)
-        run_scrip_path = os.path.join(pipeline_directory, autoanalysis.RUN_SCRIPT_FILENAME)
-        # remove setup script if already exists
-        if os.path.exists(setup_script_path):
-            os.remove(setup_script_path)
-        # set specific demux-stats pipeline options
-        autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
-        autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
-        # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
-        autoanalysis.setup_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, lims.SOAP_URL, False)
-        # remove run script if already exists
-        if os.path.exists(run_scrip_path):
-            os.remove(run_scrip_path)
-        # call run_pipelines to create run script
-        autoanalysis.run_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.CLUSTER_HOST)
-            
-        ### create index files
-        for fastq_file in fastq_files:
-            index_filename = runs.getIndexFileName(fastq_file)
+    ### setup demux pipeline
+    pipeline_directory = os.path.join(run_folder, 'demultiplex')
+    setup_script_path = os.path.join(pipeline_directory, autoanalysis.SETUP_SCRIPT_FILENAME)
+    run_scrip_path = os.path.join(pipeline_directory, autoanalysis.RUN_SCRIPT_FILENAME)
+    # set specific demux-stats pipeline options
+    autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '' # do not generate index-files
+    autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
+    # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
+    autoanalysis.setup_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, lims.SOAP_URL, False)
+    # call run_pipelines to create run script
+    autoanalysis.run_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, cluster)
+        
+    ### create index files
+    for fastq_file in fastq_files:
+        index_filename = runs.getIndexFileName(fastq_file)
+        index_path = os.path.join(pipeline_directory, index_filename)
+        if not os.path.exists(index_path):
             multiplex_type = runs.getMultiplexTypeFromSeqFile(fastq_file)
             barcodes = multiplex_templates[multiplex_type.name]
             log.debug(multiplex_type.name)
-            index_path = os.path.join(pipeline_directory, index_filename)
             index_file = open(index_path, 'w')
             for barcode_name in list(barcodes.viewkeys()):
                 index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], runs.getSlxSampleId(fastq_file), barcode_name, runs.getRunLaneRead(fastq_file)))
             index_file.close()
             log.info('%s created' % index_path)
-            
-def run_demux():
-    """Run demultiplex statistic analysis on all multiplexed run
-    """
-    # current host
-    log.debug("################################################################################")
-    log.debug(env.host)
-    log.debug("################################################################################")
-    runs = lims.MultiplexedRuns()
-    for run in runs.filtered_runs:
-        run_folder = os.path.join(env.root_path, run.pipelinePath)
-        # call run_pipelines to run the demultiplex pipeline (dry-run=False)
-        autoanalysis.run_pipelines(run_folder, run.runNumber, {'demultiplex' : ''}, env.soft_pipeline_path, autoanalysis.CLUSTER_HOST, False)
-    
-def _create_dir(dir):
-    if not exists(dir):
-        run("mkdir %s" % dir)
-        log.debug("Directory %s created" % dir)
-    else:
-        log.debug("Directory %s already exists" % dir)
-
-def _copy_file(orig, dest):
-    if not exists(dest):
-        if env.host == 'localhost':
-            run("touch %s" % (dest))
         else:
-            run("cp %s %s" % (orig, dest))
-        log.debug("File %s copied to %s" % (orig, dest))
+            log.debug('%s already exists' % index_path)
+            
+def run_demux(run_folder, run_number, cluster, software_path):
+    """Run demultiplex statistic analysis
+    """
+    lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
+    if process_completed(run_folder):
+        if os.path.exists(lock):
+            os.remove(lock)
     else:
-        log.debug('File %s already exists' % dest)
+        if not os.path.exists(lock) and data_copied(run_folder):
+            utils.touch(lock)
+            # call run_pipelines to run the demultiplex pipeline (dry-run=False)
+            autoanalysis.run_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, cluster, False)
+        else:
+            log.info('%s presents - another script is running' % lock)
+
+################################################################################
+# UTILITY METHODS
+################################################################################
+def create_script(script_path, cmd, started, ended, lock=None):
+    if not os.path.exists(script_path):
+        script_file = open(script_path, 'w')
+        if lock:
+            command = "touch %s; touch %s; %s touch %s; rm %s" % (lock, started, cmd, ended, lock)
+        else:
+            command = "touch %s; %s touch %s" % (started, cmd, ended)
+        script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
+        script_file.close()
+        os.chmod(script_path, 0755)
+        log.info('%s created' % script_path)
+    else:
+        log.debug('%s already exists' % script_path)
+
+def run_script(script_path, started, ended, lock=None, dry_run=False):
+    """Run script
+    """
+    if os.path.exists(script_path):
+        if not os.path.exists(started):
+            if lock:
+                if not os.path.exists(lock):
+                    utils.touch(lock)
+                    utils.run_bg_process(['sh', '%s' % script_path], dry_run)
+                else:
+                    log.info('%s presents - another script is running' % lock)
+            else:
+                utils.run_bg_process(['sh', '%s' % script_path], dry_run)
+        else:
+            if not os.path.exists(ended):
+                log.info('script is currently running')
+            else:
+                log.info('script has finished')
+    else:
+        log.warn('%s is missing' % script_path)
+    
+def process_completed(run_folder):
+    demux_directory = os.path.join(run_folder, 'demultiplex')
+    demux_started = os.path.join(run_folder, autoanalysis.PIPELINE_STARTED_FILENAME)
+    demux_finished = os.path.join(run_folder, autoanalysis.PIPELINE_FINISHED_FILENAME)
+    # pipeline not finished or started
+    if not os.path.exists(demux_started) or not os.path.exists(demux_finished):
+        return False
+    return True
+
+def data_copied(run_folder):
+    copy_started = os.path.join(run_folder, COPY_STARTED_FILENAME)
+    copy_finished = os.path.join(run_folder, COPY_FINISHED_FILENAME)
+    if not os.path.exists(copy_started) or not os.path.exists(copy_finished):
+        return False
+    return True
+    
+################################################################################
+# MAIN
+################################################################################
+def main():
+    # get the options
+    parser = optparse.OptionParser()
+    parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/DemuxStats'")
+    parser.add_option("--softdir", dest="softdir", action="store", default=autoanalysis.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % autoanalysis.SOFT_PIPELINE_PATH)
+    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_option("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % autoanalysis.CLUSTER_HOST)
+    parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+    parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser.add_option("--sample-list", dest="sample_list", action="store_true", default=False, help="Print list of multiplexed samples with extra information")
+
+    (options, args) = parser.parse_args()
+
+    # logging configuration
+    log.setLevel(logging.INFO)
+    if options.debug:
+        log.setLevel(logging.DEBUG)        
+    if options.logfile:
+        log.addHandler(logger.set_file_handler(options.logfile))
+              
+    for option in ['basedir']:
+        if getattr(options, option) == None:
+            print "Please supply a --%s parameter.\n" % (option)
+            sys.exit(parser.print_help())
+        
+    if not os.path.exists(options.basedir):
+        sys.exit("%s does not exists - check your '--basedir' option" % options.basedir)
+        
+    runs = lims.MultiplexedRuns(options.dburl, options.run_number)
+    multiplex_templates = get_multiplex_templates()
+    for run in runs.filtered_runs:
+        log.info('--------------------------------------------------------------------------------')
+        log.info('--- RUN: %s' % run.runNumber)
+        log.info('--------------------------------------------------------------------------------')
+        # create run folder in basedir for analysis
+        run_folder = os.path.join(options.basedir, run.pipelinePath)
+        utils.create_directory(run_folder)
+        # get all fastq files associated to demultiplexed lanes for this run
+        fastq_files = runs.getKnownMultiplexSeqFiles(run)
+        if os.path.exists(run_folder):
+            log.info('--- MANAGE DATA ----------------------------------------------------------------')
+            manage_data(run_folder, fastq_files, options.dry_run)
+            log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
+            setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
+            log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
+            run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+        else:
+            log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
+        if options.sample_list:
+            runs.printSampleDetails(run)
+        
+
+if __name__ == "__main__":
+	main()
+
                     
       

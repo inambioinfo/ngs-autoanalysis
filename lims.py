@@ -128,20 +128,27 @@ class CompleteRuns(AllRuns):
         return samples
 
 class MultiplexedRuns(AllRuns):
-    def __init__(self, _db_url=DB_SOLEXA):
-        super(MultiplexedRuns, self).__init__(_db_url, None)
-        self.filterRuns(None, SEQUENCING_COMPLETE_STATUS)
+    def __init__(self, _db_url=DB_SOLEXA, _run_number=None):
+        super(MultiplexedRuns, self).__init__(_db_url, _run_number)
+        self.filterRuns(_run_number, SEQUENCING_COMPLETE_STATUS)
         # other lims databases
         self.lims_db = SqlSoup(DB_LIMS)
         self.request_db = SqlSoup(DB_REQUEST)
         self.general_db = SqlSoup(DB_GENERAL)
         
     def filterCondition(self, _run, _run_number, _status):
-        # select completed runs that have been analysed and are multiplexed
-        if _run.status == _status and (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE'):
-            if _run.multiplexed == 1:
+        if _run.multiplexed == 1:
+            if _run_number:
                 self.filtered_runs.append(_run)
-            
+                log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
+            else:
+                # select completed runs that have been analysed and are multiplexed
+                if _run.status == _status and (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE'):
+                    self.filtered_runs.append(_run)
+        else:
+            if _run_number:
+                log.warning('Run %s is not multiplexed.' % _run.runNumber)
+                            
     def getKnownMultiplexSeqFiles(self, run):
         sequence_files = []
         lanes = self.solexa_db.lane.filter_by(run_id=run.id)
