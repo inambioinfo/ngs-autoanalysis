@@ -19,7 +19,8 @@ def set_custom_logger(debug=None):
     # consol logging configuration
     consol_handler = logging.StreamHandler()
     consol_handler.setFormatter(formatter)
-    log.addHandler(consol_handler)
+    if not len(log.handlers):
+        log.addHandler(consol_handler)
     return log
                   
 def set_file_handler(logfile):
