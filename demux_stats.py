@@ -246,6 +246,15 @@ def data_copied(run_folder):
         return False
     return True
     
+def all_process_completed(run_folder):
+    clean_started = os.path.join(run_folder, CLEAN_STARTED_FILENAME)
+    clean_finished = os.path.join(run_folder, CLEAN_FINISHED_FILENAME)
+    if not data_copied(run_folder) or not process_completed(run_folder):
+        return False
+    if not os.path.exists(clean_started) or not os.path.exists(clean_finished):
+        return False
+    return True
+    
 ################################################################################
 # MAIN
 ################################################################################
@@ -291,12 +300,15 @@ def main():
         # get all fastq files associated to demultiplexed lanes for this run
         fastq_files = runs.getKnownMultiplexSeqFiles(run)
         if os.path.exists(run_folder):
-            log.info('--- MANAGE DATA ----------------------------------------------------------------')
-            manage_data(run_folder, fastq_files, options.dry_run)
-            log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
-            setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
-            log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
-            run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+            if not all_process_completed(run_folder):
+                log.info('--- MANAGE DATA ----------------------------------------------------------------')
+                manage_data(run_folder, fastq_files, options.dry_run)
+                log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
+                setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
+                log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
+                run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+            else:
+                log.info('*** DEMUX-STATS COMPLETED ******************************************************')
         else:
             log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
         if options.sample_list:
