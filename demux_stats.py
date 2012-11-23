@@ -232,8 +232,8 @@ def run_script(script_path, started, ended, lock=None, dry_run=False):
     
 def process_completed(run_folder):
     demux_directory = os.path.join(run_folder, 'demultiplex')
-    demux_started = os.path.join(run_folder, autoanalysis.PIPELINE_STARTED_FILENAME)
-    demux_finished = os.path.join(run_folder, autoanalysis.PIPELINE_FINISHED_FILENAME)
+    demux_started = os.path.join(demux_directory, autoanalysis.PIPELINE_STARTED_FILENAME)
+    demux_finished = os.path.join(demux_directory, autoanalysis.PIPELINE_FINISHED_FILENAME)
     # pipeline not finished or started
     if not os.path.exists(demux_started) or not os.path.exists(demux_finished):
         return False
