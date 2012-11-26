@@ -207,7 +207,6 @@ def print_demux_report(run_folder):
                 distinct_barcodes = False
                 for line in summary:
                     columns = line.strip().split()
-                    print columns
                     if len(columns) == 7:
                         barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
                     elif columns[-1] == 'reads':
@@ -241,7 +240,7 @@ def print_demux_report(run_folder):
             barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
             barcode_summary['barcode_found'] = ':'.join(barcode_found)
 
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (summary_file, barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
             
         
 
