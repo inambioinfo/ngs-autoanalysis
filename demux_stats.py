@@ -191,6 +191,59 @@ def run_demux(run_folder, run_number, cluster, software_path):
             autoanalysis.run_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, cluster, False)
         else:
             log.info('%s presents - another script is running' % lock)
+            
+def print_demux_report(run_folder):
+    """Print demultiplex report
+    Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
+    """
+    if process_completed(run_folder):
+        pipeline_directory = os.path.join(run_folder, 'demultiplex')
+        summary_files = glob.glob(os.path.join(pipeline_directory, 'BarcodeSummary.*.txt'))
+        for summary_file in summary_files:
+            with open(summary_file, 'r') as summary:
+                barcode_summary = {}
+                barcode_match = {}
+                barcode_found = []
+                distinct_barcodes = False
+                for line in summary:
+                    columns = line.strip().split()
+                    print columns
+                    if len(columns) == 7:
+                        barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
+                    elif columns[-1] == 'reads':
+                        barcode_summary['total_reads'] = int(columns[0])
+                    elif columns[-1] == 'lost':
+                        barcode_summary['no_match'] = int(columns[0])
+                    elif columns[-1] == 'codes':
+                        distinct_barcodes = True
+                        barcode_summary['distinct_barcodes'] = int(columns[0])
+                    elif distinct_barcodes and len(columns) == 2:
+                        barcode_found.append(columns[-1])
+
+            zero_error_reads = 0
+            one_error_reads = 0 
+            most_frequent = 0
+            least_frequent = barcode_summary['total_reads']
+            for barcode in list(barcode_match.viewkeys()):
+                total_reads = int(barcode_match[barcode][0])
+                if total_reads > most_frequent:
+                    most_frequent = total_reads
+                if not total_reads == 0:
+                    if total_reads < least_frequent :
+                        least_frequent = total_reads
+                zero_error_reads += int(barcode_match[barcode][1])
+                one_error_reads += int(barcode_match[barcode][2])
+
+            barcode_summary['most_frequent'] = float((most_frequent * 100 ) / barcode_summary['total_reads'])
+            barcode_summary['least_frequent'] = float((least_frequent * 100 ) / barcode_summary['total_reads'])
+            barcode_summary['zero_error_match'] = float((zero_error_reads * 100 ) / barcode_summary['total_reads'])
+            barcode_summary['zero_or_one_error_match'] = float(((zero_error_reads + one_error_reads) * 100 ) / barcode_summary['total_reads'])
+            barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
+            barcode_summary['barcode_found'] = ':'.join(barcode_found)
+
+            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (summary_file, barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+            
+        
 
 ################################################################################
 # UTILITY METHODS
@@ -307,6 +360,8 @@ def main():
                 setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
                 log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
                 run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+                log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
+                print_demux_report(run_folder)
             else:
                 log.info('*** DEMUX-STATS COMPLETED ******************************************************')
         else:
