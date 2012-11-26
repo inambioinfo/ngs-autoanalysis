@@ -240,7 +240,7 @@ def print_demux_report(run_folder):
             barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
             barcode_summary['barcode_found'] = ':'.join(barcode_found)
 
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (summary_file, barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
             
         
 
@@ -359,9 +359,9 @@ def main():
                 setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
                 log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
                 run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+            else:
                 log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
                 print_demux_report(run_folder)
-            else:
                 log.info('*** DEMUX-STATS COMPLETED ******************************************************')
         else:
             log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
