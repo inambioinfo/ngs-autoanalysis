@@ -81,7 +81,7 @@ def manage_data(run_folder, fastq_files, dry_run):
     copy = ""
     clean = ""
     for fastq_file in fastq_files:
-        log.info("%s\t%s\t%s" % (fastq_file.host, fastq_file.path, fastq_file.filename))
+        log.debug("%s\t%s\t%s" % (fastq_file.host, fastq_file.path, fastq_file.filename))
         orig = os.path.join(fastq_file.path, fastq_file.filename)
         dest = os.path.join(run_folder, fastq_file.filename)
         copy = copy + "scp %s:%s %s; " % (fastq_file.host, orig, dest)
