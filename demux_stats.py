@@ -69,7 +69,7 @@ HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
    <body>
-      <table>
+      <table border="1">
          %s
       </table>
    </body>
@@ -303,7 +303,7 @@ def create_html_report(report, html_filename):
     html_file = open(html_filename, 'w')
     report_table_lanes = ''
     for barcode_summary in report:
-        report_table_lanes += "<tr><td><a href='http://uk-cri-lsol03.crnet.org:8080/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (barcode_summary['summary_file'], os.path.basename(barcode_summary['summary_file']), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+        report_table_lanes += "<tr><td><a href='http://uk-cri-lsol03.crnet.org:8080/solexa/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (barcode_summary['summary_file'], os.path.basename(barcode_summary['summary_file']), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
     html_file.write(HTML_TEMPLATE % report_table_lanes)
     html_file.close()
     
