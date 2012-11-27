@@ -297,7 +297,7 @@ def process_failed(run_folder):
     demux_started = os.path.join(demux_directory, autoanalysis.PIPELINE_STARTED_FILENAME)
     demux_finished = os.path.join(demux_directory, autoanalysis.PIPELINE_FINISHED_FILENAME)
     if os.path.exists(demux_started) and not os.path.exists(demux_finished):
-        job_output = glob.glob(os.path.join(pipeline_directory, '*.out'))
+        job_output = glob.glob(os.path.join(demux_directory, '*.out'))
         if job_output:
             if not utils.output_job_success(job_output):
                 return True
