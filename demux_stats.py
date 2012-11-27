@@ -251,7 +251,10 @@ def parse_summary_files(run_folder):
             barcode_summary['zero_error_match'] = float((zero_error_reads * 100 ) / barcode_summary['total_reads'])
             barcode_summary['zero_or_one_error_match'] = float(((zero_error_reads + one_error_reads) * 100 ) / barcode_summary['total_reads'])
             barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
-            barcode_summary['barcode_found'] = ':'.join(barcode_found)
+            if len(barcode_found) > 0:
+                barcode_summary['barcode_found'] = ':'.join(barcode_found)
+            else:
+                barcode_summary['barcode_found'] = 'none'
             barcode_summary['summary_file'] = summary_file
             
             report.append(barcode_summary)
@@ -300,7 +303,7 @@ def create_html_report(report, html_filename):
     html_file = open(html_filename, 'w')
     report_table_lanes = ''
     for barcode_summary in report:
-        report_table_lanes += "<tr><td><a href='%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (barcode_summary['summary_file'], os.path.basename(barcode_summary['summary_file']), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+        report_table_lanes += "<tr><td><a href='http://uk-cri-lsol03.crnet.org:8080/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (barcode_summary['summary_file'], os.path.basename(barcode_summary['summary_file']), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
     html_file.write(HTML_TEMPLATE % report_table_lanes)
     html_file.close()
     
