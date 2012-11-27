@@ -365,7 +365,7 @@ def main():
         fastq_files = runs.getKnownMultiplexSeqFiles(run)
         # lock file
         lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
-        ignore = os.path.join(os.path.dirname(run_folder), IGNORE_FILENAME)
+        ignore = os.path.join(run_folder, IGNORE_FILENAME)
         if os.path.exists(run_folder):
             # check demux-stats.ignore is not present - stop running analysis if present
             if not os.path.exists(ignore):
