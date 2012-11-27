@@ -65,6 +65,17 @@ CLEAN_SCRIPT_FILENAME = 'clean.sh'
 CLEAN_STARTED_FILENAME = 'clean.started'
 CLEAN_FINISHED_FILENAME = 'clean.ended'
 
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+   <body>
+      <table>
+         %s
+      </table>
+   </body>
+</html>
+"""
+
 ################################################################################
 # DEMUX STATS PIPELINE METHODS
 ################################################################################
@@ -193,10 +204,11 @@ def run_demux(run_folder, run_number, cluster, software_path):
         else:
             log.info('%s presents - another script is running' % lock)
             
-def print_demux_report(run_folder):
-    """Print demultiplex report
+def parse_summary_files(run_folder):
+    """Parse barcode summary files and print demultiplex report
     Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
     """
+    report = []
     if process_completed(run_folder):
         pipeline_directory = os.path.join(run_folder, 'demultiplex')
         summary_files = glob.glob(os.path.join(pipeline_directory, 'BarcodeSummary.*.txt'))
@@ -240,10 +252,11 @@ def print_demux_report(run_folder):
             barcode_summary['zero_or_one_error_match'] = float(((zero_error_reads + one_error_reads) * 100 ) / barcode_summary['total_reads'])
             barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
             barcode_summary['barcode_found'] = ':'.join(barcode_found)
-
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+            barcode_summary['summary_file'] = summary_file
             
-        
+            report.append(barcode_summary)
+            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+    return report
 
 ################################################################################
 # UTILITY METHODS
@@ -282,6 +295,14 @@ def run_script(script_path, started, ended, lock=None, dry_run=False):
                 log.info('script has finished')
     else:
         log.warn('%s is missing' % script_path)
+    
+def create_html_report(report, html_filename):
+    html_file = open(html_filename, 'w')
+    report_table_lanes = ''
+    for barcode_summary in report:
+        report_table_lanes += "<tr><td><a href='%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (barcode_summary['summary_file'], os.path.basename(barcode_summary['summary_file']), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
+    html_file.write(HTML_TEMPLATE % report_table_lanes)
+    html_file.close()
     
 def process_completed(run_folder):
     demux_directory = os.path.join(run_folder, 'demultiplex')
@@ -332,7 +353,8 @@ def main():
     parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser.add_option("--logfile", dest="logfile", action="store", help="File to print logging information")
+    parser.add_option("--htmlfile", dest="htmlfile", action="store", help="HTML file to write the report")
     parser.add_option("--sample-list", dest="sample_list", action="store_true", default=False, help="Print list of multiplexed samples with extra information")
 
     (options, args) = parser.parse_args()
@@ -354,6 +376,7 @@ def main():
         
     runs = lims.MultiplexedRuns(options.dburl, options.run_number)
     multiplex_templates = get_multiplex_templates()
+    summary_report = []
     for run in runs.filtered_runs:
         log.info('--------------------------------------------------------------------------------')
         log.info('--- RUN: %s' % run.runNumber)
@@ -385,15 +408,16 @@ def main():
                         run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
                 else:
                     log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
-                    print_demux_report(run_folder)
+                    summary_report.extend(parse_summary_files(run_folder))
                     log.info('*** DEMUX-STATS COMPLETED ******************************************************')
             else:
                 log.info('%s is present' % ignore)
         else:
             log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
+        if options.htmlfile:
+            create_html_report(summary_report, options.htmlfile)
         if options.sample_list:
-            runs.printSampleDetails(run)
-        
+            runs.printSampleDetails(run)    
 
 if __name__ == "__main__":
 	main()
