@@ -55,6 +55,7 @@ MULTIPLEX_KIT={
 
 # Default filenames
 LOCK_FILENAME = "demux-stats.lock"
+IGNORE_FILENAME = "demux-stats.ignore"
 
 COPY_SCRIPT_FILENAME = 'copy.sh'
 COPY_STARTED_FILENAME = 'copy.started'
@@ -290,6 +291,17 @@ def process_completed(run_folder):
     if not os.path.exists(demux_started) or not os.path.exists(demux_finished):
         return False
     return True
+    
+def process_failed(run_folder):
+    demux_directory = os.path.join(run_folder, 'demultiplex')
+    demux_started = os.path.join(demux_directory, autoanalysis.PIPELINE_STARTED_FILENAME)
+    demux_finished = os.path.join(demux_directory, autoanalysis.PIPELINE_FINISHED_FILENAME)
+    if os.path.exists(demux_started) and not os.path.exists(demux_finished):
+        job_output = glob.glob(os.path.join(pipeline_directory, '*.out'))
+        if job_output:
+            if not utils.output_job_success(job_output):
+                return True
+    return False
 
 def data_copied(run_folder):
     copy_started = os.path.join(run_folder, COPY_STARTED_FILENAME)
@@ -351,18 +363,32 @@ def main():
         utils.create_directory(run_folder)
         # get all fastq files associated to demultiplexed lanes for this run
         fastq_files = runs.getKnownMultiplexSeqFiles(run)
+        # lock file
+        lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
+        ignore = os.path.join(os.path.dirname(run_folder), IGNORE_FILENAME)
         if os.path.exists(run_folder):
-            if not all_process_completed(run_folder):
-                log.info('--- MANAGE DATA ----------------------------------------------------------------')
-                manage_data(run_folder, fastq_files, options.dry_run)
-                log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
-                setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
-                log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
-                run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+            # check demux-stats.ignore is not present - stop running analysis if present
+            if not os.path.exists(ignore):
+                if not all_process_completed(run_folder):
+                    if process_failed(run_folder):
+                        log.info('*** [***FAIL***] ***************************************************************')
+                        utils.touch(ignore)
+                        # remove lock file
+                        if os.path.exists(lock):
+                            os.remove(lock)
+                    else:
+                        log.info('--- MANAGE DATA ----------------------------------------------------------------')
+                        manage_data(run_folder, fastq_files, options.dry_run)
+                        log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
+                        setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
+                        log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
+                        run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
+                else:
+                    log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
+                    print_demux_report(run_folder)
+                    log.info('*** DEMUX-STATS COMPLETED ******************************************************')
             else:
-                log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
-                print_demux_report(run_folder)
-                log.info('*** DEMUX-STATS COMPLETED ******************************************************')
+                log.info('%s is present' % ignore)
         else:
             log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
         if options.sample_list:
