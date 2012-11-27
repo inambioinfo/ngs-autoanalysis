@@ -70,6 +70,7 @@ HTML_TEMPLATE = """
 <html>
    <body>
       <table border="1">
+         <tr><th>Summary file</th><th>0 error</th><th>0 or 1 error</th><th>no match</th><th>most frequent index</th><th>least frequent index</th><th>most frequent barcodes found in pool</th></tr>
          %s
       </table>
    </body>
