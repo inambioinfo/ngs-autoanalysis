@@ -138,7 +138,7 @@ def get_multiplex_templates():
                         barcode_id1=columns[0]
                         barcode_id2=columns[1]
                         sample_name=columns[2]
-                        template[sample_name] = "%s\t%s" % (barcodes_sequence[barcode_id1], barcodes_sequence[barcode_id1])
+                        template[sample_name] = "%s\t%s" % (barcodes_sequence[barcode_id1], barcodes_sequence[barcode_id2])
                     else:
                         log.error('number of columns in %s not equal to 2 or 3.' % samplesheet_url)
         multiplex_templates[multiplex_name] = template
