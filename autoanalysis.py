@@ -562,9 +562,9 @@ def main():
     for run in runs.filtered_runs:
         # check run folder in basedir for analysis
         run_folder = os.path.join(options.basedir, run.pipelinePath)
-        log.info('--------------------------------------------------------------------------------')
-        log.info('--- RUN: %s' % run_folder)
-        log.info('--------------------------------------------------------------------------------')
+        log.info('================================================================================')
+        log.info('=== RUN: %s' % run_folder)
+        log.info('================================================================================')
         if os.path.exists(run_folder):
             # check sequencing process has finished - do not just rely on lims status
             sequencing_completed = os.path.join(run_folder, SEQUENCING_COMPLETED_FILENAME)
