@@ -203,7 +203,7 @@ def main(argv=None):
     parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_option("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
     parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--email", dest="email", action="store_true", default=False, help="Send INFO logs by email")
+    parser.add_option("--email", dest="email", action="store_true", default=False, help="Send WARN logs by email")
     parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     (options, args) = parser.parse_args()

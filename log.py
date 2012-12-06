@@ -34,7 +34,7 @@ def set_smtp_handler(subject):
     log.setLevel(logging.DEBUG)
     smtp_handler = logging.handlers.SMTPHandler(mailhost='smtp.cruk.cam.ac.uk', fromaddr='anne.pajon@cruk.cam.ac.uk', toaddrs=['anne.pajon@cruk.cam.ac.uk'], subject=subject)
     smtp_handler.setFormatter(formatter)
-    smtp_handler.setLevel(logging.INFO)
+    smtp_handler.setLevel(logging.WARN)
     return smtp_handler
 
 
