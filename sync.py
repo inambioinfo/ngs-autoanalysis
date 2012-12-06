@@ -56,6 +56,7 @@ RSYNC_FOLDERNAME = "rsync"
 RSYNC_SCRIPT_FILENAME = "rsync.sh"
 RSYNC_STARTED_FILENAME = "rsync.started"
 RSYNC_FINISHED_FILENAME = "rsync.ended"
+RSYNC_FAIL_FILENAME = "rsync.fail"
 RSYNC_LOCK_FILENAME = "rsync.lock"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_IGNORE_FILENAME = 'rsync.ignore'
@@ -77,6 +78,7 @@ def setup_rsync(run_folder, dest_run_folder):
     rsync_started = os.path.join(rsync_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(rsync_directory, RSYNC_FINISHED_FILENAME)
     rsync_log = os.path.join(rsync_directory, RSYNC_LOG_FILENAME)
+    rsync_fail = os.path.join(rsync_directory, RSYNC_FAIL_FILENAME)
     rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     run_completed = os.path.join(run_folder, SEQUENCING_COMPLETED_FILENAME)
 
@@ -96,7 +98,7 @@ def setup_rsync(run_folder, dest_run_folder):
         rsync_options = "-av %s %s %s > %s 2>&1" % (" ".join(RSYNC_EXCLUDES), run_folder, dest_basedir, rsync_log)
         copy_finished = "%s %s/." % (rsync_finished, dest_rsync_directory)
         copy_run_completed = "%s %s/." % (run_completed, dest_run_folder)
-        command = "touch %s; touch %s; rsync %s; touch %s; cp %s; cp %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_lock)
+        command = "touch %s; touch %s; rsync %s && {touch %s; cp %s; cp %s;} || touch %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
         rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
         rsync_script_file.close()
         log.info('%s created' % rsync_script_path)
@@ -108,6 +110,7 @@ def rsync(run_folder, dry_run=True):
     rsync_script_path = os.path.join(rsync_directory, RSYNC_SCRIPT_FILENAME)
     rsync_started = os.path.join(rsync_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(rsync_directory, RSYNC_FINISHED_FILENAME)
+    rsync_fail = os.path.join(rsync_directory, RSYNC_FAIL_FILENAME)
     rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     run_completed = os.path.join(run_folder, SEQUENCING_COMPLETED_FILENAME)
 
@@ -115,7 +118,7 @@ def rsync(run_folder, dry_run=True):
     if os.path.exists(rsync_script_path):            
         if not os.path.exists(rsync_started):
             if not os.path.exists(rsync_lock):
-                if os.path.exists(run_completed):
+                if sequencing_completed(run_folder) and os.path.exists(run_completed):
                     utils.touch(rsync_lock)
                     utils.run_bg_process(['sh', '%s' % rsync_script_path], dry_run)
                 else:
@@ -124,9 +127,13 @@ def rsync(run_folder, dry_run=True):
                 log.info('%s presents - another rsync process is running' % rsync_lock)
         else:
             if not os.path.exists(rsync_finished):
-                log.info('%s is currently being synchronised' % run_folder)
+                if os.path.exists(rsync_fail):
+                    log.warn("[***FAIL***] rsync for %s has failed." % run_folder)
+                    log.warn("please investigate %s." % rsync_log)
+                else:
+                    log.info('%s is currently being synchronised' % run_folder)
             else:
-                log.info('%s has been synchronised' % run_folder)
+                log.info('%s has been synchronised successfully' % run_folder)
     else:
         log.warn('%s is missing' % rsync_script_path)
 
@@ -138,7 +145,7 @@ def register_run_completed(run_folder):
             log.info("%s created" % run_completed)
         else:
             log.debug("%s already exists" % run_completed)
-        
+            
 def update_status(update_status, soap_url, run, run_folder, dest_run_folder):
     # create soap client
     soap_client = Client("%s?wsdl" % soap_url)
@@ -196,6 +203,7 @@ def main(argv=None):
     parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_option("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
     parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_option("--email", dest="email", action="store_true", default=False, help="Send INFO logs by email")
     parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     (options, args) = parser.parse_args()
@@ -206,6 +214,8 @@ def main(argv=None):
         log.setLevel(logging.DEBUG)        
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
+    if options.email:
+        log.addHandler(logger.set_smtp_handler('sync.py logs'))
                   
     for option in ['basedir', 'lustredir']:
         if getattr(options, option) == None:
