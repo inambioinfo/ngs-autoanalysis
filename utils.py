@@ -112,7 +112,7 @@ def locate_run_folder(run_folder_name, archive_glob, create=True):
                 else:
                     log.error('no volume %s found' % archive_glob)
         else:
-            log.error('no run folder %s found in %s' % (run_folder_name, archive_glob))
+            log.info('no run folder %s found in %s' % (run_folder_name, archive_glob))
     return None
     
 def create_directory(directory):
