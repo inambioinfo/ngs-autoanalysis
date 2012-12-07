@@ -98,9 +98,24 @@ def setup_rsync(run_folder, dest_run_folder):
         rsync_options = "-av %s %s %s > %s 2>&1" % (" ".join(RSYNC_EXCLUDES), run_folder, dest_basedir, rsync_log)
         copy_finished = "%s %s/." % (rsync_finished, dest_rsync_directory)
         copy_run_completed = "%s %s/." % (run_completed, dest_run_folder)
-        command = "touch %s; touch %s; rsync %s && {touch %s; cp %s; cp %s} || touch %s; rm %s" % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
+        command = """
+touch %s
+touch %s
+
+if ( rsync %s )
+then 
+    touch %s
+    cp %s
+    cp %s
+else 
+    touch %s 
+fi
+
+rm %s
+        """ % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
         rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
         rsync_script_file.close()
+        os.chmod(rsync_script_path, 0755)
         log.info('%s created' % rsync_script_path)
     else:
         log.debug('%s already exists' % rsync_script_path)
