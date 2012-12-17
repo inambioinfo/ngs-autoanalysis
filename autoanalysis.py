@@ -28,7 +28,7 @@ import sys
 import os
 import glob
 import logging
-import optparse
+import argparse
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
@@ -519,21 +519,21 @@ def run_external_rsync_script(rsync_script_path, rsync_started, rsync_finished, 
 ################################################################################
 def main():
     # get the options
-    parser = optparse.OptionParser()
-    parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
-    parser.add_option("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'")
-    parser.add_option("--softdir", dest="softdir", action="store", default=SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % SOFT_PIPELINE_PATH)
-    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
-    parser.add_option("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
-    parser.add_option("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % CLUSTER_HOST)
-    parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
-    parser.add_option("--step", dest="step", action="store", choices=list(MULTIPLEX_PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(MULTIPLEX_PIPELINES.viewkeys()))
-    parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_option("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
-    parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
+    parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+    parser.add_argument("--softdir", dest="softdir", action="store", default=SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % SOFT_PIPELINE_PATH)
+    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_argument("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
+    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % CLUSTER_HOST)
+    parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_argument("--step", dest="step", action="store", choices=list(MULTIPLEX_PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(MULTIPLEX_PIPELINES.viewkeys()))
+    parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+    parser.add_argument("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
+    parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     # logging configuration
     log.setLevel(logging.INFO)
@@ -542,11 +542,6 @@ def main():
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
                   
-    for option in ['basedir', 'archivedir']:
-        if getattr(options, option) == None:
-            print "Please supply a --%s parameter.\n" % (option)
-            sys.exit(parser.print_help())
-            
     if not os.path.exists(options.basedir):
         sys.exit("%s does not exists - check your '--basedir' option" % options.basedir)
     
