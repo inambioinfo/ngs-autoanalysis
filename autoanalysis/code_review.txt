@@ -1,0 +1,45 @@
+Friday 14-Dec 2012
+
+--------------------------------------------------------------------------------
+-- INTRODUCTION
+--------------------------------------------------------------------------------
+- run pipeline of pipelines from /lustre/mib-cri/solexa/Runs [run_pipelines]
+- generate shell script for each step [setup_pipelines]
+- synchronise results to archive folder /solexa01/data/Runs
+- connect to lims DB using SQLAlchemy
+- connect to lims SOAP api using suds
+
+
+--------------------------------------------------------------------------------
+-- COMMENTS/IMPROVEMENTS
+--------------------------------------------------------------------------------
+- logging
+- error handling
+- Pipelines class?
+- configuration in separate file?
+
+
+--------------------------------------------------------------------------------
+-- DISCUSSION
+--------------------------------------------------------------------------------
+GenomeSpace http://www.genomespace.org/
+MGA - to be run on demux data?
+
+Things to do:
+(1) Lims/Run classes: reorganise to have only one Run class and create a Lims one
+	- Runs are all the same only status is different
+	- MultiplexedRuns methods useful to all Runs
+	- may need a specific sub-class for MultiplexedRuns
+(2) Create a Pipeline class
+(3) Error handling: use try/except instead of if/then/else to log errors and warnings
+(4) Log: use syslog and logwatch
+(5) Process: fork and always get return code 
+(6) Command line arguments: rparse
+(7) Configuration files: config parser or yaml 
+	- default encoded if non site specific 
+	- file 
+	- own config check
+(8) Documentation: sphinx/docxygen
+(9) Package it up using setup.py and install dependencies - check how to create eggs
+
+Future development: should be database driven instead
