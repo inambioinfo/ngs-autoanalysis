@@ -66,7 +66,8 @@ RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
     "--exclude=Thumbnail_Images", # thumbnail images
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
-    "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME
+    "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME,
+    "--exclude=Old*" # Anything that has been moved out of the way
 ]
 
 ################################################################################
