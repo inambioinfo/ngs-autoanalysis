@@ -16,6 +16,7 @@ import os
 import glob
 import logging
 import optparse
+import time
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
@@ -83,6 +84,7 @@ def main():
     # lims db
     solexa_db = SqlSoup(options.dburl)
     
+    # moving complete run into trash directory
     run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
     for run_folder in run_folders:
         log.info('--------------------------------------------------------------------------------')
@@ -105,7 +107,19 @@ def main():
                 raise
         else:
             log.debug('%s is present' % dont_delete)
-            
+    
+    # removing run folder older than 3 days from trash
+    trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
+    older = 60*60*24*3 # convert 3 days to seconds
+    present = time.time()
+    for run_folder in trash_run_folders:
+        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        log.info('~~~ TRASH RUN: %s' % run_folder)
+        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        if (present - os.path.getmtime(run_folder)) > older:
+            log.info('*** run folder will be removed')
+            cmd = ['rm -rf', run_folder]
+            utils.run_bg_process(cmd, options.dry_run)            
     
 if __name__ == '__main__':
     main()
