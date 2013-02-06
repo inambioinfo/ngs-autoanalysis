@@ -124,7 +124,7 @@ class CompleteRuns(AllRuns):
                 is_multiplexed = False
                 if lane.multiplexing_id != None:
                     is_multiplexed = True
-                samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower(), 'run_number' : _run.runNumber, 'lane_number' : lane.lane, 'is_multiplexed': is_multiplexed}
+                samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower().replace(' ', ''), 'run_number' : _run.runNumber, 'lane_number' : lane.lane, 'is_multiplexed': is_multiplexed}
         return samples
 
 class MultiplexedRuns(AllRuns):
