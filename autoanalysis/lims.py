@@ -39,85 +39,69 @@ SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
 # Default lims status
 SEQUENCING_STARTED_STATUS = 'STARTED'
 SEQUENCING_COMPLETE_STATUS = 'COMPLETE'
-ANALYSIS_READY_STATUS = 'READY'
 PRIMARY_ANALYSIS_COMPLETE_STATUS = 'PRIMARY COMPLETE'
 ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
 
 ################################################################################
-# CLASS DEFINITION
+# CLASS Lims
 ################################################################################
-class AllRuns(object):
-    def __init__(self, _db_url, _run_number=None):
-        # CRI lims database connection
-        self.solexa_db = SqlSoup(_db_url)
-        self.runs = []
-        self.filtered_runs = []
-        self.__populateRuns(_run_number)
+class Lims(object):
+    def __init__(self, _db_url=DB_SOLEXA):
+        # main solexa database
+        self.solexa = SqlSoup(_db_url)
+        # other lims databases
+        self.lims = SqlSoup(DB_LIMS)
+        self.request = SqlSoup(DB_REQUEST)
+        self.general = SqlSoup(DB_GENERAL)
 
-    def __populateRuns(self, _run_number=None):
+################################################################################
+# CLASS Runs
+################################################################################
+class Runs(object):
+    def __init__(self, _lims):
+        # CRI lims database connection
+        self.lims = _lims
+
+    def __populateRuns(self):
         # get one run
-        if _run_number:
+        if self.run_number:
             run = self.findRun(_run_number)
             self.runs.append(run)
+            log.info('Run %s: status %s and %s; multiplexed %s' % (run.runNumber, run.status, run.analysisStatus, run.multiplexed))
         # get all runs
         else:
             runs = self.findAllRuns()
             for run in runs:
                 self.runs.append(run)
-    
-    def filterRuns(self, _run_number, _sequencing_status):
-        for run in self.runs:
-            # check one run
-            if _run_number:
-                run = self.findRun(_run_number)
-                self.filterCondition(run, _run_number, _sequencing_status)
-            # check all runs
-            else:
-                self.filterCondition(run, _run_number, _sequencing_status)
-                        
-    def filterCondition(self, _run, _run_number, _sequencing_status):
-        pass
 
-    def findRun(self, _run_number=None):
-        return self.solexa_db.solexarun.filter_by(runNumber=_run_number).one()
-        
-    def findAllRuns(self):
-        return self.solexa_db.solexarun.all()
-        
-class StartedRuns(AllRuns):
-    def __init__(self, _db_url, _run_number=None):
-        super(StartedRuns, self).__init__(_db_url, _run_number)
-        self.filterRuns(_run_number, SEQUENCING_STARTED_STATUS)
+    def findRun(self, _run_number):
+        run = self.lims.solexa.solexarun.filter_by(runNumber=_run_number).one()
+        log.info('Run %s: status %s and %s; multiplexed %s' % (run.runNumber, run.status, run.analysisStatus, run.multiplexed))
+        return run
 
-    def filterCondition(self, _run, _run_number, _status):
+    def findAllRuns(self, _run_number=None):
         if _run_number:
-            self.filtered_runs.append(_run)
-            log.info('Run %s is current status is %s and not %s' % (_run.runNumber, _run.status, _status))
-        else:
-            # status could be STARTED or RE-STARTED
-            if _status in _run.status:
-                self.filtered_runs.append(_run)
-                if _run_number:
-                    log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
+            return [self.findRun(_run_number)]
+        return self.lims.solexa.solexarun.all()
         
-class CompleteRuns(AllRuns):
-    def __init__(self, _db_url, _run_number=None):
-        super(CompleteRuns, self).__init__(_db_url, _run_number)
-        self.filterRuns(_run_number, SEQUENCING_COMPLETE_STATUS)
-
-    def filterCondition(self, _run, _run_number, _status):
-        if _run.status == _status:
-            if _run_number:
-                self.filtered_runs.append(_run)
-                log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
-            else:
-                # select completed runs that have not been analysed
-                if not (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE' or _run.analysisStatus == 'ABANDONED'):
-                    self.filtered_runs.append(_run)
-                    
-    def getExternalSampleIds(self, _run):
+    def findAllStartedRuns(self, _run_number=None):
+        if _run_number:
+            return [self.findRun(_run_number)]
+        return self.lims.solexa.solexarun.filter_by(status=SEQUENCING_STARTED_STATUS).all()
+        
+    def findAllCompleteRuns(self, _run_number=None):
+        if _run_number:
+            return [self.findRun(_run_number)]
+        return self.lims.solexa.solexarun.filter(self.lims.solexa.solexarun.status==SEQUENCING_COMPLETE_STATUS).filter(~self.lims.solexa.solexarun.analysisStatus.in_(['COMPLETE', 'SECONDARY COMPLETE', 'ABANDONED'])).all()
+        
+    def findAllAnalysedMultiplexedRuns(self, _run_number=None):
+        if _run_number:
+            return [self.findRun(_run_number)]
+        return self.lims.solexa.solexarun.filter(self.lims.solexa.solexarun.status==SEQUENCING_COMPLETE_STATUS).filter(self.lims.solexa.solexarun.analysisStatus.in_(['COMPLETE', 'SECONDARY COMPLETE'])).filter(self.lims.solexa.solexarun.multiplexed==1).all()
+    
+    def findExternalSampleIds(self, _run):
         samples = {}
-        lanes = self.solexa_db.lane.filter_by(run_id=_run.id)
+        lanes = self.lims.solexa.lane.filter_by(run_id=_run.id)
         for lane in lanes:
             # select external lane
             if lane.isControl == 0 and lane.isExternal == 1:
@@ -127,69 +111,47 @@ class CompleteRuns(AllRuns):
                 samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower().replace(' ', ''), 'run_number' : _run.runNumber, 'lane_number' : lane.lane, 'is_multiplexed': is_multiplexed}
         return samples
 
-class MultiplexedRuns(AllRuns):
-    def __init__(self, _db_url=DB_SOLEXA, _run_number=None):
-        super(MultiplexedRuns, self).__init__(_db_url, _run_number)
-        self.filterRuns(_run_number, SEQUENCING_COMPLETE_STATUS)
-        # other lims databases
-        self.lims_db = SqlSoup(DB_LIMS)
-        self.request_db = SqlSoup(DB_REQUEST)
-        self.general_db = SqlSoup(DB_GENERAL)
-        
-    def filterCondition(self, _run, _run_number, _status):
-        if _run.multiplexed == 1:
-            if _run_number:
-                self.filtered_runs.append(_run)
-                log.warning('Run %s is not set to %s, its current status is %s.' % (_run.runNumber, _status, _run.status))
-            else:
-                # select completed runs that have been analysed and are multiplexed
-                if _run.status == _status and (_run.analysisStatus == 'COMPLETE' or _run.analysisStatus == 'SECONDARY COMPLETE'):
-                    self.filtered_runs.append(_run)
-        else:
-            if _run_number:
-                log.warning('Run %s is not multiplexed.' % _run.runNumber)
-                            
-    def getKnownMultiplexSeqFiles(self, run):
+    def findKnownMultiplexSeqFiles(self, _run):
         sequence_files = []
-        lanes = self.solexa_db.lane.filter_by(run_id=run.id)
+        lanes = self.lims.solexa.lane.filter_by(run_id=_run.id)
         for lane in lanes:
             # select multiplexed lane
             if lane.isControl == 0 and lane.multiplexing_id != None:
-                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
+                multiplex_type = self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
                 if multiplex_type.name != 'Other':
                     # select all files for multiplexed lanes of known type
-                    file_locations = self.lims_db.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
+                    file_locations = self.lims.lims.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
                     for file_location in file_locations:
-                        file_type = self.lims_db.analysisfiletype.filter_by(id=file_location.type_id).one()
+                        file_type = self.lims.lims.analysisfiletype.filter_by(id=file_location.type_id).one()
                         # select only FastQ files 
                         if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
                             # select only non-demultiplexed fastQ files
                             if 'Data/Intensities/' in file_location.path or 'primary' in file_location.path:
                                 sequence_files.append(file_location)
         return sequence_files
+                
+    def findLaneFromSeqFile(self, analysisfileuri):
+        return self.lims.solexa.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
 
-    def getMultiplexTypeFromSeqFile(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        return self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
-
-    def getLaneFromSeqFile(self, analysisfileuri):
-        return self.solexa_db.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
-
-    def getNewSeqFileName(self, analysisfileuri):
-        return "%s.%s.fq.gz" % (self.getSlxSampleId(analysisfileuri), self.getRunLaneRead(analysisfileuri))
-
-    def getIndexFileName(self, analysisfileuri):
-        return "index.%s.txt" % self.getRunLaneRead(analysisfileuri)
-
-    def getSlxSampleId(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        return lane.genomicsSampleId
-
-    def getRunLaneRead(self, analysisfileuri):
-        lane = self.getLaneFromSeqFile(analysisfileuri)
-        run = self.solexa_db.solexarun.filter_by(id=lane.run_id).one()
+    def findRunLaneRead(self, analysisfileuri):
+        lane = self.findLaneFromSeqFile(analysisfileuri)
+        run = self.lims.solexa.solexarun.filter_by(id=lane.run_id).one()
         read_number = self.getReadNumber(analysisfileuri.filename)
         return "%s.s_%s.r_%s" % (run.runNumber, lane.lane, read_number)
+
+    def getMultiplexTypeFromSeqFile(self, analysisfileuri):
+        lane = self.findLaneFromSeqFile(analysisfileuri)
+        return self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
+
+    def getNewSeqFileName(self, analysisfileuri):
+        return "%s.%s.fq.gz" % (self.getSlxSampleId(analysisfileuri), self.findRunLaneRead(analysisfileuri))
+
+    def getIndexFileName(self, analysisfileuri):
+        return "index.%s.txt" % self.findRunLaneRead(analysisfileuri)
+
+    def getSlxSampleId(self, analysisfileuri):
+        lane = self.findLaneFromSeqFile(analysisfileuri)
+        return lane.genomicsSampleId
 
     def getReadNumber(self, file_name):
         if 'sequence.txt.gz' in file_name:
@@ -202,38 +164,57 @@ class MultiplexedRuns(AllRuns):
             return 1
 
     def printSampleDetails(self, run):
-        lanes = self.solexa_db.lane.filter_by(run_id=run.id)
+        lanes = self.lims.solexa.lane.filter_by(run_id=run.id)
         for lane in lanes:
             # select multiplexed lanes
             if lane.isControl == 0 and lane.multiplexing_id != None:
                 # user
-                user = self.general_db.user.filter_by(email=lane.userEmail).one()
+                user = self.lims.general.user.filter_by(email=lane.userEmail).one()
                 username = "%s.%s" % (user.firstname, user.surname)
                 # comments
                 str_comment = ''
-                request_requestfieldvalues = self.request_db.request_requestfieldvalue.filter_by(Request_id=lane.request_id)
-                requestfieldtype_comments = self.request_db.requestfieldtype.filter_by(name='Comments').one()
+                request_requestfieldvalues = self.lims.request.request_requestfieldvalue.filter_by(Request_id=lane.request_id)
+                requestfieldtype_comments = self.lims.request.requestfieldtype.filter_by(name='Comments').one()
                 for request_requestfieldvalue in request_requestfieldvalues:
-                    comments = self.request_db.requestfieldvalue.filter_by(id=request_requestfieldvalue.fieldValues_id,type_id=requestfieldtype_comments.id)
+                    comments = self.lims.request.requestfieldvalue.filter_by(id=request_requestfieldvalue.fieldValues_id,type_id=requestfieldtype_comments.id)
                     for comment in comments:
                         str_comment = comment.strValue
                 # multiplex type
-                multiplex_type = self.solexa_db.multiplexing.filter_by(id=lane.multiplexing_id).one()
+                multiplex_type = self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
                 if multiplex_type.name == 'Other':
                     multiplex_type_name = "*** %s ***" % multiplex_type.shortName
                 else:
                     multiplex_type_name = multiplex_type.shortName
 
-                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (multiplex_type_name, run.runNumber, lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))
-
-
+                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (multiplex_type_name, run.runNumber, lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))      
 
 ################################################################################
-# UNIT TESTS
+# Unit tests
 ################################################################################
 class limsTests(unittest.TestCase):
+    
     def setUp(self):
-        pass
+        self.lims = Lims()
+        self.run_number = '1016'
+        
+    def test_database_name(self):
+        db_name = self.lims.solexa.engine.name
+        self.assertEqual(db_name, 'mysql')
+        
+    def test_find_run(self):
+        runs = Runs(self.lims)
+        my_run = runs.findRun(self.run_number)
+        print my_run.status
+        
+        
+    def test_find_all_complete_runs(self):
+        runs = Runs(self.lims)
+        for run in runs.findAllCompleteRuns():
+            self.assertEqual(run.status, 'COMPLETE')
+            self.assertNotEqual(run.analysisStatus, 'COMPLETE')
+            self.assertNotEqual(run.analysisStatus, 'SECONDARY COMPLETE')
+            self.assertNotEqual(run.analysisStatus, 'ABANDONED')
+    
 
 if __name__ == '__main__':
-    unittest.main()
+	unittest.main()
