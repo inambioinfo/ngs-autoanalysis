@@ -48,4 +48,7 @@ Future development: should be database driven instead
 --------------------------------------------------------------------------------
 -- DONE
 --------------------------------------------------------------------------------
+06-02-2013: add unit test (python -m unittest --verbose lims)
+06-02-2013: create one Runs class and one Lims class
+
 17-12-2012: Command line arguments: use argparse

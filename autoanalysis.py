@@ -552,9 +552,11 @@ def main():
     if options.dry_run:
         options.update_status = False
         
+    # create database connection
+    lims_db = lims.Lims(options.dburl)
     # get all completed runs that have not been analysed or just one run
-    runs = lims.CompleteRuns(options.dburl, options.run_number)
-    for run in runs.filtered_runs:
+    runs = lims.Runs(lims_db)
+    for run in runs.findAllCompleteRuns(options.run_number):
         # check run folder in basedir for analysis
         run_folder = os.path.join(options.basedir, run.pipelinePath)
         log.info('================================================================================')
@@ -582,7 +584,7 @@ def main():
                     pipelines = {options.step : ""}
                     
                 # get list of external samples
-                external_samples = runs.getExternalSampleIds(run)
+                external_samples = runs.findExternalSampleIds(run)
                 
                 log.info('--- SETUP PIPELINES ------------------------------------------------------------')
                 setup_pipelines(run_folder, run.runNumber, pipelines, options.softdir, options.soapurl, options.dry_run)
