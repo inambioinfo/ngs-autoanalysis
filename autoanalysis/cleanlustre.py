@@ -118,7 +118,7 @@ def main():
         log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         if (present - os.path.getmtime(run_folder)) > older:
             log.info('*** run folder will be removed')
-            cmd = ['rm -rf', run_folder]
+            cmd = ['rm', '-rf', run_folder]
             utils.run_bg_process(cmd, options.dry_run)            
     
 if __name__ == '__main__':
