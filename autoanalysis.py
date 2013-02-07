@@ -583,7 +583,7 @@ def main():
                 if options.step:
                     pipelines = {options.step : ""}
                     
-                # get list of external samples
+                # get list of external samples for this run
                 external_samples = runs.findExternalSampleIds(run)
                 
                 log.info('--- SETUP PIPELINES ------------------------------------------------------------')
