@@ -49,6 +49,7 @@ Future development: should be database driven instead
 --------------------------------------------------------------------------------
 -- DONE
 --------------------------------------------------------------------------------
+07-02-2013: add try-except in util
 07-02-2013: refactor Lims class to handle access to four databases; add more tests
 
 06-02-2013: add unit test (python -m unittest --verbose lims)

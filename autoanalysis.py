@@ -523,7 +523,7 @@ def main():
     parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
     parser.add_argument("--softdir", dest="softdir", action="store", default=SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % SOFT_PIPELINE_PATH)
-    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
     parser.add_argument("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % CLUSTER_HOST)
     parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
