@@ -13,6 +13,7 @@ Created by Anne Pajon on 2012-11-08.
 ################################################################################
 import sys
 import os
+import re
 import glob
 import logging
 import unittest
@@ -24,16 +25,10 @@ log = logging.getLogger('root.lims')
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Database url
+# Default database url
 DB_URL = "mysql://readonly@uk-cri-lbio04/cri_solexa"
-# database urls
-DB_HOST = "mysql://readonly@uk-cri-lbio04"
-DB_SOLEXA = "%s/cri_solexa" % DB_HOST
-DB_LIMS = "%s/cri_lims" % DB_HOST
-DB_REQUEST = "%s/cri_request" % DB_HOST
-DB_GENERAL = "%s/cri_general" % DB_HOST
 
-# Soap url
+# Default SOAP url
 SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
 
 # Default lims status
@@ -46,13 +41,22 @@ ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
 # CLASS Lims
 ################################################################################
 class Lims(object):
-    def __init__(self, _db_url=DB_SOLEXA):
+    
+    db_url_pattern = 'mysql://(.*)/(.*)'
+    db_url_string = 'mysql://%(host)s/%(db_name)s'
+    
+    lims_db_name = 'cri_lims'
+    request_db_name = 'cri_request'
+    general_db_name = 'cri_general'
+    
+    def __init__(self, _db_url=DB_URL):
         # main solexa database
         self.solexa = SqlSoup(_db_url)
+        (self.db_host, self.solexa_db_name) = re.compile(Lims.db_url_pattern).findall(_db_url)[0]
         # other lims databases
-        self.lims = SqlSoup(DB_LIMS)
-        self.request = SqlSoup(DB_REQUEST)
-        self.general = SqlSoup(DB_GENERAL)
+        self.lims = SqlSoup(Lims.db_url_string % {'host':self.db_host, 'db_name':Lims.lims_db_name})
+        self.request = SqlSoup(Lims.db_url_string % {'host':self.db_host, 'db_name':Lims.request_db_name})
+        self.general = SqlSoup(Lims.db_url_string % {'host':self.db_host, 'db_name':Lims.general_db_name})
 
 ################################################################################
 # CLASS Runs
@@ -196,24 +200,35 @@ class limsTests(unittest.TestCase):
     def setUp(self):
         self.lims = Lims()
         self.run_number = '1016'
+        self.runs = Runs(self.lims)
         
-    def test_database_name(self):
-        db_name = self.lims.solexa.engine.name
-        self.assertEqual(db_name, 'mysql')
+    def test_database_names(self):
+        solexa_db_name = self.lims.solexa.engine.url.database
+        lims_db_name = self.lims.lims.engine.url.database
+        request_db_name = self.lims.request.engine.url.database
+        general_db_name = self.lims.general.engine.url.database
+        self.assertEqual(solexa_db_name, self.lims.solexa_db_name)
+        self.assertEqual(lims_db_name, self.lims.lims_db_name)
+        self.assertEqual(request_db_name, self.lims.request_db_name)
+        self.assertEqual(general_db_name, self.lims.general_db_name)
         
     def test_find_run(self):
-        runs = Runs(self.lims)
-        my_run = runs.findRun(self.run_number)
-        print my_run.status
-        
+        run = self.runs.findRun(self.run_number)
+        self.assertEqual(str(run.runNumber), self.run_number)
         
     def test_find_all_complete_runs(self):
-        runs = Runs(self.lims)
-        for run in runs.findAllCompleteRuns():
+        for run in self.runs.findAllCompleteRuns():
             self.assertEqual(run.status, 'COMPLETE')
             self.assertNotEqual(run.analysisStatus, 'COMPLETE')
             self.assertNotEqual(run.analysisStatus, 'SECONDARY COMPLETE')
             self.assertNotEqual(run.analysisStatus, 'ABANDONED')
+            
+    def test_find_external_samples(self):
+        run = self.runs.findRun(self.run_number)
+        samples = self.runs.findExternalSampleIds(run)
+        for sample_id in list(samples.viewkeys()):
+            self.assertNotIn(' ', samples[sample_id]['institute'])
+            self.assertEqual(str(samples[sample_id]['run_number']), self.run_number)
     
 
 if __name__ == '__main__':
