@@ -18,6 +18,7 @@ import glob
 import logging
 import unittest
 from sqlalchemy.ext.sqlsoup import SqlSoup
+from suds.client import Client
 
 # logging definition
 log = logging.getLogger('root.lims')
@@ -50,6 +51,7 @@ class Lims(object):
     general_db_name = 'cri_general'
     
     def __init__(self, _db_url=DB_URL):
+        self.db_url = _db_url
         # main solexa database
         self.solexa = SqlSoup(_db_url)
         (self.db_host, self.solexa_db_name) = re.compile(Lims.db_url_pattern).findall(_db_url)[0]
@@ -59,12 +61,47 @@ class Lims(object):
         self.general = SqlSoup(Lims.db_url_string % {'host':self.db_host, 'db_name':Lims.general_db_name})
 
 ################################################################################
+# CLASS SoapLims
+################################################################################
+class SoapLims(object):
+    
+    def __init__(self, _soap_url=SOAP_URL):
+        self.soap_url = _soap_url
+        # create soap client
+        self.client = Client("%s?wsdl" % _soap_url)
+        
+    def getRun(self, _run_number):
+        return self.client.service.getSolexaRunForRunNumber(_run_number, 'true')
+        
+    def setAnalysisStatus(self, run, status):
+        if not run.analysisStatus == status:
+            try:
+                self.client.service.setAnalysisStatus(run.process_id, status)
+                log.info('analysis status in lims set to %s for process id %s' % (status, run.process_id))
+            except:
+                log.exception()
+                raise
+        else:
+            log.info('analysis status in lims already set to %s for process id %s' % (status, run.process_id))
+    
+    def setRunComplete(self, run, status):
+        if not run.status == status:
+            try:
+                self.client.service.setRunComplete(run.process_id)
+                log.info('run status in lims set to %s for process id %s' % (status, run.process_id))
+            except:
+                log.exception()
+                raise
+        else:
+            log.info('run status in lims already set to %s for process id %s' % (status, run.process_id))
+        
+################################################################################
 # CLASS Runs
 ################################################################################
 class Runs(object):
-    def __init__(self, _lims):
+    def __init__(self, _db_url=DB_URL):
         # CRI lims database connection
-        self.lims = _lims
+        self.lims = Lims(_db_url)
 
     def __populateRuns(self):
         # get one run
@@ -200,7 +237,7 @@ class limsTests(unittest.TestCase):
     def setUp(self):
         self.lims = Lims()
         self.run_number = '1016'
-        self.runs = Runs(self.lims)
+        self.runs = Runs()
         
     def test_database_names(self):
         solexa_db_name = self.lims.solexa.engine.url.database

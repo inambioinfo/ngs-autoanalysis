@@ -52,7 +52,7 @@ def main():
     parser = optparse.OptionParser()
     parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
     parser.add_option("--trashdir", dest="trashdir", action="store", help="trash directory e.g. '/lustre/mib-cri/solexa/Trash_Runs'")
-    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
+    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
     parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")

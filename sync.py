@@ -14,21 +14,21 @@ Created by Anne Pajon on 2012-10-26.
 import sys
 import os
 import glob
+import argparse
 import logging
-import optparse
 
 try:
     from sqlalchemy.ext.sqlsoup import SqlSoup
     from suds.client import Client
 except ImportError:
-    sys.exit("""
+    sys.exit('''
 --------------------------------------------------------------------------------
 >>> modules { mysql-python | sqlalchemy | suds } not installed.
 --------------------------------------------------------------------------------
 [on sols] use /home/mib-cri/software/python2.7/bin/python
 [locally] install virtualenv; source bin/activate and pip install modules
 --------------------------------------------------------------------------------
-    """)
+''')
 
 # import logging module first
 import log as logger
@@ -162,16 +162,13 @@ def register_run_completed(run_folder):
         else:
             log.debug("%s already exists" % run_completed)
             
-def update_status(update_status, soap_url, run, run_folder, dest_run_folder):
-    # create soap client
-    soap_client = Client("%s?wsdl" % soap_url)
-
+def update_status(update_status, soap_client, run, run_folder, dest_run_folder):
     # update lims status when sequencing completed and rsynced
     if rsync_and_run_completed(run_folder) and rsync_and_run_completed(dest_run_folder):
         log.info('*** RSYNC AND RUN COMPLETED ****************************************************')
         # update status in lims
         if update_status:
-            utils.set_run_complete(soap_client, run, lims.SEQUENCING_COMPLETE_STATUS)
+            soap_client.setRunComplete(run, lims.SEQUENCING_COMPLETE_STATUS)
         else:
             log.debug('lims status not updated - use --update-status option to turn it on')
     else:
@@ -210,19 +207,19 @@ def rsync_and_run_completed(run_folder):
 def main(argv=None):
     
     # get the options
-    parser = optparse.OptionParser()
-    parser.add_option("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'")
-    parser.add_option("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'")
-    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
-    parser.add_option("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
-    parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
-    parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_option("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
-    parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--email", dest="email", action="store_true", default=False, help="Send WARN logs by email")
-    parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
+    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
+    parser.add_argument("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
+    parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+    parser.add_argument("--update-status", dest="update_status", action="store_true", default=False, help="use this option to update the status of a run in lims when process completed")
+    parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_argument("--email", dest="email", action="store_true", default=False, help="Send WARN logs by email")
+    parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     # logging configuration
     log.setLevel(logging.INFO)
@@ -232,13 +229,7 @@ def main(argv=None):
         log.addHandler(logger.set_file_handler(options.logfile))
     if options.email:
         log.addHandler(logger.set_smtp_handler('sync.py logs'))
-                  
-    for option in ['basedir', 'lustredir']:
-        if getattr(options, option) == None:
-            print "Please supply a --%s parameter.\n" % (option)
-            parser.print_help()
-            sys.exit()
-            
+                              
     if not glob.glob(options.basedir):
         log.error("%s does not exists - check your '--basedir' option" % options.basedir)
         sys.exit(1)
@@ -246,10 +237,13 @@ def main(argv=None):
     if not os.path.exists(options.lustredir):
         log.error("%s does not exists - check your '--lustredir' option" % options.lustredir)
         sys.exit(1)
-        
+
+    # create soap client
+    soap_client = lims.SoapLims(options.soapurl)
+    # create lims client
+    runs = lims.Runs(options.dburl)
     # get all started runs
-    runs = lims.StartedRuns(options.dburl, options.run_number)
-    for run in runs.filtered_runs:
+    for run in runs.findAllStartedRuns(options.run_number):
         log.info('--------------------------------------------------------------------------------')
         log.info('--- RUN: %s' % run.runNumber)
         log.info('--------------------------------------------------------------------------------')
@@ -268,7 +262,7 @@ def main(argv=None):
                 log.info('--- RUN RSYNC ------------------------------------------------------------------')
                 rsync(run_folder, options.dry_run)
                 log.info('--- UPDATE STATUS --------------------------------------------------------------')
-                update_status(options.update_status, options.soapurl, run, run_folder, dest_run_folder)
+                update_status(options.update_status, soap_client, run, run_folder, dest_run_folder)
             else:
                 log.info('%s is present' % rsync_ignore)
         else:
