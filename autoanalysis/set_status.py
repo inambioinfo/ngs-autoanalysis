@@ -8,35 +8,30 @@ $Id$
 Created by Anne Pajon on 2012-10-29.
 """
 
-import sys, os
-import optparse
+import sys
+import os
+import argparse
 import logging
+
+try:
+    from sqlalchemy.ext.sqlsoup import SqlSoup
+    from suds.client import Client
+except ImportError:
+    sys.exit('''
+--------------------------------------------------------------------------------
+>>> modules { mysql-python | sqlalchemy | suds } not installed.
+--------------------------------------------------------------------------------
+[on sols] use /home/mib-cri/software/python2.7/bin/python
+[locally] install virtualenv; source bin/activate and pip install modules
+--------------------------------------------------------------------------------
+''')
 
 # import logging module first
 import log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import utils
-
-try:
-    from suds.client import Client
-except ImportError:
-    print '''
- --------------------------------------------------------------------------------
- --- Use this python on the sols to call the script
- > /home/mib-cri/software/python2.7/bin/python
- --------------------------------------------------------------------------------
- --- Or locally install 'suds' python module first 
- --- and activate your python virtual environment
- > wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
- > python virtualenv.py `pwd`
- > source bin/activate
- > pip install suds
- '''
-    sys.exit()
-
-# Soap url
-SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
+import lims
 
 ################################################################################
 # MAIN
@@ -44,15 +39,15 @@ SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
 def main(argv=None):
     
     # get the options
-    parser = optparse.OptionParser()
-    parser.add_option("--soapurl", dest="soapurl", action="store", default=SOAP_URL, help="soap url - default set to '%s'" % SOAP_URL)
-    parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
-    parser.add_option("--status", dest="status", action="store", help="analysis status to set e.g. 'COMPLETE'")
-    parser.add_option("--update", dest="update", action="store_true", default=False, help="use this option to do a status update and not only report action")
-    parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url - default set to '%s'" % lims.SOAP_URL)
+    parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'", required=True)
+    parser.add_argument("--status", dest="status", action="store", help="analysis status to set e.g. 'COMPLETE'", required=True)
+    parser.add_argument("--update", dest="update", action="store_true", default=False, help="use this option to do a status update and not only report action")
+    parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     # logging configuration
     log.setLevel(logging.INFO)
@@ -61,23 +56,17 @@ def main(argv=None):
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
                   
-    for option in ['run_number', 'status']:
-        if getattr(options, option) == None:
-            print "Please supply a --%s parameter.\n" % (option)
-            parser.print_help()
-            sys.exit(1)
-            
     # create soap client
-    soap_client = Client("%s?wsdl" % options.soapurl)
+    soap_client = lims.SoapLims(options.soapurl)
 
     # get run
-    run = soap_client.service.getSolexaRunForRunNumber(options.run_number, 'true')
+    run = soap_client.getRun(options.run_number)
     log.debug(run)
     
     if run.runStatus == 'COMPLETE':
         log.info('--- UPDATE STATUS --------------------------------------------------------------')
         if (options.update):
-            utils.set_analysis_status(soap_client, run, options.status)
+            soap_client.setAnalysisStatus(soap_client, run, options.status)
             log.info('update status of run %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))
         else:
             log.info('use --update to update the status of %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))

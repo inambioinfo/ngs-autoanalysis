@@ -158,28 +158,6 @@ def get_smallest_volume(archive_glob):
         log.exception()
         raise
 
-def set_analysis_status(solexa_soap, run, status):
-    if not run.analysisStatus == status:
-        try:
-            solexa_soap.service.setAnalysisStatus(run.process_id, status)
-            log.info('analysis status in lims set to %s for process id %s' % (status, run.process_id))
-        except:
-            log.exception()
-            raise
-    else:
-        log.info('analysis status in lims already set to %s for process id %s' % (status, run.process_id))
-
-def set_run_complete(solexa_soap, run, status):
-    if not run.status == status:
-        try:
-            solexa_soap.service.setRunComplete(run.process_id)
-            log.info('run status in lims set to %s for process id %s' % (status, run.process_id))
-        except:
-            log.exception()
-            raise
-    else:
-        log.info('run status in lims already set to %s for process id %s' % (status, run.process_id))
-
 ################################################################################
 # UNIT TESTS
 ################################################################################

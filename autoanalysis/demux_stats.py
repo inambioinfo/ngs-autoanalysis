@@ -15,7 +15,7 @@ import sys
 import os
 import glob
 import logging
-import optparse
+import argparse
 import urllib2
 
 try:
@@ -37,7 +37,7 @@ log = logger.set_custom_logger()
 # then import other custom modules
 import utils
 import lims
-import autoanalysis
+import pipelines
 
 ################################################################################
 # CONSTANTS
@@ -184,7 +184,7 @@ def setup_demux(runs, run_folder, run_number, multiplex_templates, fastq_files, 
             log.debug(multiplex_type.name)
             index_file = open(index_path, 'w')
             for barcode_name in list(barcodes.viewkeys()):
-                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], runs.getSlxSampleId(fastq_file), barcode_name, runs.getRunLaneRead(fastq_file)))
+                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], runs.getSlxSampleId(fastq_file), barcode_name, runs.findRunLaneRead(fastq_file)))
             index_file.close()
             log.info('%s created' % index_path)
         else:
@@ -349,19 +349,19 @@ def all_process_completed(run_folder):
 ################################################################################
 def main():
     # get the options
-    parser = optparse.OptionParser()
-    parser.add_option("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/DemuxStats'")
-    parser.add_option("--softdir", dest="softdir", action="store", default=autoanalysis.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % autoanalysis.SOFT_PIPELINE_PATH)
-    parser.add_option("--dburl", dest="dburl", action="store", default=lims.DB_SOLEXA, help="database url [read only access] - default set to '%s'" % lims.DB_SOLEXA)
-    parser.add_option("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % autoanalysis.CLUSTER_HOST)
-    parser.add_option("--run", dest="run_number", action="store", help="run number e.g. '948'")
-    parser.add_option("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
-    parser.add_option("--logfile", dest="logfile", action="store", help="File to print logging information")
-    parser.add_option("--htmlfile", dest="htmlfile", action="store", help="HTML file to write the report")
-    parser.add_option("--sample-list", dest="sample_list", action="store_true", default=False, help="Print list of multiplexed samples with extra information")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/DemuxStats'", required=True)
+    parser.add_argument("--softdir", dest="softdir", action="store", default=autoanalysis.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % autoanalysis.SOFT_PIPELINE_PATH)
+    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
+    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % autoanalysis.CLUSTER_HOST)
+    parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+    parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
+    parser.add_argument("--logfile", dest="logfile", action="store", help="File to print logging information")
+    parser.add_argument("--htmlfile", dest="htmlfile", action="store", help="HTML file to write the report")
+    parser.add_argument("--sample-list", dest="sample_list", action="store_true", default=False, help="Print list of multiplexed samples with extra information")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     # logging configuration
     log.setLevel(logging.INFO)
@@ -369,19 +369,16 @@ def main():
         log.setLevel(logging.DEBUG)        
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
-              
-    for option in ['basedir']:
-        if getattr(options, option) == None:
-            print "Please supply a --%s parameter.\n" % (option)
-            sys.exit(parser.print_help())
-        
+                      
     if not os.path.exists(options.basedir):
         sys.exit("%s does not exists - check your '--basedir' option" % options.basedir)
         
-    runs = lims.MultiplexedRuns(options.dburl, options.run_number)
+    # create lims client
+    runs = lims.Runs(options.dburl)
     multiplex_templates = get_multiplex_templates()
     summary_report = []
-    for run in runs.filtered_runs:
+    # loop over all multiplexed runs that have been analysed or just one run
+    for run in runs.findAllAnalysedMultiplexedRuns(options.run_number):
         log.info('--------------------------------------------------------------------------------')
         log.info('--- RUN: %s' % run.runNumber)
         log.info('--------------------------------------------------------------------------------')
@@ -389,7 +386,7 @@ def main():
         run_folder = os.path.join(options.basedir, run.pipelinePath)
         utils.create_directory(run_folder)
         # get all fastq files associated to demultiplexed lanes for this run
-        fastq_files = runs.getKnownMultiplexSeqFiles(run)
+        fastq_files = runs.findKnownMultiplexSeqFiles(run)
         # lock file
         lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
         ignore = os.path.join(run_folder, IGNORE_FILENAME)
