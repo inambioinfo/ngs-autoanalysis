@@ -24,8 +24,11 @@ log = logging.getLogger('root.utils')
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Template for local shell script
-LOCAL_SCRIPT_TEMPLATE = '''
+# Cluster host
+CLUSTER_HOST = "uk-cri-lcst01"
+
+# Template for shell script
+SCRIPT_TEMPLATE = '''
 #!/bin/bash
 #
 # Shell script for running command(s) locally
@@ -37,15 +40,8 @@ set -v
 
 '''
 
-# Template for lsf shell script
-LSF_SCRIPT_TEMPLATE = '''
-#!/bin/bash
-# 
-# Shell script for executing run-pipeline on the cluster
-#
-
-set -v
-
+# Template for lsf command
+LSF_CMD_TEMPLATE = '''
 export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
@@ -54,9 +50,37 @@ ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -
 
 '''
 
+# Template for rsync command
+RSYNC_CMD_TEMPLATE = '''
+touch %(started)s
+touch %(lock)s
+
+if ( rsync %(options)s )
+then 
+    touch %(rsync_finished)s
+    cp %(cp_finished)s
+    cp %(completed)s
+else 
+    touch %(fail)s 
+fi
+
+rm %(lock)s
+        """ % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
+'''
+
 ################################################################################
 # METHODS
 ################################################################################
+def create_script(script_path, command):
+    if not os.path.exists(script_path):    
+        script_file = open(script_path, 'w')
+        script_file.write(SCRIPT_TEMPLATE % {'cmd':command})
+        script_file.close()
+        os.chmod(script_path, 0755)
+        log.info('%s created' % script_path)
+    else:
+        log.debug('%s already exists' % script_path)
+    
 def run_process(cmd, dry_run=True):
     if not dry_run:
         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

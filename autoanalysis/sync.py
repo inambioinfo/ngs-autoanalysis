@@ -66,8 +66,8 @@ RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
     "--exclude=Thumbnail_Images", # thumbnail images
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
-    "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME,
-    "--exclude=Old*" # Anything that has been moved out of the way
+    "--exclude=Old*", # Anything that has been moved out of the way
+    "--exclude=%s" % SEQUENCING_COMPLETED_FILENAME
 ]
 
 ################################################################################
@@ -94,32 +94,11 @@ def setup_rsync(run_folder, dest_run_folder):
         log.debug('%s already exists' % rsync_directory)
         
     # create rsync script 
-    if not os.path.exists(rsync_script_path):    
-        rsync_script_file = open(rsync_script_path, 'w')
-        rsync_options = "-av %s %s %s > %s 2>&1" % (" ".join(RSYNC_EXCLUDES), run_folder, dest_basedir, rsync_log)
-        copy_finished = "%s %s/." % (rsync_finished, dest_rsync_directory)
-        copy_run_completed = "%s %s/." % (run_completed, dest_run_folder)
-        command = """
-touch %s
-touch %s
-
-if ( rsync %s )
-then 
-    touch %s
-    cp %s
-    cp %s
-else 
-    touch %s 
-fi
-
-rm %s
-        """ % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
-        rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-        rsync_script_file.close()
-        os.chmod(rsync_script_path, 0755)
-        log.info('%s created' % rsync_script_path)
-    else:
-        log.debug('%s already exists' % rsync_script_path)
+    rsync_options = "-av %s %s %s > %s 2>&1" % (" ".join(RSYNC_EXCLUDES), run_folder, dest_basedir, rsync_log)
+    copy_finished = "%s %s/." % (rsync_finished, dest_rsync_directory)
+    copy_run_completed = "%s %s/." % (run_completed, dest_run_folder)
+    command = utils.RSYNC_CMD_TEMPLATE % {'started': rsync_started, 'lock': rsync_lock, 'options': rsync_options, 'rsync_finished': rsync_finished, 'cp_finished': copy_finished, 'completed': copy_run_completed, 'fail': rsync_fail}
+    utils.create_script(rsync_script_path, command)
 
 def rsync(run_folder, dry_run=True):
     rsync_directory = os.path.join(run_folder, RSYNC_FOLDERNAME)

@@ -19,7 +19,7 @@ import unittest
 # logging definition
 log = logging.getLogger('root.pipelines')
 
-#
+# autoanalysis modules
 import utils
 
 ################################################################################
@@ -74,6 +74,14 @@ RSYNC_LOCK_FILENAME = "rsync.lock"
 RSYNC_DEMUX_STARTED_FILENAME = "rsync_demux.started"
 RSYNC_DEMUX_FINISHED_FILENAME = "rsync_demux.ended"
 
+DEMUX_STATS_LOCK_FILENAME = "demux-stats.lock"
+DEMUX_STATS_COPY_SCRIPT_FILENAME = 'copy.sh'
+DEMUX_STATS_COPY_STARTED_FILENAME = 'copy.started'
+DEMUX_STATS_COPY_FINISHED_FILENAME = 'copy.ended'
+DEMUX_STATS_CLEAN_SCRIPT_FILENAME = 'clean.sh'
+DEMUX_STATS_CLEAN_STARTED_FILENAME = 'clean.started'
+DEMUX_STATS_CLEAN_FINISHED_FILENAME = 'clean.ended'
+
 SEQUENCING_COMPLETED_FILENAME = "Run.completed"
 PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
 PROCESS_COMPLETED_FILENAME = "Run.all.completed"
@@ -112,6 +120,8 @@ class RunDefinition(object):
         else:
             self.multiplexed_run = False
         self.run_number = self.run.runNumber
+        self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE_FILENAME)
+        self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED_FILENAME)
         log.info('================================================================================')
         log.info('=== RUN: %s' % self.run_folder)
         log.info('================================================================================')
@@ -119,10 +129,8 @@ class RunDefinition(object):
     def ready_to_process(self):
         if os.path.exists(self.run_folder):
             # check sequencing process has finished - do not just rely on lims status
-            sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED_FILENAME)
-            # check analysis.ignore is not present - stop running autopipe if present
-            analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE_FILENAME)
-            if os.path.exists(sequencing_completed) and not os.path.exists(analysis_ignore):
+            # and check analysis.ignore is not present - stop running analysis if present
+            if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
                 return True
             else:
                 if not os.path.exists(sequencing_completed):
@@ -132,7 +140,17 @@ class RunDefinition(object):
                     log.info('%s is present' % analysis_ignore)
                     return False
         return False
-
+        
+    def ready_to_analyse(self):
+        if os.path.exists(self.run_folder):
+            # check analysis.ignore is not present - stop running analysis if present
+            if not os.path.exists(self.analysis_ignore):
+                return True
+            else:
+                log.info('%s is present' % analysis_ignore)
+                return False
+        return False
+            
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################        
@@ -193,9 +211,8 @@ class Pipelines(object):
             self.pipelines = PIPELINES
             self.pipelines_for_completion = PIPELINES
         if self.pipeline_step:
-            self.pipelines = {options.step : ""}
-        
-        
+            self.pipelines = {self.pipeline_step : ""}
+                
     def execute(self):
         log.info('--- SETUP PIPELINES ------------------------------------------------------------')
         self.setup_pipelines()
@@ -209,8 +226,7 @@ class Pipelines(object):
         self.publish_external_data()
         log.info('--- UPDATE STATUS --------------------------------------------------------------')
         self.register_process_completed()
-        
-        
+                
     def setup_pipelines(self):
         """Setup pipelines by creating and running shell script to generate run-meta.xml for each pipeline
         """
@@ -223,16 +239,8 @@ class Pipelines(object):
             utils.create_directory(pipeline_definition.pipeline_directory)
 
             # create setup-pipeline script 
-            if not os.path.exists(pipeline_definition.setup_script_path):    
-                setup_script_file = open(pipeline_definition.setup_script_path, 'w')
-                command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --notifications %s %s %s" % (self.software_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(self.run_definition.run_folder), self.soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], self.run_definition.run_number, pipeline_definition.run_meta)
-                setup_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-                # TODO: copy pipeline definition
-                setup_script_file.close()
-                os.chmod(pipeline_definition.setup_script_path, 0755)
-                log.info('%s created' % pipeline_definition.setup_script_path)
-            else:
-                log.debug('%s already exists' % pipeline_definition.setup_script_path)
+            command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --notifications %s %s %s" % (self.software_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(self.run_definition.run_folder), self.soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], self.run_definition.run_number, pipeline_definition.run_meta)
+            utils.create_script(pipeline_definition.setup_script_path, command)
 
             # run setup-pipeline script to create meta data 
             if not os.path.exists(pipeline_definition.run_meta):
@@ -244,6 +252,16 @@ class Pipelines(object):
                 # TODO: check output file for errors
                 log.debug('%s already exists' % pipeline_definition.run_meta)
                 
+    def _create_run_pipeline_script(self, pipeline_definition):
+        # create run-pipeline script
+        if self.cluster_host:
+            bsub_cmd = "%s/%s/bin/%s --mode=lsf --clean %s" % (self.software_path, pipeline_definition.pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
+            command = utils.LSF_CMD_TEMPLATE % {'mem_value': '2048', 'cluster':self.cluster_host, 'work_dir':pipeline_definition.pipeline_directory, 'job_name':pipeline_definition.job_name, 'cmd':bsub_cmd}
+            utils.create_script(pipeline_definition.run_script_path, command)
+        else:
+            command = "cd %s; touch %s; %s/%s/bin/%s --mode=local --clean %s" % (pipeline_definition.pipeline_directory, PIPELINE_STARTED_FILENAME, self.software_path, pipeline_definition.pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
+            utils.create_script(pipeline_definition.run_script_path, command)
+                
     def run_pipelines(self):
         """Run pipelines by creating and running a shell script to run run-pipeline for each pipeline
         """
@@ -253,20 +271,8 @@ class Pipelines(object):
             pipeline_definition.print_log()
 
             # create run-pipeline script
-            if not os.path.exists(pipeline_definition.run_script_path):
-                run_script_file = open(pipeline_definition.run_script_path, 'w')
-                if cluster_host:
-                    command = "%s/%s/bin/%s --mode=lsf --clean %s" % (self.software_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
-                    run_script_file.write(utils.LSF_SCRIPT_TEMPLATE % {'mem_value': '2048', 'cluster':self.cluster_host, 'work_dir':pipeline_definition.pipeline_directory, 'job_name':pipeline_definition.job_name, 'cmd':command})
-                else:
-                    command = "cd %s; touch %s; %s/%s/bin/%s --mode=local --clean %s" % (pipeline_definition.pipeline_directory, PIPELINE_STARTED_FILENAME, self.software_path, pipeline_name, RUN_PIPELINE_FILENAME, RUN_META_FILENAME)
-                    run_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-                run_script_file.close()
-                os.chmod(pipeline_definition.run_script_path, 0755)
-                log.info('%s created' % pipeline_definition.run_script_path)
-            else:
-                log.debug('%s already exists' % pipeline_definition.run_script_path)
-
+            self._create_run_pipeline_script(pipeline_definition)
+            
             # run run-pipeline script to run the pipeline
             if os.path.exists(pipeline_definition.run_meta):
                 # pipeline not started
@@ -312,20 +318,13 @@ class Pipelines(object):
 
                 # create rsync-pipeline script 
                 if os.path.exists(pipeline_definition.pipeline_directory):
-                    if not os.path.exists(pipeline_definition.rsync_script_path):    
-                        rsync_script_file = open(pipeline_definition.rsync_script_path, 'w')
-                        if pipeline_name is 'primary':
-                            rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], run_folder, dest_basedir, pipeline_definition.rsync_log)
-                        else:
-                            rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, dest_run_folder, pipeline_definition.rsync_log)
-                        copy_finished = "%s %s/." % (pipeline_definition.rsync_finished, dest_pipeline_directory)
-                        command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (pipeline_definition.rsync_started, pipeline_definition.rsync_lock, rsync_options, pipeline_definition.rsync_finished, copy_finished, pipeline_definition.rsync_lock)
-                        rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-                        rsync_script_file.close()
-                        os.chmod(pipeline_definition.rsync_script_path, 0755)
-                        log.info('%s created' % pipeline_definition.rsync_script_path)
+                    if pipeline_name is 'primary':
+                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], self.run_definition.run_folder, dest_basedir, pipeline_definition.rsync_log)
                     else:
-                        log.debug('%s already exists' % pipeline_definition.rsync_script_path)
+                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, self.run_definition.dest_run_folder, pipeline_definition.rsync_log)
+                    copy_finished = "%s %s/." % (pipeline_definition.rsync_finished, dest_pipeline_directory)
+                    command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (pipeline_definition.rsync_started, pipeline_definition.rsync_lock, rsync_options, pipeline_definition.rsync_finished, copy_finished, pipeline_definition.rsync_lock)
+                    utils.create_script(pipeline_definition.rsync_script_path, command)
                 else:
                     log.warn('%s is missing' % pipeline_definition.pipeline_directory)
     
@@ -523,26 +522,19 @@ class Pipelines(object):
     def create_external_rsync_script(self, external_directory, rsync_script_path, rsync_started, rsync_finished, log_prefix, rsync_lock):
         """Create rsync script for external data
         """
-        if not os.path.exists(rsync_script_path):
-            rsync_script_file = open(rsync_script_path, 'w')
-            rsync = ""
-            # set of institutes
-            institutes = set()
-            for sample_id in list(self.external_samples.viewkeys()):
-                institutes.add(self.external_samples[sample_id]['institute'])
-            for institute in institutes:
-                src = os.path.join(external_directory, institute)
-                dest = "%s/%s/current/" % (FTP_URL, institute)
-                rsync_log = "%s/%s_%s.log" % (external_directory, log_prefix, institute)
-                rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
-            command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
-            rsync_script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-            rsync_script_file.close()
-            os.chmod(rsync_script_path, 0755)
-            log.info('%s created' % rsync_script_path)
-        else:
-            log.debug('%s already exists' % rsync_script_path)
-
+        rsync = ""
+        # set of institutes
+        institutes = set()
+        for sample_id in list(self.external_samples.viewkeys()):
+            institutes.add(self.external_samples[sample_id]['institute'])
+        for institute in institutes:
+            src = os.path.join(external_directory, institute)
+            dest = "%s/%s/current/" % (FTP_URL, institute)
+            rsync_log = "%s/%s_%s.log" % (external_directory, log_prefix, institute)
+            rsync = rsync + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+        command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
+        utils.create_script(rsync_script_path, command)
+        
     def run_external_rsync_script(self, rsync_script_path, rsync_started, rsync_finished, rsync_lock):
         """Run rsync script for external data
         """
@@ -581,10 +573,227 @@ class Pipelines(object):
 ################################################################################
 # CLASS DemuxPipelines
 ################################################################################
-class DemuxPipelines(Pipelines):
+class DemuxStatsPipelines(Pipelines):
     
-    def __init__(self):
-        Pipelines.__init__(self)
+    def __init__(self, _run_definition, _multiplex_templates, _lims_client, _soap_client, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
+        
+        Pipelines.__init__(self, _run_definition, None, 'demultiplex', None, _soap_client, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True)
+        self.lims_client = _lims_client
+        # get all fastq files associated to demultiplexed lanes for this run
+        self.fastq_files = self.lims_client.findKnownMultiplexSeqFiles(self.run_definition.run)
+        self.multiplex_templates = _multiplex_templates
+        # create pipeline definition
+        self.pipeline_definition = PipelineDefinition(self.run_definition, self.pipeline_step)
+        self.pipeline_definition.print_log()
+        # specific files for running demux stats analysis
+        self.lock = os.path.join(os.path.dirname(self.run_definition.run_folder), DEMUX_STATS_LOCK_FILENAME)
+        self.copy_script_path = os.path.join(self.run_definition.run_folder, DEMUX_STATS_COPY_SCRIPT_FILENAME)
+        self.copy_started = os.path.join(self.run_definition.run_folder, DEMUX_STATS_COPY_STARTED_FILENAME)
+        self.copy_finished = os.path.join(self.run_definition.run_folder, DEMUX_STATS_COPY_FINISHED_FILENAME)
+        self.clean_script_path = os.path.join(self.run_definition.run_folder, DEMUX_STATS_CLEAN_SCRIPT_FILENAME)
+        self.clean_started = os.path.join(self.run_definition.run_folder, DEMUX_STATS_CLEAN_STARTED_FILENAME)
+        self.clean_finished = os.path.join(self.run_definition.run_folder, DEMUX_STATS_CLEAN_FINISHED_FILENAME)        
+        
+    def execute_demux(self):
+        if not self.all_process_completed():
+            if self.process_failed():
+                log.info('*** [***FAIL***] ***************************************************************')
+                utils.touch(self.run_definition.analysis_ignore)
+                # remove lock file
+                if os.path.exists(self.lock):
+                    os.remove(self.lock)
+            else:
+                log.info('--- MANAGE DATA ----------------------------------------------------------------')
+                self.manage_data()
+                log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
+                self.setup_demux()
+                log.info('--- CREATE INDEXES -------------------------------------------------------------')
+                self.create_indexes()
+                log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
+                self.run_demux()
+        else:
+            log.info('*** DEMUX-STATS COMPLETED ******************************************************')
+        
+    def manage_data(self):
+        """Create and run scripts to copy and clean fastq file on lustre
+        """
+        copy = ""
+        clean = ""
+        for fastq_file in self.fastq_files:
+            log.debug("%s\t%s\t%s" % (fastq_file.host, fastq_file.path, fastq_file.filename))
+            orig = os.path.join(fastq_file.path, fastq_file.filename)
+            dest = os.path.join(self.run_definition.run_folder, fastq_file.filename)
+            copy = copy + "scp %s:%s %s; " % (fastq_file.host, orig, dest)
+            clean = clean + "rm -f %s; " % dest
+        # create/run copy script
+        self._create_script(self.copy_script_path, copy, self.copy_started, self.copy_finished, self.lock)
+        self._run_script(self.copy_script_path, self.copy_started, self.copy_finished, self.lock)
+        # create/run clean script
+        self._create_script(self.clean_script_path, clean, self.clean_started, self.clean_finished) 
+        if self.process_completed(['demultiplex']):
+            self._run_script(self.clean_script_path, self.clean_started, self.clean_finished)  
+        # create symlink for fastq files in primary directory
+        if self.data_copied():
+            # create primary folder
+            primary_folder = os.path.join(self.run_definition.run_folder, 'primary')
+            utils.create_directory(primary_folder)
+            for fastq_file in self.fastq_files:
+                new_fastq_filename = self.lims_client.getNewSeqFileName(fastq_file)
+                link_name = "%s/%s" % (primary_folder, new_fastq_filename)
+                fastq_path = os.path.join(run_folder, fastq_file.filename)
+                log.debug(fastq_path)
+                if os.path.lexists(link_name):
+                    os.remove(link_name)
+                os.symlink(fastq_path, link_name)
+
+    def setup_demux(self):
+        """Setup demultiplex statistic analysis
+        """        
+        ### setup demux pipeline
+        # set specific demux-stats pipeline options
+        PIPELINES_SETUP_OPTIONS['demultiplex'] = '--pipeline=/home/mib-cri/software/pipelines/demultiplex/demuxstatspipeline.xml' # do not generate index-files
+        # call setup_pipelines to create setup script and run-meta.xml
+        self.setup_pipelines()
+        # create run-pipeline script
+        self._create_run_pipeline_script(self.pipeline_definition)
+        
+    def create_indexes(self):
+        """Create index files
+        """
+        for fastq_file in self.fastq_files:
+            index_filename = self.lims_client.getIndexFileName(fastq_file)
+            index_path = os.path.join(self.pipeline_definition.pipeline_directory, index_filename)
+            if not os.path.exists(index_path):
+                multiplex_type = self.lims_client.getMultiplexTypeFromSeqFile(fastq_file)
+                barcodes = self.multiplex_templates[multiplex_type.name]
+                log.debug(multiplex_type.name)
+                index_file = open(index_path, 'w')
+                for barcode_name in list(barcodes.viewkeys()):
+                    index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], self.lims_client.getSlxSampleId(fastq_file), barcode_name, self.lims_client.findRunLaneRead(fastq_file)))
+                index_file.close()
+                log.info('%s created' % index_path)
+            else:
+                log.debug('%s already exists' % index_path)
+        
+    def run_demux(self):
+        """Run demultiplex statistic analysis
+        """
+        if self.process_completed(['demultiplex']):
+            if os.path.exists(self.lock):
+                os.remove(self.lock)
+        else:
+            if not os.path.exists(self.lock) and self.data_copied():
+                utils.touch(self.lock)
+                # call run_pipelines to run the demultiplex pipeline only one at a time
+                self.run_pipelines()
+            else:
+                log.info('%s presents - another script is running' % self.lock)
+                
+    def parse_summary_files(self):
+        """Parse barcode summary files and return demultiplex report
+        Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
+        """
+        report = []
+        if self.process_completed(['demultiplex']):
+            log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
+            summary_files = glob.glob(os.path.join(self.pipeline_definition.pipeline_directory, 'BarcodeSummary.*.txt'))
+            for summary_file in summary_files:
+                with open(summary_file, 'r') as summary:
+                    barcode_summary = {}
+                    barcode_match = {}
+                    barcode_found = []
+                    distinct_barcodes = False
+                    for line in summary:
+                        columns = line.strip().split()
+                        if len(columns) == 7:
+                            barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
+                        elif columns[-1] == 'reads':
+                            barcode_summary['total_reads'] = int(columns[0])
+                        elif columns[-1] == 'lost':
+                            barcode_summary['no_match'] = int(columns[0])
+                        elif columns[-1] == 'codes':
+                            distinct_barcodes = True
+                            barcode_summary['distinct_barcodes'] = int(columns[0])
+                        elif distinct_barcodes and len(columns) == 2:
+                            barcode_found.append(columns[-1])
+
+                zero_error_reads = 0
+                one_error_reads = 0 
+                most_frequent = 0
+                least_frequent = barcode_summary['total_reads']
+                for barcode in list(barcode_match.viewkeys()):
+                    total_reads = int(barcode_match[barcode][0])
+                    if total_reads > most_frequent:
+                        most_frequent = total_reads
+                    if not total_reads == 0:
+                        if total_reads < least_frequent :
+                            least_frequent = total_reads
+                    zero_error_reads += int(barcode_match[barcode][1])
+                    one_error_reads += int(barcode_match[barcode][2])
+
+                barcode_summary['most_frequent'] = float((most_frequent * 100 ) / barcode_summary['total_reads'])
+                barcode_summary['least_frequent'] = float((least_frequent * 100 ) / barcode_summary['total_reads'])
+                barcode_summary['zero_error_match'] = float((zero_error_reads * 100 ) / barcode_summary['total_reads'])
+                barcode_summary['zero_or_one_error_match'] = float(((zero_error_reads + one_error_reads) * 100 ) / barcode_summary['total_reads'])
+                barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
+                if len(barcode_found) > 0:
+                    barcode_summary['barcode_found'] = ':'.join(barcode_found)
+                else:
+                    barcode_summary['barcode_found'] = 'none'
+                barcode_summary['summary_file'] = summary_file
+
+                report.append(barcode_summary)
+                log.info("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found']))
+        return report
+    
+    
+    def data_copied(self):
+        if not os.path.exists(self.copy_started) or not os.path.exists(self.copy_finished):
+            return False
+        return True
+
+    def all_process_completed(self):
+        if not self.data_copied() or not self.process_completed(['demultiplex']):
+            return False
+        if not os.path.exists(self.clean_started) or not os.path.exists(self.clean_finished):
+            return False
+        return True
+
+    def process_failed(self):
+        if os.path.exists(self.pipeline_definition.pipeline_started) and not os.path.exists(self.pipeline_definition.pipeline_finished):
+            job_output = glob.glob(os.path.join(self.pipeline_definition.pipeline_directory, '*.out'))
+            if job_output:
+                if not utils.output_job_success(job_output):
+                    return True
+        return False
+        
+    def _create_script(self, script_path, cmd, started, ended, lock=None):
+        if lock:
+            command = "touch %s; touch %s; %s touch %s; rm %s" % (lock, started, cmd, ended, lock)
+        else:
+            command = "touch %s; %s touch %s" % (started, cmd, ended)
+        utils.create_script(script_path, command)
+
+    def _run_script(self, script_path, started, ended, lock=None):
+        """Run script
+        """
+        if os.path.exists(script_path):
+            if not os.path.exists(started):
+                if lock:
+                    if not os.path.exists(lock):
+                        utils.touch(lock)
+                        utils.run_bg_process(['sh', '%s' % script_path], self.dry_run)
+                    else:
+                        log.info('%s presents - another script is running' % lock)
+                else:
+                    utils.run_bg_process(['sh', '%s' % script_path], self.dry_run)
+            else:
+                if not os.path.exists(ended):
+                    log.info('script is currently running')
+                else:
+                    log.info('script has finished')
+        else:
+            log.warn('%s is missing' % script_path)
     
 ################################################################################
 # Unit tests
