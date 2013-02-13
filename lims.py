@@ -103,18 +103,6 @@ class Runs(object):
         # CRI lims database connection
         self.lims = Lims(_db_url)
 
-    def __populateRuns(self):
-        # get one run
-        if self.run_number:
-            run = self.findRun(_run_number)
-            self.runs.append(run)
-            log.info('Run %s: status %s and %s; multiplexed %s' % (run.runNumber, run.status, run.analysisStatus, run.multiplexed))
-        # get all runs
-        else:
-            runs = self.findAllRuns()
-            for run in runs:
-                self.runs.append(run)
-
     def findRun(self, _run_number):
         run = self.lims.solexa.solexarun.filter_by(runNumber=_run_number).one()
         log.info('Run %s: status %s and %s; multiplexed %s' % (run.runNumber, run.status, run.analysisStatus, run.multiplexed))

@@ -53,18 +53,6 @@ MULTIPLEX_KIT={
     'TruSeq DNA High Throughput' : 'truseq_dna_ht.csv'
 }
 
-# Default filenames
-LOCK_FILENAME = "demux-stats.lock"
-IGNORE_FILENAME = "demux-stats.ignore"
-
-COPY_SCRIPT_FILENAME = 'copy.sh'
-COPY_STARTED_FILENAME = 'copy.started'
-COPY_FINISHED_FILENAME = 'copy.ended'
-
-CLEAN_SCRIPT_FILENAME = 'clean.sh'
-CLEAN_STARTED_FILENAME = 'clean.started'
-CLEAN_FINISHED_FILENAME = 'clean.ended'
-
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
@@ -78,34 +66,8 @@ HTML_TEMPLATE = """
 """
 
 ################################################################################
-# DEMUX STATS PIPELINE METHODS
+# UTILITY METHODS
 ################################################################################
-def manage_data(run_folder, fastq_files, dry_run):
-    """Create and run scripts to copy and clean fastq file on lustre
-    """
-    copy_script_path = os.path.join(run_folder, COPY_SCRIPT_FILENAME)
-    copy_started = os.path.join(run_folder, COPY_STARTED_FILENAME)
-    copy_finished = os.path.join(run_folder, COPY_FINISHED_FILENAME)
-    lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
-    clean_script_path = os.path.join(run_folder, CLEAN_SCRIPT_FILENAME)
-    clean_started = os.path.join(run_folder, CLEAN_STARTED_FILENAME)
-    clean_finished = os.path.join(run_folder, CLEAN_FINISHED_FILENAME)
-    
-    copy = ""
-    clean = ""
-    for fastq_file in fastq_files:
-        log.debug("%s\t%s\t%s" % (fastq_file.host, fastq_file.path, fastq_file.filename))
-        orig = os.path.join(fastq_file.path, fastq_file.filename)
-        dest = os.path.join(run_folder, fastq_file.filename)
-        copy = copy + "scp %s:%s %s; " % (fastq_file.host, orig, dest)
-        clean = clean + "rm -f %s; " % dest
-        
-    create_script(copy_script_path, copy, copy_started, copy_finished, lock)
-    run_script(copy_script_path, copy_started, copy_finished, lock, dry_run)
-    create_script(clean_script_path, clean, clean_started, clean_finished) 
-    if process_completed(run_folder):
-        run_script(clean_script_path, clean_started, clean_finished, dry_run)   
-
 def get_multiplex_templates():
     """Load index templates for all multiplex kits
     """
@@ -143,163 +105,7 @@ def get_multiplex_templates():
                         log.error('number of columns in %s not equal to 2 or 3.' % samplesheet_url)
         multiplex_templates[multiplex_name] = template
     return multiplex_templates
-                     
-def setup_demux(runs, run_folder, run_number, multiplex_templates, fastq_files, cluster, software_path):
-    """Setup demultiplex statistic analysis
-    """
-    ### configure fastq files
-    # create primary folder
-    primary_folder = os.path.join(run_folder, 'primary')
-    utils.create_directory(primary_folder)
-    # create symlink for fastq files in primary directory
-    if data_copied(run_folder):
-        for fastq_file in fastq_files:
-            new_fastq_filename = runs.getNewSeqFileName(fastq_file)
-            link_name = "%s/%s" % (primary_folder, new_fastq_filename)
-            fastq_path = os.path.join(run_folder, fastq_file.filename)
-            log.debug(fastq_path)
-            if os.path.lexists(link_name):
-                os.remove(link_name)
-            os.symlink(fastq_path, link_name)
 
-    ### setup demux pipeline
-    pipeline_directory = os.path.join(run_folder, 'demultiplex')
-    setup_script_path = os.path.join(pipeline_directory, autoanalysis.SETUP_SCRIPT_FILENAME)
-    run_scrip_path = os.path.join(pipeline_directory, autoanalysis.RUN_SCRIPT_FILENAME)
-    # set specific demux-stats pipeline options
-    autoanalysis.PIPELINES_SETUP_OPTIONS['demultiplex'] = '--pipeline=/home/mib-cri/software/pipelines/demultiplex/demuxstatspipeline.xml' # do not generate index-files
-    autoanalysis.CREATE_METAFILE_FILENAME = 'create-metafile'
-    # call setup_pipelines to create setup script and run-meta.xml (dry-run=False)
-    autoanalysis.setup_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, lims.SOAP_URL, False)
-    # call run_pipelines to create run script
-    autoanalysis.run_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, cluster)
-        
-    ### create index files
-    for fastq_file in fastq_files:
-        index_filename = runs.getIndexFileName(fastq_file)
-        index_path = os.path.join(pipeline_directory, index_filename)
-        if not os.path.exists(index_path):
-            multiplex_type = runs.getMultiplexTypeFromSeqFile(fastq_file)
-            barcodes = multiplex_templates[multiplex_type.name]
-            log.debug(multiplex_type.name)
-            index_file = open(index_path, 'w')
-            for barcode_name in list(barcodes.viewkeys()):
-                index_file.write("%s\t%s.%s.%s.fq.gz\n" % (barcodes[barcode_name], runs.getSlxSampleId(fastq_file), barcode_name, runs.findRunLaneRead(fastq_file)))
-            index_file.close()
-            log.info('%s created' % index_path)
-        else:
-            log.debug('%s already exists' % index_path)
-            
-def run_demux(run_folder, run_number, cluster, software_path):
-    """Run demultiplex statistic analysis
-    """
-    lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
-    if process_completed(run_folder):
-        if os.path.exists(lock):
-            os.remove(lock)
-    else:
-        if not os.path.exists(lock) and data_copied(run_folder):
-            utils.touch(lock)
-            # call run_pipelines to run the demultiplex pipeline (dry-run=False)
-            autoanalysis.run_pipelines(run_folder, run_number, {'demultiplex' : ''}, software_path, cluster, False)
-        else:
-            log.info('%s presents - another script is running' % lock)
-            
-def parse_summary_files(run_folder):
-    """Parse barcode summary files and print demultiplex report
-    Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
-    """
-    report = []
-    if process_completed(run_folder):
-        pipeline_directory = os.path.join(run_folder, 'demultiplex')
-        summary_files = glob.glob(os.path.join(pipeline_directory, 'BarcodeSummary.*.txt'))
-        for summary_file in summary_files:
-            with open(summary_file, 'r') as summary:
-                barcode_summary = {}
-                barcode_match = {}
-                barcode_found = []
-                distinct_barcodes = False
-                for line in summary:
-                    columns = line.strip().split()
-                    if len(columns) == 7:
-                        barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
-                    elif columns[-1] == 'reads':
-                        barcode_summary['total_reads'] = int(columns[0])
-                    elif columns[-1] == 'lost':
-                        barcode_summary['no_match'] = int(columns[0])
-                    elif columns[-1] == 'codes':
-                        distinct_barcodes = True
-                        barcode_summary['distinct_barcodes'] = int(columns[0])
-                    elif distinct_barcodes and len(columns) == 2:
-                        barcode_found.append(columns[-1])
-
-            zero_error_reads = 0
-            one_error_reads = 0 
-            most_frequent = 0
-            least_frequent = barcode_summary['total_reads']
-            for barcode in list(barcode_match.viewkeys()):
-                total_reads = int(barcode_match[barcode][0])
-                if total_reads > most_frequent:
-                    most_frequent = total_reads
-                if not total_reads == 0:
-                    if total_reads < least_frequent :
-                        least_frequent = total_reads
-                zero_error_reads += int(barcode_match[barcode][1])
-                one_error_reads += int(barcode_match[barcode][2])
-
-            barcode_summary['most_frequent'] = float((most_frequent * 100 ) / barcode_summary['total_reads'])
-            barcode_summary['least_frequent'] = float((least_frequent * 100 ) / barcode_summary['total_reads'])
-            barcode_summary['zero_error_match'] = float((zero_error_reads * 100 ) / barcode_summary['total_reads'])
-            barcode_summary['zero_or_one_error_match'] = float(((zero_error_reads + one_error_reads) * 100 ) / barcode_summary['total_reads'])
-            barcode_summary['no_match'] = float((barcode_summary['no_match'] * 100) / barcode_summary['total_reads'])
-            if len(barcode_found) > 0:
-                barcode_summary['barcode_found'] = ':'.join(barcode_found)
-            else:
-                barcode_summary['barcode_found'] = 'none'
-            barcode_summary['summary_file'] = summary_file
-            
-            report.append(barcode_summary)
-            print "%s\t%s\t%s\t%s\t%s\t%s\t%s" % (os.path.basename(summary_file), barcode_summary['zero_error_match'], barcode_summary['zero_or_one_error_match'], barcode_summary['no_match'], barcode_summary['most_frequent'], barcode_summary['least_frequent'], barcode_summary['barcode_found'])
-    return report
-
-################################################################################
-# UTILITY METHODS
-################################################################################
-def create_script(script_path, cmd, started, ended, lock=None):
-    if not os.path.exists(script_path):
-        script_file = open(script_path, 'w')
-        if lock:
-            command = "touch %s; touch %s; %s touch %s; rm %s" % (lock, started, cmd, ended, lock)
-        else:
-            command = "touch %s; %s touch %s" % (started, cmd, ended)
-        script_file.write(utils.LOCAL_SCRIPT_TEMPLATE % {'cmd':command})
-        script_file.close()
-        os.chmod(script_path, 0755)
-        log.info('%s created' % script_path)
-    else:
-        log.debug('%s already exists' % script_path)
-
-def run_script(script_path, started, ended, lock=None, dry_run=False):
-    """Run script
-    """
-    if os.path.exists(script_path):
-        if not os.path.exists(started):
-            if lock:
-                if not os.path.exists(lock):
-                    utils.touch(lock)
-                    utils.run_bg_process(['sh', '%s' % script_path], dry_run)
-                else:
-                    log.info('%s presents - another script is running' % lock)
-            else:
-                utils.run_bg_process(['sh', '%s' % script_path], dry_run)
-        else:
-            if not os.path.exists(ended):
-                log.info('script is currently running')
-            else:
-                log.info('script has finished')
-    else:
-        log.warn('%s is missing' % script_path)
-    
 def create_html_report(report, html_filename):
     html_file = open(html_filename, 'w')
     report_table_lanes = ''
@@ -308,42 +114,6 @@ def create_html_report(report, html_filename):
     html_file.write(HTML_TEMPLATE % report_table_lanes)
     html_file.close()
     
-def process_completed(run_folder):
-    demux_directory = os.path.join(run_folder, 'demultiplex')
-    demux_started = os.path.join(demux_directory, autoanalysis.PIPELINE_STARTED_FILENAME)
-    demux_finished = os.path.join(demux_directory, autoanalysis.PIPELINE_FINISHED_FILENAME)
-    # pipeline not finished or started
-    if not os.path.exists(demux_started) or not os.path.exists(demux_finished):
-        return False
-    return True
-    
-def process_failed(run_folder):
-    demux_directory = os.path.join(run_folder, 'demultiplex')
-    demux_started = os.path.join(demux_directory, autoanalysis.PIPELINE_STARTED_FILENAME)
-    demux_finished = os.path.join(demux_directory, autoanalysis.PIPELINE_FINISHED_FILENAME)
-    if os.path.exists(demux_started) and not os.path.exists(demux_finished):
-        job_output = glob.glob(os.path.join(demux_directory, '*.out'))
-        if job_output:
-            if not utils.output_job_success(job_output):
-                return True
-    return False
-
-def data_copied(run_folder):
-    copy_started = os.path.join(run_folder, COPY_STARTED_FILENAME)
-    copy_finished = os.path.join(run_folder, COPY_FINISHED_FILENAME)
-    if not os.path.exists(copy_started) or not os.path.exists(copy_finished):
-        return False
-    return True
-    
-def all_process_completed(run_folder):
-    clean_started = os.path.join(run_folder, CLEAN_STARTED_FILENAME)
-    clean_finished = os.path.join(run_folder, CLEAN_FINISHED_FILENAME)
-    if not data_copied(run_folder) or not process_completed(run_folder):
-        return False
-    if not os.path.exists(clean_started) or not os.path.exists(clean_finished):
-        return False
-    return True
-    
 ################################################################################
 # MAIN
 ################################################################################
@@ -351,9 +121,9 @@ def main():
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/DemuxStats'", required=True)
-    parser.add_argument("--softdir", dest="softdir", action="store", default=autoanalysis.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % autoanalysis.SOFT_PIPELINE_PATH)
+    parser.add_argument("--softdir", dest="softdir", action="store", default=pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
-    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % autoanalysis.CLUSTER_HOST)
+    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
     parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
@@ -372,9 +142,12 @@ def main():
                       
     if not os.path.exists(options.basedir):
         sys.exit("%s does not exists - check your '--basedir' option" % options.basedir)
-        
+    
+    # create soap client
+    soap_client = lims.SoapLims()
     # create lims client
     runs = lims.Runs(options.dburl)
+    # create multiplexing templates
     multiplex_templates = get_multiplex_templates()
     summary_report = []
     # loop over all multiplexed runs that have been analysed or just one run
@@ -385,36 +158,19 @@ def main():
         # create run folder in basedir for analysis
         run_folder = os.path.join(options.basedir, run.pipelinePath)
         utils.create_directory(run_folder)
-        # get all fastq files associated to demultiplexed lanes for this run
-        fastq_files = runs.findKnownMultiplexSeqFiles(run)
-        # lock file
-        lock = os.path.join(os.path.dirname(run_folder), LOCK_FILENAME)
-        ignore = os.path.join(run_folder, IGNORE_FILENAME)
-        if os.path.exists(run_folder):
-            # check demux-stats.ignore is not present - stop running analysis if present
-            if not os.path.exists(ignore):
-                if not all_process_completed(run_folder):
-                    if process_failed(run_folder):
-                        log.info('*** [***FAIL***] ***************************************************************')
-                        utils.touch(ignore)
-                        # remove lock file
-                        if os.path.exists(lock):
-                            os.remove(lock)
-                    else:
-                        log.info('--- MANAGE DATA ----------------------------------------------------------------')
-                        manage_data(run_folder, fastq_files, options.dry_run)
-                        log.info('--- SETUP DEMUX STATS ----------------------------------------------------------')
-                        setup_demux(runs, run_folder, run.runNumber, multiplex_templates, fastq_files, options.cluster, options.softdir)
-                        log.info('--- RUN DEMUX STATS ------------------------------------------------------------')
-                        run_demux(run_folder, run.runNumber, options.cluster, options.softdir)
-                else:
-                    log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
-                    summary_report.extend(parse_summary_files(run_folder))
-                    log.info('*** DEMUX-STATS COMPLETED ******************************************************')
-            else:
-                log.info('%s is present' % ignore)
+        # create run definition
+        run_definition = pipelines.RunDefinition(options.basedir, options.basedir, run)
+        
+        if run_definition.ready_to_analyse():
+            # create pipeline
+            demux_stat = pipelines.DemuxStatsPipelines(run_definition, multiplex_templates, runs, soap_client, options.softdir, options.cluster, options.dry_run)
+            # execute pipeline
+            demux_stat.execute_demux()
+            # parse barcode summary files
+            summary_report.extend(demux_stat.parse_summary_files())
         else:
-            log.warn('run folder %s does not exists - deumx-stats will not run' % run_folder)
+            log.warn('run folder %s does not exists - demux-stats will not run' % run_folder)
+        
         if options.htmlfile:
             create_html_report(summary_report, options.htmlfile)
         if options.sample_list:

@@ -52,12 +52,6 @@ import lims
 import pipelines
 
 ################################################################################
-# CONSTANTS
-################################################################################
-# Cluster host
-CLUSTER_HOST = "uk-cri-lcst01"
-
-################################################################################
 # MAIN
 ################################################################################
 def main():
@@ -68,7 +62,7 @@ def main():
     parser.add_argument("--softdir", dest="softdir", action="store", default=pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
     parser.add_argument("--soapurl", dest="soapurl", action="store", default=lims.SOAP_URL, help="soap url [for updating status only] - default set to '%s'" % lims.SOAP_URL)
-    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % CLUSTER_HOST)
+    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
     parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
     parser.add_argument("--step", dest="step", action="store", choices=list(pipelines.MULTIPLEX_PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(pipelines.MULTIPLEX_PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
@@ -107,7 +101,7 @@ def main():
         external_samples = runs.findExternalSampleIds(run)
         
         if run_definition.ready_to_process():
-            # create pipelines
+            # create pipelines and execute
             analysis_pipelines = pipelines.Pipelines(run_definition, external_samples, options.step, options.update_status, soap_client, options.softdir, options.cluster, options.dry_run)
             analysis_pipelines.execute()
         else:

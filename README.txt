@@ -25,6 +25,13 @@ For testing locally:
 ################################################################################
 ### HISTORY OF CHANGES
 ################################################################################
+13-02-2013: refactoring demux_stats into pipelines.DemuxStatsPipelines class
+
+12-02-2013: refactoring demux_stats into pipelines.DemuxStatsPipelines class
+
+11-02-2013: looking at improving process method
+11-02-2013: fix demux_stats after refactoring
+
 08-02-2013: create Pipelines, PipelineDefinition, and RunDefinition classes
 08-02-2013: use argparse in sync, set_status, cleanlustre, and demux_stats
 08-02-2013: create SoapLims class
@@ -36,6 +43,15 @@ For testing locally:
 06-02-2013: create Runs class and Lims class
 
 17-12-2012: Command line arguments: use argparse
+
+################################################################################
+### TODO
+################################################################################
+- change lims module to talk to new genologics lims
+- use syslog and logwatch
+- use configuration file to setup default values using yaml
+- generate documentation using sphinx
+- package it up using setup.py
 
 ################################################################################
 ### Friday 14-Dec 2012: Code review
