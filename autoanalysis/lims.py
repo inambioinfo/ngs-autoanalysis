@@ -158,6 +158,19 @@ class Runs(object):
                             if 'Data/Intensities/' in file_location.path or 'primary' in file_location.path:
                                 sequence_files.append(file_location)
         return sequence_files
+        
+    def findSlxSeqFiles(self, _run, _slx_id):
+        sequence_files = []
+        lane = self.lims.solexa.lane.filter_by(run_id=_run.id, genomicsSampleId=_slx_id).one()
+        if lane.isControl ==0:
+            # select all file locations
+            file_locations = self.lims.lims.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
+            for file_location in file_locations:
+                file_type = self.lims.lims.analysisfiletype.filter_by(id=file_location.type_id).one()
+                # select only FastQ files 
+                if file_type.name == 'FastQ':
+                    sequence_files.append(file_location)
+        return sequence_files
                 
     def findLaneFromSeqFile(self, analysisfileuri):
         return self.lims.solexa.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
@@ -254,7 +267,14 @@ class limsTests(unittest.TestCase):
         for sample_id in list(samples.viewkeys()):
             self.assertNotIn(' ', samples[sample_id]['institute'])
             self.assertEqual(str(samples[sample_id]['run_number']), self.run_number)
-    
+            
+    def test_find_slx_files(self):
+        run = self.runs.findRun('1003')
+        slx_id = 'SLX-6023'
+        seqfiles = self.runs.findSlxSeqFiles(run, slx_id)
+        for seqfile in seqfiles:
+            self.assertEqual('SLX-6023.1003.s_3.r_1.fq.gz', seqfile.filename)
+
 
 if __name__ == '__main__':
 	unittest.main()
