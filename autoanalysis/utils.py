@@ -106,7 +106,7 @@ def touch(fname, times=None):
         with file(fname, 'wa'):
             os.utime(fname, times)
     except:
-        log.exception()
+        log.exception('cannot touch %s' % fname)
         raise
 
 def output_job_success(output_files):
@@ -121,7 +121,7 @@ def output_job_success(output_files):
                     if 'Successfully completed' in line:
                         return True
     except IOError:
-        log.exception()
+        log.exception('')
         raise
     else:
         return False
@@ -156,7 +156,7 @@ def create_directory(directory):
         if os.path.exists(directory):
             log.debug('%s already exists' % directory)
         else:
-            log.exception()
+            log.exception('cannot create directory %s' % directory)
             raise
 
 def get_smallest_volume(archive_glob):
@@ -173,13 +173,13 @@ def get_smallest_volume(archive_glob):
             except ValueError:
                 return volumes[0]
             except:
-                log.exception()
+                log.exception('cannot get smallest volume from %s' % archive_glob)
                 raise
         else:
             log.error('no volume %s found' % archive_glob)
             return None
     except:
-        log.exception()
+        log.exception('cannot get smallest volume from %s' % archive_glob)
         raise
 
 ################################################################################

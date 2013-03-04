@@ -79,7 +79,7 @@ class SoapLims(object):
                 self.client.service.setAnalysisStatus(run.process_id, status)
                 log.info('analysis status in lims set to %s for process id %s' % (status, run.process_id))
             except:
-                log.exception()
+                log.exception('status not update to %s for process id %s' % (status, run.process_id))
                 raise
         else:
             log.info('analysis status in lims already set to %s for process id %s' % (status, run.process_id))
@@ -90,7 +90,7 @@ class SoapLims(object):
                 self.client.service.setRunComplete(run.process_id)
                 log.info('run status in lims set to %s for process id %s' % (status, run.process_id))
             except:
-                log.exception()
+                log.exception('status not update to %s for process id %s' % (status, run.process_id))
                 raise
         else:
             log.info('run status in lims already set to %s for process id %s' % (status, run.process_id))
