@@ -43,7 +43,7 @@ import lims
 # Instrument names with their run completed dependencies
 INSTRUMENTS = {
     'HWI-ST230' : ['RTAComplete.txt'],
-    'M01214' : ['RTAComplete.txt'],
+    'M01686' : ['RTAComplete.txt'],
     'M01642' : ['RTAComplete.txt'], 
     'HWI-EAS350' : ['Basecalling_Netcopy_complete.txt'],
     'HWI-EAS202' : ['Basecalling_Netcopy_complete.txt']
