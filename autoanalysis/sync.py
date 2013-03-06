@@ -105,6 +105,7 @@ def rsync(run_folder, dry_run=True):
     rsync_script_path = os.path.join(rsync_directory, RSYNC_SCRIPT_FILENAME)
     rsync_started = os.path.join(rsync_directory, RSYNC_STARTED_FILENAME)
     rsync_finished = os.path.join(rsync_directory, RSYNC_FINISHED_FILENAME)
+    rsync_log = os.path.join(rsync_directory, RSYNC_LOG_FILENAME)
     rsync_fail = os.path.join(rsync_directory, RSYNC_FAIL_FILENAME)
     rsync_lock = os.path.join(os.path.dirname(run_folder), RSYNC_LOCK_FILENAME)
     run_completed = os.path.join(run_folder, SEQUENCING_COMPLETED_FILENAME)
