@@ -644,7 +644,7 @@ class DemuxStatsPipelines(Pipelines):
             for fastq_file in self.fastq_files:
                 new_fastq_filename = self.lims_client.getNewSeqFileName(fastq_file)
                 link_name = "%s/%s" % (primary_folder, new_fastq_filename)
-                fastq_path = os.path.join(run_folder, fastq_file.filename)
+                fastq_path = os.path.join(self.run_definition.run_folder, fastq_file.filename)
                 log.debug(fastq_path)
                 if os.path.lexists(link_name):
                     os.remove(link_name)
