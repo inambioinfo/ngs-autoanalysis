@@ -635,7 +635,7 @@ class DemuxStatsPipelines(Pipelines):
         self._run_script(self.copy_script_path, self.copy_started, self.copy_finished, self.lock)
         # create/run clean script
         self._create_script(self.clean_script_path, clean, self.clean_started, self.clean_finished) 
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             self._run_script(self.clean_script_path, self.clean_started, self.clean_finished)  
         # create symlink for fastq files in primary directory
         if self.data_copied():
@@ -710,6 +710,8 @@ class DemuxStatsPipelines(Pipelines):
                     distinct_barcodes = False
                     for line in summary:
                         columns = line.strip().split()
+                        if len(columns) == 0:
+                            pass
                         if len(columns) == 7:
                             barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
                         elif columns[-1] == 'reads':
