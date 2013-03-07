@@ -87,6 +87,10 @@ PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
 PROCESS_COMPLETED_FILENAME = "Run.all.completed"
 ANALYSIS_IGNORE_FILENAME = "analysis.ignore"
 
+# Default lims status
+PRIMARY_ANALYSIS_COMPLETE_STATUS = 'PRIMARY COMPLETE'
+ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
+
 # rsync exclude list
 RSYNC_EXCLUDE = { 
     "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=*/temp/* --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
@@ -463,7 +467,7 @@ class Pipelines(object):
             log.info('*** PROCESS COMPLETED **********************************************************')
             # update analysis status in lims
             if self.update_status:
-                self.soap_client.setAnalysisStatus(self.run_definition.run, lims.ANALYSIS_COMPLETE_STATUS)
+                self.soap_client.setAnalysisStatus(self.run_definition.run, ANALYSIS_COMPLETE_STATUS)
             else:
                 log.debug('lims not updated - use --update-status option to turn it on')
         else:
@@ -471,7 +475,7 @@ class Pipelines(object):
             if self.process_completed(['primary']):
                 # update analysis status in lims
                 if self.update_status:
-                    self.soap_client.setAnalysisStatus(self.run_definition.run, lims.PRIMARY_ANALYSIS_COMPLETE_STATUS)
+                    self.soap_client.setAnalysisStatus(self.run_definition.run, PRIMARY_ANALYSIS_COMPLETE_STATUS)
                 else:
                     log.debug('lims not updated - use --update-status option to turn it on')
             # remove Run.all.complete when process not completed and file exists
