@@ -93,12 +93,14 @@ ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
 
 # rsync exclude list
 RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=*/temp/* --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
+    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
     "mga" : "",
     "demultiplex" : "",
     "fastqc" : "",
     "secondary" : "",                   
 }
+
+RSYNC_ALL_EXCLUDE = "--exclude=temp --exclude=JobOutputs"
 
 ################################################################################
 # CLASS SystemDefinition
@@ -323,9 +325,9 @@ class Pipelines(object):
                 # create rsync-pipeline script 
                 if os.path.exists(pipeline_definition.pipeline_directory):
                     if pipeline_name is 'primary':
-                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], self.run_definition.run_folder, dest_basedir, pipeline_definition.rsync_log)
+                        rsync_options = "-av %s %s %s %s > %s 2>&1" % (RSYNC_ALL_EXCLUDE, RSYNC_EXCLUDE[pipeline_name], self.run_definition.run_folder, dest_basedir, pipeline_definition.rsync_log)
                     else:
-                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, self.run_definition.dest_run_folder, pipeline_definition.rsync_log)
+                        rsync_options = "-av %s %s %s %s > %s 2>&1" % (RSYNC_ALL_EXCLUDE, RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, self.run_definition.dest_run_folder, pipeline_definition.rsync_log)
                     copy_finished = "%s %s/." % (pipeline_definition.rsync_finished, dest_pipeline_directory)
                     command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (pipeline_definition.rsync_started, pipeline_definition.rsync_lock, rsync_options, pipeline_definition.rsync_finished, copy_finished, pipeline_definition.rsync_lock)
                     utils.create_script(pipeline_definition.rsync_script_path, command)

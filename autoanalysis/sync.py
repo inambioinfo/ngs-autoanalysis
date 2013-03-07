@@ -64,6 +64,9 @@ RSYNC_IGNORE_FILENAME = 'rsync.ignore'
 # rsync exclude list
 RSYNC_EXCLUDES = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
+    "--exclude=Data/RTALogs", 
+    "--exclude=InterOp",
+    "--exclude=Logs",
     "--exclude=Thumbnail_Images", # thumbnail images
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
     "--exclude=Old*", # Anything that has been moved out of the way
