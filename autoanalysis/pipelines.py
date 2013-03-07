@@ -501,7 +501,7 @@ class Pipelines(object):
                 return False
         return True
     
-    def process_completed(self, list_pipelines):
+    def process_completed(self, list_pipelines, check_rsync=True):
         """Checks for all pipeline in the list that each of them has finished and has
         been synchronised.
         pipeline.started and pipeline.ended need to be present as well as 
@@ -517,8 +517,9 @@ class Pipelines(object):
             if not os.path.exists(pipeline_finished) or not os.path.exists(pipeline_started):
                 return False
             # rsync not finished or started
-            if not os.path.exists(rsync_finished) or not os.path.exists(rsync_started):
-                return False
+            if check_rsync:
+                if not os.path.exists(rsync_finished) or not os.path.exists(rsync_started):
+                    return False
         return True
         
     ### External rsync utility methods ----------------------------------------
@@ -682,7 +683,7 @@ class DemuxStatsPipelines(Pipelines):
     def run_demux(self):
         """Run demultiplex statistic analysis
         """
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             if os.path.exists(self.lock):
                 os.remove(self.lock)
         else:
@@ -757,7 +758,7 @@ class DemuxStatsPipelines(Pipelines):
         return True
 
     def all_process_completed(self):
-        if not self.data_copied() or not self.process_completed(['demultiplex']):
+        if not self.data_copied() or not self.process_completed(['demultiplex'], False):
             return False
         if not os.path.exists(self.clean_started) or not os.path.exists(self.clean_finished):
             return False
