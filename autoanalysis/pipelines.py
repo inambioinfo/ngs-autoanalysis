@@ -151,7 +151,7 @@ class RunDefinition(object):
             if not os.path.exists(self.analysis_ignore):
                 return True
             else:
-                log.info('%s is present' % analysis_ignore)
+                log.info('%s is present' % self.analysis_ignore)
                 return False
         return False
             
