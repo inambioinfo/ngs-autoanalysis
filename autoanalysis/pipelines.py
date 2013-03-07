@@ -711,7 +711,7 @@ class DemuxStatsPipelines(Pipelines):
                     for line in summary:
                         columns = line.strip().split()
                         if len(columns) == 0:
-                            pass
+                            continue
                         if len(columns) == 7:
                             barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
                         elif columns[-1] == 'reads':
