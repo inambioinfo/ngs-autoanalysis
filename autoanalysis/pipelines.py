@@ -699,7 +699,7 @@ class DemuxStatsPipelines(Pipelines):
         Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
         """
         report = []
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
             summary_files = glob.glob(os.path.join(self.pipeline_definition.pipeline_directory, 'BarcodeSummary.*.txt'))
             for summary_file in summary_files:
