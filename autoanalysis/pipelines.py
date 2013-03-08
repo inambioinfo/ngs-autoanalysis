@@ -139,11 +139,11 @@ class RunDefinition(object):
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
                 return True
             else:
-                if not os.path.exists(sequencing_completed):
-                    log.warn('%s does not exists' % sequencing_completed)
+                if not os.path.exists(self.sequencing_completed):
+                    log.warn('%s does not exists' % self.sequencing_completed)
                     return False
-                if os.path.exists(analysis_ignore):
-                    log.info('%s is present' % analysis_ignore)
+                if os.path.exists(self.analysis_ignore):
+                    log.info('%s is present' % self.analysis_ignore)
                     return False
         return False
         
