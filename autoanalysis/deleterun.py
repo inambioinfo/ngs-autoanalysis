@@ -116,18 +116,21 @@ def main():
                         if age > delete_images_older_than and not os.path.exists(images_deleted):
                             delete_images_cmd = ['find', run_folder, '-name', '*.tif', '-delete']
                             log.info('deleting images...')
-                            utils.touch(images_deleted)
+                            if not options.dry_run:
+                                utils.touch(images_deleted)
                             utils.run_bg_process(delete_images_cmd, options.dry_run)
                         if age > delete_intensities_older_than and not os.path.exists(intensities_deleted):
                             delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '-name', '*_pos.txt', 
                             '-o', '-name', '*.cif', '-o', '-name', '*.filter', '-o', '-name', '*.bcl', '-o', '-name', '*.stats', '-delete']
                             log.info('deleting intensities...')
-                            utils.touch(intensities_deleted)
+                            if not options.dry_run:
+                                utils.touch(intensities_deleted)
                             utils.run_bg_process(delete_intensities_cmd, options.dry_run)
                         if age > delete_thumbnails_older_than and not os.path.exists(thumbnails_deleted):
                             delete_thumbnails_cmd = ['find', '%s/Thumbnail_Images/' % run_folder, '-name', '*.jpg', '-delete']
                             log.info('deleting thumbnails...')
-                            utils.touch(thumbnails_deleted)
+                            if not options.dry_run:
+                                utils.touch(thumbnails_deleted)
                             utils.run_bg_process(delete_thumbnails_cmd, options.dry_run)
                     else:
                         log.info('%s is missing' % sequencing_completed)
