@@ -114,7 +114,7 @@ def main():
                         # moving run folders to OldRuns after 10 days of cleaning thumbnails
                         thumbnails_deleted_age = present - os.path.getmtime(thumbnails_deleted)
                         if thumbnails_deleted_age > convert_day(10):
-                            oldruns_path = os.path.join(os.path.dirname(run_folder), '../OldRuns')
+                            oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
                             move_runfolder_cmd = ['mv', run_folder, old_runs_path]
                             utils.create_directory(oldruns_path)
                             log.info('moving run folder...')
