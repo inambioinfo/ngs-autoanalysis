@@ -221,36 +221,44 @@ def main(argv=None):
     if not os.path.exists(options.lustredir):
         log.error("%s does not exists - check your '--lustredir' option" % options.lustredir)
         sys.exit(1)
-
-    # create soap client
-    soap_client = lims.SoapLims(options.soapurl)
-    # create lims client
-    runs = lims.Runs(options.dburl)
-    # get all started runs
-    for run in runs.findAllStartedRuns(options.run_number):
-        log.info('--------------------------------------------------------------------------------')
-        log.info('--- RUN: %s' % run.runNumber)
-        log.info('--------------------------------------------------------------------------------')
-        # check run folder in basedir for analysis
-        run_folder = utils.locate_run_folder(run.pipelinePath, options.basedir, False)
-        if run_folder:
-            # check rsync.ignore is not present
-            rsync_ignore = os.path.join(run_folder, RSYNC_IGNORE_FILENAME)
-            if not os.path.exists(rsync_ignore):
-                # get/create dest folder to synchronize run folder
-                dest_run_folder = utils.locate_run_folder(run.pipelinePath, options.lustredir)
-                log.info('--- REGISTER RUN COMPLETED -----------------------------------------------------')
-                register_run_completed(run_folder)
-                log.info('--- SETUP RSYNC ----------------------------------------------------------------')
-                setup_rsync(run_folder, dest_run_folder)
-                log.info('--- RUN RSYNC ------------------------------------------------------------------')
-                rsync(run_folder, options.dry_run)
-                log.info('--- UPDATE STATUS --------------------------------------------------------------')
-                update_status(options.update_status, soap_client, run, run_folder, dest_run_folder)
+        
+    try:
+        # create soap client
+        soap_client = lims.SoapLims(options.soapurl)
+        # create lims client
+        runs = lims.Runs(options.dburl)
+        # get all started runs
+        for run in runs.findAllStartedRuns(options.run_number):
+            log.info('--------------------------------------------------------------------------------')
+            log.info('--- RUN: %s' % run.runNumber)
+            log.info('--------------------------------------------------------------------------------')
+            # check run folder in basedir for analysis
+            run_folder = utils.locate_run_folder(run.pipelinePath, options.basedir, False)
+            if run_folder:
+                try:
+                    # check rsync.ignore is not present
+                    rsync_ignore = os.path.join(run_folder, RSYNC_IGNORE_FILENAME)
+                    if not os.path.exists(rsync_ignore):
+                        # get/create dest folder to synchronize run folder
+                        dest_run_folder = utils.locate_run_folder(run.pipelinePath, options.lustredir)
+                        log.info('--- REGISTER RUN COMPLETED -----------------------------------------------------')
+                        register_run_completed(run_folder)
+                        log.info('--- SETUP RSYNC ----------------------------------------------------------------')
+                        setup_rsync(run_folder, dest_run_folder)
+                        log.info('--- RUN RSYNC ------------------------------------------------------------------')
+                        rsync(run_folder, options.dry_run)
+                        log.info('--- UPDATE STATUS --------------------------------------------------------------')
+                        update_status(options.update_status, soap_client, run, run_folder, dest_run_folder)
+                    else:
+                        log.info('%s is present' % rsync_ignore)
+                except:
+                    log.exception("Unexpected error")
+                    continue
             else:
-                log.info('%s is present' % rsync_ignore)
-        else:
-            log.debug('%s does not exists in %s' % (run.pipelinePath, options.basedir))
+                log.debug('%s does not exists in %s' % (run.pipelinePath, options.basedir))
+    except:
+        log.exception("Unexpected error")
+        raise
 
 if __name__ == "__main__":
 	sys.exit(main())

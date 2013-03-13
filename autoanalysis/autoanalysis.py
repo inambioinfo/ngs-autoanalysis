@@ -89,23 +89,31 @@ def main():
     if options.dry_run:
         options.update_status = False
         
-    # create soap client
-    soap_client = lims.SoapLims(options.soapurl)
-    # create lims client
-    runs = lims.Runs(options.dburl)
-    # loop over all completed runs that have not been analysed or just one run
-    for run in runs.findAllCompleteRuns(options.run_number):
-        # create run definition
-        run_definition = pipelines.RunDefinition(options.basedir, options.archivedir, run)
-        # create list of external samples for this run
-        external_samples = runs.findExternalSampleIds(run)
+    try:
+        # create soap client
+        soap_client = lims.SoapLims(options.soapurl)
+        # create lims client
+        runs = lims.Runs(options.dburl)
+        # loop over all completed runs that have not been analysed or just one run
+        for run in runs.findAllCompleteRuns(options.run_number):
+            try:
+                # create run definition
+                run_definition = pipelines.RunDefinition(options.basedir, options.archivedir, run)
+                # create list of external samples for this run
+                external_samples = runs.findExternalSampleIds(run)
         
-        if run_definition.ready_to_process():
-            # create pipelines and execute
-            analysis_pipelines = pipelines.Pipelines(run_definition, external_samples, options.step, options.update_status, soap_client, options.softdir, options.cluster, options.dry_run)
-            analysis_pipelines.execute()
-        else:
-            log.warn('run folder %s does not exists - autoanalysis will not run' % run_definition.run_folder)
+                if run_definition.ready_to_process():
+                    # create pipelines and execute
+                    analysis_pipelines = pipelines.Pipelines(run_definition, external_samples, options.step, options.update_status, soap_client, options.softdir, options.cluster, options.dry_run)
+                    analysis_pipelines.execute()
+                else:
+                    log.warn('run folder %s does not exists - autoanalysis will not run' % run_definition.run_folder)
+            except:
+                log.exception("Unexpected error")
+                continue
+    except:
+        log.exception("Unexpected error")
+        raise
     
 if __name__ == "__main__":
 	main()

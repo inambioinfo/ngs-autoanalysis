@@ -80,80 +80,88 @@ def main():
         log.setLevel(logging.DEBUG)        
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
-                  
-    # lims db
-    solexa_db = SqlSoup(options.dburl)
+        
+    try:        
+        # lims db
+        solexa_db = SqlSoup(options.dburl)
     
-    # setting-up time
-    present = time.time()
-    delete_thumbnails_older_than = convert_day(options.thumbnails)
-    delete_images_older_than = convert_day(options.images)
-    delete_intensities_older_than = convert_day(options.intensities)
+        # setting-up time
+        present = time.time()
+        delete_thumbnails_older_than = convert_day(options.thumbnails)
+        delete_images_older_than = convert_day(options.images)
+        delete_intensities_older_than = convert_day(options.intensities)
     
-    # removing data into completed run folders
-    run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
-    for run_folder in run_folders:
-        log.info('--------------------------------------------------------------------------------')
-        log.info('--- RUN: %s' % run_folder)
-        log.info('--------------------------------------------------------------------------------')
-        # check dont.delete is not present - stop cleaning if present
-        dont_delete = os.path.join(run_folder, DONT_DELETE_FILENAME)
-        if not os.path.exists(dont_delete):
-            try:
-                run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
-                log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
-                if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
-                    thumbnails_deleted = os.path.join(run_folder, THUMBNAILS_DELETED)
-                    intensities_deleted = os.path.join(run_folder, INTENSITIES_DELETED)
-                    images_deleted = os.path.join(run_folder, IMAGES_DELETED)
-                    runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
-                    log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
-                    if os.path.exists(images_deleted) and os.path.exists(intensities_deleted) and os.path.exists(thumbnails_deleted):
-                        log.info('All images/intensities/thumbnails deleted')
-                        # moving run folders to OldRuns after 10 days of cleaning thumbnails
-                        thumbnails_deleted_age = present - os.path.getmtime(thumbnails_deleted)
-                        if thumbnails_deleted_age > convert_day(10):
-                            oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
-                            move_runfolder_cmd = ['mv', run_folder, old_runs_path]
-                            utils.create_directory(oldruns_path)
-                            log.info('moving run folder...')
-                            utils.run_bg_process(move_runfolder_cmd, options.dry_run)
-                    else:
-                        if os.path.exists(images_deleted):
-                            log.info('All images deleted')
+        # removing data into completed run folders
+        run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
+        for run_folder in run_folders:
+            log.info('--------------------------------------------------------------------------------')
+            log.info('--- RUN: %s' % run_folder)
+            log.info('--------------------------------------------------------------------------------')
+            # check dont.delete is not present - stop cleaning if present
+            dont_delete = os.path.join(run_folder, DONT_DELETE_FILENAME)
+            if not os.path.exists(dont_delete):
+                try:
+                    run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
+                    log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
+                    if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
+                        thumbnails_deleted = os.path.join(run_folder, THUMBNAILS_DELETED)
+                        intensities_deleted = os.path.join(run_folder, INTENSITIES_DELETED)
+                        images_deleted = os.path.join(run_folder, IMAGES_DELETED)
+                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
+                        log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
+                        # check deleting file has been done already
+                        if os.path.exists(images_deleted) and os.path.exists(intensities_deleted) and os.path.exists(thumbnails_deleted):
+                            log.info('All images/intensities/thumbnails deleted')
+                            # moving run folders to OldRuns after 10 days of cleaning thumbnails
+                            thumbnails_deleted_age = present - os.path.getmtime(thumbnails_deleted)
+                            if thumbnails_deleted_age > convert_day(10):
+                                oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
+                                move_runfolder_cmd = ['mv', run_folder, old_runs_path]
+                                utils.create_directory(oldruns_path)
+                                log.info('moving run folder...')
+                                utils.run_bg_process(move_runfolder_cmd, options.dry_run)
                         else:
-                            if runfolder_age > delete_images_older_than:
-                                delete_images_cmd = ['find', run_folder, '-name', '*.tif', '-delete']
-                                log.info('deleting images...')
-                                if not options.dry_run:
-                                    utils.touch(images_deleted)
-                                utils.run_bg_process(delete_images_cmd, options.dry_run)
-                        if os.path.exists(intensities_deleted):
-                            log.info('All intensities deleted')
-                        else:
-                            if runfolder_age > delete_intensities_older_than:
-                                delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '-name', '*_pos.txt', 
-                                '-o', '-name', '*.cif', '-o', '-name', '*.filter', '-o', '-name', '*.bcl', '-o', '-name', '*.stats', '-delete']
-                                log.info('deleting intensities...')
-                                if not options.dry_run:
-                                    utils.touch(intensities_deleted)
-                                utils.run_bg_process(delete_intensities_cmd, options.dry_run)
-                        if os.path.exists(thumbnails_deleted):
-                            log.info('All thumbnails deleted')
-                        else:
-                            if runfolder_age > delete_thumbnails_older_than:
-                                delete_thumbnails_cmd = ['find', '%s/Thumbnail_Images/' % run_folder, '-name', '*.jpg', '-delete']
-                                log.info('deleting thumbnails...')
-                                if not options.dry_run:
-                                    utils.touch(thumbnails_deleted)
-                                utils.run_bg_process(delete_thumbnails_cmd, options.dry_run)
-            except (NoResultFound):
-                log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
-            except Exception, e:
-                log.exception("Unexpected error")
-                continue
-        else:
-            log.debug('%s is present' % dont_delete)
+                            # deleting images
+                            if os.path.exists(images_deleted):
+                                log.info('All images deleted')
+                            else:
+                                if runfolder_age > delete_images_older_than:
+                                    delete_images_cmd = ['find', run_folder, '-name', '*.tif', '-delete']
+                                    log.info('deleting images...')
+                                    if not options.dry_run:
+                                        utils.touch(images_deleted)
+                                    utils.run_bg_process(delete_images_cmd, options.dry_run)
+                            # deleting intensities
+                            if os.path.exists(intensities_deleted):
+                                log.info('All intensities deleted')
+                            else:
+                                if runfolder_age > delete_intensities_older_than:
+                                    delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '-name', '*_pos.txt', 
+                                    '-o', '-name', '*.cif', '-o', '-name', '*.filter', '-o', '-name', '*.bcl', '-o', '-name', '*.stats', '-delete']
+                                    log.info('deleting intensities...')
+                                    if not options.dry_run:
+                                        utils.touch(intensities_deleted)
+                                    utils.run_bg_process(delete_intensities_cmd, options.dry_run)
+                            # deleting thumbnails
+                            if os.path.exists(thumbnails_deleted):
+                                log.info('All thumbnails deleted')
+                            else:
+                                if runfolder_age > delete_thumbnails_older_than:
+                                    delete_thumbnails_cmd = ['find', '%s/Thumbnail_Images/' % run_folder, '-name', '*.jpg', '-delete']
+                                    log.info('deleting thumbnails...')
+                                    if not options.dry_run:
+                                        utils.touch(thumbnails_deleted)
+                                    utils.run_bg_process(delete_thumbnails_cmd, options.dry_run)
+                except (NoResultFound):
+                    log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
+                except:
+                    log.exception("Unexpected error")
+                    continue
+            else:
+                log.debug('%s is present' % dont_delete)
+    except:
+        log.exception("Unexpected error")
+        raise
         
 if __name__ == '__main__':
     main()

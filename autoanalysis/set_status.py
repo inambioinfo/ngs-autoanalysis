@@ -55,24 +55,27 @@ def main(argv=None):
         log.setLevel(logging.DEBUG)        
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
-                  
-    # create soap client
-    soap_client = lims.SoapLims(options.soapurl)
-
-    # get run
-    run = soap_client.getRun(options.run_number)
-    log.debug(run)
-    
-    if run.runStatus == 'COMPLETE':
-        log.info('--- UPDATE STATUS --------------------------------------------------------------')
-        if (options.update):
-            soap_client.setAnalysisStatus(soap_client, run, options.status)
-            log.info('update status of run %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))
-        else:
-            log.info('use --update to update the status of %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))
-    else:
-        log.warning('sequencing status of run %s is not COMPLETE' % options.run)
         
+    try:
+        # create soap client
+        soap_client = lims.SoapLims(options.soapurl)
+
+        # get run
+        run = soap_client.getRun(options.run_number)
+        log.debug(run)
+    
+        if run.runStatus == 'COMPLETE':
+            log.info('--- UPDATE STATUS --------------------------------------------------------------')
+            if (options.update):
+                soap_client.setAnalysisStatus(soap_client, run, options.status)
+                log.info('update status of run %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))
+            else:
+                log.info('use --update to update the status of %s from %s to %s' % (options.run_number, run.analysisStatus, options.status))
+        else:
+            log.warning('sequencing status of run %s is not COMPLETE' % options.run)
+    except:
+        log.exception("Unexpected error")
+        raise
 
 if __name__ == "__main__":
 	sys.exit(main())
