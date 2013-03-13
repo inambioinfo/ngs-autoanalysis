@@ -50,7 +50,8 @@ MULTIPLEX_KIT={
     'TruSeq Small RNA' : 'truseq_smallrna.csv',
     'TruSeq RNA Low Throughput' : 'truseq_rna_lt.csv',
     'TruSeq DNA Low Throughput' : 'truseq_dna_lt.csv',
-    'TruSeq DNA High Throughput' : 'truseq_dna_ht.csv'
+    'TruSeq DNA High Throughput' : 'truseq_dna_ht.csv',
+    'Nugen Ovation Ultralow DR' : 'ovationultralow_dr.csv'
 }
 
 HTML_TEMPLATE = """

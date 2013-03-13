@@ -35,8 +35,6 @@ SOAP_URL = "http://uk-cri-ldmz02.crnet.org/solexa-ws/SolexaExportBeanWS"
 # Default lims status
 SEQUENCING_STARTED_STATUS = 'STARTED'
 SEQUENCING_COMPLETE_STATUS = 'COMPLETE'
-PRIMARY_ANALYSIS_COMPLETE_STATUS = 'PRIMARY COMPLETE'
-ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
 
 ################################################################################
 # CLASS Lims
