@@ -81,45 +81,53 @@ def main():
         log.error("%s does not exists - check your '--trashdir' option" % options.trashdir)
         sys.exit(1)
     
-    # lims db
-    solexa_db = SqlSoup(options.dburl)
+    try:
+        # lims db
+        solexa_db = SqlSoup(options.dburl)
     
-    # moving complete run into trash directory
-    run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
-    for run_folder in run_folders:
-        log.info('--------------------------------------------------------------------------------')
-        log.info('--- RUN: %s' % run_folder)
-        log.info('--------------------------------------------------------------------------------')
-        # check dont.delete is not present - stop cleaning if present
-        dont_delete = os.path.join(run_folder, DONT_DELETE_FILENAME)
-        if not os.path.exists(dont_delete):
+        # moving complete run into trash directory
+        run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
+        for run_folder in run_folders:
+            log.info('--------------------------------------------------------------------------------')
+            log.info('--- RUN: %s' % run_folder)
+            log.info('--------------------------------------------------------------------------------')
+            # check dont.delete is not present - stop cleaning if present
+            dont_delete = os.path.join(run_folder, DONT_DELETE_FILENAME)
+            if not os.path.exists(dont_delete):
+                try:
+                    run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
+                    log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
+                    if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
+                        log.info('*** run folder will be moved to trash')
+                        cmd = ['mv', run_folder, options.trashdir]
+                        utils.run_bg_process(cmd, options.dry_run)
+                except (NoResultFound):
+                    log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
+                except:
+                    log.exception("Unexpected error")
+                    continue
+            else:
+                log.debug('%s is present' % dont_delete)
+    
+        # removing run folder older than 3 days from trash
+        trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
+        older = 60*60*24*3 # convert 3 days to seconds
+        present = time.time()
+        for run_folder in trash_run_folders:
+            log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+            log.info('~~~ TRASH RUN: %s' % run_folder)
+            log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
             try:
-                run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
-                log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
-                if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
-                    log.info('*** run folder will be moved to trash')
-                    cmd = ['mv', run_folder, options.trashdir]
+                if (present - os.path.getmtime(run_folder)) > older:
+                    log.info('*** run folder will be removed')
+                    cmd = ['rm', '-rf', run_folder]
                     utils.run_bg_process(cmd, options.dry_run)
-            except (NoResultFound):
-                log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
             except:
-                log.error("Unexpected error:", sys.exc_info()[0])
-                raise
-        else:
-            log.debug('%s is present' % dont_delete)
-    
-    # removing run folder older than 3 days from trash
-    trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
-    older = 60*60*24*3 # convert 3 days to seconds
-    present = time.time()
-    for run_folder in trash_run_folders:
-        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        log.info('~~~ TRASH RUN: %s' % run_folder)
-        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        if (present - os.path.getmtime(run_folder)) > older:
-            log.info('*** run folder will be removed')
-            cmd = ['rm', '-rf', run_folder]
-            utils.run_bg_process(cmd, options.dry_run)            
+                log.exception("Unexpected error")
+                continue  
+    except:
+        log.exception("Unexpected error")
+        raise        
     
 if __name__ == '__main__':
     main()

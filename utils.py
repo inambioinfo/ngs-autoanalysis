@@ -65,7 +65,6 @@ else
 fi
 
 rm %(lock)s
-        """ % (rsync_started, rsync_lock, rsync_options, rsync_finished, copy_finished, copy_run_completed, rsync_fail, rsync_lock)
 '''
 
 ################################################################################

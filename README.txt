@@ -5,6 +5,7 @@ scripts:
    - autoanalysis.py
    - sync.py
    - cleanlustre.py
+   - deleterun.py
    - set_status.py
    - demux_stats.py
 modules:

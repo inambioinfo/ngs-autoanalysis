@@ -87,14 +87,20 @@ PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
 PROCESS_COMPLETED_FILENAME = "Run.all.completed"
 ANALYSIS_IGNORE_FILENAME = "analysis.ignore"
 
+# Default lims status
+PRIMARY_ANALYSIS_COMPLETE_STATUS = 'PRIMARY COMPLETE'
+ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
+
 # rsync exclude list
 RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=*/temp/* --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
+    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
     "mga" : "",
     "demultiplex" : "",
     "fastqc" : "",
     "secondary" : "",                   
 }
+
+RSYNC_ALL_EXCLUDE = "--exclude=temp --exclude=JobOutputs"
 
 ################################################################################
 # CLASS SystemDefinition
@@ -133,11 +139,11 @@ class RunDefinition(object):
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
                 return True
             else:
-                if not os.path.exists(sequencing_completed):
-                    log.warn('%s does not exists' % sequencing_completed)
+                if not os.path.exists(self.sequencing_completed):
+                    log.warn('%s does not exists' % self.sequencing_completed)
                     return False
-                if os.path.exists(analysis_ignore):
-                    log.info('%s is present' % analysis_ignore)
+                if os.path.exists(self.analysis_ignore):
+                    log.info('%s is present' % self.analysis_ignore)
                     return False
         return False
         
@@ -147,7 +153,7 @@ class RunDefinition(object):
             if not os.path.exists(self.analysis_ignore):
                 return True
             else:
-                log.info('%s is present' % analysis_ignore)
+                log.info('%s is present' % self.analysis_ignore)
                 return False
         return False
             
@@ -319,9 +325,9 @@ class Pipelines(object):
                 # create rsync-pipeline script 
                 if os.path.exists(pipeline_definition.pipeline_directory):
                     if pipeline_name is 'primary':
-                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], self.run_definition.run_folder, dest_basedir, pipeline_definition.rsync_log)
+                        rsync_options = "-av %s %s %s %s > %s 2>&1" % (RSYNC_ALL_EXCLUDE, RSYNC_EXCLUDE[pipeline_name], self.run_definition.run_folder, dest_basedir, pipeline_definition.rsync_log)
                     else:
-                        rsync_options = "-av %s %s %s > %s 2>&1" % (RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, self.run_definition.dest_run_folder, pipeline_definition.rsync_log)
+                        rsync_options = "-av %s %s %s %s > %s 2>&1" % (RSYNC_ALL_EXCLUDE, RSYNC_EXCLUDE[pipeline_name], pipeline_definition.pipeline_directory, self.run_definition.dest_run_folder, pipeline_definition.rsync_log)
                     copy_finished = "%s %s/." % (pipeline_definition.rsync_finished, dest_pipeline_directory)
                     command = "touch %s; touch %s; rsync %s; touch %s; cp %s; rm %s" % (pipeline_definition.rsync_started, pipeline_definition.rsync_lock, rsync_options, pipeline_definition.rsync_finished, copy_finished, pipeline_definition.rsync_lock)
                     utils.create_script(pipeline_definition.rsync_script_path, command)
@@ -463,7 +469,7 @@ class Pipelines(object):
             log.info('*** PROCESS COMPLETED **********************************************************')
             # update analysis status in lims
             if self.update_status:
-                self.soap_client.setAnalysisStatus(self.run_definition.run, lims.ANALYSIS_COMPLETE_STATUS)
+                self.soap_client.setAnalysisStatus(self.run_definition.run, ANALYSIS_COMPLETE_STATUS)
             else:
                 log.debug('lims not updated - use --update-status option to turn it on')
         else:
@@ -471,7 +477,7 @@ class Pipelines(object):
             if self.process_completed(['primary']):
                 # update analysis status in lims
                 if self.update_status:
-                    self.soap_client.setAnalysisStatus(self.run_definition.run, lims.PRIMARY_ANALYSIS_COMPLETE_STATUS)
+                    self.soap_client.setAnalysisStatus(self.run_definition.run, PRIMARY_ANALYSIS_COMPLETE_STATUS)
                 else:
                     log.debug('lims not updated - use --update-status option to turn it on')
             # remove Run.all.complete when process not completed and file exists
@@ -497,7 +503,7 @@ class Pipelines(object):
                 return False
         return True
     
-    def process_completed(self, list_pipelines):
+    def process_completed(self, list_pipelines, check_rsync=True):
         """Checks for all pipeline in the list that each of them has finished and has
         been synchronised.
         pipeline.started and pipeline.ended need to be present as well as 
@@ -513,8 +519,9 @@ class Pipelines(object):
             if not os.path.exists(pipeline_finished) or not os.path.exists(pipeline_started):
                 return False
             # rsync not finished or started
-            if not os.path.exists(rsync_finished) or not os.path.exists(rsync_started):
-                return False
+            if check_rsync:
+                if not os.path.exists(rsync_finished) or not os.path.exists(rsync_started):
+                    return False
         return True
         
     ### External rsync utility methods ----------------------------------------
@@ -630,7 +637,7 @@ class DemuxStatsPipelines(Pipelines):
         self._run_script(self.copy_script_path, self.copy_started, self.copy_finished, self.lock)
         # create/run clean script
         self._create_script(self.clean_script_path, clean, self.clean_started, self.clean_finished) 
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             self._run_script(self.clean_script_path, self.clean_started, self.clean_finished)  
         # create symlink for fastq files in primary directory
         if self.data_copied():
@@ -640,7 +647,7 @@ class DemuxStatsPipelines(Pipelines):
             for fastq_file in self.fastq_files:
                 new_fastq_filename = self.lims_client.getNewSeqFileName(fastq_file)
                 link_name = "%s/%s" % (primary_folder, new_fastq_filename)
-                fastq_path = os.path.join(run_folder, fastq_file.filename)
+                fastq_path = os.path.join(self.run_definition.run_folder, fastq_file.filename)
                 log.debug(fastq_path)
                 if os.path.lexists(link_name):
                     os.remove(link_name)
@@ -678,7 +685,7 @@ class DemuxStatsPipelines(Pipelines):
     def run_demux(self):
         """Run demultiplex statistic analysis
         """
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             if os.path.exists(self.lock):
                 os.remove(self.lock)
         else:
@@ -694,7 +701,7 @@ class DemuxStatsPipelines(Pipelines):
         Read each BarcodeSummary.SLX-4783.787.s_8.txt file and print report
         """
         report = []
-        if self.process_completed(['demultiplex']):
+        if self.process_completed(['demultiplex'], False):
             log.info('--- DEMUX STATS REPORT ---------------------------------------------------------')
             summary_files = glob.glob(os.path.join(self.pipeline_definition.pipeline_directory, 'BarcodeSummary.*.txt'))
             for summary_file in summary_files:
@@ -705,6 +712,8 @@ class DemuxStatsPipelines(Pipelines):
                     distinct_barcodes = False
                     for line in summary:
                         columns = line.strip().split()
+                        if len(columns) == 0:
+                            continue
                         if len(columns) == 7:
                             barcode_match[columns[0]] = [columns[1], columns[3], columns[5]]
                         elif columns[-1] == 'reads':
@@ -753,7 +762,7 @@ class DemuxStatsPipelines(Pipelines):
         return True
 
     def all_process_completed(self):
-        if not self.data_copied() or not self.process_completed(['demultiplex']):
+        if not self.data_copied() or not self.process_completed(['demultiplex'], False):
             return False
         if not os.path.exists(self.clean_started) or not os.path.exists(self.clean_finished):
             return False
