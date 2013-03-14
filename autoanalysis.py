@@ -44,12 +44,12 @@ except ImportError:
 ''')
 
 # import logging module first
-import log as logger
+import autoanalysis.log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
-import utils
-import lims
-import pipelines
+import autoanalysis.utils as utils
+import autoanalysis.lims as lims
+import autoanalysis.pipelines as pipelines
 
 ################################################################################
 # MAIN
