@@ -126,7 +126,7 @@ def main():
                                 log.info('All images deleted')
                             else:
                                 if runfolder_age > delete_images_older_than:
-                                    delete_images_cmd = ['find', run_folder, '-name', '*.tif', '-delete']
+                                    delete_images_cmd = ['find', run_folder, '-name', "'*.tif'", '-delete']
                                     log.info('deleting images...')
                                     if not options.dry_run:
                                         utils.touch(images_deleted)
@@ -136,8 +136,8 @@ def main():
                                 log.info('All intensities deleted')
                             else:
                                 if runfolder_age > delete_intensities_older_than:
-                                    delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '-name', '*_pos.txt', 
-                                    '-o', '-name', '*.cif', '-o', '-name', '*.filter', '-o', '-name', '*.bcl', '-o', '-name', '*.stats', '-delete']
+                                    delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '\(', '-name', "'*_pos.txt'", 
+                                    '-o', '-name', "'*.cif'", '-o', '-name', "'*.filter'", '-o', '-name', "'*.bcl'", '-o', '-name', "'*.stats'", '\)','-delete']
                                     log.info('deleting intensities...')
                                     if not options.dry_run:
                                         utils.touch(intensities_deleted)
@@ -147,7 +147,7 @@ def main():
                                 log.info('All thumbnails deleted')
                             else:
                                 if runfolder_age > delete_thumbnails_older_than:
-                                    delete_thumbnails_cmd = ['find', '%s/Thumbnail_Images/' % run_folder, '-name', '*.jpg', '-delete']
+                                    delete_thumbnails_cmd = ['find', '%s/Thumbnail_Images/' % run_folder, '-name', "'*.jpg'", '-delete']
                                     log.info('deleting thumbnails...')
                                     if not options.dry_run:
                                         utils.touch(thumbnails_deleted)
