@@ -90,6 +90,7 @@ def main():
         delete_thumbnails_older_than = convert_day(options.thumbnails)
         delete_images_older_than = convert_day(options.images)
         delete_intensities_older_than = convert_day(options.intensities)
+        move_folder_older_than = convert_day(options.thumbnails+options.images+options.intensities)
     
         # removing data into completed run folders
         run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
@@ -112,9 +113,8 @@ def main():
                         # check deleting file has been done already
                         if os.path.exists(images_deleted) and os.path.exists(intensities_deleted) and os.path.exists(thumbnails_deleted):
                             log.info('All images/intensities/thumbnails deleted')
-                            # moving run folders to OldRuns after 10 days of cleaning thumbnails
-                            thumbnails_deleted_age = present - os.path.getmtime(thumbnails_deleted)
-                            if thumbnails_deleted_age > convert_day(10):
+                            # moving run folders to OldRuns after thumbnails+images+intensities days
+                            if runfolder_age > move_folder_older_than:
                                 oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
                                 move_runfolder_cmd = ['mv', run_folder, old_runs_path]
                                 utils.create_directory(oldruns_path)
