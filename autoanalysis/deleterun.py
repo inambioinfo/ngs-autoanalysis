@@ -116,7 +116,7 @@ def main():
                             # moving run folders to OldRuns after thumbnails+images+intensities days
                             if runfolder_age > move_folder_older_than:
                                 oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
-                                move_runfolder_cmd = ['mv', run_folder, old_runs_path]
+                                move_runfolder_cmd = ['mv', run_folder, oldruns_path]
                                 utils.create_directory(oldruns_path)
                                 log.info('moving run folder...')
                                 utils.run_bg_process(move_runfolder_cmd, options.dry_run)
