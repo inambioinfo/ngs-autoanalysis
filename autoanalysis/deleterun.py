@@ -3,7 +3,7 @@
 """
 deleterun.py
 
-$Id: $
+$Id$
 
 Created by Anne Pajon on 2013-03-08.
 """
