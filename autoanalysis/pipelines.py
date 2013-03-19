@@ -166,6 +166,7 @@ class PipelineDefinition(object):
         self.run_definition = _run_definition
         self.pipeline_name = _pipeline_name
         self.pipeline_directory = os.path.join(self.run_definition.run_folder, self.pipeline_name)
+        self.dest_pipeline_directory = os.path.join(self.run_definition.dest_run_folder, self.pipeline_name)
         self.job_name = "%s_%s_pipeline" % (self.run_definition.run_number, self.pipeline_name)
         self.rsync_lock = os.path.join(os.path.dirname(self.run_definition.run_folder), RSYNC_LOCK_FILENAME)
 
@@ -181,9 +182,14 @@ class PipelineDefinition(object):
         self.rsync_finished = os.path.join(self.pipeline_directory, RSYNC_FINISHED_FILENAME)
         self.rsync_log = os.path.join(self.pipeline_directory, RSYNC_LOG_FILENAME)
 
-        self.ext_rsync_demux_script_path = os.path.join(self.pipeline_directory, RSYNC_DEMUX_SCRIPT_FILENAME)
-        self.ext_rsync_demux_started = os.path.join(self.pipeline_directory, RSYNC_DEMUX_STARTED_FILENAME)
-        self.ext_rsync_demux_finished = os.path.join(self.pipeline_directory, RSYNC_DEMUX_FINISHED_FILENAME)
+        self.ext_rsync_script_path = os.path.join(self.dest_pipeline_directory, RSYNC_SCRIPT_FILENAME)
+        self.ext_rsync_started = os.path.join(self.dest_pipeline_directory, RSYNC_STARTED_FILENAME)
+        self.ext_rsync_finished = os.path.join(self.dest_pipeline_directory, RSYNC_FINISHED_FILENAME)
+        self.ext_rsync_log = os.path.join(self.dest_pipeline_directory, RSYNC_LOG_FILENAME)
+
+        self.ext_rsync_demux_script_path = os.path.join(self.dest_pipeline_directory, RSYNC_DEMUX_SCRIPT_FILENAME)
+        self.ext_rsync_demux_started = os.path.join(self.dest_pipeline_directory, RSYNC_DEMUX_STARTED_FILENAME)
+        self.ext_rsync_demux_finished = os.path.join(self.dest_pipeline_directory, RSYNC_DEMUX_FINISHED_FILENAME)
 
         self.primary_completed = os.path.join(self.run_definition.run_folder, PRIMARY_COMPLETED_FILENAME)
         self.dest_primary_completed = os.path.join(self.run_definition.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
@@ -378,18 +384,18 @@ class Pipelines(object):
         pipeline_definition = PipelineDefinition(self.run_definition, 'external')
         
         if self.external_samples:
-            if self.run_definition.run_folder:
+            if self.run_definition.dest_run_folder:
                 # create external directory
-                utils.create_directory(pipeline_definition.pipeline_directory)
+                utils.create_directory(pipeline_definition.dest_pipeline_directory)
 
                 # rsync fastq files at the end of primary
                 if os.path.exists(pipeline_definition.primary_completed):            
                     # symlink matching files from primary directory
                     for sample_id in list(self.external_samples.viewkeys()):
-                        institute_directory = os.path.join(pipeline_definition.pipeline_directory, self.external_samples[sample_id]['institute'])
+                        institute_directory = os.path.join(pipeline_definition.dest_pipeline_directory, self.external_samples[sample_id]['institute'])
                         # create institute directory
                         utils.create_directory(institute_directory)
-                        file_names = glob.glob("%s/%s.*" % (os.path.join(self.run_definition.run_folder, 'primary'), sample_id))
+                        file_names = glob.glob("%s/%s.*" % (os.path.join(self.run_definition.dest_run_folder, 'primary'), sample_id))
                         for file_name in file_names:
                             # create symlink
                             link_name = os.path.join(institute_directory, os.path.basename(file_name))                
@@ -398,9 +404,9 @@ class Pipelines(object):
                             os.symlink(file_name, link_name)
                             log.debug("%s symlink created" % link_name)
                     # create rsync script
-                    self.create_external_rsync_script(pipeline_definition.pipeline_directory, pipeline_definition.rsync_script_path, pipeline_definition.rsync_started, pipeline_definition.rsync_finished, 'rsync', pipeline_definition.rsync_lock)
+                    self.create_external_rsync_script(pipeline_definition.dest_pipeline_directory, pipeline_definition.ext_rsync_script_path, pipeline_definition.ext_rsync_started, pipeline_definition.ext_rsync_finished, 'rsync', pipeline_definition.rsync_lock)
                     # run rsync
-                    self.run_external_rsync_script(pipeline_definition.rsync_script_path, pipeline_definition.rsync_started, pipeline_definition.rsync_finished, pipeline_definition.rsync_lock)
+                    self.run_external_rsync_script(pipeline_definition.ext_rsync_script_path, pipeline_definition.ext_rsync_started, pipeline_definition.ext_rsync_finished, pipeline_definition.rsync_lock)
                 else:
                     log.info('Primary not completed')
 
@@ -410,11 +416,11 @@ class Pipelines(object):
                         # symlink matching files from demultiplex directory
                         for sample_id in list(self.external_samples.viewkeys()):
                             if self.external_samples[sample_id]['is_multiplexed']:
-                                institute_directory = os.path.join(pipeline_definition.pipeline_directory, self.external_samples[sample_id]['institute'])
+                                institute_directory = os.path.join(pipeline_definition.dest_pipeline_directory, self.external_samples[sample_id]['institute'])
                                 demux_directory = os.path.join(institute_directory, '%s.%s.s_%s.demux' % (sample_id, self.external_samples[sample_id]['run_number'], self.external_samples[sample_id]['lane_number']))
                                 # create sample demux directory
                                 utils.create_directory(demux_directory)
-                                file_names = glob.glob("%s/*%s*" % (os.path.join(self.run_definition.run_folder, 'demultiplex'), sample_id))
+                                file_names = glob.glob("%s/*%s*" % (os.path.join(self.run_definition.dest_run_folder, 'demultiplex'), sample_id))
                                 for file_name in file_names:
                                     # create symlink
                                     link_name = os.path.join(demux_directory, os.path.basename(file_name))                
@@ -424,7 +430,7 @@ class Pipelines(object):
                                     log.debug("%s symlink created" % link_name)
 
                         # create rsync_demux script
-                        self.create_external_rsync_script(pipeline_definition.pipeline_directory, pipeline_definition.ext_rsync_demux_script_path, pipeline_definition.ext_rsync_demux_started, pipeline_definition.ext_rsync_demux_finished, 'rsync_demux', pipeline_definition.rsync_lock)
+                        self.create_external_rsync_script(pipeline_definition.dest_pipeline_directory, pipeline_definition.ext_rsync_demux_script_path, pipeline_definition.ext_rsync_demux_started, pipeline_definition.ext_rsync_demux_finished, 'rsync_demux', pipeline_definition.rsync_lock)
 
                         # run rsync_demux
                         self.run_external_rsync_script(pipeline_definition.ext_rsync_demux_script_path, pipeline_definition.ext_rsync_demux_started, pipeline_definition.ext_rsync_demux_finished, pipeline_definition.rsync_lock)
@@ -563,7 +569,7 @@ class Pipelines(object):
     def external_data_published(self):
         """Checks that external data has been published
         """
-        external_directory = os.path.join(self.run_definition.run_folder, 'external')
+        external_directory = os.path.join(self.run_definition.dest_run_folder, 'external')
         rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
         rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
