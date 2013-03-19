@@ -19,7 +19,7 @@ import subprocess
 import unittest
 
 # logging definition
-log = logging.getLogger('root.utils')
+log = logging.getLogger('auto.utils')
 
 ################################################################################
 # CONSTANTS

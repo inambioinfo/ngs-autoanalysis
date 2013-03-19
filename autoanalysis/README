@@ -7,16 +7,16 @@ scripts:
    - cleanlustre.py
    - deleterun.py
    - set_status.py
-modules:
+autoanalysis modules:
    - lims.py
    - pipelines.py
    - log.py
    - utils.py
-legacy:
+legacy code:
    - demux_stats.py
 
 For testing locally:
-> python -m unittest --verbose lims
+> python -m unittest --verbose autoanalysis.lims
 
 > python autoanalysis.py --basedir=/lustre/mib-cri/solexa/Runs --archivedir=/solexa01/data/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
 > python sync.py --basedir=/solexa01/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run

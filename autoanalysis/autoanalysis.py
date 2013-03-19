@@ -9,16 +9,16 @@ Created by Anne Pajon on 2012-10-05.
 
 --------------------------------------------------------------------------------
 
-This script has firstly been made to replace the old Perl solexa_autoanalysis.pl 
-written by Kevin Howe and modified by Ben Davis mainly because all steps of the 
-sequencing pipeline have been standardised and are now using the workflow engine 
-written by Richard Bowers.
-
 This script automatised the creation of the run-meta.xml needed for the pipeline
 to run; runs the pipeline; synchronises the data back to the archive; publishes 
 external data onto the ftp server; and updates the analysis status in the lims. 
 The list of runs is obtained from the lims when sequencing has finished and
 status set to COMPLETE.
+
+This script has been made firstly to replace the old Perl solexa_autoanalysis.pl 
+written by Kevin Howe and modified by Ben Davis mainly because all steps of the 
+sequencing pipeline have been standardised and are now using the workflow engine 
+written by Richard Bowers.
 """
 
 ################################################################################
@@ -95,7 +95,7 @@ def main():
         # create lims client
         runs = lims.Runs(options.dburl)
         # loop over all completed runs that have not been analysed or just one run
-        for run in runs.findAllCompleteRuns(options.run_number):
+        for run in runs.findAllCompletedRuns(options.run_number):
             try:
                 # create run definition
                 run_definition = pipelines.RunDefinition(options.basedir, options.archivedir, run)
