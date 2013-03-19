@@ -20,19 +20,14 @@ import unittest
 log = logging.getLogger('auto.pipelines')
 
 # autoanalysis modules
+import runfolders
 import utils
 
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Pipeline definitions
+# Pipeline definitions and dependencies
 PIPELINES = {
-    "primary": [],
-    "mga": ["primary"],
-    "fastqc": ["primary"],
-    "secondary": ["primary"]}
-    
-MULTIPLEX_PIPELINES = {
     "primary": [],
     "mga": ["primary"],
     "demultiplex": ["primary"],
@@ -74,14 +69,9 @@ RSYNC_LOCK_FILENAME = "rsync.lock"
 RSYNC_DEMUX_STARTED_FILENAME = "rsync_demux.started"
 RSYNC_DEMUX_FINISHED_FILENAME = "rsync_demux.ended"
 
-SEQUENCING_COMPLETED_FILENAME = "Run.completed"
-PRIMARY_COMPLETED_FILENAME = "Run.primary.completed"
-PROCESS_COMPLETED_FILENAME = "Run.all.completed"
+PRIMARY_COMPLETED_FILENAME = "Analysis.primary.completed"
+PROCESS_COMPLETED_FILENAME = "Analysis.all.completed"
 ANALYSIS_IGNORE_FILENAME = "analysis.ignore"
-
-# Default lims status
-PRIMARY_ANALYSIS_COMPLETE_STATUS = 'PRIMARY COMPLETE'
-ANALYSIS_COMPLETE_STATUS = 'COMPLETE'
 
 # rsync exclude list
 RSYNC_EXCLUDE = { 
@@ -94,61 +84,7 @@ RSYNC_EXCLUDE = {
 
 RSYNC_ALL_EXCLUDE = "--exclude=temp --exclude=JobOutputs"
 
-################################################################################
-# CLASS SystemDefinition
-################################################################################
-class SystemDefinition(object):
-    
-    def __init__(self, _base_dir, _archive_dir):
-        self.base_dir = _base_dir
-        self.archive_dir = _archive_dir
 
-################################################################################
-# CLASS RunDefinition
-################################################################################
-class RunDefinition(object):
-    
-    def __init__(self, _base_dir, _archive_dir, _run):
-        self.system = SystemDefinition(_base_dir, _archive_dir)
-        self.run = _run
-        self.run_folder = os.path.join(self.system.base_dir, self.run.pipelinePath)
-        self.dest_run_folder = utils.locate_run_folder(os.path.basename(self.run_folder), self.system.archive_dir)
-        if self.run.multiplexed == 1:
-            self.multiplexed_run = True
-        else:
-            self.multiplexed_run = False
-        self.run_number = self.run.runNumber
-        self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE_FILENAME)
-        self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED_FILENAME)
-        log.info('================================================================================')
-        log.info('=== RUN: %s' % self.run_folder)
-        log.info('================================================================================')
-        
-    def ready_to_process(self):
-        if os.path.exists(self.run_folder):
-            # check sequencing process has finished - do not just rely on lims status
-            # and check analysis.ignore is not present - stop running analysis if present
-            if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
-                return True
-            else:
-                if not os.path.exists(self.sequencing_completed):
-                    log.warn('%s does not exists' % self.sequencing_completed)
-                    return False
-                if os.path.exists(self.analysis_ignore):
-                    log.info('%s is present' % self.analysis_ignore)
-                    return False
-        return False
-        
-    def ready_to_analyse(self):
-        if os.path.exists(self.run_folder):
-            # check analysis.ignore is not present - stop running analysis if present
-            if not os.path.exists(self.analysis_ignore):
-                return True
-            else:
-                log.info('%s is present' % self.analysis_ignore)
-                return False
-        return False
-            
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################        
@@ -158,8 +94,8 @@ class PipelineDefinition(object):
         self.run_definition = _run_definition
         self.pipeline_name = _pipeline_name
         self.pipeline_directory = os.path.join(self.run_definition.run_folder, self.pipeline_name)
-        self.dest_pipeline_directory = os.path.join(self.run_definition.dest_run_folder, self.pipeline_name)
-        self.job_name = "%s_%s_pipeline" % (self.run_definition.run_number, self.pipeline_name)
+        self.dest_pipeline_directory = os.path.join(self.run_definition.archive_run_folder, self.pipeline_name)
+        self.job_name = "%s_%s_pipeline" % (self.run_definition.flowcell_id, self.pipeline_name)
         self.rsync_lock = os.path.join(os.path.dirname(self.run_definition.run_folder), RSYNC_LOCK_FILENAME)
 
         self.setup_script_path = os.path.join(self.pipeline_directory, SETUP_SCRIPT_FILENAME)
@@ -184,36 +120,29 @@ class PipelineDefinition(object):
         self.ext_rsync_demux_finished = os.path.join(self.dest_pipeline_directory, RSYNC_DEMUX_FINISHED_FILENAME)
 
         self.primary_completed = os.path.join(self.run_definition.run_folder, PRIMARY_COMPLETED_FILENAME)
-        self.dest_primary_completed = os.path.join(self.run_definition.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
+        self.dest_primary_completed = os.path.join(self.run_definition.archive_run_folder, PRIMARY_COMPLETED_FILENAME)
         self.process_completed = os.path.join(self.run_definition.run_folder, PROCESS_COMPLETED_FILENAME)
-        self.dest_process_completed = os.path.join(self.run_definition.dest_run_folder, PROCESS_COMPLETED_FILENAME)
-
+        self.dest_process_completed = os.path.join(self.run_definition.archive_run_folder, PROCESS_COMPLETED_FILENAME)
+        
+    def get_header(self):
+        return '--- %s' % self.pipeline_name.upper()
+        
     def print_log(self):
-        log.info('--- %s' % self.pipeline_name.upper())
+        log.info(self.get_header())
 
 ################################################################################
 # CLASS Pipelines
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, _run_definition, _external_samples, _pipeline_step, _update_status, _soap_client, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
+    def __init__(self, _run_definition, _pipeline_step, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
         self.run_definition = _run_definition
-        self.external_samples = _external_samples
         self.pipeline_step = _pipeline_step       
-        self.update_status = _update_status
         self.software_path = _software_path
-        self.soap_client = _soap_client
-        self.soap_url = self.soap_client.soap_url
         self.cluster_host = _cluster_host
         self.dry_run = _dry_run
 
-        # get list of pipeline names for processing and completion
-        if self.run_definition.multiplexed_run:
-            self.pipelines = MULTIPLEX_PIPELINES
-            self.pipelines_for_completion = MULTIPLEX_PIPELINES
-        else:
-            self.pipelines = PIPELINES
-            self.pipelines_for_completion = PIPELINES
+        self.pipelines = PIPELINES
         if self.pipeline_step:
             self.pipelines = {self.pipeline_step : ""}
 
@@ -226,10 +155,10 @@ class Pipelines(object):
         self.run_pipelines()
         log.info('--- RUN RSYNC ------------------------------------------------------------------')
         self.rsync_pipelines()
-        log.info('--- PUBLISH EXTERNAL DATA ------------------------------------------------------')
-        self.publish_external_data()
-        log.info('--- UPDATE STATUS --------------------------------------------------------------')
-        self.register_process_completed()
+        #log.info('--- PUBLISH EXTERNAL DATA ------------------------------------------------------')
+        #self.publish_external_data()
+        #log.info('--- UPDATE STATUS --------------------------------------------------------------')
+        #self.register_process_completed()
 
     def setup_pipelines(self):
         """Setup pipelines by creating and running shell script to generate run-meta.xml for each pipeline
@@ -459,7 +388,7 @@ class Pipelines(object):
                 os.remove(pipeline_definition.dest_primary_completed)
 
         # update lims analysis status when all processes completed and rsynced
-        if self.process_completed(list(self.pipelines_for_completion.viewkeys())) and self.external_data_published():
+        if self.process_completed(list(self.pipelines.viewkeys())) and self.external_data_published():
             if not os.path.exists(pipeline_definition.process_completed):
                 utils.touch(pipeline_definition.process_completed)
             if not os.path.exists(pipeline_definition.dest_process_completed):
@@ -579,9 +508,25 @@ class Pipelines(object):
 # Unit tests
 ################################################################################
 
-class pipelinesTests(unittest.TestCase):
-	def setUp(self):
-		pass
+class PipelinesTests(unittest.TestCase):
+	
+    def setUp(self):
+        import log as logger
+        log = logger.set_custom_logger()
+        log.setLevel(logging.DEBUG)  
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/basedir/data/Runs/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
+        self.runs = runfolders.RunFolders(self.basedir, self.archivedir)
+        
+    def test_nothing(self):
+        pass
+        
+    def test_run_definition(self):
+        for run_folder in self.runs.run_folders:
+            run_definition = runfolders.RunDefinition(run_folder, self.archivedir)
+            pipeline_definition = PipelineDefinition(run_definition, 'test')
+            self.assertEqual('test', pipeline_definition.pipeline_name)
 
 
 if __name__ == '__main__':
