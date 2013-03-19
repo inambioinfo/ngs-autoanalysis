@@ -12,7 +12,7 @@ import logging
 import logging.handlers
 
 # logging definition
-log = logging.getLogger("root")
+log = logging.getLogger("auto")
 formatter = logging.Formatter('%(asctime)s %(name)-14s %(levelname)-8s: %(message)s')
 
 def set_custom_logger(debug=None):

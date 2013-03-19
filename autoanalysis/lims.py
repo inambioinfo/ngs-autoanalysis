@@ -21,7 +21,7 @@ from sqlalchemy.ext.sqlsoup import SqlSoup
 from suds.client import Client
 
 # logging definition
-log = logging.getLogger('root.lims')
+log = logging.getLogger('auto.lims')
 
 ################################################################################
 # CONSTANTS
@@ -116,16 +116,11 @@ class Runs(object):
             return [self.findRun(_run_number)]
         return self.lims.solexa.solexarun.filter_by(status=SEQUENCING_STARTED_STATUS).all()
         
-    def findAllCompleteRuns(self, _run_number=None):
+    def findAllCompletedRuns(self, _run_number=None):
         if _run_number:
             return [self.findRun(_run_number)]
         return self.lims.solexa.solexarun.filter(self.lims.solexa.solexarun.status==SEQUENCING_COMPLETE_STATUS).filter(~self.lims.solexa.solexarun.analysisStatus.in_(['COMPLETE', 'SECONDARY COMPLETE', 'ABANDONED'])).all()
         
-    def findAllAnalysedMultiplexedRuns(self, _run_number=None):
-        if _run_number:
-            return [self.findRun(_run_number)]
-        return self.lims.solexa.solexarun.filter(self.lims.solexa.solexarun.status==SEQUENCING_COMPLETE_STATUS).filter(self.lims.solexa.solexarun.analysisStatus.in_(['COMPLETE', 'SECONDARY COMPLETE'])).filter(self.lims.solexa.solexarun.multiplexed==1).all()
-    
     def findExternalSampleIds(self, _run):
         samples = {}
         lanes = self.lims.solexa.lane.filter_by(run_id=_run.id)
@@ -138,25 +133,6 @@ class Runs(object):
                 samples[lane.genomicsSampleId] = {'institute' : lane.institute.lower().replace(' ', ''), 'run_number' : _run.runNumber, 'lane_number' : lane.lane, 'is_multiplexed': is_multiplexed}
         return samples
 
-    def findKnownMultiplexSeqFiles(self, _run):
-        sequence_files = []
-        lanes = self.lims.solexa.lane.filter_by(run_id=_run.id)
-        for lane in lanes:
-            # select multiplexed lane
-            if lane.isControl == 0 and lane.multiplexing_id != None:
-                multiplex_type = self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
-                if multiplex_type.name != 'Other':
-                    # select all files for multiplexed lanes of known type
-                    file_locations = self.lims.lims.analysisfileuri.filter_by(owner_id=lane.sampleProcess_id)
-                    for file_location in file_locations:
-                        file_type = self.lims.lims.analysisfiletype.filter_by(id=file_location.type_id).one()
-                        # select only FastQ files 
-                        if file_location.scheme == 'FILE' and file_location.role == 'ARCHIVE' and file_type.name == 'FastQ':
-                            # select only non-demultiplexed fastQ files
-                            if 'Data/Intensities/' in file_location.path or 'primary' in file_location.path:
-                                sequence_files.append(file_location)
-        return sequence_files
-        
     def findSlxSeqFiles(self, _run, _slx_id):
         sequence_files = []
         lane = self.lims.solexa.lane.filter_by(run_id=_run.id, genomicsSampleId=_slx_id).one()
@@ -169,64 +145,7 @@ class Runs(object):
                 if file_type.name == 'FastQ':
                     sequence_files.append(file_location)
         return sequence_files
-                
-    def findLaneFromSeqFile(self, analysisfileuri):
-        return self.lims.solexa.lane.filter_by(sampleProcess_id=analysisfileuri.owner_id).one()
 
-    def findRunLaneRead(self, analysisfileuri):
-        lane = self.findLaneFromSeqFile(analysisfileuri)
-        run = self.lims.solexa.solexarun.filter_by(id=lane.run_id).one()
-        read_number = self.getReadNumber(analysisfileuri.filename)
-        return "%s.s_%s.r_%s" % (run.runNumber, lane.lane, read_number)
-
-    def getMultiplexTypeFromSeqFile(self, analysisfileuri):
-        lane = self.findLaneFromSeqFile(analysisfileuri)
-        return self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
-
-    def getNewSeqFileName(self, analysisfileuri):
-        return "%s.%s.fq.gz" % (self.getSlxSampleId(analysisfileuri), self.findRunLaneRead(analysisfileuri))
-
-    def getIndexFileName(self, analysisfileuri):
-        return "index.%s.txt" % self.findRunLaneRead(analysisfileuri)
-
-    def getSlxSampleId(self, analysisfileuri):
-        lane = self.findLaneFromSeqFile(analysisfileuri)
-        return lane.genomicsSampleId
-
-    def getReadNumber(self, file_name):
-        if 'sequence.txt.gz' in file_name:
-            read_number = file_name[file_name.find('s_')+4:file_name.find('_sequence.txt.gz')]
-            if read_number == '':
-                read_number = '1'
-            return read_number
-        else:
-            log.warning('sequence.txt.gz not found in %s' % file_name)
-            return 1
-
-    def printSampleDetails(self, run):
-        lanes = self.lims.solexa.lane.filter_by(run_id=run.id)
-        for lane in lanes:
-            # select multiplexed lanes
-            if lane.isControl == 0 and lane.multiplexing_id != None:
-                # user
-                user = self.lims.general.user.filter_by(email=lane.userEmail).one()
-                username = "%s.%s" % (user.firstname, user.surname)
-                # comments
-                str_comment = ''
-                request_requestfieldvalues = self.lims.request.request_requestfieldvalue.filter_by(Request_id=lane.request_id)
-                requestfieldtype_comments = self.lims.request.requestfieldtype.filter_by(name='Comments').one()
-                for request_requestfieldvalue in request_requestfieldvalues:
-                    comments = self.lims.request.requestfieldvalue.filter_by(id=request_requestfieldvalue.fieldValues_id,type_id=requestfieldtype_comments.id)
-                    for comment in comments:
-                        str_comment = comment.strValue
-                # multiplex type
-                multiplex_type = self.lims.solexa.multiplexing.filter_by(id=lane.multiplexing_id).one()
-                if multiplex_type.name == 'Other':
-                    multiplex_type_name = "*** %s ***" % multiplex_type.shortName
-                else:
-                    multiplex_type_name = multiplex_type.shortName
-
-                print ("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s" % (multiplex_type_name, run.runNumber, lane.genomicsSampleId, run.deviceType, lane.sequenceType, lane.endType, lane.cycles, lane.userSampleId, username, str_comment ))      
 
 ################################################################################
 # Unit tests
@@ -253,7 +172,7 @@ class limsTests(unittest.TestCase):
         self.assertEqual(str(run.runNumber), self.run_number)
         
     def test_find_all_complete_runs(self):
-        for run in self.runs.findAllCompleteRuns():
+        for run in self.runs.findAllCompletedRuns():
             self.assertEqual(run.status, 'COMPLETE')
             self.assertNotEqual(run.analysisStatus, 'COMPLETE')
             self.assertNotEqual(run.analysisStatus, 'SECONDARY COMPLETE')
