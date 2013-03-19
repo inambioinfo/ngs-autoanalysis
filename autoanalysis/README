@@ -1,0 +1,106 @@
+################################################################################
+### INFO
+################################################################################
+scripts:
+   - autoanalysis.py
+   - sync.py
+   - cleanlustre.py
+   - deleterun.py
+   - set_status.py
+autoanalysis modules:
+   - lims.py
+   - pipelines.py
+   - log.py
+   - utils.py
+legacy code:
+   - demux_stats.py
+
+For testing locally:
+> python -m unittest --verbose autoanalysis.lims
+
+> python autoanalysis.py --basedir=/lustre/mib-cri/solexa/Runs --archivedir=/solexa01/data/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
+> python sync.py --basedir=/solexa01/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
+> python cleanlustre.py --basedir=/lustre/mib-cri/solexa/Runs --trashdir=/lustre/mib-cri/solexa/TrashRuns --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
+> python set_status.py --run 941 --status='SECONDARY COMPLETE'
+> python demux_stats.py --basedir=/lustre/mib-cri/solexa/DemuxStats --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
+
+################################################################################
+### HISTORY OF CHANGES
+################################################################################
+13-02-2013: refactoring demux_stats into pipelines.DemuxStatsPipelines class
+
+12-02-2013: refactoring demux_stats into pipelines.DemuxStatsPipelines class
+
+11-02-2013: looking at improving process method
+11-02-2013: fix demux_stats after refactoring
+
+08-02-2013: create Pipelines, PipelineDefinition, and RunDefinition classes
+08-02-2013: use argparse in sync, set_status, cleanlustre, and demux_stats
+08-02-2013: create SoapLims class
+
+07-02-2013: add try-except in util
+07-02-2013: refactor Lims class to handle access to four databases; add more tests
+
+06-02-2013: add unit test (python -m unittest --verbose lims)
+06-02-2013: create Runs class and Lims class
+
+17-12-2012: Command line arguments: use argparse
+
+################################################################################
+### TODO
+################################################################################
+- change lims module to talk to new genologics lims
+- use syslog and logwatch
+- use configuration file to setup default values using yaml
+- generate documentation using sphinx
+- package it up using setup.py
+
+################################################################################
+### Friday 14-Dec 2012: Code review
+################################################################################
+Anne Pajon <Anne.Pajon@cruk.cam.ac.uk>
+Gordon Brown <Gordon.Brown@cruk.cam.ac.uk>
+Thomas Carroll <Thomas.Carroll@cruk.cam.ac.uk>
+Tim Rayner <Tim.Rayner@cruk.cam.ac.uk>
+
+--------------------------------------------------------------------------------
+-- INTRODUCTION
+--------------------------------------------------------------------------------
+- run pipeline of pipelines from /lustre/mib-cri/solexa/Runs [run_pipelines]
+- generate shell script for each step [setup_pipelines]
+- synchronise results to archive folder /solexa01/data/Runs
+- connect to lims DB using SQLAlchemy
+- connect to lims SOAP api using suds
+
+--------------------------------------------------------------------------------
+-- COMMENTS/IMPROVEMENTS
+--------------------------------------------------------------------------------
+- logging
+- error handling
+- Pipelines class?
+- configuration in separate file?
+
+--------------------------------------------------------------------------------
+-- DISCUSSION
+--------------------------------------------------------------------------------
+GenomeSpace http://www.genomespace.org/
+MGA - to be run on demux data?
+
+Things to do:
+* Use argparse as command line arguments
+* Lims/Run classes: reorganise to have only one Run class and create a Lims one
+	- Runs are all the same only status is different
+	- MultiplexedRuns methods useful to all Runs
+	- may need a specific sub-class for MultiplexedRuns
+* Create a Pipeline class
+* Error handling: use try/except instead of if/then/else to log errors and warnings
+* Log: use syslog and logwatch
+* Process: fork and always get return code 
+* Configuration files: config parser or yaml 
+	- default encoded if non site specific 
+	- file 
+	- own config check
+* Documentation: sphinx/docxygen
+* Package it up using setup.py and install dependencies - check how to create eggs
+
+Future development: should be database driven instead
