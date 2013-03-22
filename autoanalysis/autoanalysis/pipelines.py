@@ -34,6 +34,9 @@ PIPELINES = {
     "fastqc": ["primary"],
     "secondary": ["primary","demultiplex"]}
 
+# Pipeline setup command
+PIPELINE_SETUP_COMMAND = "%(bin)s --basedir=%(basedir)s --queue=solexa --notifications %(options)s %(run_uid)s %(output)s"
+
 # Pipeline create-metafile extra options
 PIPELINES_SETUP_OPTIONS = {
     "primary": "",
@@ -100,8 +103,8 @@ class PipelineDefinition(object):
 
         self.setup_script_path = os.path.join(self.pipeline_directory, SETUP_SCRIPT_FILENAME)
         self.run_meta = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
-
         self.run_script_path = os.path.join(self.pipeline_directory, RUN_SCRIPT_FILENAME)
+
         self.pipeline_started = os.path.join(self.pipeline_directory, PIPELINE_STARTED_FILENAME)
         self.pipeline_finished = os.path.join(self.pipeline_directory, PIPELINE_FINISHED_FILENAME)
 
@@ -129,13 +132,20 @@ class PipelineDefinition(object):
         
     def print_log(self):
         log.info(self.get_header())
+        
+    def create_pipeline_folder(self):
+        utils.create_directory(self.pipeline_directory)
+        
+    def set_setup_command(self):
+        pass
+        
 
 ################################################################################
 # CLASS Pipelines
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, _run_definition, _pipeline_step, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
+    def __init__(self, _run_definition, _pipeline_step=None, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
         self.run_definition = _run_definition
         self.pipeline_step = _pipeline_step       
         self.software_path = _software_path
@@ -169,10 +179,10 @@ class Pipelines(object):
             pipeline_definition.print_log()
 
             # create pipeline folder
-            utils.create_directory(pipeline_definition.pipeline_directory)
+            pipeline_definition.create_pipeline_folder()
 
             # create setup-pipeline script 
-            command = "%s/%s/bin/%s --basedir=%s --queue=solexa --url=%s --notifications %s %s %s" % (self.software_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(self.run_definition.run_folder), self.soap_url, PIPELINES_SETUP_OPTIONS[pipeline_name], self.run_definition.run_number, pipeline_definition.run_meta)
+            command = "%s/%s/bin/%s --basedir=%s --queue=solexa --notifications %s %s %s" % (self.software_path, pipeline_name, CREATE_METAFILE_FILENAME, os.path.dirname(self.run_definition.run_folder), PIPELINES_SETUP_OPTIONS[pipeline_name], self.run_definition.run_uid, pipeline_definition.run_meta)
             utils.create_script(pipeline_definition.setup_script_path, command)
 
             # run setup-pipeline script to create meta data 
@@ -184,6 +194,17 @@ class Pipelines(object):
             else:
                 # TODO: check output file for errors
                 log.debug('%s already exists' % pipeline_definition.run_meta)
+                
+    def clean_setup_pipelines(self):
+        """Remove setup scripts
+        """
+        for pipeline_name in list(self.pipelines.viewkeys()):
+            # create pipeline definition
+            pipeline_definition = PipelineDefinition(self.run_definition, pipeline_name)
+            pipeline_definition.print_log()
+            if os.path.exists(pipeline_definition.setup_script_path):
+                os.remove(pipeline_definition.setup_script_path)
+                log.info('%s has been removed' % pipeline_definition.setup_script_path)
 
     def _create_run_pipeline_script(self, pipeline_definition):
         # create run-pipeline script
@@ -527,6 +548,23 @@ class PipelinesTests(unittest.TestCase):
             run_definition = runfolders.RunDefinition(run_folder, self.archivedir)
             pipeline_definition = PipelineDefinition(run_definition, 'test')
             self.assertEqual('test', pipeline_definition.pipeline_name)
+            pipeline_definition.create_pipeline_folder()
+            self.assertTrue(os.path.exists(pipeline_definition.pipeline_directory))
+            # clean-up after testing
+            os.rmdir(pipeline_definition.pipeline_directory)
+            self.assertFalse(os.path.exists(pipeline_definition.pipeline_directory))
+
+    def test_pipelines_setup(self):
+        for run_folder in self.runs.run_folders:
+            run_definition = runfolders.RunDefinition(run_folder, self.archivedir)
+            pipelines = Pipelines(run_definition)
+            self.assertEqual(run_definition.run_folder_name, pipelines.run_definition.run_folder_name)
+            pipelines.setup_pipelines()
+            for pipeline_name in list(PIPELINES.viewkeys()):
+                pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                self.assertTrue(os.path.exists(pipeline_folder))
+                self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
+                
 
 
 if __name__ == '__main__':
