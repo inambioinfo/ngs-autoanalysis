@@ -31,7 +31,7 @@ CLUSTER_HOST = "uk-cri-lcst01"
 SCRIPT_TEMPLATE = '''
 #!/bin/bash
 #
-# Shell script for running command(s) locally
+# Autoanalysis generated shell script for running command(s) locally
 #
 
 set -v

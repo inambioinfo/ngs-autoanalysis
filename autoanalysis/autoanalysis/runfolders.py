@@ -21,6 +21,9 @@ import unittest
 # logging definition
 log = logging.getLogger('auto.runfolders')
 
+# autoanalysis modules
+import utils
+
 ################################################################################
 # CONSTANTS
 ################################################################################
@@ -39,24 +42,25 @@ RUN_HEADER = """================================================================
 ################################################################################
         
 class RunFolders(object):
-    def __init__(self, _basedir, _archivedir=None):
+    def __init__(self, _basedir, _archivedir):
         self.basedir = _basedir
         self.archivedir = _archivedir
         self.run_folders =  glob.glob(RUNFOLDER_GLOB % self.basedir)
         self.archived_run_folders = glob.glob(RUNFOLDER_GLOB % self.archivedir)
         
-    def findAllCompletedRuns(self):
+    def findRunsToAnalyse(self):
         completed_runs = []
         for run_folder in self.run_folders:
-            if os.path.exists(os.path.join(run_folder, SEQUENCING_COMPLETED)):
-                completed_runs.append(run_folder)
+            run_definition = RunDefinition(run_folder, self.archivedir)
+            if run_definition.is_ready_for_analysis():
+                completed_runs.append(run_definition)
         return completed_runs
         
     
 class RunDefinition(object):
-    def __init__(self, _run_folder, _archive_run_folder=None):
+    def __init__(self, _run_folder, _archivedir=None):
         self.run_folder = _run_folder
-        self.archive_run_folder = _archive_run_folder
+        self.archive_run_folder = utils.locate_run_folder(os.path.basename(self.run_folder), _archivedir)
         self.run_folder_name = os.path.basename(self.run_folder)
         self.start_date = self.run_folder_name.split('_')[0]
         self.instrument = self.run_folder_name.split('_')[1]
@@ -70,8 +74,7 @@ class RunDefinition(object):
         
     def is_ready_for_analysis(self):
         if os.path.exists(self.run_folder):
-            # check sequencing process has finished 
-            # and check analysis.ignore is not present - stop running analysis if present
+            # check sequencing process has finished and check analysis.ignore is not present
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
                 return True
             else:
@@ -102,11 +105,11 @@ class RunFoldersTests(unittest.TestCase):
     def test_run_folders_creation(self):
         self.assertEqual(self.basedir, self.runs.basedir)
         self.assertEqual(self.archivedir, self.runs.archivedir)
-        self.assertEqual(1, len(self.runs.run_folders))
-        self.assertEqual(0, len(self.runs.archived_run_folders))
+        self.assertEqual(2, len(self.runs.run_folders))
+        self.assertEqual(2, len(self.runs.archived_run_folders))
         
-    def test_find_all_completed_runs(self):
-        self.assertEqual(1, len(self.runs.findAllCompletedRuns()))
+    def test_find_runs_to_analyse(self):
+        self.assertEqual(1, len(self.runs.findRunsToAnalyse()))
         
         
 class RunDefinitionTests(unittest.TestCase):
@@ -117,11 +120,17 @@ class RunDefinitionTests(unittest.TestCase):
         log.setLevel(logging.DEBUG)  
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/basedir/data/Runs/')
-        self.runs = RunFolders(self.basedir)
-        self.run_folder = self.runs.findAllCompletedRuns()[0]
+        self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
+        self.runs = RunFolders(self.basedir, self.archivedir)
+        self.runs_run_definition = self.runs.findRunsToAnalyse()[0]
+        self.run_folder = self.runs_run_definition.run_folder
         self.run_folder_name = os.path.basename(self.run_folder)
-        self.run_def = RunDefinition(self.run_folder)
+        self.run_def = RunDefinition(self.run_folder, self.archivedir)
         
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.run_def.archive_run_folder)
+
     def test_run_definition(self):
         self.assertEqual(self.run_folder, self.run_def.run_folder)
         self.assertEqual(self.run_folder_name, self.run_def.run_folder_name)
@@ -129,6 +138,7 @@ class RunDefinitionTests(unittest.TestCase):
         self.assertEqual('HWI-ST230', self.run_def.instrument)
         self.assertEqual('D18MAACXX', self.run_def.flowcell_id)
         self.assertEqual('130114_D18MAACXX', self.run_def.run_uid)
+        self.assertTrue(os.path.exists(self.run_def.archive_run_folder))
         
     def test_run_definition_header(self):
         self.assertEqual(RUN_HEADER % {'run_folder': self.run_folder_name}, self.run_def.get_header())

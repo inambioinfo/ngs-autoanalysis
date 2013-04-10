@@ -16,7 +16,7 @@ legacy code:
    - demux_stats.py
 
 For testing locally:
-> python -m unittest --verbose autoanalysis.lims
+> python -m unittest --verbose autoanalysis.runfolders autoanalysis.pipelines
 
 > python autoanalysis.py --basedir=/lustre/mib-cri/solexa/Runs --archivedir=/solexa01/data/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
 > python sync.py --basedir=/solexa01/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --dburl=mysql://root:rootpass@localhost/cri_solexa --dry-run
