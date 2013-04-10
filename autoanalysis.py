@@ -48,8 +48,8 @@ import autoanalysis.log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as runfolders
-import autoanalysis.pipelines as pipelines
+import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
 # MAIN
@@ -59,10 +59,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
-    parser.add_argument("--softdir", dest="softdir", action="store", default=pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % pipelines.SOFT_PIPELINE_PATH)
+    parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
-    parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
-    parser.add_argument("--step", dest="step", action="store", choices=list(pipelines.MULTIPLEX_PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(pipelines.MULTIPLEX_PIPELINES.viewkeys()))
+    #parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
@@ -77,23 +77,16 @@ def main():
         log.addHandler(logger.set_file_handler(options.logfile))
                   
     try:
-        # loop over all run folders that have a Run.completed file in options.basedir
-        runs = runfolders.RunFolders(options.basedir, options.archivedir)
-        for run in runs.run_folders:
+        # loop over all run folders that have a Sequencing.completed file in options.basedir
+        runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.softdir, options.cluster, option.dry_run)
+        for run_definition in runs.findRunsToAnalyse():
             try:
-                # create run definition
-                run_definition = runfolders.RunDefinition(run)
-                
-                ### TODO
-                # create list of external samples for this run
-                #external_samples = runs.findExternalSampleIds(run)
-        
-                if run_definition.is_ready_for_analysis():
-                    # create pipelines and execute
-                    analysis_pipelines = pipelines.Pipelines(run_definition, external_samples, options.step, options.update_status, soap_client, options.softdir, options.cluster, options.dry_run)
-                    analysis_pipelines.execute()
-                else:
-                    log.warn('run folder %s does not exists - autoanalysis will not run' % run_definition.run_folder)
+                # create pipelines
+                pipelines = Pipelines(run_definition, options.step)
+                # execute pipelines
+                pipelines.execute_pipelines()
+                # register completion
+                pipelines.register_completion()
             except:
                 log.exception("Unexpected error")
                 continue
