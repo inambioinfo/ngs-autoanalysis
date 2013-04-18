@@ -136,8 +136,8 @@ def main():
                                 log.info('All intensities deleted')
                             else:
                                 if runfolder_age > delete_intensities_older_than:
-                                    delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '(', '-name', "'*_pos.txt'", 
-                                    '-o', '-name', "'*.cif'", '-o', '-name', "'*.filter'", '-o', '-name', "'*.bcl'", '-o', '-name', "'*.stats'", ')','-delete']
+                                    delete_intensities_cmd = ['find', '%s/Data/Intensities/' % run_folder, '\\(', '-name', "'*_pos.txt'", 
+                                    '-o', '-name', "'*.cif'", '-o', '-name', "'*.filter'", '-o', '-name', "'*.bcl'", '-o', '-name', "'*.stats'", '\\)','-delete']
                                     log.info('deleting intensities...')
                                     if not options.dry_run:
                                         utils.touch(intensities_deleted)
