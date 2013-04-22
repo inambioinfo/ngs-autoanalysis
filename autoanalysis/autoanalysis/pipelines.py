@@ -205,7 +205,7 @@ class PipelineDefinition(object):
     def create_run_pipeline_script(self):
         log.info('... create run pipeline script .................................................')
         try:
-            if self.env['cluster']:
+            if self.env['mode'] is 'lsf':
                 utils.create_script(self.run_script_path, utils.LSF_CMD_TEMPLATE % self.env)
             else:
                 utils.create_script(self.run_script_path, PIPELINE_LOCAL_RUN_COMMAND % self.env)
@@ -317,7 +317,7 @@ class Pipelines(object):
         if self.run_definition.is_ready_for_analysis:
             for pipeline_name in self.pipelines.keys():
                 # create pipeline definition
-                pipeline_definition = PipelineDefinition(self.run_definition, pipeline_name, self.software_path)
+                pipeline_definition = PipelineDefinition(self.run_definition, pipeline_name, self.software_path, self.cluster_host)
                 pipeline_definition.print_header()
                 # create setup-pipeline script 
                 pipeline_definition.create_setup_pipeline_script()
@@ -342,9 +342,6 @@ class Pipelines(object):
     def register_completion(self):
         """ Create Analysis.primary.completed and Analysis.all.completed when pipelines
         have been successfully ran and synchronised
-        TODO: Update lims status if --update-status is on
-        Update lims analysis status to PRIMARY COMPLETE when just primary completed and rsynced
-        Update lims analysis status to COMPLETE when all processes completed and rsynced, even external data publication
         TODO: check that external data has been published
         """
         # create Analysis.primary.completed when primary pipeline completed
@@ -542,7 +539,81 @@ class PipelinesTests(unittest.TestCase):
                     self.assertFalse(os.path.exists(pipeline_folder))
                     self.assertFalse(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
                     
-        
+class PipelinesOneRunFolderTests(unittest.TestCase):
+
+    def setUp(self):
+        import log as logger
+        log = logger.set_custom_logger()
+        log.setLevel(logging.DEBUG)  
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/basedir/data/Runs/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
+        self.runs = runfolders.RunFolders(self.basedir, self.archivedir, '130114_HWI-ST230_1016_D18MAACXX')
+
+    def tearDown(self):
+        import shutil
+        for run_definition in self.runs.findRunsToAnalyse():
+            for pipeline_name in PIPELINES.keys():
+                pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                if os.path.exists(pipeline_folder):
+                    shutil.rmtree(pipeline_folder)
+                archive_run_folder = utils.locate_run_folder(os.path.basename(run_definition.run_folder), self.archivedir)
+                archive_pipeline_folder = os.path.join(archive_run_folder, pipeline_name)
+                if os.path.exists(archive_pipeline_folder):
+                    shutil.rmtree(archive_pipeline_folder)
+            filelist = []
+            filelist.extend(glob.glob("%s/Analysis.*.completed" % run_definition.run_folder))
+            filelist.extend(glob.glob("%s/Analysis.*.completed" % archive_run_folder))
+            for f in filelist:
+                os.remove(f)
+
+    def test_pipelines_execute(self):
+        for run_definition in self.runs.findRunsToAnalyse():
+            pipelines = Pipelines(run_definition)
+            self.assertEqual(run_definition.run_folder_name, pipelines.run_definition.run_folder_name)
+            pipelines.execute_pipelines()
+            for pipeline_name in PIPELINES.keys():
+                pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                self.assertTrue(os.path.exists(pipeline_folder))
+                self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
+
+    def test_pipelines_register_completion(self):
+        for run_definition in self.runs.findRunsToAnalyse():
+            pipelines = Pipelines(run_definition)
+            self.assertEqual(run_definition.run_folder_name, pipelines.run_definition.run_folder_name)
+            pipelines.execute_pipelines()
+            for pipeline_name in PIPELINES.keys():
+                pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                utils.touch(os.path.join(pipeline_folder, PIPELINE_STARTED_FILENAME))
+                utils.touch(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME))
+                utils.touch(os.path.join(pipeline_folder, RSYNC_STARTED_FILENAME))
+                utils.touch(os.path.join(pipeline_folder, RSYNC_ENDED_FILENAME))
+                archive_pipeline_folder = os.path.join(utils.locate_run_folder(os.path.basename(run_definition.run_folder), self.archivedir), pipeline_name)
+                utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_STARTED_FILENAME))
+                utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
+                utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
+                utils.touch(os.path.join(archive_pipeline_folder, RSYNC_ENDED_FILENAME))
+            pipelines.register_completion()
+            self.assertTrue(os.path.isfile(pipelines.primary_completed))
+            self.assertTrue(os.path.isfile(pipelines.all_completed))
+            self.assertTrue(os.path.isfile(pipelines.archive_primary_completed))
+            self.assertTrue(os.path.isfile(pipelines.archive_all_completed))
+
+    def test_pipelines_execute_only_primary(self):
+        for run_definition in self.runs.findRunsToAnalyse():
+            pipelines = Pipelines(run_definition, 'primary')
+            self.assertEqual(run_definition.run_folder_name, pipelines.run_definition.run_folder_name)
+            pipelines.execute_pipelines()
+            for pipeline_name in PIPELINES.keys():
+                if pipeline_name is 'primary':
+                    pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                    self.assertTrue(os.path.exists(pipeline_folder))
+                    self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
+                else:
+                    pipeline_folder = os.path.join(run_definition.run_folder, pipeline_name)
+                    self.assertFalse(os.path.exists(pipeline_folder))
+                    self.assertFalse(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
+
 
 if __name__ == '__main__':
 	unittest.main()
