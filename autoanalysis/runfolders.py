@@ -29,6 +29,7 @@ import utils
 ################################################################################
 
 RUNFOLDER_GLOB = "%s/??????_*_*_*"
+ONERUNFOLDER_GLOB = "%s/%s"
 SEQUENCING_COMPLETED = 'Sequencing.completed'
 ANALYSIS_IGNORE = 'analysis.ignore'
 
@@ -42,11 +43,15 @@ RUN_HEADER = """================================================================
 ################################################################################
         
 class RunFolders(object):
-    def __init__(self, _basedir, _archivedir):
+    def __init__(self, _basedir, _archivedir, _run_folder=None):
         self.basedir = _basedir
         self.archivedir = _archivedir
-        self.run_folders =  glob.glob(RUNFOLDER_GLOB % self.basedir)
-        self.archived_run_folders = glob.glob(RUNFOLDER_GLOB % self.archivedir)
+        if _run_folder:
+            self.run_folders = glob.glob(ONERUNFOLDER_GLOB % (self.basedir, _run_folder))
+            self.archived_run_folders = glob.glob(ONERUNFOLDER_GLOB % (self.archivedir, _run_folder))
+        else:
+            self.run_folders =  glob.glob(RUNFOLDER_GLOB % self.basedir)
+            self.archived_run_folders = glob.glob(RUNFOLDER_GLOB % self.archivedir)
         
     def findRunsToAnalyse(self):
         completed_runs = []
@@ -64,6 +69,7 @@ class RunDefinition(object):
         self.run_folder_name = os.path.basename(self.run_folder)
         self.start_date = self.run_folder_name.split('_')[0]
         self.instrument = self.run_folder_name.split('_')[1]
+        self.run_number = self.run_folder_name.split('_')[2]
         self.flowcell_id = self.run_folder_name.split('_')[-1]
         self.run_uid = '%s_%s' % (self.start_date, self.flowcell_id)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
@@ -111,6 +117,26 @@ class RunFoldersTests(unittest.TestCase):
     def test_find_runs_to_analyse(self):
         self.assertEqual(1, len(self.runs.findRunsToAnalyse()))
         
+class OneRunFolderTests(unittest.TestCase):
+
+    def setUp(self):
+        import log as logger
+        log = logger.set_custom_logger()
+        log.setLevel(logging.DEBUG)  
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/basedir/data/Runs/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
+        self.runs = RunFolders(self.basedir, self.archivedir, '130114_HWI-ST230_1016_D18MAACXX')
+
+    def test_run_folders_creation(self):
+        self.assertEqual(self.basedir, self.runs.basedir)
+        self.assertEqual(self.archivedir, self.runs.archivedir)
+        self.assertEqual(1, len(self.runs.run_folders))
+        self.assertEqual(1, len(self.runs.archived_run_folders))
+
+    def test_find_runs_to_analyse(self):
+        self.assertEqual(1, len(self.runs.findRunsToAnalyse()))
+
         
 class RunDefinitionTests(unittest.TestCase):
     

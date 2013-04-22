@@ -30,19 +30,6 @@ import glob
 import logging
 import argparse
 
-try:
-    from sqlalchemy.ext.sqlsoup import SqlSoup
-    from suds.client import Client
-except ImportError:
-    sys.exit('''
---------------------------------------------------------------------------------
->>> modules { mysql-python | sqlalchemy | suds } not installed.
---------------------------------------------------------------------------------
-[on sols] use /home/mib-cri/software/python2.7/bin/python
-[locally] install virtualenv; source bin/activate and pip install modules
---------------------------------------------------------------------------------
-''')
-
 # import logging module first
 import autoanalysis.log as logger
 log = logger.set_custom_logger()
@@ -61,7 +48,7 @@ def main():
     parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
     parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
-    #parser.add_argument("--run", dest="run_number", action="store", help="run number e.g. '948'")
+    parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
@@ -78,11 +65,11 @@ def main():
                   
     try:
         # loop over all run folders that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.softdir, options.cluster, option.dry_run)
+        runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
         for run_definition in runs.findRunsToAnalyse():
             try:
                 # create pipelines
-                pipelines = Pipelines(run_definition, options.step)
+                pipelines = auto_pipelines.Pipelines(run_definition, options.step, options.softdir, options.cluster, options.dry_run)
                 # execute pipelines
                 pipelines.execute_pipelines()
                 # register completion
