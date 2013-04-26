@@ -6,6 +6,13 @@ deleterun.py
 $Id$
 
 Created by Anne Pajon on 2013-03-08.
+
+--------------------------------------------------------------------------------
+
+Sequencing server script that deletes old runs and moves them to OldRuns
+
+Usage:
+> python deleterun.py --basedir=/solexa0[1-3]/data/Runs/ --debug
 """
 
 ################################################################################
@@ -19,32 +26,18 @@ import argparse
 import time
 import datetime
 
-try:
-    from sqlalchemy.ext.sqlsoup import SqlSoup
-    from sqlalchemy.orm.exc import NoResultFound
-except ImportError:
-    sys.exit("""
---------------------------------------------------------------------------------
->>> modules { mysql-python | sqlalchemy } not installed.
---------------------------------------------------------------------------------
-[on sols] use /home/mib-cri/software/python2.7/bin/python
-[locally] install virtualenv; source bin/activate and pip install modules
---------------------------------------------------------------------------------
-""")
-
 # import logging module first
 import autoanalysis.log as logger
 log = logger.set_custom_logger()
 # then import other custom modules
 import autoanalysis.utils as utils
 import autoanalysis.lims as lims
+import autoanalysis.runfolders as auto_runfolders
 
 ################################################################################
 # CONSTANTS
 ################################################################################
 # Default filenames
-DONT_DELETE_FILENAME = 'dont.delete'
-SEQUENCING_COMPLETED_FILENAME = "Run.completed"
 CLEAN_FOLDERNAME = 'clean'
 
 ################################################################################
@@ -110,7 +103,7 @@ def clean(run_folder, clean_task, dry_run=True):
     else:
         log.warn('%s is missing' % clean_script_path)
     
-def is_ended(run_folder, clean_task):
+def is_completed(run_folder, clean_task):
     clean_directory = os.path.join(run_folder, CLEAN_FOLDERNAME)
     clean_started = os.path.join(clean_directory, '%s.started' % clean_task)
     clean_ended = os.path.join(clean_directory, '%s.ended' % clean_task)
@@ -122,8 +115,6 @@ def is_ended(run_folder, clean_task):
 ################################################################################
 # MAIN
 ################################################################################
-
-# delete_old_run_data.pl -thumbnails 90 -images 14 -intensities 21 -runfolderlocglob '/solexa0*/data/Runs/??????_*'
 def main():
     # get the options
     parser = argparse.ArgumentParser()
@@ -131,7 +122,6 @@ def main():
     parser.add_argument("--thumbnails", dest="thumbnails", action="store", help="number of days to keep thumbnails - default set to 90", default=90, type=int)
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
     parser.add_argument("--images", dest="images", action="store", help="number of days to keep images - default set to 14", default=14, type=int)
-    parser.add_argument("--dburl", dest="dburl", action="store", default=lims.DB_URL, help="database url [read only access] - default set to '%s'" % lims.DB_URL)
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
@@ -146,9 +136,6 @@ def main():
         log.addHandler(logger.set_file_handler(options.logfile))
         
     try:        
-        # lims db
-        solexa_db = SqlSoup(options.dburl)
-
         # setting-up time
         present = time.time()
         delete_thumbnails_older_than = convert_day(options.thumbnails)
@@ -156,23 +143,27 @@ def main():
         delete_intensities_older_than = convert_day(options.intensities)
         move_folder_older_than = convert_day(options.thumbnails+options.images+options.intensities)
 
-        # removing data into completed run folders
+        # removing data from completed or failed run folders
         run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
         for run_folder in run_folders:
-            log.info('--------------------------------------------------------------------------------')
-            log.info('--- RUN: %s' % run_folder)
-            log.info('--------------------------------------------------------------------------------')
-            # check dont.delete is not present - stop cleaning if present
-            dont_delete = os.path.join(run_folder, DONT_DELETE_FILENAME)
-            if not os.path.exists(dont_delete):
-                try:
-                    run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
-                    log.info('Sequencing status %s and analysis status %s' % (run.status, run.analysisStatus))
-                    if (run.status == 'COMPLETE' and (run.analysisStatus == 'COMPLETE' or run.analysisStatus == 'SECONDARY COMPLETE')) or ('ABORTED' in run.status) or (run.status == 'FAILED'):
-                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
+            try:
+                log.info('--------------------------------------------------------------------------------')
+                log.info('--- RUN: %s' % run_folder)
+                log.info('--------------------------------------------------------------------------------')
+                # check dont.delete is not present - stop cleaning if present
+                dont_delete = os.path.join(run_folder, auto_runfolders.DONT_DELETE)
+                if not os.path.exists(dont_delete):
+                    sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
+                    sequencing_failed = os.path.join(run_folder, auto_runfolders.SEQUENCING_FAILED)
+                    analysis_completed = os.path.join(run_folder, auto_runfolders.ANALYSIS_COMPLETED)
+                    if ( ( os.path.exists(sequencing_completed) and os.path.exists(analysis_completed) ) or os.path.exists(sequencing_failed) ):
+                        if os.path.exists(sequencing_completed):
+                            runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
+                        else:
+                            runfolder_age = present - os.path.getmtime(sequencing_failed)
                         log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
                         # check deleting file has been done already
-                        if is_ended(run_folder, 'delete_images') and is_ended(run_folder, 'delete_intensities') and is_ended(run_folder, 'delete_thumbnails'):
+                        if is_completed(run_folder, 'delete_images') and is_completed(run_folder, 'delete_intensities') and is_completed(run_folder, 'delete_thumbnails'):
                             log.info('All images/intensities/thumbnails deleted')
                             # moving run folders to OldRuns after thumbnails+images+intensities days
                             if runfolder_age > move_folder_older_than:
@@ -183,7 +174,7 @@ def main():
                                 utils.run_bg_process(move_runfolder_cmd, options.dry_run)
                         else:
                             # deleting images
-                            if is_ended(run_folder, 'delete_images'):
+                            if is_completed(run_folder, 'delete_images'):
                                 log.info('All images deleted')
                             else:
                                 if runfolder_age > delete_images_older_than:
@@ -191,7 +182,7 @@ def main():
                                     setup_clean(run_folder, 'delete_images', delete_images_cmd)
                                     clean(run_folder, 'delete_images', options.dry_run)
                             # deleting intensities
-                            if is_ended(run_folder, 'delete_intensities'):
+                            if is_completed(run_folder, 'delete_intensities'):
                                 log.info('All intensities deleted')
                             else:
                                 if runfolder_age > delete_intensities_older_than:
@@ -199,20 +190,18 @@ def main():
                                     setup_clean(run_folder, 'delete_intensities', delete_intensities_cmd)
                                     clean(run_folder, 'delete_intensities', options.dry_run)
                             # deleting thumbnails
-                            if is_ended(run_folder, 'delete_thumbnails'):
+                            if is_completed(run_folder, 'delete_thumbnails'):
                                 log.info('All thumbnails deleted')
                             else:
                                 if runfolder_age > delete_thumbnails_older_than:
                                     delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run_folder
                                     setup_clean(run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
                                     clean(run_folder, 'delete_thumbnails', options.dry_run)
-                except (NoResultFound):
-                    log.info('No result found in lims for pipelinePath %s' % os.path.basename(run_folder))
-                except:
-                    log.exception("Unexpected error")
-                    continue
-            else:
-                log.debug('%s is present' % dont_delete)
+                else:
+                    log.debug('%s is present' % dont_delete)
+            except:
+                log.exception("Unexpected error")
+                continue
     except:
         log.exception("Unexpected error")
         raise

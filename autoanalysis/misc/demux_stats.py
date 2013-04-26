@@ -160,11 +160,11 @@ def main():
         run_folder = os.path.join(options.basedir, run.pipelinePath)
         utils.create_directory(run_folder)
         # create run definition
-        run_definition = pipelines.RunDefinition(options.basedir, options.basedir, run)
+        run = pipelines.RunDefinition(options.basedir, options.basedir, run)
         
-        if run_definition.ready_to_analyse():
+        if run.ready_to_analyse():
             # create pipeline
-            demux_stat = pipelines.DemuxStatsPipelines(run_definition, multiplex_templates, runs, soap_client, options.softdir, options.cluster, options.dry_run)
+            demux_stat = pipelines.DemuxStatsPipelines(run, multiplex_templates, runs, soap_client, options.softdir, options.cluster, options.dry_run)
             # execute pipeline
             demux_stat.execute_demux()
             # parse barcode summary files

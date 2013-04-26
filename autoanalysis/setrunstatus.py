@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-sync.py
+setrunstatus.py
 
 $Id$
 
-Created by Anne Pajon on 2012-10-26.
+Created by Anne Pajon on 2013-04-25.
 
 --------------------------------------------------------------------------------
 
-Sequencing server script that synchronizes data to lustre
+Sequencing server script that creates Sequencing.completed
 
 Usage:
-> python sync.py --basedir=/solexa0[1-3]/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --debug
+> python setrunstatus.py --basedir=/solexa0[1-3]/data/Runs --debug
 """
 
 ################################################################################
@@ -33,14 +33,48 @@ import autoanalysis.runfolders as auto_runfolders
 import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
+# CONSTANTS
+################################################################################
+# Instrument names with their run completed dependencies
+INSTRUMENTS = {
+    'HWI-ST230' : ['RTAComplete.txt'],
+    'M01686' : ['RTAComplete.txt'], 
+    'M01642' : ['RTAComplete.txt'], 
+    'M01712' : ['RTAComplete.txt'], 
+    'HWI-EAS350' : ['Basecalling_Netcopy_complete.txt'],
+    'HWI-EAS202' : ['Basecalling_Netcopy_complete.txt']
+}
+
+def create_sequencing_completed(run_folder, dry_run):
+    sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
+    if is_sequencing_completed(run_folder):
+        if not os.path.exists(sequencing_completed):
+            utils.touch(sequencing_completed, dry_run)
+            log.info("%s created" % auto_runfolders.SEQUENCING_COMPLETED)
+        else:
+            log.info("Sequencing COMPLETED")
+    else:
+        log.info("Sequencing STARTED")
+            
+def is_sequencing_completed(run_folder):
+    instrument_match = False
+    files_found = True
+    for instrument in list(INSTRUMENTS.viewkeys()):
+        if instrument in run_folder:
+            for filename in INSTRUMENTS[instrument]:
+                if not os.path.exists(os.path.join(run_folder, filename)):
+                    files_found = False
+            instrument_match = True
+    return instrument_match and files_found
+    
+################################################################################
 # MAIN
 ################################################################################
 def main(argv=None):
-    
+
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
-    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
@@ -54,17 +88,15 @@ def main(argv=None):
         log.setLevel(logging.DEBUG)        
     if options.logfile:
         log.addHandler(logger.set_file_handler(options.logfile))
-                              
+
     try:
-        # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
-        for run in runs.completed_runs:
+        runs = auto_runfolders.RunFolders(options.basedir, "", options.run_folder)
+        # loop over all run folders in options.basedir
+        for run_folder in runs.run_folders:
             try:
-                log.info(run.getHeader())
-                # create sync 
-                sync = auto_pipelines.Sync(run, options.dry_run)
-                # execute pipelines
-                sync.execute()
+                # create Sequencing.completed 
+                log.info(auto_runfolders.RUN_HEADER % {'run_folder': run_folder})
+                create_sequencing_completed(run_folder, options.dry_run)
             except:
                 log.exception("Unexpected error")
                 continue
@@ -74,4 +106,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
 	sys.exit(main())
+
 
