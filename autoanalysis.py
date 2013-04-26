@@ -9,16 +9,11 @@ Created by Anne Pajon on 2012-10-05.
 
 --------------------------------------------------------------------------------
 
-This script automatised the creation of the run-meta.xml needed for the pipeline
-to run; runs the pipeline; synchronises the data back to the archive; publishes 
-external data onto the ftp server; and updates the analysis status in the lims. 
-The list of runs is obtained from the lims when sequencing has finished and
-status set to COMPLETE.
+Analysis server script that automatically runs the different steps of the sequencing 
+pipeline and rsync them to the archive.
 
-This script has been made firstly to replace the old Perl solexa_autoanalysis.pl 
-written by Kevin Howe and modified by Ben Davis mainly because all steps of the 
-sequencing pipeline have been standardised and are now using the workflow engine 
-written by Richard Bowers.
+Usage:
+> python autoanalysis.py --basedir=/lustre/mib-cri/solexa/Runs/ --archivedir=/solexa0[1-6]/data/Runs --cluster=uk-cri-lcst01 --debug
 """
 
 ################################################################################
@@ -64,16 +59,17 @@ def main():
         log.addHandler(logger.set_file_handler(options.logfile))
                   
     try:
-        # loop over all run folders that have a Sequencing.completed file in options.basedir
+        # loop over all runs that have a Sequencing.completed file in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
-        for run_definition in runs.findRunsToAnalyse():
+        for run in runs.completed_runs:
             try:
+                log.info(run.getHeader())
                 # create pipelines
-                pipelines = auto_pipelines.Pipelines(run_definition, options.step, options.softdir, options.cluster, options.dry_run)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run)
                 # execute pipelines
-                pipelines.execute_pipelines()
+                pipelines.execute()
                 # register completion
-                pipelines.register_completion()
+                pipelines.registerCompletion()
             except:
                 log.exception("Unexpected error")
                 continue

@@ -50,23 +50,6 @@ ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -
 
 '''
 
-# Template for rsync command
-RSYNC_CMD_TEMPLATE = '''
-touch %(started)s
-touch %(lock)s
-
-if ( rsync %(options)s )
-then 
-    touch %(rsync_finished)s
-    cp %(cp_finished)s
-    cp %(completed)s
-else 
-    touch %(fail)s 
-fi
-
-rm %(lock)s
-'''
-
 ################################################################################
 # METHODS
 ################################################################################
@@ -93,17 +76,24 @@ def run_process(cmd, dry_run=True):
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
-def run_bg_process(cmd, dry_run=True):
+def run_bg_process(cmd, dry_run=True, logfilename=None):
     if not dry_run:
-        subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if logfilename:
+            with open(logfilename, "wb") as logfile:
+                subprocess.Popen(cmd, shell=False, stdout=logfile, stderr=subprocess.STDOUT)
+        else:
+            subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         log.info("command '%s' executed" % " ".join(cmd))
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
-def touch(fname, times=None):
+def touch(fname, dry_run=False, times=None):
     try:
-        with file(fname, 'wa'):
-            os.utime(fname, times)
+        if not dry_run:
+            with file(fname, 'wa'):
+                os.utime(fname, times)
+        else:
+            log.info("[dry-run] touch %s" % fname)
     except:
         log.exception('cannot touch %s' % fname)
         raise
