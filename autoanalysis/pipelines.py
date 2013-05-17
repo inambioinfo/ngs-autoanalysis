@@ -36,7 +36,7 @@ PIPELINES = OrderedDict ([
     ("secondary", ["primary","demultiplex"])])
 
 # Pipeline commands
-PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(run_uid)s %(run_meta)s"
+PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
 
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 PIPELINE_LOCAL_RUN_COMMAND = "cd %(work_dir)s; touch %(started)s; %(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
@@ -184,6 +184,7 @@ class PipelineDefinition(object):
         else:
             self.env['options'] = ''
         self.env['run_uid'] = self.run.run_uid
+        self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
         if _cluster_host:
             self.env['mode'] = 'lsf' 
