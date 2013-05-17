@@ -36,7 +36,7 @@ PIPELINES = OrderedDict ([
     ("secondary", ["primary","demultiplex"])])
 
 # Pipeline commands
-PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications %(options)s %(run_uid)s %(run_meta)s"
+PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(run_uid)s %(run_meta)s"
 
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 PIPELINE_LOCAL_RUN_COMMAND = "cd %(work_dir)s; touch %(started)s; %(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
