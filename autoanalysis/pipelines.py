@@ -103,7 +103,7 @@ PIPELINES_SETUP_OPTIONS = {
     "mga": "--create-sample-sheet",
     "demultiplex": "--index-files",
     "fastqc": "",
-    "secondary": "--demultiplexed"}
+    "secondary": ""}
         
 # Software pipeline path
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
