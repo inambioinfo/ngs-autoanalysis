@@ -257,7 +257,7 @@ class PipelineDefinition(object):
                     if _dependencies_satisfied:
                         utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
-                        log.info('%s pipeline dependencies not satisfied' % pipeline_name)
+                        log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
                 else:
                     log.warn("%s presents with no %s" % (self.pipeline_ended, PIPELINE_STARTED_FILENAME))
             # pipeline started
