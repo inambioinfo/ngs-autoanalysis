@@ -65,14 +65,15 @@ def create_script(script_path, command):
     
 def run_process(cmd, dry_run=True):
     if not dry_run:
-        process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (stdout, stderr) = process.communicate()
+        process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out = process.communicate()[0]
+        retcode = process.returncode
         log.info("command '%s' executed" % " ".join(cmd))
-        if stdout:
-            log.debug(stdout)
-        if stderr:
-            log.error(stderr)
-        return stdout
+        if retcode < 0:
+            log.error(out)
+        else:
+            log.debug(out)
+        return out
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
@@ -82,7 +83,7 @@ def run_bg_process(cmd, dry_run=True, logfilename=None):
             with open(logfilename, "wb") as logfile:
                 subprocess.Popen(cmd, shell=False, stdout=logfile, stderr=subprocess.STDOUT)
         else:
-            subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         log.info("command '%s' executed" % " ".join(cmd))
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
