@@ -202,7 +202,7 @@ class PipelineDefinition(object):
         self.env['rsync_fail'] = self.rsync_fail
         self.env['seq_completed'] = self.run.sequencing_completed
         if self.pipeline_name is 'primary':
-            self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.run.run_folder, self.run.dest_run_folder, self.rsync_log)
+            self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.run.run_folder, os.path.dirname(self.run.dest_run_folder), self.rsync_log)
         elif self.pipeline_name in PIPELINE_RSYNC_EXCLUDE.keys():
             self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.pipeline_directory, self.run.dest_run_folder, self.rsync_log)
         elif self.pipeline_name is 'rsync':
