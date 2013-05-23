@@ -36,7 +36,10 @@ SCRIPT_TEMPLATE = '''
 
 set -v
 
-%(cmd)s
+if ! ( %(cmd)s )
+then 
+   exit 1
+fi
 
 '''
 
