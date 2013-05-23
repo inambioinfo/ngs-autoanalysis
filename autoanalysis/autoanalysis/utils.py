@@ -69,6 +69,7 @@ def run_process(cmd, dry_run=True):
         out = process.communicate()[0]
         retcode = process.returncode
         log.info("command '%s' executed" % " ".join(cmd))
+        log.debug(retcode)
         if retcode == 0:
             log.debug(out)
         else:
