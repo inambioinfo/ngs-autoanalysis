@@ -444,8 +444,8 @@ class Pipelines(object):
             if os.path.exists(self.all_completed):
                 os.remove(self.all_completed)
             if os.path.exists(self.archive_all_completed):
-                os.remove(self.archive_all_completed)    
-
+                os.remove(self.archive_all_completed)   
+                
     ### Utility methods -------------------------------------------------------
 
     def areDependenciesSatisfied(self, pipeline_name):
