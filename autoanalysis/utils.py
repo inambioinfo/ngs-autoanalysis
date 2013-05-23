@@ -66,7 +66,9 @@ def create_script(script_path, command):
 def run_process(cmd, dry_run=True):
     if not dry_run:
         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        out = process.communicate()[0]
+        out, err = process.communicate()
+        log.debug(out)
+        log.debug(err)
         retcode = process.returncode
         log.info("command '%s' executed" % " ".join(cmd))
         log.debug(retcode)
