@@ -18,9 +18,6 @@ import glob
 import logging
 import unittest
 
-# logging definition
-log = logging.getLogger('auto.runfolders')
-
 # autoanalysis modules
 import utils
 
@@ -46,10 +43,11 @@ RUN_HEADER = """
 ################################################################################
         
 class RunFolders(object):
-    def __init__(self, _basedir, _destdir, _one_run_folder=None): # destdir
-        self.basedir = _basedir
-        self.destdir = _destdir
-        self.one_run_folder = _one_run_folder
+    def __init__(self, basedir, destdir, one_run_folder=None): # destdir
+        self.log = logging.getLogger(__name__) 
+        self.basedir = basedir
+        self.destdir = destdir
+        self.one_run_folder = one_run_folder
         if self.one_run_folder:
             self.run_folders = glob.glob(ONERUNFOLDER_GLOB % (self.basedir, self.one_run_folder))
         else:
@@ -81,14 +79,16 @@ class RunFolders(object):
         return glob.glob(RUNFOLDER_GLOB % self.destdir)
         
 class RunDefinition(object):
-    def __init__(self, _run_folder, _destdir=None):
-        self.run_folder = _run_folder
-        self.destdir = _destdir
+    def __init__(self, run_folder, destdir=None):
+        self.log = logging.getLogger(__name__) 
+        self.run_folder = run_folder
+        self.destdir = destdir
         self.run_folder_name = os.path.basename(self.run_folder)
         self.start_date = self.run_folder_name.split('_')[0]
         self.instrument = self.run_folder_name.split('_')[1]
         self.run_number = self.run_folder_name.split('_')[2]
         self.flowcell_id = self.run_folder_name.split('_')[-1]
+        # TODO add reagent cartridge ID from runParameter.xml
         self.run_uid = '%s_%s' % (self.start_date, self.flowcell_id)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
@@ -111,10 +111,10 @@ class RunDefinition(object):
                 return True
             else:
                 if not os.path.exists(self.sequencing_completed):
-                    log.debug('%s does not exists' % self.sequencing_completed)
+                    self.log.debug('%s does not exists' % self.sequencing_completed)
                     return False
                 if os.path.exists(self.analysis_ignore):
-                    log.debug('%s is present' % self.analysis_ignore)
+                    self.log.debug('%s is present' % self.analysis_ignore)
                     return False
         return False
         
@@ -125,10 +125,10 @@ class RunDefinition(object):
                 return True
             else:
                 if not os.path.exists(self.analysis_completed):
-                    log.debug('%s does not exists' % self.analysis_completed)
+                    self.log.debug('%s does not exists' % self.analysis_completed)
                     return False
                 if os.path.exists(self.dont_delete):
-                    log.debug('%s is present' % self.dont_delete)
+                    self.log.debug('%s is present' % self.dont_delete)
                     return False
         return False
         
@@ -139,12 +139,11 @@ class SyncRunFoldersTests(unittest.TestCase):
     
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/seqdir/vol0[1-2]/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
-        self.runs = RunFolders(self.basedir, self.destdir)
+        self.runs = RunFolders(basedir=self.basedir, destdir=self.destdir)
         
     def tearDown(self):
         import shutil
@@ -167,12 +166,11 @@ class AnalysisRunFoldersTests(unittest.TestCase):
     
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
-        self.runs = RunFolders(self.basedir, self.destdir)
+        self.runs = RunFolders(basedir=self.basedir, destdir=self.destdir)
         
     def tearDown(self):
         import shutil
@@ -197,8 +195,7 @@ class OneRunFolderTests(unittest.TestCase):
 
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
@@ -225,12 +222,11 @@ class RunDefinitionTests(unittest.TestCase):
     
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
-        self.runs = RunFolders(self.basedir, self.destdir)
+        self.runs = RunFolders(basedir=self.basedir, destdir=self.destdir)
         self.runs_run = self.runs.completed_runs[0]
         self.run_folder = self.runs_run.run_folder
         self.run_folder_name = os.path.basename(self.run_folder)
