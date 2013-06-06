@@ -17,9 +17,6 @@ import logging
 import unittest
 from collections import OrderedDict
 
-# logging definition
-log = logging.getLogger('auto.pipelines')
-
 # autoanalysis modules
 import runfolders
 import utils
@@ -137,9 +134,10 @@ PRIMARY_COMPLETED_FILENAME = "Analysis.primary.completed"
 ################################################################################        
 class PipelineDefinition(object):
 
-    def __init__(self, _run, _pipeline_name, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None):
-        self.run = _run
-        self.pipeline_name = _pipeline_name
+    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None):
+        self.log = logging.getLogger(__name__)
+        self.run = run
+        self.pipeline_name = pipeline_name
 
         # create pipeline directory
         self.pipeline_directory = os.path.join(self.run.run_folder, self.pipeline_name)
@@ -165,13 +163,13 @@ class PipelineDefinition(object):
 
         # enviroment variables for setting up and running each pipeline
         self.env = {}
-        self.setEnv(_software_path, _cluster_host)
+        self.setEnv(software_path, cluster_host)
         
     def getHeader(self):
         return '--- %s' % self.pipeline_name.upper()
         
     def printHeader(self):
-        log.info(self.getHeader())
+        self.log.info(self.getHeader())
         
     def setEnv(self, _software_path, _cluster_host):
         """set environment variables for generating shell scripts from their templates
@@ -212,43 +210,43 @@ class PipelineDefinition(object):
         self.env['archive_pipedir'] = self.archive_pipeline_directory
         
     def createSetupPipelineScript(self):
-        log.info('... create setup pipeline script ...............................................')
+        self.log.info('... create setup pipeline script ...............................................')
         try:
             if not os.path.exists(self.setup_script_path):
                 utils.create_script(self.setup_script_path, PIPELINE_SETUP_COMMAND % self.env)
             else:
-                log.debug('%s already exists' % self.setup_script_path)
+                self.log.debug('%s already exists' % self.setup_script_path)
         except:
-            log.exception('unexpected error when creating setup pipeline script')
+            self.log.exception('unexpected error when creating setup pipeline script')
             raise
         
     def runSetupPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
-        log.info('... run setup pipeline script ..................................................')
+        self.log.info('... run setup pipeline script ..................................................')
         try:
             if not os.path.exists(self.env['run_meta']):
                 if _dependencies_satisfied:
                     utils.run_process(['sh', '%s' % self.setup_script_path], _dry_run)
                 else:
-                    log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
+                    self.log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
             else:
-                log.debug('%s already exists' % self.env['run_meta'])
+                self.log.debug('%s already exists' % self.env['run_meta'])
         except:
-            log.exception('unexpected error when running setup pipeline script')
+            self.log.exception('unexpected error when running setup pipeline script')
             raise
             
     def createRunPipelineScript(self):
-        log.info('... create run pipeline script .................................................')
+        self.log.info('... create run pipeline script .................................................')
         try:
             if self.env['mode'] is 'lsf':
                 utils.create_script(self.run_script_path, utils.LSF_CMD_TEMPLATE % self.env)
             else:
                 utils.create_script(self.run_script_path, PIPELINE_LOCAL_RUN_COMMAND % self.env)
         except:
-            log.exception('unexpected error when creating run pipeline script')
+            self.log.exception('unexpected error when creating run pipeline script')
             raise
             
     def runRunPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
-        log.info('... run run pipeline script ....................................................')
+        self.log.info('... run run pipeline script ....................................................')
         if os.path.exists(self.env['run_meta']):
             # pipeline not started
             if not os.path.exists(self.pipeline_started):
@@ -257,9 +255,9 @@ class PipelineDefinition(object):
                     if _dependencies_satisfied:
                         utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
-                        log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
+                        self.log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
                 else:
-                    log.warn("%s presents with no %s" % (self.pipeline_ended, PIPELINE_STARTED_FILENAME))
+                    self.log.warn("%s presents with no %s" % (self.pipeline_ended, PIPELINE_STARTED_FILENAME))
             # pipeline started
             else:
                 # pipeline not finished
@@ -268,34 +266,34 @@ class PipelineDefinition(object):
                     # output file presents - check for errors
                     if job_output:
                         if utils.output_job_success(job_output):
-                            log.info("%s pipeline finished successfully. %s do not exist yet." % (self.pipeline_name, self.pipeline_ended))
+                            self.log.info("%s pipeline finished successfully. %s do not exist yet." % (self.pipeline_name, self.pipeline_ended))
                         else:
-                            log.error("[***FAIL***] %s pipeline in %s has failed." % (self.pipeline_name, self.run.run_folder))
-                            log.error("please investigate %s." % job_output)
+                            self.log.error("[***FAIL***] %s pipeline in %s has failed." % (self.pipeline_name, self.run.run_folder))
+                            self.log.error("please investigate %s." % job_output)
                     else:
-                        log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
+                        self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
-                    log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
+                    self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
         else:
-            log.warn("%s is missing" % self.env['run_meta'])
+            self.log.warn("%s is missing" % self.env['run_meta'])
             
     def createRsyncPipelineScript(self):
-        log.info('... create rsync pipeline script ...............................................')
+        self.log.info('... create rsync pipeline script ...............................................')
         try:
             if not os.path.exists(self.rsync_script_path):
                 utils.create_script(self.rsync_script_path, PIPELINE_RSYNC_COMMAND % self.env)
             else:
-                log.debug('%s already exists' % self.rsync_script_path)
+                self.log.debug('%s already exists' % self.rsync_script_path)
         except:
-            log.exception('unexpected error when creating rsync pipeline script')
+            self.log.exception('unexpected error when creating rsync pipeline script')
             raise
             
     def runRsyncPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
         """Run rsync script to synchronise data from lustre to lbio03
         Synchronise primary directory first, and then all the other pipeline folders
         """
-        log.info('... run rsync pipeline script ..................................................')
+        self.log.info('... run rsync pipeline script ..................................................')
         # rsync primary first
         if os.path.exists(self.rsync_script_path):            
             if os.path.exists(self.pipeline_started) and os.path.exists(self.pipeline_ended):
@@ -306,41 +304,41 @@ class PipelineDefinition(object):
                                 utils.touch(self.rsync_lock, _dry_run)
                                 utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                             else:
-                                log.debug("nothing to rsync yet - primary pipeline not complete")
+                                self.log.debug("nothing to rsync yet - primary pipeline not complete")
                         else:
                             utils.touch(self.rsync_lock, _dry_run)
                             utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                     else:
-                        log.info('%s presents - another rsync process is running' % self.rsync_lock)
+                        self.log.info('%s presents - another rsync process is running' % self.rsync_lock)
                 else:
                     if not os.path.exists(self.rsync_ended):
                         if os.path.exists(self.rsync_fail):
-                            log.error("[***FAIL***] rsync for %s has failed." % self.run.run_folder)
-                            log.error("please investigate %s." % self.rsync_log)
+                            self.log.error("[***FAIL***] rsync for %s has failed." % self.run.run_folder)
+                            self.log.error("please investigate %s." % self.rsync_log)
                         else:
-                            log.info('%s pipeline is currently being synchronised' % self.pipeline_name)
+                            self.log.info('%s pipeline is currently being synchronised' % self.pipeline_name)
                     else:
-                        log.info('[***OK***] %s pipeline has been synchronised successfully' % self.pipeline_name)
+                        self.log.info('[***OK***] %s pipeline has been synchronised successfully' % self.pipeline_name)
             else:
-                log.debug("nothing to rsync yet - %s and/or %s missing" % (PIPELINE_STARTED_FILENAME, PIPELINE_ENDED_FILENAME))
+                self.log.debug("nothing to rsync yet - %s and/or %s missing" % (PIPELINE_STARTED_FILENAME, PIPELINE_ENDED_FILENAME))
         else:
-            log.warn('%s is missing' % self.rsync_script_path)
+            self.log.warn('%s is missing' % self.rsync_script_path)
             
     def createRsyncRunFolderScript(self):
-        log.info('... create rsync runfolder script ..............................................')
+        self.log.info('... create rsync runfolder script ..............................................')
         try:
             if not os.path.exists(self.rsync_script_path):
                 utils.create_script(self.rsync_script_path, RUNFOLDER_RSYNC_COMMAND % self.env)
             else:
-                log.debug('%s already exists' % self.rsync_script_path)
+                self.log.debug('%s already exists' % self.rsync_script_path)
         except:
-            log.exception('unexpected error when creating rsync runfolder script')
+            self.log.exception('unexpected error when creating rsync runfolder script')
             raise
 
     def runRsyncRunFolderScript(self, _dry_run=True):
         """Run rsync script to synchronise runfolder data from sequencing servers to lustre
         """
-        log.info('... run rsync runfolder script .................................................')
+        self.log.info('... run rsync runfolder script .................................................')
         if os.path.exists(self.rsync_script_path):
             if not os.path.exists(self.rsync_started):
                 if not os.path.exists(self.rsync_lock):
@@ -348,32 +346,33 @@ class PipelineDefinition(object):
                         utils.touch(self.rsync_lock, _dry_run)
                         utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                     else:
-                        log.debug("nothing to rsync yet - sequencing not completed")
+                        self.log.debug("nothing to rsync yet - sequencing not completed")
                 else:
-                    log.info('%s presents - another rsync process is running' % self.rsync_lock)
+                    self.log.info('%s presents - another rsync process is running' % self.rsync_lock)
             else:
                 if not os.path.exists(self.rsync_ended):
                     if os.path.exists(self.rsync_fail):
-                        log.error("[***FAIL***] rsync for %s has failed." % self.run.run_folder)
-                        log.error("please investigate %s." % self.rsync_log)
+                        self.log.error("[***FAIL***] rsync for %s has failed." % self.run.run_folder)
+                        self.log.error("please investigate %s." % self.rsync_log)
                     else:
-                        log.info('runfolder is currently being synchronised')
+                        self.log.info('runfolder is currently being synchronised')
                 else:
-                    log.info('runfolder has been synchronised')
+                    self.log.info('runfolder has been synchronised')
         else:
-            log.warn('%s is missing' % self.rsync_script_path)
+            self.log.warn('%s is missing' % self.rsync_script_path)
         
 ################################################################################
 # CLASS Pipelines
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, _run, _pipeline_step=None, _software_path=SOFT_PIPELINE_PATH, _cluster_host=None, _dry_run=True):
-        self.run = _run
-        self.pipeline_step = _pipeline_step       
-        self.software_path = _software_path
-        self.cluster_host = _cluster_host
-        self.dry_run = _dry_run
+    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True):
+        self.log = logging.getLogger(__name__) 
+        self.run = run
+        self.pipeline_step = pipeline_step
+        self.software_path = software_path
+        self.cluster_host = cluster_host
+        self.dry_run = dry_run
 
         self.pipelines = PIPELINES
         if self.pipeline_step:
@@ -393,15 +392,15 @@ class Pipelines(object):
                 # create pipeline definition
                 pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host)
                 pipeline_definition.printHeader()
-                # create setup-pipeline script 
+                # - step 1 - create setup-pipeline script 
                 pipeline_definition.createSetupPipelineScript()
                 # run setup-pipeline script to create meta data 
                 pipeline_definition.runSetupPipelineScript(self.areDependenciesSatisfied(pipeline_name), self.dry_run)
-                # create run-pipeline script
+                # - step 2 - create run-pipeline script
                 pipeline_definition.createRunPipelineScript()
                 # run run-pipeline script to run the pipeline
                 pipeline_definition.runRunPipelineScript(self.areDependenciesSatisfied(pipeline_name), self.dry_run)
-                # create rsync-pipeline script
+                # - setp 3 - create rsync-pipeline script
                 pipeline_definition.createRsyncPipelineScript()
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
@@ -412,7 +411,7 @@ class Pipelines(object):
     Synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
     --> need list of external samples and to which institute they belong
     """
-
+    
     def registerCompletion(self):
         """ Create Analysis.primary.completed and Analysis.completed when pipelines
         have been successfully ran and synchronised
@@ -424,7 +423,7 @@ class Pipelines(object):
                 utils.touch (self.primary_completed)
             if not os.path.exists(self.archive_primary_completed):
                 utils.touch (self.archive_primary_completed)
-            log.info('*** PRIMARY COMPLETED **********************************************************')
+            self.log.info('*** PRIMARY COMPLETED **********************************************************')
         else:
             # remove Analysis.primary.completed when primary not completed and file exists
             if os.path.exists(self.primary_completed):
@@ -438,7 +437,7 @@ class Pipelines(object):
                 utils.touch(self.all_completed)
             if not os.path.exists(self.archive_all_completed):
                 utils.touch(self.archive_all_completed)
-            log.info('*** PROCESS COMPLETED **********************************************************')
+            self.log.info('*** PROCESS COMPLETED **********************************************************')
         else:
             # remove Analysis.completed when analysis not completed and file exists
             if os.path.exists(self.all_completed):
@@ -453,7 +452,7 @@ class Pipelines(object):
         Both pipeline.started and pipeline.ended need to be present
         """
         pipeline_dependencies = self.pipelines[pipeline_name]
-        log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
+        self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
         for dep_pipeline_name in pipeline_dependencies:
             pipeline_directory = os.path.join(self.run.run_folder, dep_pipeline_name)
             pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
@@ -489,17 +488,18 @@ class Pipelines(object):
 ################################################################################
 class Sync(object):
     
-    def __init__(self, _run, _dry_run=True):
-        self.run = _run
+    def __init__(self, run, dry_run=True):
+        self.log = logging.getLogger(__name__) 
+        self.run = run
         self.pipeline_name = 'rsync'
-        self.dry_run = _dry_run
+        self.dry_run = dry_run
         
     def execute(self):
         """execute rsync_runfolder by creating a shell script and running it
         """
         if self.run.isCompleted():
             # create pipeline definition
-            pipeline_definition = PipelineDefinition(self.run, self.pipeline_name)
+            pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
             pipeline_definition.printHeader()
             # create rsync-pipeline script
             pipeline_definition.createRsyncRunFolderScript()
@@ -514,15 +514,15 @@ class PipelineDefinitionTests(unittest.TestCase):
 	
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
         self.runs = runfolders.RunFolders(self.basedir, self.archivedir)
         self.run = self.runs.completed_runs[0]
-        self.pipeline_definition = PipelineDefinition(self.run, 'test')
-        self.pipeline_definition_cluster = PipelineDefinition(self.run, 'test', SOFT_PIPELINE_PATH, 'uk-cri-test')
+        self.log.debug('Testing logging')
+        self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test') 
+        self.pipeline_definition_cluster = PipelineDefinition(run=self.run, pipeline_name='test', cluster_host='uk-cri-test')
         self.pipeline_definition.printHeader()
         
     def tearDown(self):
@@ -565,14 +565,13 @@ class SyncPipelineDefinitionTests(unittest.TestCase):
 
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/seqdir/vol0[1-2]/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.runs = runfolders.RunFolders(self.basedir, self.destdir)
         self.run = self.runs.completed_runs[0]
-        self.pipeline_definition = PipelineDefinition(self.run, 'rsync')
+        self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='rsync')
         self.pipeline_definition.printHeader()
 
     def tearDown(self):
@@ -600,8 +599,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
     
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
@@ -623,7 +621,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
 
     def testExecute(self):
         for run in self.runs.completed_runs:
-            pipelines = Pipelines(run)
+            pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
@@ -633,7 +631,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                 
     def testRegisterCompletion(self):
         for run in self.runs.completed_runs:
-            pipelines = Pipelines(run)
+            pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
@@ -655,7 +653,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
             
     def testExecuteOnlyPrimary(self):
         for run in self.runs.completed_runs:
-            pipelines = Pipelines(run, 'primary')
+            pipelines = Pipelines(run=run, pipeline_step='primary')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
@@ -672,8 +670,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
@@ -699,7 +696,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def testExecute(self):
         run = self.runs.completed_runs[0]
-        pipelines = Pipelines(run)
+        pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
         for pipeline_name in PIPELINES.keys():
@@ -709,7 +706,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def testRegisterCompletion(self):
         run = self.runs.completed_runs[0]
-        pipelines = Pipelines(run)
+        pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
         for pipeline_name in PIPELINES.keys():
@@ -731,7 +728,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def testExecuteOnlyPrimary(self):
         for run in self.runs.completed_runs:
-            pipelines = Pipelines(run, 'primary')
+            pipelines = Pipelines(run=run, pipeline_step='primary')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
@@ -748,8 +745,7 @@ class SyncTests(unittest.TestCase):
 
     def setUp(self):
         import log as logger
-        log = logger.set_custom_logger()
-        log.setLevel(logging.DEBUG)  
+        self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/seqdir/vol0[1-2]/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
@@ -765,7 +761,7 @@ class SyncTests(unittest.TestCase):
     def testExecute(self):
         import time
         for run in self.runs.completed_runs:
-            sync = Sync(run, False)
+            sync = Sync(run=run, dry_run=False)
             self.assertEqual(run.run_folder_name, sync.run.run_folder_name)
             sync.execute()
             time.sleep(5) # wait for rsync to synchronise files
@@ -779,6 +775,6 @@ class SyncTests(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, RSYNC_STARTED_FILENAME)))
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, RSYNC_ENDED_FILENAME)))
             self.assertTrue(os.path.isfile(os.path.join(run.dest_run_folder, runfolders.SEQUENCING_COMPLETED)))
-                            
+                                                    
 if __name__ == '__main__':
 	unittest.main()
