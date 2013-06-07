@@ -70,7 +70,7 @@ def main():
                 # register completion
                 pipelines.registerCompletion()
                 if options.update_lims:
-                    glslims = auto_glslims.GlsLims(options.lims)
+                    glslims = auto_glslims.GlsLims(auto_glslims.LIMS_SERVERS[options.lims])
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     #glslims.publishFlowCell()
                     #glslims.updateSampleProgressStatus()
