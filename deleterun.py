@@ -26,10 +26,8 @@ import argparse
 import time
 import datetime
 
-# import logging module first
+# import custom modules
 import autoanalysis.log as logger
-log = logger.set_custom_logger()
-# then import other custom modules
 import autoanalysis.utils as utils
 import autoanalysis.lims as lims
 import autoanalysis.runfolders as auto_runfolders
@@ -123,18 +121,17 @@ def main():
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
     parser.add_argument("--images", dest="images", action="store", help="number of days to keep images - default set to 14", default=14, type=int)
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_argument("--debug", dest="debug", action="store_true", default=False, help="Set logging level to DEBUG, by default INFO")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     options = parser.parse_args()
 
     # logging configuration
-    log.setLevel(logging.INFO)
-    if options.debug:
-        log.setLevel(logging.DEBUG)        
+    log = logger.get_custom_logger()
     if options.logfile:
-        log.addHandler(logger.set_file_handler(options.logfile))
-        
+        log = logger.get_custom_logger(options.logfile)
+    else:
+        log = logger.get_custom_logger()
+                  
     try:        
         # setting-up time
         present = time.time()
