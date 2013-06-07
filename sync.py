@@ -46,7 +46,6 @@ def main(argv=None):
     options = parser.parse_args()
 
     # logging configuration
-    log = logger.get_custom_logger()
     if options.logfile:
         log = logger.get_custom_logger(options.logfile)
     else:
