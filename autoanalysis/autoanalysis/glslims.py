@@ -38,11 +38,13 @@ class GlsLims:
         self.log = logging.getLogger(__name__)
         self.lims_server = lims_server
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
+        self.log.info('*** LIMS UPDATES ***************************************************************')
 
     def createAnalysisProcesses(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
         """
+        self.log.info('... create analysis processes ..................................................')
         run = self.glsutil.getLatestRunProcessByFlowcellId(flowcell_id)
         if run is not None:
             fastq = self.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', flowcell_id)
@@ -59,6 +61,7 @@ class GlsLims:
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
     def publishFlowCell(self, flowcell_id):
+        self.log.info('... publish flow-cell ..........................................................')
         self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
         
     def updateSampleProgressStatus(self):
