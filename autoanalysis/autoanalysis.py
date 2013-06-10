@@ -45,7 +45,7 @@ def main():
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_argument("--lims", dest="lims", action="store", choices=list(auto_glslims.LIMS_SERVERS.viewkeys()), default=auto_glslims.LIMS_SERVERS['dev'], help="lims servers to choose from %s - default set to %s" % (list(auto_glslims.LIMS_SERVERS.viewkeys()), auto_glslims.LIMS_SERVERS['dev']))
+    parser.add_argument("--lims", dest="lims", action="store", choices=list(auto_glslims.LIMS_SERVERS.viewkeys()), default='dev', help="lims servers to choose from %s - default set to 'dev'" % list(auto_glslims.LIMS_SERVERS.viewkeys()))
     parser.add_argument("--update-lims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
