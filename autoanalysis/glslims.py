@@ -64,9 +64,11 @@ class GlsLims:
         self.log.info('... publish flow-cell ..........................................................')
         self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
         
-    def updateSampleProgressStatus(self):
-        # notify lims by updating progress status UDF on samples to 'Analysis Underway'
-        pass
+    def updateSampleProgressStatus(self, flowcell_id):
+        """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
+        """
+        self.log.info('... update sample progress status ..............................................')
+        self.glsutil.updateFlowcellSampleProgressForAnalysis(flowcell_id)
 
 class GlsLimsTests(unittest.TestCase):
     
