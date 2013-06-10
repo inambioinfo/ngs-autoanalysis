@@ -48,15 +48,15 @@ class GlsLims:
             fastq = self.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', flowcell_id)
             if fastq is None:
                 self.glsutil.createBclToFastqPipelineProcess(flowcell_id)
-                self.log.debug("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['fastq'], flowcell_id))
+                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['fastq'], flowcell_id))
             demux = self.glsutil.getSingleAnalysisProcessByFlowcellId('demux', flowcell_id)
             if demux is None:
                 self.glsutil.createDemuxPipelineProcess(flowcell_id)
-                self.log.debug("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['demux'], flowcell_id))
+                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['demux'], flowcell_id))
             align = self.glsutil.getSingleAnalysisProcessByFlowcellId('align', flowcell_id)
             if align is None:
                 self.glsutil.createAlignmentPipelineProcess(flowcell_id)
-                self.log.debug("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
+                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
     def publishFlowCell(self, flowcell_id):
         self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
