@@ -39,6 +39,10 @@ class GlsLims:
         self.lims_server = lims_server
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** LIMS UPDATES ***************************************************************')
+        
+    def isSequencingRunComplete(self, run_id):
+        # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
+        return self.glsutil.hasFlowcellPassedSequencingQc(run_id)
 
     def createAnalysisProcesses(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists

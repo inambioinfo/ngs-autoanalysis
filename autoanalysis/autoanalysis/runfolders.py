@@ -56,6 +56,12 @@ class RunFolders(object):
         self.analysed_runs = self.getAnalysedRuns()
         self.dest_run_folders = self.getDestinationRunFolders()
         
+    def getAllRuns(self):
+        runs = []
+        for run_folder in self.run_folders:
+            run = RunDefinition(run_folder)
+        return runs
+        
     def getCompletedRuns(self):
         completed_runs = []
         for run_folder in self.run_folders:
@@ -91,6 +97,7 @@ class RunDefinition(object):
         # TODO add reagent cartridge ID from runParameter.xml
         self.run_uid = '%s_%s' % (self.start_date, self.flowcell_id)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
+        self.sequencing_failed = os.path.join(self.run_folder, SEQUENCING_FAILED)
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
@@ -103,6 +110,39 @@ class RunDefinition(object):
         if self.isCompleted():
             return utils.locate_run_folder(os.path.basename(self.run_folder), self.destdir)
         return None
+        
+    def updateSequencingStatus(self, _qc_flag=True, _dry_run=True):
+        if _qc_flag is not None:
+            if _qc_flag: 
+                if not os.path.exists(self.sequencing_completed):
+                    utils.touch(self.sequencing_completed, _dry_run)
+                    self.log.info('create %s' % self.sequencing_completed)
+                else:
+                    self.log.debug('%s already exists' % self.sequencing_completed)
+            else:
+                # all lanes have QC FAILED
+                if not os.path.exists(self.sequencing_failed):
+                    utils.touch(self.sequencing_failed, _dry_run)
+                    self.log.info('create %s' % self.sequencing_failed)
+                else:
+                    self.log.debug('%s already exists' % self.sequencing_failed)
+        else:
+            self.log.info('unknown sequencing status')
+                    
+    def updateAnalysisStatus(self, _dry_run=True):
+        if self.isCompleted():
+            dest_analysis_completed = os.path.join(self.dest_run_folder, ANALYSIS_COMPLETED)
+            if os.path.exists(dest_analysis_completed):
+                if not os.path.exists(self.analysis_completed):
+                    utils.touch(self.analysis_completed, _dry_run)
+                    self.log.info('create %s' % self.analysis_completed)
+                else:
+                    self.log.debug('%s already exists' % self.analysis_completed)
+            else:
+                self.log.debug('%s does not exist - pipelines running' % dest_analysis_completed)
+        else:
+            self.log.debug('%s does not exist - sequencing running' % self.sequencing_completed)
+                    
         
     def isCompleted(self):
         if os.path.exists(self.run_folder):
