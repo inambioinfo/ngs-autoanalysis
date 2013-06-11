@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-sync.py
+updaterunstatus.py
 
 $Id$
 
-Created by Anne Pajon on 2012-10-26.
+Created by Anne Pajon on 2013-06-11.
 
---------------------------------------------------------------------------------
-
-Sequencing server script that synchronizes data to lustre
-
-Usage:
-> python sync.py --basedir=/solexa0[1-3]/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --debug
 """
 
 ################################################################################
@@ -29,18 +23,19 @@ import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
 import autoanalysis.pipelines as auto_pipelines
+import autoanalysis.glslims as auto_glslims
 
 ################################################################################
 # MAIN
 ################################################################################
 def main():
-    
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
     parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+    parser.add_argument("--lims", dest="lims", action="store", choices=list(auto_glslims.LIMS_SERVERS.viewkeys()), default='dev', help="lims servers to choose from %s - default set to 'dev'" % list(auto_glslims.LIMS_SERVERS.viewkeys()))
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     options = parser.parse_args()
@@ -52,15 +47,15 @@ def main():
         log = logger.get_custom_logger()
                   
     try:
-        # loop over all runs that have a Sequencing.completed file in options.basedir
+        # lims connection
+        glslims = auto_glslims.GlsLims(auto_glslims.LIMS_SERVERS[options.lims])
+        # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
-        for run in runs.completed_runs:
+        for run in runs.getAllRuns():
             try:
                 log.info(run.getHeader())
-                # create sync 
-                sync = auto_pipelines.Sync(run, options.dry_run)
-                # execute pipelines
-                sync.execute()
+                run.updateSequencingStatus(glslims.isSequencingRunComplete(run.run_folder_name), options.dry_run)
+                run.updateAnalysisStatus(options.dry_run)
             except:
                 log.exception("Unexpected error")
                 continue
@@ -68,6 +63,7 @@ def main():
         log.exception("Unexpected error")
         raise
 
-if __name__ == "__main__":
-	sys.exit(main())
+
+if __name__ == '__main__':
+	main()
 
