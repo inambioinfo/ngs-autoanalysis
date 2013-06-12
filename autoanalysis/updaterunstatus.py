@@ -86,8 +86,8 @@ def main():
         for run in unknown_runs:
             log.info('UNKNOWN %s' % run.run_folder)
             try:
-                run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run.run_folder)).one()
-                if ('ABORTED' in run.status) or (run.status == 'FAILED'):
+                solexa_run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run.run_folder)).one()
+                if ('ABORTED' in solexa_run.status) or (solexa_run.status == 'FAILED'):
                     log.info('FAILED  %s' % run.run_folder)
                     run.updateSequencingStatus(False, options.dry_run)
             except:
