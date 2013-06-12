@@ -134,7 +134,7 @@ PRIMARY_COMPLETED_FILENAME = "Analysis.primary.completed"
 ################################################################################        
 class PipelineDefinition(object):
 
-    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None):
+    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None, use_dev_lims=True):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = pipeline_name
@@ -163,7 +163,7 @@ class PipelineDefinition(object):
 
         # enviroment variables for setting up and running each pipeline
         self.env = {}
-        self.setEnv(software_path, cluster_host)
+        self.setEnv(software_path, cluster_host, use_dev_lims)
         
     def getHeader(self):
         return '--- %s' % self.pipeline_name.upper()
@@ -171,16 +171,22 @@ class PipelineDefinition(object):
     def printHeader(self):
         self.log.info(self.getHeader())
         
-    def setEnv(self, _software_path, _cluster_host):
+    def setEnv(self, _software_path, _cluster_host, _use_dev_lims):
         """set environment variables for generating shell scripts from their templates
         """
         self.env['bin_meta'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
         self.env['bin_run'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
         self.env['basedir'] = os.path.dirname(self.run.run_folder)
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
-            self.env['options'] = PIPELINES_SETUP_OPTIONS[self.pipeline_name]
+            if _use_dev_lims:
+                self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
+            else:
+                self.env['options'] = PIPELINES_SETUP_OPTIONS[self.pipeline_name]
         else:
-            self.env['options'] = ''
+            if _use_dev_lims:
+                self.env['options'] = '--dev'
+            else:
+                self.env['options'] = ''
         self.env['run_uid'] = self.run.run_uid
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
@@ -366,13 +372,14 @@ class PipelineDefinition(object):
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True):
+    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_dev_lims=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.pipeline_step = pipeline_step
         self.software_path = software_path
         self.cluster_host = cluster_host
         self.dry_run = dry_run
+        self.use_dev_lims = use_dev_lims 
 
         self.pipelines = PIPELINES
         if self.pipeline_step:

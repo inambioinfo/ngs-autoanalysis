@@ -34,9 +34,12 @@ LIMS_SERVERS = {
 
 class GlsLims:
     
-    def __init__(self, lims_server=LIMS_SERVERS['dev']):
+    def __init__(self, use_dev_lims=True):
         self.log = logging.getLogger(__name__)
-        self.lims_server = lims_server
+        if use_dev_lims:
+            self.lims_server = LIMS_SERVERS['dev']
+        else:
+            self.lims_server = LIMS_SERVERS['pro']
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** LIMS CONNECTION ************************************************************')
         

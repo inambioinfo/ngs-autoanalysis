@@ -45,7 +45,7 @@ def main():
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_argument("--lims", dest="lims", action="store", choices=list(auto_glslims.LIMS_SERVERS.viewkeys()), default='dev', help="lims servers to choose from %s - default set to 'dev'" % list(auto_glslims.LIMS_SERVERS.viewkeys()))
+    parser.add_argument("--dev-lims", dest="use_dev_lims", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--update-lims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -64,13 +64,13 @@ def main():
             try:
                 log.info(run.getHeader())
                 # create pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
                 # execute pipelines
                 pipelines.execute()
                 # register completion
                 pipelines.registerCompletion()
                 if options.update_lims:
-                    glslims = auto_glslims.GlsLims(auto_glslims.LIMS_SERVERS[options.lims])
+                    glslims = auto_glslims.GlsLims(options.use_dev_lims)
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     glslims.updateSampleProgressStatus(run.flowcell_id)
                     if run.isAnalysed():
