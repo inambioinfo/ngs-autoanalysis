@@ -20,6 +20,7 @@ import logging
 
 # to connect to old lims for checking status of old runs
 from sqlalchemy.ext.sqlsoup import SqlSoup
+from sqlalchemy.orm.exc import NoResultFound
 
 # import custom modules
 import autoanalysis.log as logger
