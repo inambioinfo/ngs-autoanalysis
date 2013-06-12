@@ -42,6 +42,7 @@ class GlsLims:
         
     def isSequencingRunComplete(self, run_id):
         # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
+        self.log.info('... check sequencing status ....................................................')
         return self.glsutil.hasFlowcellPassedSequencingQc(run_id)
 
     def createAnalysisProcesses(self, flowcell_id):
