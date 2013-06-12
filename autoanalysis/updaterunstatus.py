@@ -81,6 +81,8 @@ def main():
             log.info('PASSED  %s' % run.run_folder)
         for run in failed_runs:
             log.info('FAILED  %s' % run.run_folder)
+        # old lims db
+        solexa_db = SqlSoup('mysql://readonly@uk-cri-lbio04/cri_solexa')
         for run in unknown_runs:
             log.info('UNKNOWN %s' % run.run_folder)
             try:
