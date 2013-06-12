@@ -51,10 +51,11 @@ def main():
         glslims = auto_glslims.GlsLims(auto_glslims.LIMS_SERVERS[options.lims])
         # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
+        all_runs = runs.getAllRuns()
         passed_runs = []
         failed_runs = []
         unknown_runs = []
-        for run in runs.getAllRuns():
+        for run in all_runs:
             try:
                 log.info(run.getHeader())
                 qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
@@ -79,6 +80,10 @@ def main():
             log.info('FAILED  %s' % run.run_folder)
         for run in unknown_runs:
             log.info('UNKNOWN %s' % run.run_folder)
+        log.info('ALL     RUNS: %s' % len(all_runs))
+        log.info('PASSED  RUNS: %s' % len(passed_runs))
+        log.info('FAILED  RUNS: %s' % len(failed_runs))
+        log.info('UNKNOWN RUNS: %s' % len(unknown_runs))
     except:
         log.exception("Unexpected error")
         raise
