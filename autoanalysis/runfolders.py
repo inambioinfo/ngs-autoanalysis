@@ -61,6 +61,7 @@ class RunFolders(object):
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
             run = RunDefinition(run_folder, self.destdir)
+            runs.append(run)
         return runs
         
     def getCompletedRuns(self):
