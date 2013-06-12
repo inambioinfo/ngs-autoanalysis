@@ -60,7 +60,7 @@ class RunFolders(object):
         runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
-            run = RunDefinition(run_folder)
+            run = RunDefinition(run_folder, self.destdir)
         return runs
         
     def getCompletedRuns(self):
@@ -149,6 +149,7 @@ class RunDefinition(object):
         if os.path.exists(self.run_folder):
             # check Sequencing.completed is present and analysis.ignore is not present
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
+                self.log.debug('%s is present' % self.sequencing_completed)
                 return True
             else:
                 if not os.path.exists(self.sequencing_completed):
