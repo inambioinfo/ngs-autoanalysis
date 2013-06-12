@@ -18,6 +18,9 @@ import glob
 import argparse
 import logging
 
+# to connect to old lims for checking status of old runs
+from sqlalchemy.ext.sqlsoup import SqlSoup
+
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
@@ -80,6 +83,14 @@ def main():
             log.info('FAILED  %s' % run.run_folder)
         for run in unknown_runs:
             log.info('UNKNOWN %s' % run.run_folder)
+            try:
+                run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run_folder)).one()
+                if ('ABORTED' in run.status) or (run.status == 'FAILED'):
+                    log.info('FAILED  %s' % run.run_folder)
+                    run.updateSequencingStatus(False, options.dry_run)
+            except:
+                log.exception("Unexpected error")
+                continue
         log.info('ALL     RUNS: %s' % len(all_runs))
         log.info('PASSED  RUNS: %s' % len(passed_runs))
         log.info('FAILED  RUNS: %s' % len(failed_runs))
