@@ -59,6 +59,7 @@ class RunFolders(object):
     def getAllRuns(self):
         runs = []
         for run_folder in self.run_folders:
+            self.log.debug(run_folder)
             run = RunDefinition(run_folder)
         return runs
         
