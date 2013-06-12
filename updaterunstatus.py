@@ -59,19 +59,23 @@ def main():
         passed_runs = []
         failed_runs = []
         unknown_runs = []
+        known_runs = []
         for run in all_runs:
             try:
                 log.info(run.getHeader())
-                qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
-                run.updateSequencingStatus(qc_flag, options.dry_run)
-                run.updateAnalysisStatus(options.dry_run)
-                if qc_flag is not None:
-                    if qc_flag:
-                        passed_runs.append(run)
+                if not run.isSequencingStatusUpdated():
+                    qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
+                    run.updateSequencingStatus(qc_flag, options.dry_run)
+                    run.updateAnalysisStatus(options.dry_run)
+                    if qc_flag is not None:
+                        if qc_flag:
+                            passed_runs.append(run)
+                        else:
+                            failed_runs.append(run)
                     else:
-                        failed_runs.append(run)
+                        unknown_runs.append(run)
                 else:
-                    unknown_runs.append(run)
+                    known_runs.append(run)
             except:
                 log.exception("Unexpected error")
                 continue
@@ -97,6 +101,8 @@ def main():
 
         # print run reports
         log.info('*** RUN REPORTS ****************************************************************')
+        for run in known_runs:
+            log.info('KNOWN   %s' % run.run_folder)
         for run in passed_runs:
             log.info('PASSED  %s' % run.run_folder)
         for run in failed_runs:
@@ -104,6 +110,7 @@ def main():
         for run in unknown_runs:
             log.info('UNKNOWN %s' % run.run_folder)
         log.info('ALL     RUNS: %s' % len(all_runs))
+        log.info('KNOWN   RUNS: %s' % len(known_runs))
         log.info('PASSED  RUNS: %s' % len(passed_runs))
         log.info('FAILED  RUNS: %s' % len(failed_runs))
         log.info('UNKNOWN RUNS: %s' % len(unknown_runs))
