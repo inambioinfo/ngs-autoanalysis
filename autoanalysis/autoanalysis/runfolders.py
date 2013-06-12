@@ -131,6 +131,12 @@ class RunDefinition(object):
         else:
             self.log.info('unknown sequencing status')
                     
+    def isSequencingStatusUpdated(self):
+        # check if Sequencing.completed or Sequencing.failed presents
+        if os.path.exists(self.sequencing_completed) or os.path.exists(self.sequencing_failed):
+            return True
+        return False
+
     def updateAnalysisStatus(self, _dry_run=True):
         if self.isCompleted():
             dest_analysis_completed = os.path.join(self.dest_run_folder, ANALYSIS_COMPLETED)
@@ -144,8 +150,7 @@ class RunDefinition(object):
                 self.log.debug('%s does not exist - pipelines running' % dest_analysis_completed)
         else:
             self.log.debug('%s does not exist - sequencing running' % self.sequencing_completed)
-                    
-        
+            
     def isCompleted(self):
         if os.path.exists(self.run_folder):
             # check Sequencing.completed is present and analysis.ignore is not present
