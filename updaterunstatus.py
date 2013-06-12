@@ -76,27 +76,30 @@ def main():
                 log.exception("Unexpected error")
                 continue
                 
-        # print run reports
-        log.info('*** RUN REPORTS ****************************************************************')
-        for run in passed_runs:
-            log.info('PASSED  %s' % run.run_folder)
-        for run in failed_runs:
-            log.info('FAILED  %s' % run.run_folder)
-        # old lims db
+        # looking for failed runs in old lims that have not been migrated
         solexa_db = SqlSoup('mysql://readonly@uk-cri-lbio04/cri_solexa')
         for run in unknown_runs:
-            log.info('UNKNOWN %s' % run.run_folder)
             try:
                 solexa_run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run.run_folder)).one()
                 if ('ABORTED' in solexa_run.status) or (solexa_run.status == 'FAILED'):
-                    log.info('FAILED  %s' % run.run_folder)
                     run.updateSequencingStatus(False, options.dry_run)
+                    failed_runs.append(run)
+                    unknown_runs.remove(run)
             except NoResultFound:
                 log.info("No result found for %s in solexa db" % run.run_folder)
                 continue
             except:
                 log.exception("Unexpected error")
                 continue
+
+        # print run reports
+        log.info('*** RUN REPORTS ****************************************************************')
+        for run in passed_runs:
+            log.info('PASSED  %s' % run.run_folder)
+        for run in failed_runs:
+            log.info('FAILED  %s' % run.run_folder)
+        for run in unknown_runs:
+            log.info('UNKNOWN %s' % run.run_folder)
         log.info('ALL     RUNS: %s' % len(all_runs))
         log.info('PASSED  RUNS: %s' % len(passed_runs))
         log.info('FAILED  RUNS: %s' % len(failed_runs))
