@@ -90,6 +90,9 @@ def main():
                 if ('ABORTED' in solexa_run.status) or (solexa_run.status == 'FAILED'):
                     log.info('FAILED  %s' % run.run_folder)
                     run.updateSequencingStatus(False, options.dry_run)
+            except NoResultFound:
+                log.info("No result found for %s in solexa db" % run.run_folder)
+                continue
             except:
                 log.exception("Unexpected error")
                 continue
