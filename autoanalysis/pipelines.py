@@ -397,7 +397,7 @@ class Pipelines(object):
         if self.run.isCompleted():
             for pipeline_name in self.pipelines.keys():
                 # create pipeline definition
-                pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host)
+                pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_dev_lims)
                 pipeline_definition.printHeader()
                 # - step 1 - create setup-pipeline script 
                 pipeline_definition.createSetupPipelineScript()
