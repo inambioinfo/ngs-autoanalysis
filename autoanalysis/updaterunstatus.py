@@ -82,7 +82,8 @@ def main():
                 
         log.info('*** OLD LIMS CONNECTION ********************************************************')
         # looking for failed runs in old lims that have not been migrated
-        solexa_db = SqlSoup('mysql://readonly@uk-cri-lbio04/cri_solexa')
+        #solexa_db = SqlSoup('mysql://readonly@uk-cri-lbio04/cri_solexa')
+        solexa_db = SqlSoup('mysql://readonly@limsdev.cri.camres.org/cri_solexa')
         for run in list(unknown_runs):
             try:
                 log.info('UNKNOWN %s' % run.run_folder)
