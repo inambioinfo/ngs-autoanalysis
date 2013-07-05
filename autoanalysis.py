@@ -69,12 +69,17 @@ def main():
                 pipelines.execute()
                 # register completion
                 pipelines.registerCompletion()
+                # connect to lims
+                glslims = auto_glslims.GlsLims(options.use_dev_lims)
+                # create lims processes, update sample status and publish flow-cell
                 if options.update_lims:
-                    glslims = auto_glslims.GlsLims(options.use_dev_lims)
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     glslims.updateSampleProgressStatus(run.flowcell_id)
                     if run.isAnalysed():
                         glslims.publishFlowCell()
+                # publish external data
+                external = auto_pipelines.External(run, glslims.findExternalData(run.run_folder_name), options.dry_run)
+                external.publish()
             except:
                 log.exception("Unexpected error")
                 continue

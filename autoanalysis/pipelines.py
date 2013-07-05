@@ -412,13 +412,6 @@ class Pipelines(object):
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
-    """ TODO
-    - publish_external_data: publish external data to ftp server - rsync to ldmz01
-    Create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
-    Synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
-    --> need list of external samples and to which institute they belong
-    """
-    
     def registerCompletion(self):
         """ Create Analysis.primary.completed and Analysis.completed when pipelines
         have been successfully ran and synchronised
@@ -491,16 +484,159 @@ class Pipelines(object):
         return True
 
 ################################################################################
+# CLASS External
+################################################################################
+class External(object):
+    
+    def __init__(self, run, external_data, dry_run=True):
+        self.log = logging.getLogger(__name__) 
+        self.run = run
+        self.external_data = external_data
+        self.pipeline_name = 'external'
+        self.dry_run = dry_run
+        
+        self.primary_completed = os.path.join(self.run.run_folder, PRIMARY_COMPLETED_FILENAME)
+        self.archive_primary_completed = os.path.join(self.run.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
+        self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
+        self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
+
+    def publish(self):
+        """publish external data to ftp server - rsync to ldmz01
+        create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
+        synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
+        """
+        if self.run.isCompleted():
+            if self.external_data:
+                # create pipeline definition
+                pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
+                pipeline_definition.printHeader()
+                # create symlinks for external users
+                self.createSymlinks(pipeline_definition.dest_pipeline_directory)
+                # create rsync-pipeline script
+                pipeline_definition.createRsyncRunFolderScript()
+                # run rsync-pipeline script
+                pipeline_definition.runRsyncRunFolderScript(self.dry_run)
+            else:
+                log.info('No external data to publish')
+            
+    def createSymlinks(self, external_directory):
+        if self.external_data:
+            if self.run.dest_run_folder:
+                # rsync fastq files at the end of primary
+                if os.path.exists(self.archive_primary_completed):            
+                    # symlink matching files from primary directory
+                    for file_id in list(self.external_files.viewkeys()):
+                        for ftpdir in self.external_samples[sample_id]['to_ftpdirs']:
+                            # create ftpdir in external directory in run folder
+                            runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
+                            utils.create_directory(runfolder_ext_ftpdir)
+                            file_path = self.external_samples[sample_id]['from_contenturi']
+                            try:
+                                # create symlink
+                                link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_path))                
+                                if os.path.lexists(link_name):
+                                    os.remove(link_name)
+                                os.symlink(file_name, link_name)
+                                log.debug("%s symlink created" % link_name)
+                            except:
+                                self.log.exception('unexpected error when creating symlink')
+                                raise
+                else:
+                    log.info('Primary not completed')
+            else:
+                log.warn('%s does not exist' % self.run.dest_run_folder)
+        else:
+            log.info('No external data to publish')
+
+    def createRsyncPipelineScript(self):
+        self.log.info('... create rsync pipeline script ...............................................')
+        try:
+            if not os.path.exists(self.rsync_script_path):
+                utils.create_script(self.rsync_script_path, PIPELINE_RSYNC_COMMAND % self.env)
+            else:
+                self.log.debug('%s already exists' % self.rsync_script_path)
+        except:
+            self.log.exception('unexpected error when creating rsync pipeline script')
+            raise
+
+    def createFtpRsyncScript(self, external_directory, rsync_script_path, rsync_started, rsync_ended, rsync_fail, log_prefix, rsync_lock):
+        """Create rsync script for external data
+        """
+        self.log.info('... create ftp rsync pipeline script ...........................................')
+        PIPELINE_RSYNC_COMMAND = '''
+        touch %(rsync_started)s
+        touch %(rsync_lock)s
+
+        if ( %(rsync_cmd)s ) 
+        then
+           touch %(rsync_ended)s
+        else
+            touch %(rsync_fail)s
+        fi
+
+        rm %(rsync_lock)s
+        '''
+        
+        rsync_cmd = ""
+        # set of institutes
+        ftpdirs = set()
+        for sample_id in list(self.external_samples.viewkeys()):
+            for ftpdir in self.external_samples[sample_id]['to_ftpdirs']:
+                ftpdirs.add(ftpdir)
+        for ftpdir in ftpdirs:
+            src = os.path.join(external_directory, ftpdir)
+            dest = "%s/%s/current/" % (FTP_URL, ftpdir)
+            rsync_log = "%s/%s_%s.log" % (external_directory, log_prefix, ftpdir)
+            rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+        command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
+        utils.create_script(rsync_script_path, command)
+
+    def runFtpRsyncScript(self, rsync_script_path, rsync_started, rsync_finished, rsync_lock):
+        """Run rsync script for external data
+        """
+        if os.path.exists(rsync_script_path):
+            if not os.path.exists(rsync_started):
+                if not os.path.exists(rsync_lock):
+                    utils.touch(rsync_lock)
+                    utils.run_bg_process(['sh', '%s' % rsync_script_path], self.dry_run)
+                else:
+                    log.info('%s presents - another rsync process is running' % rsync_lock)
+            else:
+                if not os.path.exists(rsync_finished):
+                    log.info('external data is currently being synchronised')
+                else:
+                    log.info('external data has been synchronised')
+        else:
+            log.warn('%s is missing' % rsync_script_path)
+            
+    def isExternalDataPublished(self):
+        """Checks that external data has been published
+        """
+        external_directory = os.path.join(self.run_definition.dest_run_folder, 'external')
+        rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+        rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
+        rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
+        rsync_demux_finished = os.path.join(external_directory, RSYNC_DEMUX_FINISHED_FILENAME)
+        if self.external_samples:
+            # rsync external data not finished or started
+            if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
+                return False
+            if self.run_definition.multiplexed_run:
+                if not os.path.exists(rsync_demux_started) or not os.path.exists(rsync_demux_finished):
+                    return False
+        return True
+
+################################################################################
 # CLASS Sync
 ################################################################################
 class Sync(object):
-    
+
     def __init__(self, run, dry_run=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.pipeline_name = 'rsync'
         self.dry_run = dry_run
-        
+
     def execute(self):
         """execute rsync_runfolder by creating a shell script and running it
         """
@@ -512,7 +648,7 @@ class Sync(object):
             pipeline_definition.createRsyncRunFolderScript()
             # run rsync-pipeline script
             pipeline_definition.runRsyncRunFolderScript(self.dry_run)
-            
+
 ################################################################################
 # Unit tests
 ################################################################################

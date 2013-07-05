@@ -47,6 +47,11 @@ class GlsLims:
         # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.hasFlowcellPassedSequencingQc(run_id)
+        
+    def isAllFastqFilesFound(self, run_id):
+        # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
+        self.log.info('... check fastq files ..........................................................')
+        return self.glsutil.isFastqPipelineComplete(run_id) and self.glsutil.isDemuxPipelineComplete(run_id)
 
     def createAnalysisProcesses(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
@@ -77,6 +82,18 @@ class GlsLims:
         """
         self.log.info('... update sample progress status ..............................................')
         self.glsutil.updateFlowcellSampleProgressForAnalysis(flowcell_id)
+        
+    def findExternalData(self, run_id):
+        self.log.info('... find external data .........................................................')
+        data = {}
+        fastq_files = self.glsutil.getRawFastqFiles(run_id)
+        for raw in fastq_files:
+            ftpdirs = self.glsutil.getFtpDirFromArtifactId(raw.artifactid)
+            if ftpdirs:
+                data[raw.artifactid] = {'from_contenturi': raw.contenturi, 'to_ftpdirs': []}
+                for ftpdir in ftpdirs:
+                    data[raw.artifactid]['to_ftpdirs'].append(ftpdir.ftpdir)
+        return data
 
 class GlsLimsTests(unittest.TestCase):
     
