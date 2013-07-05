@@ -63,10 +63,11 @@ def main():
         for run in all_runs:
             try:
                 log.info(run.getHeader())
-                if not run.isSequencingStatusUpdated():
+                if not run.isSequencingStatusPresent():
                     qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
+                    all_fastq_found = glslims.isAllFastqFilesFound(run.run_folder_name)
                     run.updateSequencingStatus(qc_flag, options.dry_run)
-                    run.updateAnalysisStatus(options.dry_run)
+                    run.updateAnalysisStatus(all_fastq_found, options.dry_run)
                     if qc_flag is not None:
                         if qc_flag:
                             passed_runs.append(run)

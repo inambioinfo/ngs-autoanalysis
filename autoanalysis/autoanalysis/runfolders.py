@@ -131,29 +131,34 @@ class RunDefinition(object):
         else:
             self.log.info('unknown sequencing status')
                     
-    def isSequencingStatusUpdated(self):
-        # check if Sequencing.completed or Sequencing.failed presents
+    def isSequencingStatusPresent(self):
+        # check if Sequencing.completed or Sequencing.failed is present
         if os.path.exists(self.sequencing_completed) or os.path.exists(self.sequencing_failed):
             return True
         return False
 
-    def updateAnalysisStatus(self, _dry_run=True):
-        if self.isCompleted():
-            dest_analysis_completed = os.path.join(self.dest_run_folder, ANALYSIS_COMPLETED)
-            if os.path.exists(dest_analysis_completed):
-                if not os.path.exists(self.analysis_completed):
-                    utils.touch(self.analysis_completed, _dry_run)
-                    self.log.info('create %s' % self.analysis_completed)
-                else:
-                    self.log.debug('%s already exists' % self.analysis_completed)
+    def updateAnalysisStatus(self, _all_fastq_found=False, _dry_run=True):
+        if _all_fastq_found:
+            if not os.path.exists(self.analysis_completed):
+                utils.touch(self.analysis_completed, _dry_run)
+                self.log.info('create %s' % self.analysis_completed)
             else:
-                self.log.debug('%s does not exist - pipelines running' % dest_analysis_completed)
+                self.log.debug('%s already exists' % self.analysis_completed)
         else:
-            self.log.debug('%s does not exist - sequencing running' % self.sequencing_completed)
+            if os.path.exists(self.sequencing_completed):
+                self.log.info('All fastq files not found - analysis running')
+            else:
+                self.log.info('%s does not exist - sequencing running' % self.sequencing_completed)
+                
+    def isAnalysisStatusPresent(self):
+        # check if Analysed.completed is present
+        if os.path.exists(self.analysis_completed):
+            return True
+        return False
             
     def isCompleted(self):
+        # check Sequencing.completed is present and analysis.ignore is not present - ready for analysis
         if os.path.exists(self.run_folder):
-            # check Sequencing.completed is present and analysis.ignore is not present
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
                 self.log.debug('%s is present' % self.sequencing_completed)
                 return True
@@ -167,8 +172,8 @@ class RunDefinition(object):
         return False
         
     def isAnalysed(self):
+        # check Analysed.completed is present and dont_delete is not present - ready for cleaning
         if os.path.exists(self.run_folder):
-            # check Analysed.completed is present and dont_delete is not present
             if os.path.exists(self.analysis_completed) and not os.path.exists(self.dont_delete):
                 return True
             else:
