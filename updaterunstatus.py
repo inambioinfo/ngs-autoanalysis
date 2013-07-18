@@ -68,7 +68,7 @@ def main():
                     qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
                     run.updateSequencingStatus(qc_flag, options.dry_run)
                 if not run.isSyncStatusPresent():
-                    run.updateSyncStatus(option.dry_run)
+                    run.updateSyncStatus(options.dry_run)
                     
                 # reporting
                 if os.path.exists(run.sequencing_completed):
