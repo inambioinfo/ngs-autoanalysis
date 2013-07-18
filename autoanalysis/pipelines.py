@@ -517,7 +517,7 @@ class External(object):
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncRunFolderScript(self.dry_run)
             else:
-                log.info('No external data to publish')
+                self.log.info('No external data to publish')
             
     def createSymlinks(self, external_directory):
         if self.external_data:
