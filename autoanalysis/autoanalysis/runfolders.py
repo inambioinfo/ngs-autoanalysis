@@ -153,7 +153,7 @@ class RunDefinition(object):
             if os.path.exists(os.path.join(rsync_folder, RSYNC_STARTED)):
                 if os.path.exists(os.path.join(rsync_folder, RSYNC_ENDED)):
                     if not os.path.exists(self.sync_completed):
-                        utils.touch(self.sync_completed)
+                        utils.touch(self.sync_completed, _dry_run)
                         self.log.info('create %s' % self.sync_completed)
                     else:
                         self.log.debug('%s already exists' % self.sync_completed)
