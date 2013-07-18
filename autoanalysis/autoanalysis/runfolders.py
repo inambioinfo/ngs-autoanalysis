@@ -149,7 +149,7 @@ class RunDefinition(object):
         
     def updateSyncStatus(self, _dry_run=True):
         rsync_folder = os.path.join(self.run_folder, RSYNC_FOLDER)
-        if os.path.exist(rsync_folder):
+        if os.path.exists(rsync_folder):
             if os.path.exists(os.path.join(rsync_folder, RSYNC_STARTED)):
                 if os.path.exists(os.path.join(rsync_folder, RSYNC_ENDED)):
                     if not os.path.exists(self.sync_completed):
