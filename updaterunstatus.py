@@ -81,7 +81,7 @@ def main():
                 elif os.path.exists(run.sequencing_failed):
                     seqfail_runs.append(run)
                 else:
-                    unknown_runs.append(runs)
+                    unknown_runs.append(run)
             except:
                 log.exception("Unexpected error")
                 continue
