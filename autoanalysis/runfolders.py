@@ -29,9 +29,17 @@ RUNFOLDER_GLOB = "%s/??????_*_*_*"
 ONERUNFOLDER_GLOB = "%s/%s"
 SEQUENCING_COMPLETED = 'Sequencing.completed'
 SEQUENCING_FAILED = 'Sequencing.failed'
+SYNC_COMPLETED = 'Sync.completed'
+SYNC_FAILED = 'Sync.failed'
 ANALYSIS_COMPLETED = "Analysis.completed"
 ANALYSIS_IGNORE = 'analysis.ignore'
 DONT_DELETE = 'dont.delete'
+
+RSYNC_FOLDER = "rsync"
+RSYNC_STARTED = "rsync.started"
+RSYNC_ENDED = "rsync.ended"
+RSYNC_FAIL = "rsync.failed"
+
 
 RUN_HEADER = """
 ================================================================================
@@ -100,6 +108,8 @@ class RunDefinition(object):
         self.run_uid = '%s_%s' % (self.start_date, self.flowcell_id)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
         self.sequencing_failed = os.path.join(self.run_folder, SEQUENCING_FAILED)
+        self.sync_completed = os.path.join(self.run_folder, SYNC_COMPLETED)
+        self.sync_failed = os.path.join(self.run_folder, SYNC_FAILED)
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
@@ -134,6 +144,34 @@ class RunDefinition(object):
     def isSequencingStatusPresent(self):
         # check if Sequencing.completed or Sequencing.failed is present
         if os.path.exists(self.sequencing_completed) or os.path.exists(self.sequencing_failed):
+            return True
+        return False
+        
+    def updateSyncStatus(self, _dry_run=True):
+        rsync_folder = os.path.join(self.run_folder, RSYNC_FOLDER)
+        if os.path.exist(rsync_folder):
+            if os.path.exists(os.path.join(rsync_folder, RSYNC_STARTED)):
+                if os.path.exists(os.path.join(rsync_folder, RSYNC_ENDED)):
+                    if not os.path.exists(self.sync_completed):
+                        utils.touch(self.sync_completed)
+                        self.log.info('create %s' % self.sync_completed)
+                    else:
+                        self.log.debug('%s already exists' % self.sync_completed)
+                elif os.path.exists(os.path.join(rsync_folder, RSYNC_FAILED)):
+                    if not os.path.exists(self.sync_failed):
+                        utils.touch(self.sync_failed)
+                        self.log.info('create %s' % self.sync_failed)
+                    else:
+                        self.log.debug('%s already exists' % self.sync_failed)
+                else:
+                    self.log.info('Sync not finished.')
+                    
+        else:
+            self.log.info('Not sync yet. %s does not exist.' % rsync_folder)
+            
+    def isSyncStatusPresent(self):
+        # check if Sync.completed or Sync.failed is present
+        if os.path.exists(self.sync_completed) or os.path.exists(self.sync_failed):
             return True
         return False
 

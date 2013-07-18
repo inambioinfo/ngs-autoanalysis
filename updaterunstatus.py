@@ -56,66 +56,52 @@ def main():
         # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
         all_runs = runs.getAllRuns()
-        passed_runs = []
-        failed_runs = []
+        completed_runs = []
+        tosync_runs = []
+        syncfail_runs = []
+        seqfail_runs = []
         unknown_runs = []
-        known_runs = []
         for run in all_runs:
             try:
                 log.info(run.getHeader())
                 if not run.isSequencingStatusPresent():
                     qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
-                    all_fastq_found = glslims.isAllFastqFilesFound(run.run_folder_name)
                     run.updateSequencingStatus(qc_flag, options.dry_run)
-                    run.updateAnalysisStatus(all_fastq_found, options.dry_run)
-                    if qc_flag is not None:
-                        if qc_flag:
-                            passed_runs.append(run)
-                        else:
-                            failed_runs.append(run)
+                if not run.isSyncStatusPresent():
+                    run.updateSyncStatus(option.dry_run)
+                    
+                # reporting
+                if os.path.exists(run.sequencing_completed):
+                    if os.path.exists(run.sync_completed):
+                        completed_runs.append(run)
+                    elif os.path.exists(run.sync_failed):
+                        syncfail_runs.append(run)
                     else:
-                        unknown_runs.append(run)
+                        tosync_runs.append(run)
+                elif os.path.exists(run.sequencing_failed):
+                    seqfail_runs.append(run)
                 else:
-                    known_runs.append(run)
+                    unknown_runs.append(runs)
             except:
                 log.exception("Unexpected error")
                 continue
-                
-        log.info('*** OLD LIMS CONNECTION ********************************************************')
-        # looking for failed runs in old lims that have not been migrated
-        #solexa_db = SqlSoup('mysql://readonly@uk-cri-lbio04/cri_solexa')
-        solexa_db = SqlSoup('mysql://readonly@limsdev.cri.camres.org/cri_solexa')
-        for run in list(unknown_runs):
-            try:
-                log.info('UNKNOWN %s' % run.run_folder)
-                solexa_run = solexa_db.solexarun.filter_by(pipelinePath=os.path.basename(run.run_folder)).one()
-                log.debug(solexa_run.status)
-                if (solexa_run.status == 'ABORTED') or (solexa_run.status == 'FAILED'):
-                    run.updateSequencingStatus(False, options.dry_run)
-                    failed_runs.append(run)
-                    unknown_runs.remove(run)
-            except NoResultFound:
-                log.info("No result found for %s in solexa db" % run.run_folder)
-                continue
-            except:
-                log.exception("Unexpected error")
-                continue
-
         # print run reports
         log.info('*** RUN REPORTS ****************************************************************')
-        for run in known_runs:
-            log.info('KNOWN   %s' % run.run_folder)
-        for run in passed_runs:
-            log.info('PASSED  %s' % run.run_folder)
-        for run in failed_runs:
-            log.info('FAILED  %s' % run.run_folder)
+        for run in completed_runs:
+            log.info('COMPLETE  %s' % run.run_folder)
+        for run in seqfail_runs:
+            log.info('SEQ FAIL  %s' % run.run_folder)
+        for run in syncfail_runs:
+            log.info('SYNC FAIL %s' % run.run_folder)
+        for run in tosync_runs:
+            log.info('TO SYNC   %s' % run.run_folder)
         for run in unknown_runs:
-            log.info('UNKNOWN %s' % run.run_folder)
-        log.info('ALL     RUNS: %s' % len(all_runs))
-        log.info('KNOWN   RUNS: %s' % len(known_runs))
-        log.info('PASSED  RUNS: %s' % len(passed_runs))
-        log.info('FAILED  RUNS: %s' % len(failed_runs))
-        log.info('UNKNOWN RUNS: %s' % len(unknown_runs))
+            log.info('UNKNOWN   %s' % run.run_folder)
+        log.info('COMPLETE  RUNS: %s' % len(completed_runs))
+        log.info('SEQ FAIL  RUNS: %s' % len(seqfail_runs))
+        log.info('SYNC FAIL RUNS: %s' % len(syncfail_runs))
+        log.info('TO SYNC   RUNS: %s' % len(tosync_runs))
+        log.info('UNKNOWN   RUNS: %s' % len(unknown_runs))
     except:
         log.exception("Unexpected error")
         raise

@@ -123,7 +123,7 @@ PIPELINE_FAILED_FILENAME = "pipeline.failed"
 RSYNC_SCRIPT_FILENAME = "rsync.sh"
 RSYNC_STARTED_FILENAME = "rsync.started"
 RSYNC_ENDED_FILENAME = "rsync.ended"
-RSYNC_FAIL_FILENAME = "rsync.fail"
+RSYNC_FAIL_FILENAME = "rsync.failed"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_LOCK_FILENAME = "rsync.lock"
 
