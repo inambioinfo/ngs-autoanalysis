@@ -78,8 +78,8 @@ def main():
                     if run.isAnalysed():
                         glslims.publishFlowCell()
                 # publish external data
-                external = auto_pipelines.External(run, glslims.findExternalData(run.run_folder_name), options.dry_run)
-                external.publish()
+                #external = auto_pipelines.External(run, glslims.findExternalData(run.run_folder_name), options.dry_run)
+                #external.publish()
             except:
                 log.exception("Unexpected error")
                 continue

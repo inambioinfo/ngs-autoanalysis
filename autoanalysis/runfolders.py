@@ -51,8 +51,9 @@ RUN_HEADER = """
 ################################################################################
         
 class RunFolders(object):
-    def __init__(self, basedir, destdir, one_run_folder=None): # destdir
+    def __init__(self, basedir, destdir, one_run_folder=None, do_create_destdirs=True): # destdir
         self.log = logging.getLogger(__name__) 
+        self.do_create_destdirs = do_create_destdirs
         self.basedir = basedir
         self.destdir = destdir
         self.one_run_folder = one_run_folder
@@ -68,14 +69,14 @@ class RunFolders(object):
         runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
-            run = RunDefinition(run_folder, self.destdir)
+            run = RunDefinition(run_folder, self.destdir, self.do_create_destdirs)
             runs.append(run)
         return runs
         
     def getCompletedRuns(self):
         completed_runs = []
         for run_folder in self.run_folders:
-            run = RunDefinition(run_folder, self.destdir)
+            run = RunDefinition(run_folder, self.destdir, self.do_create_destdirs)
             if run.isCompleted():
                 completed_runs.append(run)
         return completed_runs
@@ -95,8 +96,9 @@ class RunFolders(object):
         return glob.glob(RUNFOLDER_GLOB % self.destdir)
         
 class RunDefinition(object):
-    def __init__(self, run_folder, destdir=None):
+    def __init__(self, run_folder, destdir=None, do_create_destdir=True):
         self.log = logging.getLogger(__name__) 
+        self.do_create_destdir = do_create_destdir
         self.run_folder = run_folder
         self.destdir = destdir
         self.run_folder_name = os.path.basename(self.run_folder)
@@ -119,7 +121,7 @@ class RunDefinition(object):
         return RUN_HEADER % {'run_folder': self.run_folder_name}
         
     def createDestinationRunFolder(self):
-        if self.isCompleted() and self.destdir:
+        if self.isCompleted() and self.destdir and self.do_create_destdir:
             return utils.locate_run_folder(os.path.basename(self.run_folder), self.destdir)
         return None
         
