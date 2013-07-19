@@ -122,7 +122,9 @@ class RunDefinition(object):
         
     def createDestinationRunFolder(self):
         if self.isCompleted() and self.destdir and self.do_create_destdir:
-            return utils.locate_run_folder(os.path.basename(self.run_folder), self.destdir)
+            return utils.locate_run_folder(self.run_folder_name, self.destdir)
+        elif self.isCompleted() and self.destdir:
+            return os.path.join(self.destdir, self.run_folder_name)
         return None
         
     def updateSequencingStatus(self, _qc_flag=True, _dry_run=True):
