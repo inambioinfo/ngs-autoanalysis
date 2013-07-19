@@ -143,7 +143,11 @@ class RunDefinition(object):
                     
     def isSequencingStatusPresent(self):
         # check if Sequencing.completed or Sequencing.failed is present
-        if os.path.exists(self.sequencing_completed) or os.path.exists(self.sequencing_failed):
+        if os.path.exists(self.sequencing_completed):
+            self.log.debug('%s found' % self.sequencing_completed)
+            return True
+        if os.path.exists(self.sequencing_failed):
+            self.log.debug('%s found' % self.sequencing_failed)
             return True
         return False
         
@@ -171,7 +175,11 @@ class RunDefinition(object):
             
     def isSyncStatusPresent(self):
         # check if Sync.completed or Sync.failed is present
-        if os.path.exists(self.sync_completed) or os.path.exists(self.sync_failed):
+        if os.path.exists(self.sync_completed):
+            self.log.debug('%s found' % self.sync_completed)
+            return True
+        if os.path.exists(self.sync_failed):
+            self.log.debug('%s found' % self.sync_failed)
             return True
         return False
 
