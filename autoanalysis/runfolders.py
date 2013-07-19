@@ -119,7 +119,7 @@ class RunDefinition(object):
         return RUN_HEADER % {'run_folder': self.run_folder_name}
         
     def createDestinationRunFolder(self):
-        if self.isCompleted():
+        if self.isCompleted() and self.destdir:
             return utils.locate_run_folder(os.path.basename(self.run_folder), self.destdir)
         return None
         
