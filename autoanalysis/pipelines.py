@@ -144,6 +144,8 @@ class PipelineDefinition(object):
         utils.create_directory(self.pipeline_directory)
 
         # create archive pipeline directory
+        self.log.debug(self.run.dest_run_folder)
+        self.log.debug(self.pipeline_name)
         self.archive_pipeline_directory = os.path.join(self.run.dest_run_folder, self.pipeline_name)
         #utils.create_directory(self.archive_pipeline_directory)
         self.rsync_lock = os.path.join(os.path.dirname(self.run.run_folder), RSYNC_LOCK_FILENAME)
