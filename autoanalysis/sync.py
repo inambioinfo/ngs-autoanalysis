@@ -53,7 +53,7 @@ def main():
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
+        runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder, False)
         for run in runs.completed_runs:
             try:
                 log.info(run.getHeader())
