@@ -145,7 +145,7 @@ class PipelineDefinition(object):
 
         # create archive pipeline directory
         self.archive_pipeline_directory = os.path.join(self.run.dest_run_folder, self.pipeline_name)
-        utils.create_directory(self.archive_pipeline_directory)
+        #utils.create_directory(self.archive_pipeline_directory)
         self.rsync_lock = os.path.join(os.path.dirname(self.run.run_folder), RSYNC_LOCK_FILENAME)
         
         # shell script paths
@@ -784,6 +784,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                 utils.touch(os.path.join(pipeline_folder, RSYNC_STARTED_FILENAME))
                 utils.touch(os.path.join(pipeline_folder, RSYNC_ENDED_FILENAME))
                 archive_pipeline_folder = os.path.join(utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
+                utils.create_directory(archive_pipeline_folder)
                 utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_STARTED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
@@ -859,6 +860,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             utils.touch(os.path.join(pipeline_folder, RSYNC_STARTED_FILENAME))
             utils.touch(os.path.join(pipeline_folder, RSYNC_ENDED_FILENAME))
             archive_pipeline_folder = os.path.join(utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
+            utils.create_directory(archive_pipeline_folder)
             utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_STARTED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
