@@ -36,7 +36,6 @@ def main():
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
-    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--dev-lims", dest="use_dev_lims", action="store_true", default=False, help="Use the development LIMS url")
@@ -54,7 +53,7 @@ def main():
         # lims connection
         glslims = auto_glslims.GlsLims(options.use_dev_lims)
         # loop over all runs in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder)
+        runs = auto_runfolders.RunFolders(options.basedir, None, options.run_folder)
         all_runs = runs.getAllRuns()
         completed_runs = []
         tosync_runs = []
