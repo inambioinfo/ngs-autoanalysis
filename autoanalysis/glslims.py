@@ -58,7 +58,7 @@ class GlsLims:
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
         """
         self.log.info('... create analysis processes ..................................................')
-        run = self.glsutil.getLatestRunProcessByFlowcellId(flowcell_id)
+        run = self.glsutil.getLatestCompleteRunProcessByFlowcellId(flowcell_id)
         if run is not None:
             fastq = self.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', flowcell_id)
             if fastq is None:
