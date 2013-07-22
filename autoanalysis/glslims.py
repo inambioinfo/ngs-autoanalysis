@@ -46,7 +46,7 @@ class GlsLims:
     def isSequencingRunComplete(self, run_id):
         # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
         self.log.info('... check sequencing status ....................................................')
-        return self.glsutil.hasFlowcellPassedSequencingQc(run_id)
+        return self.glsutil.isSequencingCompleted(run_id)
         
     def isAllFastqFilesFound(self, run_id):
         # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
