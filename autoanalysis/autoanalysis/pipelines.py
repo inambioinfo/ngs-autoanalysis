@@ -28,8 +28,8 @@ import utils
 PIPELINES = OrderedDict ([
     ("primary", []),
     ("mga", ["primary"]),
-    ("demultiplex", ["primary"]),
     ("fastqc", ["primary"]),
+    ("demultiplex", ["primary"]),
     ("secondary", ["primary","demultiplex"])])
 
 # Pipeline commands
