@@ -575,7 +575,7 @@ class External(object):
             for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
                 ftpdirs.add(ftpdir)
         for ftpdir in ftpdirs:
-            src = os.path.join(external_directory, ftpdir)
+            src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/%s.log" % (env['archive_pipedir'], ftpdir)
             rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
