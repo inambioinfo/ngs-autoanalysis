@@ -515,7 +515,7 @@ class External(object):
                 # create symlinks for external users
                 self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                 # create rsync-pipeline script
-                self.createFtpRsyncScript(pipeline_definition.archive_pipeline_directory, pipeline_definition.env)
+                self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
                 # run rsync-pipeline script
                 self.runFtpRsyncScript()
             else:
@@ -550,7 +550,7 @@ class External(object):
         else:
             log.info('No external data to publish')
 
-    def createFtpRsyncScript(self, external_directory, env):
+    def createFtpRsyncScript(self, rsync_script, env):
         """Create rsync script for external data
         """
         self.log.info('... create ftp rsync pipeline script ...........................................')
@@ -577,10 +577,10 @@ class External(object):
         for ftpdir in ftpdirs:
             src = os.path.join(external_directory, ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
-            rsync_log = "%s/%s.log" % (external_directory, ftpdir)
+            rsync_log = "%s/%s.log" % (env['archive_pipedir'], ftpdir)
             rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
         env['rsync_cmd'] = rsync_cmd
-        utils.create_script(rsync_script_path, FTP_RSYNC_COMMAND % env)
+        utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
 
     def runFtpRsyncScript(self):
         """Run rsync script for external data
