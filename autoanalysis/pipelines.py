@@ -207,11 +207,11 @@ class PipelineDefinition(object):
         self.env['rsync_ended'] = self.rsync_ended
         self.env['rsync_fail'] = self.rsync_fail
         self.env['seq_completed'] = self.run.sequencing_completed
-        if self.pipeline_name is 'primary':
+        if self.pipeline_name == 'primary':
             self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.run.run_folder, os.path.dirname(self.run.dest_run_folder), self.rsync_log)
         elif self.pipeline_name in PIPELINE_RSYNC_EXCLUDE.keys():
             self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.pipeline_directory, self.run.dest_run_folder, self.rsync_log)
-        elif self.pipeline_name is 'rsync':
+        elif self.pipeline_name == 'rsync':
             self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.dest_run_folder), self.rsync_log)
         else:
             self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, self.pipeline_directory, self.run.dest_run_folder, self.rsync_log)                
@@ -245,7 +245,7 @@ class PipelineDefinition(object):
     def createRunPipelineScript(self):
         self.log.info('... create run pipeline script .................................................')
         try:
-            if self.env['mode'] is 'lsf':
+            if self.env['mode'] == 'lsf':
                 utils.create_script(self.run_script_path, utils.LSF_CMD_TEMPLATE % self.env)
             else:
                 utils.create_script(self.run_script_path, PIPELINE_LOCAL_RUN_COMMAND % self.env)
@@ -307,14 +307,14 @@ class PipelineDefinition(object):
             if os.path.exists(self.pipeline_started) and os.path.exists(self.pipeline_ended):
                 if not os.path.exists(self.rsync_started):
                     if not os.path.exists(self.rsync_lock):
-                        if not self.pipeline_name is 'primary':
+                        if not self.pipeline_name == 'primary':
                             if _dependencies_satisfied:
-                                utils.touch(self.rsync_lock, _dry_run)
+                                #utils.touch(self.rsync_lock, _dry_run)
                                 utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                             else:
                                 self.log.debug("nothing to rsync yet - primary pipeline not complete")
                         else:
-                            utils.touch(self.rsync_lock, _dry_run)
+                            #utils.touch(self.rsync_lock, _dry_run)
                             utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                     else:
                         self.log.info('%s presents - another rsync process is running' % self.rsync_lock)
@@ -803,7 +803,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
-                if pipeline_name is 'primary':
+                if pipeline_name == 'primary':
                     pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                     self.assertTrue(os.path.exists(pipeline_folder))
                     self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
@@ -879,7 +879,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in PIPELINES.keys():
-                if pipeline_name is 'primary':
+                if pipeline_name == 'primary':
                     pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                     self.assertTrue(os.path.exists(pipeline_folder))
                     self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
