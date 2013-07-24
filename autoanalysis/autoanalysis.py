@@ -77,7 +77,7 @@ def main():
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     glslims.updateSampleProgressStatus(run.flowcell_id)
                     if run.isAnalysed():
-                        glslims.publishFlowCell()
+                        glslims.publishFlowCell(run.flowcell_id)
                 if options.ftp_sync:
                     # publish external data
                     external = auto_pipelines.External(run, glslims.findExternalData(run.run_folder_name), options.dry_run)
