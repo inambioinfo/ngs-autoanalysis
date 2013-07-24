@@ -515,7 +515,7 @@ class External(object):
                 # create symlinks for external users
                 self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                 # create rsync-pipeline script
-                self.createFtpRsyncScript(pipeline_definition.pipeline_definition, pipeline_definition.env)
+                self.createFtpRsyncScript(pipeline_definition.archive_pipeline_directory, pipeline_definition.env)
                 # run rsync-pipeline script
                 self.runFtpRsyncScript()
             else:
