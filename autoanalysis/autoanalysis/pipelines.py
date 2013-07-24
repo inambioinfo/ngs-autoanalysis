@@ -527,7 +527,7 @@ class External(object):
                 # rsync fastq files at the end of primary
                 if os.path.exists(self.archive_primary_completed):            
                     # symlink matching files from primary directory
-                    for file_id in list(self.external_files.viewkeys()):
+                    for file_id in list(self.external_data.viewkeys()):
                         for ftpdir in self.external_samples[sample_id]['to_ftpdirs']:
                             # create ftpdir in external directory in run folder
                             runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
