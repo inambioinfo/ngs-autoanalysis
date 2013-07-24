@@ -582,22 +582,22 @@ class External(object):
         env['rsync_cmd'] = rsync_cmd
         utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
 
-    def runFtpRsyncScript(self):
+    def runFtpRsyncScript(self, rsync_script, env):
         """Run rsync script for external data
         """
-        if os.path.exists(self.rsync_script_path):
-            if not os.path.exists(self.rsync_started):
-                if not os.path.exists(self.rsync_lock):
-                    utils.run_bg_process(['sh', '%s' % self.rsync_script_path], self.dry_run)
+        if os.path.exists(rsync_script):
+            if not os.path.exists(env['rsync_started']):
+                if not os.path.exists(env['rsync_lock']):
+                    utils.run_bg_process(['sh', '%s' % rsync_script], self.dry_run)
                 else:
-                    self.log.info('%s presents - another rsync process is running' % self.rsync_lock)
+                    self.log.info('%s presents - another rsync process is running' % env['rsync_lock'])
             else:
-                if not os.path.exists(self.rsync_finished):
+                if not os.path.exists(env['rsync_ended']):
                     self.log.info('external data is currently being synchronised')
                 else:
                     self.log.info('external data has been synchronised')
         else:
-            self.log.warn('%s is missing' % self.rsync_script_path)
+            self.log.warn('%s is missing' % sync_script)
             
     def isExternalDataPublished(self):
         """Checks that external data has been published
