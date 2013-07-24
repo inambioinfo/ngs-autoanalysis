@@ -539,7 +539,7 @@ class External(object):
                                 if os.path.lexists(link_name):
                                     os.remove(link_name)
                                 os.symlink(file_name, link_name)
-                                log.debug("%s symlink created" % link_name)
+                                self.log.debug("%s symlink created" % link_name)
                             except:
                                 self.log.exception('unexpected error when creating symlink')
                                 raise
