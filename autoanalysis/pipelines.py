@@ -517,7 +517,7 @@ class External(object):
                 # create rsync-pipeline script
                 self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
                 # run rsync-pipeline script
-                self.runFtpRsyncScript()
+                self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
             else:
                 self.log.info('No external data to publish')
             
