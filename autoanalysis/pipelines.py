@@ -515,9 +515,9 @@ class External(object):
                 # create symlinks for external users
                 self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                 # create rsync-pipeline script
-                pipeline_definition.createRsyncRunFolderScript()
+                pipeline_definition.createFtpRsyncScript(pipeline_definition.archive_pipeline_directory)
                 # run rsync-pipeline script
-                pipeline_definition.runRsyncRunFolderScript(self.dry_run)
+                pipeline_definition.runFtpRsyncScript()
             else:
                 self.log.info('No external data to publish')
             
@@ -550,22 +550,11 @@ class External(object):
         else:
             log.info('No external data to publish')
 
-    def createRsyncPipelineScript(self):
-        self.log.info('... create rsync pipeline script ...............................................')
-        try:
-            if not os.path.exists(self.rsync_script_path):
-                utils.create_script(self.rsync_script_path, PIPELINE_RSYNC_COMMAND % self.env)
-            else:
-                self.log.debug('%s already exists' % self.rsync_script_path)
-        except:
-            self.log.exception('unexpected error when creating rsync pipeline script')
-            raise
-
-    def createFtpRsyncScript(self, external_directory, rsync_script_path, rsync_started, rsync_ended, rsync_fail, log_prefix, rsync_lock):
+    def createFtpRsyncScript(self, external_directory):
         """Create rsync script for external data
         """
         self.log.info('... create ftp rsync pipeline script ...........................................')
-        PIPELINE_RSYNC_COMMAND = '''
+        FTP_RSYNC_COMMAND = '''
         touch %(rsync_started)s
         touch %(rsync_lock)s
 
@@ -590,26 +579,25 @@ class External(object):
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/%s_%s.log" % (external_directory, log_prefix, ftpdir)
             rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
-        command = "touch %s; touch %s; %s touch %s; rm %s" % (rsync_started, rsync_lock, rsync, rsync_finished, rsync_lock)
-        utils.create_script(rsync_script_path, command)
+        self.env['rsync_cmd'] = rsync_cmd
+        utils.create_script(rsync_script_path, FTP_RSYNC_COMMAND % self.env)
 
-    def runFtpRsyncScript(self, rsync_script_path, rsync_started, rsync_finished, rsync_lock):
+    def runFtpRsyncScript(self):
         """Run rsync script for external data
         """
-        if os.path.exists(rsync_script_path):
-            if not os.path.exists(rsync_started):
-                if not os.path.exists(rsync_lock):
-                    utils.touch(rsync_lock)
-                    utils.run_bg_process(['sh', '%s' % rsync_script_path], self.dry_run)
+        if os.path.exists(self.rsync_script_path):
+            if not os.path.exists(self.rsync_started):
+                if not os.path.exists(self.rsync_lock):
+                    utils.run_bg_process(['sh', '%s' % self.rsync_script_path], self.dry_run)
                 else:
-                    log.info('%s presents - another rsync process is running' % rsync_lock)
+                    self.log.info('%s presents - another rsync process is running' % self.rsync_lock)
             else:
-                if not os.path.exists(rsync_finished):
-                    log.info('external data is currently being synchronised')
+                if not os.path.exists(self.rsync_finished):
+                    self.log.info('external data is currently being synchronised')
                 else:
-                    log.info('external data has been synchronised')
+                    self.log.info('external data has been synchronised')
         else:
-            log.warn('%s is missing' % rsync_script_path)
+            self.log.warn('%s is missing' % self.rsync_script_path)
             
     def isExternalDataPublished(self):
         """Checks that external data has been published
