@@ -535,7 +535,7 @@ class External(object):
                             file_name = self.external_data[sample_id]['from_contenturi']
                             try:
                                 # create symlink
-                                link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_path))                
+                                link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_name))                
                                 if os.path.lexists(link_name):
                                     os.remove(link_name)
                                 os.symlink(file_name, link_name)
