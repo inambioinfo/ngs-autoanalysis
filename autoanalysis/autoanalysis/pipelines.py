@@ -532,7 +532,7 @@ class External(object):
                             # create ftpdir in external directory in run folder
                             runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
                             utils.create_directory(runfolder_ext_ftpdir)
-                            file_path = self.external_data[sample_id]['from_contenturi']
+                            file_name = self.external_data[sample_id]['from_contenturi']
                             try:
                                 # create symlink
                                 link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_path))                
