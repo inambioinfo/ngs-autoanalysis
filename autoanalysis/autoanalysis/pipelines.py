@@ -513,7 +513,7 @@ class External(object):
                 pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
                 pipeline_definition.printHeader()
                 # create symlinks for external users
-                self.createSymlinks(pipeline_definition.dest_pipeline_directory)
+                self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                 # create rsync-pipeline script
                 pipeline_definition.createRsyncRunFolderScript()
                 # run rsync-pipeline script
