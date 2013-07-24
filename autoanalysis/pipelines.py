@@ -528,11 +528,11 @@ class External(object):
                 if os.path.exists(self.archive_primary_completed):            
                     # symlink matching files from primary directory
                     for file_id in list(self.external_data.viewkeys()):
-                        for ftpdir in self.external_samples[sample_id]['to_ftpdirs']:
+                        for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
                             # create ftpdir in external directory in run folder
                             runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
                             utils.create_directory(runfolder_ext_ftpdir)
-                            file_path = self.external_samples[sample_id]['from_contenturi']
+                            file_path = self.external_data[sample_id]['from_contenturi']
                             try:
                                 # create symlink
                                 link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_path))                
@@ -582,8 +582,8 @@ class External(object):
         rsync_cmd = ""
         # set of institutes
         ftpdirs = set()
-        for sample_id in list(self.external_samples.viewkeys()):
-            for ftpdir in self.external_samples[sample_id]['to_ftpdirs']:
+        for sample_id in list(self.external_data.viewkeys()):
+            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
                 ftpdirs.add(ftpdir)
         for ftpdir in ftpdirs:
             src = os.path.join(external_directory, ftpdir)
@@ -619,7 +619,7 @@ class External(object):
         rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
         rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
         rsync_demux_finished = os.path.join(external_directory, RSYNC_DEMUX_FINISHED_FILENAME)
-        if self.external_samples:
+        if self.external_data:
             # rsync external data not finished or started
             if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
                 return False
