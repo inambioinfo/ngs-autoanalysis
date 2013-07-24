@@ -65,13 +65,13 @@ def main():
         for run in runs.completed_runs:
             try:
                 log.info(run.getHeader())
+                # create pipelines
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
                 if not options.donot_run_pipelines:
-                    # create pipelines
-                    pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
                     # execute pipelines
                     pipelines.execute()
-                    # register completion
-                    pipelines.registerCompletion()
+                # register completion
+                pipelines.registerCompletion()
                 if options.update_lims or options.ftp_sync:
                     # connect to lims
                     glslims = auto_glslims.GlsLims(options.use_dev_lims)

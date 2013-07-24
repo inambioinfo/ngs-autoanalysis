@@ -439,7 +439,7 @@ class Pipelines(object):
                 utils.touch(self.all_completed)
             if not os.path.exists(self.archive_all_completed):
                 utils.touch(self.archive_all_completed)
-            self.log.info('*** PROCESS COMPLETED **********************************************************')
+            self.log.info('*** ALL COMPLETED **************************************************************')
         else:
             # remove Analysis.completed when analysis not completed and file exists
             if os.path.exists(self.all_completed):
