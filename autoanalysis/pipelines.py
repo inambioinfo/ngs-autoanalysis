@@ -553,11 +553,11 @@ class External(object):
                                 self.log.exception('unexpected error when creating symlink')
                                 raise
                 else:
-                    log.info('Primary not completed')
+                    self.log.info('Primary not completed')
             else:
-                log.warn('%s does not exist' % self.run.dest_run_folder)
+                self.log.warn('%s does not exist' % self.run.dest_run_folder)
         else:
-            log.info('No external data to publish')
+            self.log.info('No external data to publish')
 
     def createFtpRsyncScript(self, rsync_script, env):
         """Create rsync script for external data
