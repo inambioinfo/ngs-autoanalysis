@@ -149,6 +149,12 @@ def create_directory(directory):
             log.exception('cannot create directory %s' % directory)
             raise
 
+def create_symlink(filename, linkname)            :
+    if os.path.lexists(linkname):
+        os.remove(linkname)
+    os.symlink(filename, linkname)
+    log.debug("%s symlink created" % linkname)
+
 def get_smallest_volume(archive_glob):
     try:
         volumes = glob.glob(archive_glob)
