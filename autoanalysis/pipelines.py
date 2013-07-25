@@ -532,14 +532,23 @@ class External(object):
                             # create ftpdir in external directory in run folder
                             runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
                             utils.create_directory(runfolder_ext_ftpdir)
-                            file_name = self.external_data[sample_id]['from_contenturi']
+                            filename = self.external_data[sample_id]['from_contenturi']
+                            """
+                            SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
+                            SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
+                            SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
+                            """
+                            splitted_filename = file_name.split('.')
+                            filename_failed = ".".join(splitted_filename[:3], 'failed', splitted_filename[4:])
+                            filename_md5sums = ".".join(splitted_filename[:2], 'md5sums.txt')
                             try:
                                 # create symlink
-                                link_name = os.path.join(runfolder_ext_ftpdir, os.path.basename(file_name))                
-                                if os.path.lexists(link_name):
-                                    os.remove(link_name)
-                                os.symlink(file_name, link_name)
-                                self.log.debug("%s symlink created" % link_name)
+                                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+                                linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                                linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
+                                utils.create_symlink(filename, linkname)
+                                utils.create_symlink(filename_failed, linkname_failed)
+                                utils.create_symlink(filename_md5sums, linkname_md5sums)
                             except:
                                 self.log.exception('unexpected error when creating symlink')
                                 raise
