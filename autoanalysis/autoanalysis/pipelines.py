@@ -415,10 +415,9 @@ class Pipelines(object):
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
-    def registerCompletion(self):
+    def registerCompletion(self, external_data=None):
         """ Create Analysis.primary.completed and Analysis.completed when pipelines
-        have been successfully ran and synchronised
-        TODO: check that external data has been published
+        have been successfully ran and synchronised and that external data has been published
         """
         # create Analysis.primary.completed when primary pipeline completed
         if self.arePipelinesCompleted(['primary']):
@@ -434,8 +433,8 @@ class Pipelines(object):
             if os.path.exists(self.archive_primary_completed):
                 os.remove(self.archive_primary_completed)
 
-        # create Analysis.completed when all pipelines completed and rsynced
-        if self.arePipelinesCompleted(self.pipelines.keys()):
+        # create Analysis.completed when all pipelines completed and rsynced and external data published
+        if self.arePipelinesCompleted(self.pipelines.keys()) and self.isExternalDataPublished(external_data):
             if not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
             if not os.path.exists(self.archive_all_completed):
@@ -484,6 +483,18 @@ class Pipelines(object):
             if check_rsync:
                 if not os.path.exists(rsync_ended) or not os.path.exists(rsync_started):
                     return False
+        return True
+        
+    def isExternalDataPublished(self, external_data=None):
+        """Checks that external data has been published
+        """
+        external_directory = os.path.join(self.run_definition.dest_run_folder, 'external')
+        rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+        rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
+        if self.external_data:
+            # rsync external data not finished or started
+            if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
+                return False
         return True
 
 ################################################################################
@@ -614,23 +625,6 @@ class External(object):
         else:
             self.log.warn('%s is missing' % sync_script)
             
-    def isExternalDataPublished(self):
-        """Checks that external data has been published
-        """
-        external_directory = os.path.join(self.run_definition.dest_run_folder, 'external')
-        rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
-        rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
-        rsync_demux_started = os.path.join(external_directory, RSYNC_DEMUX_STARTED_FILENAME)
-        rsync_demux_finished = os.path.join(external_directory, RSYNC_DEMUX_FINISHED_FILENAME)
-        if self.external_data:
-            # rsync external data not finished or started
-            if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
-                return False
-            if self.run_definition.multiplexed_run:
-                if not os.path.exists(rsync_demux_started) or not os.path.exists(rsync_demux_finished):
-                    return False
-        return True
-
 ################################################################################
 # CLASS Sync
 ################################################################################

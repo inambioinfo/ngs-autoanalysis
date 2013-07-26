@@ -48,6 +48,7 @@ def main():
     parser.add_argument("--dev-lims", dest="use_dev_lims", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
     parser.add_argument("--update-lims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
+    parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
     parser.add_argument("--ftp-sync", dest="ftp_sync", action="store_true", default=False, help="use this option to sync external data to ftp server")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -67,25 +68,30 @@ def main():
                 log.info(run.getHeader())
                 # create pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
+                # connect to lims
+                glslims = auto_glslims.GlsLims(options.use_dev_lims)
+                # get external data
+                external_data = glslims.findExternalData(run.run_folder_name)
                 if not options.donot_run_pipelines:
-                    # execute pipelines
+                    # run pipelines
                     pipelines.execute()
                 # register completion
-                pipelines.registerCompletion()
-                if options.update_lims or options.ftp_sync:
-                    # connect to lims
-                    glslims = auto_glslims.GlsLims(options.use_dev_lims)
+                pipelines.registerCompletion(external_data)
                 if options.update_lims:
-                    # create lims processes, update sample status and publish flow-cell
+                    # create lims processes and update sample status
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     glslims.updateSampleProgressStatus(run.flowcell_id)
+                else:
+                    log.info('use --update-lims option to update the lims')
+                if options.publish:
+                    # publish flow-cell
                     if run.isAnalysed():
                         glslims.publishFlowCell(run.flowcell_id)
                 else:
-                    log.info('use --update-lims option to update the lims')
+                    log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp_sync:
                     # publish external data
-                    external = auto_pipelines.External(run, glslims.findExternalData(run.run_folder_name), options.dry_run)
+                    external = auto_pipelines.External(run, external_data, options.dry_run)
                     external.publish()
                 else:
                     log.info('use --ftp-sync option to sync external data to ftp server')
