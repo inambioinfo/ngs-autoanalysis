@@ -63,13 +63,13 @@ def main():
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
+        # connect to lims
+        glslims = auto_glslims.GlsLims(options.use_dev_lims)
         for run in runs.completed_runs:
             try:
                 log.info(run.getHeader())
                 # create pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
-                # connect to lims
-                glslims = auto_glslims.GlsLims(options.use_dev_lims)
                 # get external data
                 external_data = glslims.findExternalData(run.run_folder_name)
                 if not options.donot_run_pipelines:

@@ -31,6 +31,9 @@ PIPELINES = OrderedDict ([
     ("fastqc", ["primary"]),
     ("demultiplex", ["primary"]),
     ("secondary", ["primary","demultiplex"])])
+    
+# External pipeline name
+EXTERNAL_PIPELINE = 'external'
 
 # Pipeline commands
 PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
@@ -488,7 +491,7 @@ class Pipelines(object):
     def isExternalDataPublished(self, external_data=None):
         """Checks that external data has been published
         """
-        external_directory = os.path.join(self.run_definition.dest_run_folder, 'external')
+        external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
         rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         rsync_finished = os.path.join(external_directory, RSYNC_FINISHED_FILENAME)
         if self.external_data:
@@ -506,7 +509,7 @@ class External(object):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.external_data = external_data
-        self.pipeline_name = 'external'
+        self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
         self.primary_completed = os.path.join(self.run.run_folder, PRIMARY_COMPLETED_FILENAME)
