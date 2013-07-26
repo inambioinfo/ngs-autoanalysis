@@ -538,7 +538,7 @@ class External(object):
                             SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
                             SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
                             """
-                            splitted_filename = file_name.split('.')
+                            splitted_filename = filename.split('.')
                             filename_failed = ".".join(splitted_filename[:3], 'failed', splitted_filename[4:])
                             filename_md5sums = ".".join(splitted_filename[:2], 'md5sums.txt')
                             try:
