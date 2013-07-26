@@ -542,7 +542,7 @@ class External(object):
                             splitted_filename_failed = splitted_filename
                             splitted_filename_failed.insert(4, 'failed')
                             filename_failed = ".".join(splitted_filename_failed)
-                            splitted_filename_md5sums = splitted_filename[:2]
+                            splitted_filename_md5sums = splitted_filename[:3]
                             splitted_filename_md5sums.append('md5sums.txt')
                             filename_md5sums = ".".join(splitted_filename_md5sums)
                             try:
