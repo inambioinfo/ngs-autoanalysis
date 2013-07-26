@@ -69,7 +69,7 @@ def main():
             try:
                 log.info(run.getHeader())
                 # create pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_dev_lims)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
                 # get external data
                 external_data = glslims.findExternalData(run.run_folder_name)
                 if not options.donot_run_pipelines:

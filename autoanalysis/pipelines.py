@@ -137,7 +137,7 @@ PRIMARY_COMPLETED_FILENAME = "Analysis.primary.completed"
 ################################################################################        
 class PipelineDefinition(object):
 
-    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None, use_dev_lims=True):
+    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None, use_limsdev=True):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = pipeline_name
@@ -168,7 +168,7 @@ class PipelineDefinition(object):
 
         # enviroment variables for setting up and running each pipeline
         self.env = {}
-        self.setEnv(software_path, cluster_host, use_dev_lims)
+        self.setEnv(software_path, cluster_host, use_limsdev)
         
     def getHeader(self):
         return '--- %s' % self.pipeline_name.upper()
@@ -176,19 +176,19 @@ class PipelineDefinition(object):
     def printHeader(self):
         self.log.info(self.getHeader())
         
-    def setEnv(self, _software_path, _cluster_host, _use_dev_lims):
+    def setEnv(self, _software_path, _cluster_host, _use_limsdev):
         """set environment variables for generating shell scripts from their templates
         """
         self.env['bin_meta'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
         self.env['bin_run'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
         self.env['basedir'] = os.path.dirname(self.run.run_folder)
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
-            if _use_dev_lims:
+            if _use_limsdev:
                 self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
             else:
                 self.env['options'] = PIPELINES_SETUP_OPTIONS[self.pipeline_name]
         else:
-            if _use_dev_lims:
+            if _use_limsdev:
                 self.env['options'] = '--dev'
             else:
                 self.env['options'] = ''
@@ -378,14 +378,14 @@ class PipelineDefinition(object):
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_dev_lims=True):
+    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.pipeline_step = pipeline_step
         self.software_path = software_path
         self.cluster_host = cluster_host
         self.dry_run = dry_run
-        self.use_dev_lims = use_dev_lims 
+        self.use_limsdev = use_limsdev 
 
         self.pipelines = PIPELINES
         if self.pipeline_step:
@@ -403,7 +403,7 @@ class Pipelines(object):
         if self.run.isCompleted():
             for pipeline_name in self.pipelines.keys():
                 # create pipeline definition
-                pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_dev_lims)
+                pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev)
                 pipeline_definition.printHeader()
                 # - step 1 - create setup-pipeline script 
                 pipeline_definition.createSetupPipelineScript()
