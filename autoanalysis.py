@@ -45,11 +45,11 @@ def main():
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_argument("--dev-lims", dest="use_dev_lims", action="store_true", default=False, help="Use the development LIMS url")
+    parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
     parser.add_argument("--update-lims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
     parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
-    parser.add_argument("--ftp-sync", dest="ftp_sync", action="store_true", default=False, help="use this option to sync external data to ftp server")
+    parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     options = parser.parse_args()
@@ -64,7 +64,7 @@ def main():
         # loop over all runs that have a Sequencing.completed file in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
         # connect to lims
-        glslims = auto_glslims.GlsLims(options.use_dev_lims)
+        glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.completed_runs:
             try:
                 log.info(run.getHeader())
@@ -89,12 +89,12 @@ def main():
                         glslims.publishFlowCell(run.flowcell_id)
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
-                if options.ftp_sync:
+                if options.ftp:
                     # publish external data
                     external = auto_pipelines.External(run, external_data, options.dry_run)
                     external.publish()
                 else:
-                    log.info('use --ftp-sync option to sync external data to ftp server')
+                    log.info('use --ftp option to sync external data to ftp server')
             except:
                 log.exception("Unexpected error")
                 continue
