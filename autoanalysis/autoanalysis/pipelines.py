@@ -494,7 +494,7 @@ class Pipelines(object):
         external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
         rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
-        if self.external_data:
+        if external_data:
             # rsync external data not finished or started
             if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
                 return False
