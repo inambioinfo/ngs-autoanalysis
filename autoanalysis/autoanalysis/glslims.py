@@ -41,7 +41,7 @@ class GlsLims:
         else:
             self.lims_server = LIMS_SERVERS['pro']
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
-        self.log.info('*** LIMS CONNECTION ************************************************************')
+        self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
         
     def isSequencingRunComplete(self, run_id):
         # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
