@@ -84,7 +84,7 @@ class GlsLims:
         self.glsutil.updateFlowcellSampleProgressForAnalysis(flowcell_id)
         
     def findExternalData(self, run_id):
-        self.log.info('... find external data .........................................................')
+        self.log.info('... look for external data .....................................................')
         data = {}
         fastq_files = self.glsutil.getRawFastqFiles(run_id)
         for raw in fastq_files:
@@ -93,6 +93,10 @@ class GlsLims:
                 data[raw.artifactid] = {'from_contenturi': raw.contenturi, 'to_ftpdirs': []}
                 for ftpdir in ftpdirs:
                     data[raw.artifactid]['to_ftpdirs'].append(ftpdir.ftpdir)
+        if data:
+            self.log.info('External data found')
+        else:
+            self.log.info('No external data')
         return data
 
 class GlsLimsTests(unittest.TestCase):
