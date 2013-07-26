@@ -215,6 +215,7 @@ class PipelineDefinition(object):
             self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.dest_run_folder), self.rsync_log)
         else:
             self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, self.pipeline_directory, self.run.dest_run_folder, self.rsync_log)                
+        self.env['pipedir'] = self.pipeline_directory
         self.env['archive_pipedir'] = self.archive_pipeline_directory
         
     def createSetupPipelineScript(self):
@@ -509,59 +510,57 @@ class External(object):
         """
         if self.run.isCompleted():
             if self.external_data:
-                # create pipeline definition
-                pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
-                pipeline_definition.printHeader()
-                # create symlinks for external users
-                self.createSymlinks(pipeline_definition.archive_pipeline_directory)
-                # create rsync-pipeline script
-                self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
-                # run rsync-pipeline script
-                self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                if self.run.dest_run_folder:
+                    # rsync fastq files at the end of primary when sync to archive finished
+                    if os.path.exists(self.archive_primary_completed):
+                        # create pipeline definition
+                        pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
+                        pipeline_definition.printHeader()
+                        # create symlinks for external users
+                        self.createSymlinks(pipeline_definition.archive_pipeline_directory)
+                        # create rsync-pipeline script
+                        self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                        # run rsync-pipeline script
+                        self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                    else:
+                        self.log.info('Primary not completed')
+                else:
+                    self.log.warn('%s does not exist' % self.run.dest_run_folder)
             else:
                 self.log.info('No external data to publish')
             
     def createSymlinks(self, external_directory):
-        if self.external_data:
-            if self.run.dest_run_folder:
-                # rsync fastq files at the end of primary
-                if os.path.exists(self.archive_primary_completed):            
-                    # symlink matching files from primary directory
-                    for sample_id in list(self.external_data.viewkeys()):
-                        for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
-                            # create ftpdir in external directory in run folder
-                            runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
-                            utils.create_directory(runfolder_ext_ftpdir)
-                            filename = self.external_data[sample_id]['from_contenturi']
-                            """
-                            SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
-                            SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
-                            SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
-                            """
-                            splitted_filename = filename.split('.')
-                            splitted_filename_failed = splitted_filename
-                            splitted_filename_failed.insert(4, 'failed')
-                            filename_failed = ".".join(splitted_filename_failed)
-                            splitted_filename_md5sums = splitted_filename[:3]
-                            splitted_filename_md5sums.append('md5sums.txt')
-                            filename_md5sums = ".".join(splitted_filename_md5sums)
-                            try:
-                                # create symlink
-                                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
-                                linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                                linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
-                                utils.create_symlink(filename, linkname)
-                                utils.create_symlink(filename_failed, linkname_failed)
-                                utils.create_symlink(filename_md5sums, linkname_md5sums)
-                            except:
-                                self.log.exception('unexpected error when creating symlink')
-                                raise
-                else:
-                    self.log.info('Primary not completed')
-            else:
-                self.log.warn('%s does not exist' % self.run.dest_run_folder)
-        else:
-            self.log.info('No external data to publish')
+        """ Create symlink to external primary data into external folder
+        3 files to symlink per lane per read:
+            SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
+            SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
+            SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
+        """
+        self.log.info('... create symlinks to external data ...........................................')
+        for sample_id in list(self.external_data.viewkeys()):
+            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
+                # create ftpdir in external directory in run folder
+                runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
+                utils.create_directory(runfolder_ext_ftpdir)
+                filename = self.external_data[sample_id]['from_contenturi']
+                splitted_filename = filename.split('.')
+                splitted_filename_failed = splitted_filename
+                splitted_filename_failed.insert(4, 'failed')
+                filename_failed = ".".join(splitted_filename_failed)
+                splitted_filename_md5sums = splitted_filename[:3]
+                splitted_filename_md5sums.append('md5sums.txt')
+                filename_md5sums = ".".join(splitted_filename_md5sums)
+                try:
+                    # create symlink
+                    linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+                    linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                    linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
+                    utils.create_symlink(filename, linkname)
+                    utils.create_symlink(filename_failed, linkname_failed)
+                    utils.create_symlink(filename_md5sums, linkname_md5sums)
+                except:
+                    self.log.exception('unexpected error when creating symlink')
+                    continue
 
     def createFtpRsyncScript(self, rsync_script, env):
         """Create rsync script for external data
@@ -577,7 +576,9 @@ class External(object):
         else
             touch %(rsync_fail)s
         fi
-
+        
+        rsync -av %(pipedir)s/ %(archive_pipedir)s/
+        
         rm %(rsync_lock)s
         '''
         
@@ -590,7 +591,7 @@ class External(object):
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
-            rsync_log = "%s/%s.log" % (env['archive_pipedir'], ftpdir)
+            rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
             rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
         env['rsync_cmd'] = rsync_cmd
         utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
@@ -598,6 +599,7 @@ class External(object):
     def runFtpRsyncScript(self, rsync_script, env):
         """Run rsync script for external data
         """
+        self.log.info('... run ftp rsync pipeline script ..............................................')
         if os.path.exists(rsync_script):
             if not os.path.exists(env['rsync_started']):
                 if not os.path.exists(env['rsync_lock']):
