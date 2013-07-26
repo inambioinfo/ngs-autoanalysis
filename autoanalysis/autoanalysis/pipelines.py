@@ -539,8 +539,12 @@ class External(object):
                             SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
                             """
                             splitted_filename = filename.split('.')
-                            filename_failed = ".".join(splitted_filename[:3], 'failed', splitted_filename[4:])
-                            filename_md5sums = ".".join(splitted_filename[:2], 'md5sums.txt')
+                            splitted_filename_failed = splitted_filename
+                            splitted_filename_failed.insert(4, 'failed')
+                            filename_failed = ".".join(splitted_filename_failed)
+                            splitted_filename_md5sums = splitted_filename[:2]
+                            splitted_filename_md5sums.append('md5sums.txt')
+                            filename_md5sums = ".".join(splitted_filename_md5sums)
                             try:
                                 # create symlink
                                 linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
