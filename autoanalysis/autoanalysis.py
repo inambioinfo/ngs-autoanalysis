@@ -47,7 +47,7 @@ def main():
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
-    parser.add_argument("--update-lims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
+    parser.add_argument("--updatelims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
     parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
     parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
