@@ -456,7 +456,7 @@ class Pipelines(object):
         """For a given pipeline, checks that all dependent pipelines have finished
         Both pipeline.started and pipeline.ended need to be present
         """
-        pipeline_dependencies = self.pipelines[pipeline_name]
+        pipeline_dependencies = PIPELINES[pipeline_name]
         self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
         for dep_pipeline_name in pipeline_dependencies:
             pipeline_directory = os.path.join(self.run.run_folder, dep_pipeline_name)
