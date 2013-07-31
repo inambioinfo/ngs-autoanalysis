@@ -53,6 +53,11 @@ class GlsLims:
         self.log.info('... check fastq files ..........................................................')
         return self.glsutil.isFastqPipelineComplete(run_id) and self.glsutil.isDemuxPipelineComplete(run_id)
 
+    def isPrimaryFastqFilesFound(self, run_id):
+        # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
+        self.log.info('... check primary fastq files ..................................................')
+        return self.glsutil.isFastqPipelineComplete(run_id)
+
     def createAnalysisProcesses(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
@@ -73,9 +78,12 @@ class GlsLims:
                 self.glsutil.createAlignmentPipelineProcess(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
-    def publishFlowCell(self, flowcell_id):
+    def publishFlowCell(self, run_id, flowcell_id):
         self.log.info('... publish flow-cell ..........................................................')
-        self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
+        if self.isPrimaryFastqFilesFound(run_id):
+            self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
+        else:
+            self.log.info('No primary fastq files found for run %s' % run_id)
         
     def updateSampleProgressStatus(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'

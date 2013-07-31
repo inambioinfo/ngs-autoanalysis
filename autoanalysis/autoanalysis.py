@@ -86,7 +86,7 @@ def main():
                 if options.publish:
                     # publish flow-cell
                     if run.isAnalysed():
-                        glslims.publishFlowCell(run.flowcell_id)
+                        glslims.publishFlowCell(run.run_folder_name, run.flowcell_id)
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp:
