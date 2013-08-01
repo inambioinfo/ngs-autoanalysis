@@ -44,6 +44,8 @@ def main():
 
     # get list of run folders from command line
     log.debug("List of runfolders to process: " % options.runfolders)
+    # connect to lims
+    glslims = auto_glslims.GlsLims(options.use_limsdev)
     for runfolder in options.runfolders:
         log.info(auto_runfolders.RUN_HEADER % {'run_folder': runfolder})
         # find runfolder in basedir
