@@ -89,13 +89,13 @@ class GlsLims:
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
         """
         self.log.info('... update sample progress status ..............................................')
-        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, self.glsutil.ANALYSIS_UNDERWAY)
+        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.ANALYSIS_UNDERWAY)
         
     def updateSampleProgressStatusToPublishingUnderway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Publishing Underway'
         """
         self.log.info('... update sample progress status ..............................................')
-        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, self.glsutil.PUBLISHING_UNDERWAY)
+        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.PUBLISHING_UNDERWAY)
         
     def findExternalData(self, run_id):
         self.log.info('... look for external data .....................................................')
