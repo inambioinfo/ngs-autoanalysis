@@ -55,6 +55,8 @@ def main():
             if options.publish:
                 # publish flow-cell
                 glslims.publishFlowCell(runfolder, runfolder.split('_')[-1])
+                # update sample status to 'Publishing underway'
+                glslims.updateSampleProgressStatusToPublishingUnderway(runfolder.split('_')[-1])
             else:
                 log.info('use --publish to publish the flowcell')
         else:

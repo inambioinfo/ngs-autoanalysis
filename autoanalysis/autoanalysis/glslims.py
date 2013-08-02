@@ -81,15 +81,21 @@ class GlsLims:
     def publishFlowCell(self, run_id, flowcell_id):
         self.log.info('... publish flow-cell ..........................................................')
         if self.isPrimaryFastqFilesFound(run_id):
-            self.glsutil.assignFlowcellToBioAnalysesWorkflow(flowcell_id)
+            self.glsutil.assignFlowcellToPublishingWorkflow(flowcell_id)
         else:
             self.log.info('No primary fastq files found for run %s' % run_id)
         
-    def updateSampleProgressStatus(self, flowcell_id):
+    def updateSampleProgressStatusToAnalysisUnderway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
         """
         self.log.info('... update sample progress status ..............................................')
-        self.glsutil.updateFlowcellSampleProgressForAnalysis(flowcell_id)
+        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, self.glsutil.ANALYSIS_UNDERWAY)
+        
+    def updateSampleProgressStatusToPublishingUnderway(self, flowcell_id):
+        """ Notify lims by updating Progress status UDF on samples to 'Publishing Underway'
+        """
+        self.log.info('... update sample progress status ..............................................')
+        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, self.glsutil.PUBLISHING_UNDERWAY)
         
     def findExternalData(self, run_id):
         self.log.info('... look for external data .....................................................')
