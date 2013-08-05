@@ -39,6 +39,10 @@ RUN_HEADER = """
 ================================================================================
 === RUN: %(run_folder)s
 ================================================================================"""
+EVENT_HEADER = """
+================================================================================
+=== EVENT: %s
+================================================================================"""
 THREE_DAYS = 60*60*24*3
 
 ################################################################################
@@ -70,13 +74,13 @@ def main():
                       
     # get list of volumes from command line
     log.debug("List of volumes to sync: %s" % options.volumes)
+
+    ### Manage run folders
     for volume in options.volumes:
         from_path="/%s/data/Runs/" % volume
         to_path="/runs/%s/%s/" % (options.server, volume)
         to_path_rsync="%s:/runs/%s/%s/" % (LIMS, options.server, volume)
         run_folders =  glob.glob(RUNFOLDER_GLOB % from_path)
-
-        ### Manage run folders
         for run_folder in run_folders:
             log.info(RUN_HEADER % {'run_folder': run_folder})
             run_folder_name = os.path.basename(run_folder)
@@ -106,7 +110,11 @@ def main():
                 rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
                 utils.run_process(rsync_bin_cmd, options.dry_run)
 
-        ### Copy event files to lims server
+    ### Copy event files to lims server
+    for volume in options.volumes:
+        from_path="/%s/data/Runs/" % volume
+        to_path="/runs/%s/%s/" % (options.server, volume)
+        to_path_rsync="%s:/runs/%s/%s/" % (LIMS, options.server, volume)
         from_events="%s/gls_events/" % from_path
         from_events_archive="%s/archive/" % from_events
         to_events="%s/gls_events/" % to_path_rsync
@@ -117,6 +125,7 @@ def main():
             if not os.path.exists(from_events_archive):
                 os.makedirs(from_events_archive)
             for event_file in event_files:
+                log.info(EVENT_HEADER % event_file)
                 # copy event files to lims server and move them to archive
                 scp_cmd = ["scp", "-r", "-p", event_file, to_events]
                 utils.run_process(scp_cmd, options.dry_run)
