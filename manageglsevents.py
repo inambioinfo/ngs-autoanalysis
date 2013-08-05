@@ -75,6 +75,8 @@ def main():
         to_path="/runs/%s/%s/" % (options.server, volume)
         to_path_rsync="%s:/runs/%s/%s/" % (LIMS, options.server, volume)
         run_folders =  glob.glob(RUNFOLDER_GLOB % from_path)
+
+        ### Manage run folders
         for run_folder in run_folders:
             log.info(RUN_HEADER % {'run_folder': run_folder})
             run_folder_name = os.path.basename(run_folder)
@@ -91,26 +93,35 @@ def main():
             if runfolder_age:
                 ### Delete runfolder on lims server if older than 3 days
                 if runfolder_age > THREE_DAYS:
-                    log.info('run folder older than 3 days will be deleted')
+                    log.info('Deleting run folder older than 3 days...')
                     # ssh username@domain.com 'rm /some/where/some_file.war'
                     delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
                     log.info(delete_runfolder_cmd)
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
             else:
                 ### Sync runfolder to lims server
-                log.info('run folder will be synchronised')
+                log.info('Synchronising run folder...')
                 rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
                 utils.run_process(rsync_files_cmd, options.dry_run)
                 rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
                 utils.run_process(rsync_bin_cmd, options.dry_run)
-                ### Copy event files to lims server
 
-                
-                
-
-                
-                
-
+        ### Copy event files to lims server
+        from_events="%s/gls_events/" % from_path
+        from_events_archive="%s/archive/" % from_events
+        to_events="%s/gls_events/" % to_path_rsync
+        if os.path.exists(from_events):
+            event_files = glob.glob("%s/event-*.txt" % from_events)
+            log.info('List pf events file to sync: %s' % event_files)
+            # create archive folder if it does not exist
+            if not os.path.exists(from_events_archive):
+                os.makedirs(from_events_archive)
+            for event_file in event_files:
+                # copy event files to lims server and move them to archive
+                scp_cmd = ["scp", "-r", "-p", event_file, to_events]
+                utils.run_process(scp_cmd, options.dry_run)
+                mv_cmd = ["mv", event_file, from_events_archive]
+                utils.run_process(mv_cmd, options.dry_run)
 
 if __name__ == '__main__':
 	main()
