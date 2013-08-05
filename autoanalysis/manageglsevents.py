@@ -95,7 +95,7 @@ def main():
                     # ssh username@domain.com 'rm /some/where/some_file.war'
                     delete_runfolder_cmd = ["ssh", LIMS, "'rm %s'" % to_path]
                     log.info(delete_runfolder_cmd)
-                    utils.run_process(move_runfolder_cmd, options.dry_run)
+                    utils.run_process(delete_runfolder_cmd, options.dry_run)
             else:
                 ### Sync runfolder to lims server
                 log.info('run folder will be synchronised')
