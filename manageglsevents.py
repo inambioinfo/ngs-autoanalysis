@@ -93,7 +93,7 @@ def main():
                 if runfolder_age > THREE_DAYS:
                     log.info('run folder older than 3 days will be deleted')
                     # ssh username@domain.com 'rm /some/where/some_file.war'
-                    delete_runfolder_cmd = ["ssh", LIMS, "'rm %s'" % to_path]
+                    delete_runfolder_cmd = ['ssh', LIMS, '"rm %s/%s"' % (to_path, run_folder_name)]
                     log.info(delete_runfolder_cmd)
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
             else:
@@ -101,7 +101,7 @@ def main():
                 log.info('run folder will be synchronised')
                 rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
                 utils.run_process(rsync_files_cmd, options.dry_run)
-                rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" (to_path_rsync, run_folder_name)] 
+                rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
                 utils.run_process(rsync_bin_cmd, options.dry_run)
                 ### Copy event files to lims server
 
