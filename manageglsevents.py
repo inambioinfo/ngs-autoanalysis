@@ -120,7 +120,7 @@ def main():
         to_events="%s/gls_events/" % to_path_rsync
         if os.path.exists(from_events):
             event_files = glob.glob("%s/event-*.txt" % from_events)
-            log.info('List pf events file to sync: %s' % event_files)
+            log.info('List of events file to sync: %s' % event_files)
             # create archive folder if it does not exist
             if not os.path.exists(from_events_archive):
                 os.makedirs(from_events_archive)
