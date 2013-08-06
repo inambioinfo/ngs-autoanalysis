@@ -34,6 +34,7 @@ SYNC_FAILED = 'Sync.failed'
 ANALYSIS_COMPLETED = "Analysis.completed"
 ANALYSIS_IGNORE = 'analysis.ignore'
 DONT_DELETE = 'dont.delete'
+PUBLISHING_ASSIGNED = 'Publishing.assigned'
 
 RSYNC_FOLDER = "rsync"
 RSYNC_STARTED = "rsync.started"
@@ -114,6 +115,7 @@ class RunDefinition(object):
         self.sync_failed = os.path.join(self.run_folder, SYNC_FAILED)
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
+        self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
         self.dest_run_folder = self.createDestinationRunFolder()
         
@@ -233,6 +235,13 @@ class RunDefinition(object):
                 if os.path.exists(self.dont_delete):
                     self.log.debug('%s is present' % self.dont_delete)
                     return False
+        return False
+        
+    def isPublished(self):
+        # check Publishing.assigned is present
+        if os.path.exists(self.run_folder):
+            if os.path.exists(self.publishing_assigned):
+                return True
         return False
         
 ################################################################################
