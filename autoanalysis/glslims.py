@@ -83,7 +83,7 @@ class GlsLims:
         if self.isPrimaryFastqFilesFound(run.run_folder_name):
             self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
             self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
-            utils.touch(self.sync_completed, dry_run)
+            utils.touch(run.publishing_assigned, dry_run)
         else:
             self.log.info('No primary fastq files found for run %s' % run_id)
         
