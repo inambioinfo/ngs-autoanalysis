@@ -64,6 +64,7 @@ class RunFolders(object):
             self.run_folders =  glob.glob(RUNFOLDER_GLOB % self.basedir)
         self.completed_runs = self.getCompletedRuns()
         self.analysed_runs = self.getAnalysedRuns()
+        self.published_runs = self.getPublishedRuns()
         self.dest_run_folders = self.getDestinationRunFolders()
         
     def getAllRuns(self):
@@ -91,6 +92,13 @@ class RunFolders(object):
                 analysed_runs.append(run)
         return analysed_runs
         
+    def getPublishedRuns(self):
+        published_runs = []
+        for run in self.completed_runs:
+            if run.isAnalysed() and run.isPublished():
+                published_runs.append(run)
+        return published_runs
+
     def getDestinationRunFolders(self):
         if self.one_run_folder:
             return glob.glob(ONERUNFOLDER_GLOB % (self.destdir, self.one_run_folder))
