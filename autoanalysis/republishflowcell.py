@@ -50,7 +50,7 @@ def main():
         log.info(auto_runfolders.RUN_HEADER % {'run_folder': runfolder})
         # find runfolder in basedir
         runfolder_path = utils.locate_run_folder(runfolder, options.basedir, False)
-        run = auto_runfolders.RunDefinition(run_folder_path)
+        run = auto_runfolders.RunDefinition(runfolder_path)
         if os.path.exists(run.analysis_completed):
             log.info('Analysis completed')
             if options.publish:
