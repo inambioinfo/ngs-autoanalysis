@@ -50,13 +50,12 @@ def main():
         log.info(auto_runfolders.RUN_HEADER % {'run_folder': runfolder})
         # find runfolder in basedir
         runfolder_path = utils.locate_run_folder(runfolder, options.basedir, False)
-        if os.path.exists(os.path.join(runfolder_path, auto_runfolders.ANALYSIS_COMPLETED)):
+        run = auto_runfolders.RunDefinition(run_folder_path)
+        if os.path.exists(run.analysis_completed):
             log.info('Analysis completed')
             if options.publish:
-                # publish flow-cell
-                glslims.publishFlowCell(runfolder, runfolder.split('_')[-1])
-                # update sample status to 'Publishing underway'
-                glslims.updateSampleProgressStatusToPublishingUnderway(runfolder.split('_')[-1])
+                # publish flow-cell and update sample status
+                glslims.publishFlowCell(run)
             else:
                 log.info('use --publish to publish the flowcell')
         else:
