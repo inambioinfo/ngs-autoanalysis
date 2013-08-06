@@ -53,9 +53,12 @@ def main():
         run = auto_runfolders.RunDefinition(runfolder_path)
         if os.path.exists(run.analysis_completed):
             log.info('Analysis completed')
-            if options.publish and not os.path.exists(run.publishing_assigned):
-                # publish flow-cell and update sample status
-                glslims.publishFlowCell(run, False)
+            if options.publish:
+                if not os.path.exists(run.publishing_assigned):
+                    # publish flow-cell and update sample status
+                    glslims.publishFlowCell(run, False)
+                else:
+                    log.info('%s already exists' % run.publishing_assigned)
             else:
                 log.info('use --publish to publish the flowcell')
         else:
