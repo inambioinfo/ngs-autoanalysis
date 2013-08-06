@@ -78,10 +78,12 @@ class GlsLims:
                 self.glsutil.createAlignmentPipelineProcess(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
-    def publishFlowCell(self, run_id, flowcell_id):
+    def publishFlowCell(self, run, dry_run=True):
         self.log.info('... publish flow-cell ..........................................................')
-        if self.isPrimaryFastqFilesFound(run_id):
-            self.glsutil.assignFlowcellToPublishingWorkflow(flowcell_id)
+        if self.isPrimaryFastqFilesFound(run.run_folder_name):
+            self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
+            self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
+            utils.touch(self.sync_completed, dry_run)
         else:
             self.log.info('No primary fastq files found for run %s' % run_id)
         

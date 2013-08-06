@@ -82,12 +82,11 @@ def main():
                     glslims.createAnalysisProcesses(run.flowcell_id)
                     glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
                 else:
-                    log.info('use --update-lims option to update the lims')
+                    log.info('use --updatelims option to update the lims')
                 if options.publish:
-                    # publish flow-cell
-                    if run.isAnalysed():
-                        glslims.publishFlowCell(run.run_folder_name, run.flowcell_id)
-                        glslims.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
+                    # publish flow-cell and update sample status
+                    if run.isAnalysed() and not run.isPublished():
+                        glslims.publishFlowCell(run, options.dry_run)
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp:
