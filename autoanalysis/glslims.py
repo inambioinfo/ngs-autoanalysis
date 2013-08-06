@@ -85,7 +85,7 @@ class GlsLims:
             self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
             utils.touch(run.publishing_assigned, dry_run)
         else:
-            self.log.info('No primary fastq files found for run %s' % run_id)
+            self.log.info('No primary fastq files found for run %s' % run.run_folder_name)
         
     def updateSampleProgressStatusToAnalysisUnderway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
