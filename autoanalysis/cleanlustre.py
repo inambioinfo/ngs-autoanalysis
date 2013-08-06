@@ -52,9 +52,9 @@ def main():
         log = logger.get_custom_logger()
                   
     try:
-        # loop over all runs that have a Analysis.completed file in options.basedir
+        # loop over all runs that have a Analysis.completed and Publishing.assigned files in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
-        for run in runs.analysed_runs:
+        for run in runs.published_runs:
             try:
                 log.info(run.getHeader())
                 log.info('*** run folder move to trash')
