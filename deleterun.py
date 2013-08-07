@@ -141,6 +141,7 @@ def main():
 
         # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, None)
+        all_runs = runs.getAllRuns()
         for run in runs.all_runs:
             try:
                 log.info(run.getHeader())
