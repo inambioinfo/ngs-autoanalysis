@@ -27,9 +27,9 @@ import time
 import datetime
 
 # import custom modules
+# import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.lims as lims
 import autoanalysis.runfolders as auto_runfolders
 
 ################################################################################
@@ -139,69 +139,69 @@ def main():
         delete_intensities_older_than = convert_day(options.intensities)
         move_folder_older_than = convert_day(options.thumbnails+options.images+options.intensities)
 
-        # removing data from completed or failed run folders
-        run_folders = glob.glob("%s/??????_*_*_*" % options.basedir)
-        for run_folder in run_folders:
+        # loop over all runs in options.basedir
+        runs = auto_runfolders.RunFolders(options.basedir, None)
+        for run in runs.all_runs:
             try:
-                log.info('--------------------------------------------------------------------------------')
-                log.info('--- RUN: %s' % run_folder)
-                log.info('--------------------------------------------------------------------------------')
+                log.info(run.getHeader())
                 # check dont.delete is not present - stop cleaning if present
-                dont_delete = os.path.join(run_folder, auto_runfolders.DONT_DELETE)
-                if not os.path.exists(dont_delete):
-                    sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
-                    sequencing_failed = os.path.join(run_folder, auto_runfolders.SEQUENCING_FAILED)
-                    analysis_completed = os.path.join(run_folder, auto_runfolders.ANALYSIS_COMPLETED)
-                    if ( ( os.path.exists(sequencing_completed) and os.path.exists(analysis_completed) ) or os.path.exists(sequencing_failed) ):
-                        if os.path.exists(sequencing_completed):
-                            runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
+                if not os.path.exists(run.dont_delete):
+                    
+                    # check Sequencing.completed and Sync.completed or Sequencing.failed present
+                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) ) or os.path.exists(run.sequencing_failed) ):
+                        if os.path.exists(run.sequencing_completed):
+                            runfolder_age = present - os.path.getmtime(os.path.join(run.run_folder, 'Data'))
+                            log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
                         else:
-                            runfolder_age = present - os.path.getmtime(sequencing_failed)
-                        log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
+                            runfolder_age = present - os.path.getmtime(run.sequencing_failed)
+                            log.info('[IMG:%s|INT:%s|PIC:%s] run failed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
+                            
                         # check deleting file has been done already
-                        if is_completed(run_folder, 'delete_images') and is_completed(run_folder, 'delete_intensities') and is_completed(run_folder, 'delete_thumbnails'):
+                        if is_completed(run.run_folder, 'delete_images') and is_completed(run.run_folder, 'delete_intensities') and is_completed(run.run_folder, 'delete_thumbnails'):
                             log.info('All images/intensities/thumbnails deleted')
                             # moving run folders to OldRuns after thumbnails+images+intensities days
                             if runfolder_age > move_folder_older_than:
-                                oldruns_path = os.path.join(os.path.dirname(run_folder), 'OldRuns')
-                                move_runfolder_cmd = ['mv', run_folder, oldruns_path]
+                                oldruns_path = os.path.join(os.path.dirname(run.run_folder), 'OldRuns')
+                                move_runfolder_cmd = ['mv', run.run_folder, oldruns_path]
                                 utils.create_directory(oldruns_path)
                                 log.info('moving run folder...')
                                 utils.run_bg_process(move_runfolder_cmd, options.dry_run)
                         else:
                             # deleting images
-                            if is_completed(run_folder, 'delete_images'):
+                            if is_completed(run.run_folder, 'delete_images'):
                                 log.info('All images deleted')
                             else:
                                 if runfolder_age > delete_images_older_than:
-                                    delete_images_cmd = "find %s -name *.tif -delete" % run_folder
-                                    setup_clean(run_folder, 'delete_images', delete_images_cmd)
-                                    clean(run_folder, 'delete_images', options.dry_run)
+                                    delete_images_cmd = "find %s -name *.tif -delete" % run.run_folder
+                                    setup_clean(run.run_folder, 'delete_images', delete_images_cmd)
+                                    clean(run.run_folder, 'delete_images', options.dry_run)
                             # deleting intensities
-                            if is_completed(run_folder, 'delete_intensities'):
+                            if is_completed(run.run_folder, 'delete_intensities'):
                                 log.info('All intensities deleted')
                             else:
                                 if runfolder_age > delete_intensities_older_than:
-                                    delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.bcl -or -name *.stats \) -delete" % run_folder
-                                    setup_clean(run_folder, 'delete_intensities', delete_intensities_cmd)
-                                    clean(run_folder, 'delete_intensities', options.dry_run)
+                                    delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.bcl -or -name *.stats \) -delete" % run.run_folder
+                                    setup_clean(run.run_folder, 'delete_intensities', delete_intensities_cmd)
+                                    clean(run.run_folder, 'delete_intensities', options.dry_run)
                             # deleting thumbnails
-                            if is_completed(run_folder, 'delete_thumbnails'):
+                            if is_completed(run.run_folder, 'delete_thumbnails'):
                                 log.info('All thumbnails deleted')
                             else:
                                 if runfolder_age > delete_thumbnails_older_than:
-                                    delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run_folder
-                                    setup_clean(run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
-                                    clean(run_folder, 'delete_thumbnails', options.dry_run)
+                                    delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run.run_folder
+                                    setup_clean(run.run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
+                                    clean(run.run_folder, 'delete_thumbnails', options.dry_run)
+                        
                 else:
-                    log.debug('%s is present' % dont_delete)
+                    log.debug('%s is present' % run.dont_delete)
             except:
                 log.exception("Unexpected error")
                 continue
+                
     except:
         log.exception("Unexpected error")
         raise
-
+    
 if __name__ == '__main__':
     main()
 
