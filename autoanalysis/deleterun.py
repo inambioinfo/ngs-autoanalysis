@@ -47,6 +47,7 @@ def convert_day(day):
 def setup_clean(run_folder, clean_task, find_cmd):
     """Delete tasks are delete_thumbnails, delete_intensities and delete_images
     """
+    log = logging.getLogger(__name__) 
     clean_directory = os.path.join(run_folder, CLEAN_FOLDERNAME)
     clean_script_path = os.path.join(clean_directory, '%s.sh' % clean_task)
     clean_started = os.path.join(clean_directory, '%s.started' % clean_task)
@@ -78,6 +79,7 @@ fi
         log.debug('%s already exists' % clean_script_path)
     
 def clean(run_folder, clean_task, dry_run=True):
+    log = logging.getLogger(__name__) 
     clean_directory = os.path.join(run_folder, CLEAN_FOLDERNAME)
     clean_script_path = os.path.join(clean_directory, '%s.sh' % clean_task)
     clean_started = os.path.join(clean_directory, '%s.started' % clean_task)
