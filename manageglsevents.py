@@ -109,7 +109,7 @@ def main():
                 utils.run_process(rsync_files_cmd, options.dry_run)
                 rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
                 utils.run_process(rsync_bin_cmd, options.dry_run)
-                rsync_ga_cmd = ["rsync", "-av", "--include='*/'", "--include=Data/Intensities/RTAConfiguration.xml", "--exclude=*", run_folder, to_path_rsync]
+                rsync_ga_cmd = ["rsync", "-avr", "--include='*/'", "--include=Data/Intensities/RTAConfiguration.xml", "--exclude=*", run_folder, to_path_rsync]
                 utils.run_process(rsync_ga_cmd, options.dry_run)
 
     ### Copy event files to lims server
