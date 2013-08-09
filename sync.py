@@ -57,10 +57,14 @@ def main():
         for run in runs.completed_runs:
             try:
                 log.info(run.getHeader())
-                # create sync 
-                sync = auto_pipelines.Sync(run, options.dry_run)
-                # execute pipelines
-                sync.execute()
+                if not os.path.exists(run.sync_completed):
+                    log.info('%s does not exists - to be synchronised' % run.sync_completed)
+                    # create sync 
+                    sync = auto_pipelines.Sync(run, options.dry_run)
+                    # execute pipelines
+                    sync.execute()
+                else:
+                    log.info('%s is present' % run.sync_completed)
             except:
                 log.exception("Unexpected error")
                 continue
