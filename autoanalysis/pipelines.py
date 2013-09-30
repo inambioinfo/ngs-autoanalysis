@@ -34,6 +34,7 @@ PIPELINES = OrderedDict ([
     
 # External pipeline name
 EXTERNAL_PIPELINE = 'external'
+EXTERNAL_DEMUX_PIPELINE = 'external_demux'
 
 # Pipeline commands
 PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
@@ -488,7 +489,7 @@ class Pipelines(object):
                     return False
         return True
         
-    def isExternalDataPublished(self, external_data=None):
+    def isExternalDataPublished(self, external_data=None, external_demux_data=None):
         """Checks that external data has been published
         """
         external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
@@ -498,6 +499,15 @@ class Pipelines(object):
             # rsync external data not finished or started
             if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
                 return False
+
+        external_demux_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_DEMUX_PIPELINE)
+        demux_rsync_started = os.path.join(external_demux_directory, RSYNC_STARTED_FILENAME)
+        demux_rsync_finished = os.path.join(external_demux_directory, RSYNC_ENDED_FILENAME)
+        if external_demux_data:
+            # rsync external data not finished or started
+            if not os.path.exists(demux_rsync_started) or not os.path.exists(demux_rsync_finished):
+                return False
+
         return True
 
 ################################################################################
@@ -509,6 +519,7 @@ class External(object):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.external_data = external_data
+        self.external_demux_data = external_demux_data
         self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
@@ -516,6 +527,8 @@ class External(object):
         self.archive_primary_completed = os.path.join(self.run.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
         self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
         self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
+        
+        self.archive_completed = self.archive_primary_completed
 
     def publish(self):
         """publish external data to ftp server - rsync to ldmz01
@@ -525,11 +538,11 @@ class External(object):
         if self.run.isCompleted():
             if self.external_data:
                 if self.run.dest_run_folder:
-                    # rsync fastq files at the end of primary when sync to archive finished
-                    if os.path.exists(self.archive_primary_completed):
-                        # create pipeline definition
-                        pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
-                        pipeline_definition.printHeader()
+                    # create pipeline definition
+                    pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
+                    pipeline_definition.printHeader()
+                    # rsync fastq files when sync to archive finished
+                    if os.path.exists(self.archive_completed):
                         # create symlinks for external users
                         self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                         # create rsync-pipeline script
@@ -537,18 +550,19 @@ class External(object):
                         # run rsync-pipeline script
                         self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
                     else:
-                        self.log.info('Primary not completed')
+                        self.log.info('Rsync from lustre to archive not completed')
                 else:
                     self.log.warn('%s does not exist' % self.run.dest_run_folder)
             else:
                 self.log.info('No external data to publish')
             
+        
     def createSymlinks(self, external_directory):
         """ Create symlink to external primary data into external folder
         3 files to symlink per lane per read:
-            SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
-            SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
-            SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
+            primary/SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
+            primary/SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
+            primary/SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
         """
         self.log.info('... create symlinks to external data ...........................................')
         for sample_id in list(self.external_data.viewkeys()):
@@ -627,6 +641,39 @@ class External(object):
                     self.log.info('external data has been synchronised')
         else:
             self.log.warn('%s is missing' % sync_script)
+            
+            
+class ExternalDemux(External):
+    
+    def __init__(self):
+        External.__init__(self)
+        self.pipeline_name = EXTERNAL_DEMUX_PIPELINE
+        self.archive_completed = self.archive_all_completed
+        
+    def createDemuxSymlinks(self, external_directory):
+        """
+        demultiplex/SLX-6658.A027.D29VHACXX.s_3.r_1.fq.gz
+        demultiplex/SLX-6658.A027.D29VHACXX.s_3.md5sums.txt
+        demultiplex/SLX-6658.A025.D29VHACXX.s_3.r_1.fq.gz
+        demultiplex/SLX-6658.A025.D29VHACXX.s_3.md5sums.txt
+        demultiplex/...
+        demultiplex/SLX-6658.D29VHACXX.s_3.r_1.barcodesummary.txt
+        """
+        self.log.info('... create symlinks to  demux external data ....................................')
+        for sample_id in list(self.external_data.viewkeys()):
+            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
+                # create ftpdir in external directory in run folder
+                runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
+                utils.create_directory(runfolder_ext_ftpdir)
+                filename = self.external_data[sample_id]['from_contenturi']
+                try:
+                    # create symlink
+                    linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+                    utils.create_symlink(filename, linkname)
+                except:
+                    self.log.exception('unexpected error when creating symlink')
+                    continue
+    
             
 ################################################################################
 # CLASS Sync

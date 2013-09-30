@@ -99,11 +99,14 @@ class GlsLims:
         self.log.info('... update sample progress status ..............................................')
         self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.PUBLISHING_UNDERWAY)
         
-    def findExternalData(self, run_id):
+    def findExternalData(self, run_id, demux=False):
         self.log.info('... look for external data .....................................................')
         data = {}
-        fastq_files = self.glsutil.getRawFastqFiles(run_id)
-        for raw in fastq_files:
+        if not demux:
+            files = self.glsutil.getRawFastqFiles(run_id)
+        else:
+            files = self.glsutil.getDemuxFastqFiles(run_id)
+        for raw in files:
             ftpdirs = self.glsutil.getFtpDirFromArtifactId(raw.artifactid)
             if ftpdirs:
                 data[raw.artifactid] = {'from_contenturi': raw.contenturi, 'to_ftpdirs': []}
