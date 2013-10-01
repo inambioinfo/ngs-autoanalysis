@@ -649,7 +649,7 @@ class ExternalDemux(External):
         self.pipeline_name = EXTERNAL_DEMUX_PIPELINE
         self.archive_completed = self.archive_all_completed
         
-    def createDemuxSymlinks(self, external_directory):
+    def createSymlinks(self, external_directory):
         """
         demultiplex/SLX-6658.A027.D29VHACXX.s_3.r_1.fq.gz
         demultiplex/SLX-6658.A027.D29VHACXX.s_3.md5sums.txt
