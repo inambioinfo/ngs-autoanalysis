@@ -519,7 +519,6 @@ class External(object):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.external_data = external_data
-        self.external_demux_data = external_demux_data
         self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
