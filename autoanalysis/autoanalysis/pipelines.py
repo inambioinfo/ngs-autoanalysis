@@ -644,8 +644,8 @@ class External(object):
             
 class ExternalDemux(External):
     
-    def __init__(self):
-        External.__init__(self)
+    def __init__(self, run, external_data, dry_run=True):
+        External.__init__(self, run, external_data, dry_run)
         self.pipeline_name = EXTERNAL_DEMUX_PIPELINE
         self.archive_completed = self.archive_all_completed
         
