@@ -50,15 +50,13 @@ def main():
     parser.add_argument("--updatelims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
     parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
     parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
-    parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
+    parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
 
     options = parser.parse_args()
 
     # logging configuration
-    if options.logfile:
-        log = logger.get_custom_logger(options.logfile)
-    else:
-        log = logger.get_custom_logger()
+    log = logger.get_custom_logger(options.logfile, options.nologemail)
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir

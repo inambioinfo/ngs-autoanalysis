@@ -14,7 +14,7 @@ import logging.config
 HOST = 'localhost'
 FROM = 'anne.pajon@cruk.cam.ac.uk'
 TO = 'anne.pajon@cruk.cam.ac.uk'
-SUBJECT = 'New Error Event From AUTOANALYSIS'
+SUBJECT = 'New Error From AUTOANALYSIS'
 
 # logging definition
 LOGGING = {
@@ -62,7 +62,7 @@ LOGGING = {
     },
     'loggers': {
         'autoanalysis': {
-            'handlers': ['console', 'info_file', 'error_file', 'email'],
+            'handlers': ['console', 'info_file', 'error_file'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -74,10 +74,13 @@ LOGGING = {
     }
 } 
 
-def get_custom_logger(logfile=None):
+def get_custom_logger(logfile=None, noemail=False):
     if logfile:
         LOGGING['handlers']['info_file']['filename'] = logfile
         LOGGING['handlers']['error_file']['filename'] = logfile + ".errors"
+    if not noemail:
+        LOGGING['loggers']['autoanalysis']['handlers'].append('email')
+        LOGGING['loggers']['glsclient']['handlers'].append('email')
     logging.config.dictConfig(LOGGING)
     return logging.getLogger('autoanalysis')
 
