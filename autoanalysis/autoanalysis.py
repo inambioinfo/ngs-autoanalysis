@@ -72,7 +72,6 @@ def main():
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
                 # get external data
                 external_data = glslims.findExternalData(run.run_folder_name)
-                external_demux_data = glslims.findExternalData(run.run_folder_name, True)
                 if not options.donot_run_pipelines:
                     # run pipelines
                     pipelines.execute()
@@ -91,6 +90,8 @@ def main():
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp:
+                    # get demultiplex external data
+                    external_demux_data = glslims.findExternalData(run.run_folder_name, True)
                     # publish external data
                     external = auto_pipelines.External(run, external_data, options.dry_run)
                     external.publish()
