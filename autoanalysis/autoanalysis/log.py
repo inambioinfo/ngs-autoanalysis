@@ -77,7 +77,7 @@ LOGGING = {
 def get_custom_logger(logfile=None):
     if logfile:
         LOGGING['handlers']['info_file']['filename'] = logfile
-        LOGGING['handlers']['error_file']['filename'] = "errors_" + logfile
+        LOGGING['handlers']['error_file']['filename'] = logfile + ".errors"
     logging.config.dictConfig(LOGGING)
     return logging.getLogger('autoanalysis')
 
