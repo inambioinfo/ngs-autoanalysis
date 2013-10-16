@@ -11,6 +11,11 @@ Created by Anne Pajon on 2012-10-26.
 import logging
 import logging.config
 
+HOST = 'localhost'
+FROM = 'anne.pajon@cruk.cam.ac.uk'
+TO = 'anne.pajon@cruk.cam.ac.uk'
+SUBJECT = 'New Error Event From AUTOANALYSIS'
+
 # logging definition
 LOGGING = {
     'version': 1,
@@ -29,23 +34,40 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': {
+        'info_file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'autoanalysis.log',
+            'filename': 'info.log',
             'maxBytes': '1024*1024*5',
             'backupCount': '10',
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'errors.log',
+            'maxBytes': '1024*1024*5',
+            'backupCount': '10',
+            'formatter': 'verbose',
+        },
+        'email': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.SMTPHandler',
+            'mailhost': HOST,
+            'fromaddr': FROM,
+            'toaddrs': [TO],
+            'subject': SUBJECT,
             'formatter': 'verbose',
         },
     },
     'loggers': {
         'autoanalysis': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'info_file', 'error_file', 'email'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'glsclient': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console', 'info_file', 'error_file'],
             'propagate': True,
             'level': 'DEBUG',
         },
@@ -54,7 +76,8 @@ LOGGING = {
 
 def get_custom_logger(logfile=None):
     if logfile:
-        LOGGING['handlers']['file']['filename'] = logfile
+        LOGGING['handlers']['info_file']['filename'] = logfile
+        LOGGING['handlers']['error_file']['filename'] = "errors_" + logfile
     logging.config.dictConfig(LOGGING)
     return logging.getLogger('autoanalysis')
 
