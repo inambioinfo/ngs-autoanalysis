@@ -39,7 +39,7 @@ PUBLISHING_ASSIGNED = 'Publishing.assigned'
 RSYNC_FOLDER = "rsync"
 RSYNC_STARTED = "rsync.started"
 RSYNC_ENDED = "rsync.ended"
-RSYNC_FAIL = "rsync.failed"
+RSYNC_FAILED = "rsync.failed"
 
 
 RUN_HEADER = """
