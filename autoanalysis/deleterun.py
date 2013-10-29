@@ -31,6 +31,7 @@ import datetime
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.glslims as auto_glslims
 
 ################################################################################
 # CONSTANTS
@@ -122,6 +123,7 @@ def main():
     parser.add_argument("--thumbnails", dest="thumbnails", action="store", help="number of days to keep thumbnails - default set to 90", default=90, type=int)
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
     parser.add_argument("--images", dest="images", action="store", help="number of days to keep images - default set to 14", default=14, type=int)
+    parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -133,7 +135,10 @@ def main():
     else:
         log = logger.get_custom_logger()
                   
-    try:        
+    try:
+        # connect to lims
+        glslims = auto_glslims.GlsLims(options.use_limsdev)
+        
         # setting-up time
         present = time.time()
         delete_thumbnails_older_than = convert_day(options.thumbnails)
@@ -150,8 +155,8 @@ def main():
                 # check dont.delete is not present - stop cleaning if present
                 if not os.path.exists(run.dont_delete):
                     
-                    # check Sequencing.completed and Sync.completed or Sequencing.failed present
-                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) ) or os.path.exists(run.sequencing_failed) ):
+                    # check Sequencing.completed and Sync.completed and Primary Fastq Files Found in lims OR Sequencing.failed present
+                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) and glslims.isPrimaryFastqFilesFound(run.run_folder_name) ) or os.path.exists(run.sequencing_failed) ):
                         if os.path.exists(run.sequencing_completed):
                             runfolder_age = present - os.path.getmtime(os.path.join(run.run_folder, 'Data'))
                             log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
@@ -194,6 +199,8 @@ def main():
                                     delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run.run_folder
                                     setup_clean(run.run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
                                     clean(run.run_folder, 'delete_thumbnails', options.dry_run)
+                    else:
+                        log.debug('run folder %s not ready to be deleted' % run.run_folder)
                         
                 else:
                     log.debug('%s is present' % run.dont_delete)
