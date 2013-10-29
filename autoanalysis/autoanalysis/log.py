@@ -69,7 +69,7 @@ LOGGING = {
         'glsclient': {
             'handlers': ['console', 'info_file', 'error_file'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
     }
 } 
