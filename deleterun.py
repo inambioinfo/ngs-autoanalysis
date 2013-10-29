@@ -200,7 +200,7 @@ def main():
                                     setup_clean(run.run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
                                     clean(run.run_folder, 'delete_thumbnails', options.dry_run)
                     else:
-                        log.debug('run folder %s not ready to be deleted' % run.run_folder)
+                        log.info('run folder %s not ready to be deleted' % run.run_folder)
                         
                 else:
                     log.debug('%s is present' % run.dont_delete)
