@@ -86,31 +86,36 @@ def main():
             run_folder_name = os.path.basename(run_folder)
             sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
             sequencing_failed = os.path.join(run_folder, auto_runfolders.SEQUENCING_FAILED)
-            if os.path.exists(sequencing_completed):
-                runfolder_age = present - os.path.getmtime(sequencing_completed)
-            elif os.path.exists(sequencing_failed):
-                runfolder_age = present - os.path.getmtime(sequencing_failed)
-            else:
-                log.warning('No run status found')
-                runfolder_age = None
+            analysis_ignore = os.path.join(run_folder, auto_runfolders.ANALYSIS_IGNORE)
+            
+            if not os.path.exists(analysis_ignore):
+                if os.path.exists(sequencing_completed):
+                    runfolder_age = present - os.path.getmtime(sequencing_completed)
+                elif os.path.exists(sequencing_failed):
+                    runfolder_age = present - os.path.getmtime(sequencing_failed)
+                else:
+                    log.warning('No run status found')
+                    runfolder_age = None
                 
-            if runfolder_age:
-                ### Delete runfolder on lims server if older than 3 days
-                if runfolder_age > THREE_DAYS:
-                    log.info('Deleting run folder older than 3 days...')
-                    # ssh username@domain.com 'rm /some/where/some_file.war'
-                    delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
-                    log.info(delete_runfolder_cmd)
-                    utils.run_process(delete_runfolder_cmd, options.dry_run)
+                if runfolder_age:
+                    ### Delete runfolder on lims server if older than 3 days
+                    if runfolder_age > THREE_DAYS:
+                        log.info('Deleting run folder older than 3 days...')
+                        # ssh username@domain.com 'rm /some/where/some_file.war'
+                        delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
+                        log.info(delete_runfolder_cmd)
+                        utils.run_process(delete_runfolder_cmd, options.dry_run)
+                else:
+                    ### Sync runfolder to lims server
+                    log.info('Synchronising run folder...')
+                    rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
+                    utils.run_process(rsync_files_cmd, options.dry_run)
+                    rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
+                    utils.run_process(rsync_bin_cmd, options.dry_run)
+                    rsync_ga_cmd = ["rsync", "-avr", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
+                    utils.run_process(rsync_ga_cmd, options.dry_run)
             else:
-                ### Sync runfolder to lims server
-                log.info('Synchronising run folder...')
-                rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
-                utils.run_process(rsync_files_cmd, options.dry_run)
-                rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
-                utils.run_process(rsync_bin_cmd, options.dry_run)
-                rsync_ga_cmd = ["rsync", "-avr", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
-                utils.run_process(rsync_ga_cmd, options.dry_run)
+                log.info('%s is present - run ignored' % analysis_ignore)
 
     ### Copy event files to lims server
     for volume in options.volumes:
