@@ -54,7 +54,7 @@ class GlsLims:
         return self.glsutil.isFastqPipelineComplete(run_id) and self.glsutil.isDemuxPipelineComplete(run_id)
 
     def isPrimaryFastqFilesFound(self, run_id):
-        # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
+        # return True if all Read 1 FASTQ files from fastq process are presents; False otherwise
         self.log.info('... check primary fastq files ..................................................')
         return self.glsutil.isFastqPipelineComplete(run_id)
 
