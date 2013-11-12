@@ -100,7 +100,7 @@ RUNFOLDER_RSYNC_EXCLUDE = [
 
 # Pipeline create-metafile extra options
 PIPELINES_SETUP_OPTIONS = {
-    "primary": "",
+    "primary": "--index-files",
     "mga": "--create-sample-sheet --phix",
     "demultiplex": "--index-files",
     "fastqc": "",
