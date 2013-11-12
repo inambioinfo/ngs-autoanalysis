@@ -577,14 +577,19 @@ class External(object):
                 splitted_filename_md5sums = splitted_filename[:3]
                 splitted_filename_md5sums.append('md5sums.txt')
                 filename_md5sums = ".".join(splitted_filename_md5sums)
+                splitted_filename_index = splitted_filename[:3]
+                splitted_filename_index.append('index.csv')
+                filename_index = ".".join(splitted_index_filename)
                 try:
                     # create symlink
                     linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
                     linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
                     linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
+                    linkname_index = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_index))
                     utils.create_symlink(filename, linkname)
                     utils.create_symlink(filename_failed, linkname_failed)
                     utils.create_symlink(filename_md5sums, linkname_md5sums)
+                    utils.create_symlink(filename_index, linkname_index)
                 except:
                     self.log.exception('unexpected error when creating symlink')
                     continue
