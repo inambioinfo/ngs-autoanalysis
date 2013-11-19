@@ -577,8 +577,8 @@ class External(object):
                 splitted_filename_md5sums = splitted_filename[:3]
                 splitted_filename_md5sums.append('md5sums.txt')
                 filename_md5sums = ".".join(splitted_filename_md5sums)
-                splitted_filename_index = splitted_filename[:3]
-                splitted_filename_index.append('index.csv')
+                splitted_index_filename = splitted_filename[:3]
+                splitted_index_filename.append('index.csv')
                 filename_index = ".".join(splitted_index_filename)
                 try:
                     # create symlink
