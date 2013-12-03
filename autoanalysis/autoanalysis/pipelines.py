@@ -622,6 +622,7 @@ class External(object):
                 ftpdirs.add(ftpdir)
         self.log.debug(ftpdirs)
         for ftpdir in ftpdirs:
+            self.log.debug(ftpdir)
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
