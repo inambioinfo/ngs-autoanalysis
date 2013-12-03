@@ -620,6 +620,7 @@ class External(object):
         for sample_id in list(self.external_data.viewkeys()):
             for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
                 ftpdirs.add(ftpdir)
+        self.log.debug(ftpdirs)
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
