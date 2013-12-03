@@ -626,7 +626,9 @@ class External(object):
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
-            rsync_cmd = rsync_cmd + "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            cmd = "%srsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            rsync_cmd = rsync_cmd + cmd
+            self.log.debug(rsync_cmd)
         env['rsync_cmd'] = rsync_cmd
         utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
 
