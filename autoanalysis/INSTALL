@@ -1,0 +1,42 @@
+--------------------------------------------------------------------------------
+-- INSTALLING DEPENDENCIES ON SOLs
+--------------------------------------------------------------------------------
+cd /home/mib-cri/software/Python-2.7.3/
+
+wget http://pypi.python.org/packages/source/s/setuptools/setuptools-0.6c11.tar.gz
+tar -zxvf setuptools-0.6c11.tar.gz
+cd setuptools-0.6c11
+/home/mib-cri/software/python2.7/bin/python setup.py install
+
+cd ..
+wget http://sourceforge.net/projects/mysql-python/files/mysql-python/1.2.3/MySQL-python-1.2.3.tar.gz
+tar -zxvf MySQL-python-1.2.3.tar.gz
+cd MySQL-python-1.2.3
+emacs site.cfg # change threadsafe = True to threadsafe = False
+/home/mib-cri/software/python2.7/bin/python setup.py build
+/home/mib-cri/software/python2.7/bin/python setup.py install
+
+cd ..
+wget http://prdownloads.sourceforge.net/sqlalchemy/SQLAlchemy-0.7.9.tar.gz
+cd SQLAlchemy-0.7.9
+/home/mib-cri/software/python2.7/bin/python setup.py install
+
+cd ..
+wget https://fedorahosted.org/releases/s/u/suds/python-suds-0.4.tar.gz
+tar -zxvf python-suds-0.4.tar.gz
+/home/mib-cri/software/python2.7/bin/python setup.py install
+
+cd /home/mib-cri/bin/
+ln -s /home/mib-cri/software/python2.7/bin/python python
+
+use:
+> /home/mib-cri/software/python2.7/bin/python
+
+--------------------------------------------------------------------------------
+-- VIRTUALENV - modules needed: mysql-python | sqlalchemy | suds
+--------------------------------------------------------------------------------
+
+wget https://raw.github.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
+python virtualenv.py `pwd`
+source bin/activate
+pip install mysql-python sqlalchemy suds
