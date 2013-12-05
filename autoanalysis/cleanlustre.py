@@ -18,18 +18,15 @@ Usage:
 ###############################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
 import glob
 import argparse
-import logging
 import time
 
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
-import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
 # MAIN
@@ -56,7 +53,7 @@ def main():
         runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
         for run in runs.published_runs:
             try:
-                log.info(run.getHeader())
+                log.info(run.get_header())
                 log.info('*** run folder move to trash')
                 cmd = ['mv', run.run_folder, options.trashdir]
                 utils.run_bg_process(cmd, options.dry_run)

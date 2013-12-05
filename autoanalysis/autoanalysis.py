@@ -19,10 +19,6 @@ Usage:
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
-import os
-import glob
-import logging
 import argparse
 
 # import custom modules
@@ -36,77 +32,77 @@ import autoanalysis.glslims as auto_glslims
 # MAIN
 ################################################################################
 def main():
-    # get the options
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
-    parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
-    parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
-    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
-    parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
-    parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
-    parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
-    parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
-    parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
-    parser.add_argument("--updatelims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
-    parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
-    parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
-    parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
-    parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
+	# get the options
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
+	parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+	parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
+	parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
+	parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
+	parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
+	parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
+	parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
+	parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
+	parser.add_argument("--updatelims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
+	parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
+	parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
+	parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
+	parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
 
-    options = parser.parse_args()
+	options = parser.parse_args()
 
-    # logging configuration
-    log = logger.get_custom_logger(options.logfile, options.nologemail)
-                  
-    try:
-        # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
-        # connect to lims
-        glslims = auto_glslims.GlsLims(options.use_limsdev)
-        for run in runs.completed_runs:
-            try:
-                log.info(run.getHeader())
-                # create pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
-                # get external data
-                external_data = glslims.findExternalData(run.run_folder_name)
-                if not options.donot_run_pipelines:
-                    # run pipelines
-                    pipelines.execute()
-                # register completion
-                pipelines.registerCompletion(external_data)
-                if options.update_lims:
-                    # create lims processes and update sample status
-                    glslims.createAnalysisProcesses(run.flowcell_id)
-                    glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
-                else:
-                    log.info('use --updatelims option to update the lims')
-                if options.publish:
-                    # publish flow-cell and update sample status
-                    if run.isAnalysed() and not run.isPublished():
-                        glslims.publishFlowCell(run, options.dry_run)
-                else:
-                    log.info('use --publish option to assign flowcells to publishing workflow')
-                if options.ftp:
-                    # get demultiplex external data
-                    external_demux_data = glslims.findExternalData(run.run_folder_name, True)
-                    # publish external data
-                    external = auto_pipelines.External(run, external_data, options.dry_run)
-                    external.publish()
-                    external_demux = auto_pipelines.ExternalDemux(run, external_demux_data, options.dry_run)
-                    external_demux.publish()
-                else:
-                    log.info('use --ftp option to sync external data to ftp server')
-            except:
-                log.exception("Unexpected error")
-                continue
-    except:
-        log.exception("Unexpected error")
-        raise
-    
+	# logging configuration
+	log = logger.get_custom_logger(options.logfile, options.nologemail)
+
+	try:
+		# loop over all runs that have a Sequencing.completed file in options.basedir
+		runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
+		# connect to lims
+		glslims = auto_glslims.GlsLims(options.use_limsdev)
+		for run in runs.completed_runs:
+			try:
+				log.info(run.get_header())
+				# create pipelines
+				pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
+				# get external data
+				external_data = glslims.find_external_data(run.run_folder_name)
+				if not options.donot_run_pipelines:
+					# run pipelines
+					pipelines.execute()
+				# register completion
+				pipelines.register_completion(external_data)
+				if options.update_lims:
+					# create lims processes and update sample status
+					glslims.create_analysis_processes(run.flowcell_id)
+					glslims.update_sample_progress_status_to_analysis_underway(run.flowcell_id)
+				else:
+					log.info('use --updatelims option to update the lims')
+				if options.publish:
+					# publish flow-cell and update sample status
+					if run.is_analysed() and not run.is_published():
+						glslims.publish_flowcell(run, options.dry_run)
+				else:
+					log.info('use --publish option to assign flowcells to publishing workflow')
+				if options.ftp:
+					# get demultiplex external data
+					external_demux_data = glslims.find_external_data(run.run_folder_name, True)
+					# publish external data
+					external = auto_pipelines.External(run, external_data, options.dry_run)
+					external.publish()
+					external_demux = auto_pipelines.ExternalDemux(run, external_demux_data, options.dry_run)
+					external_demux.publish()
+				else:
+					log.info('use --ftp option to sync external data to ftp server')
+			except:
+				log.exception("Unexpected error")
+				continue
+	except:
+		log.exception("Unexpected error")
+		raise
+
 if __name__ == "__main__":
 	main()
 
 
-        
+
 

@@ -9,17 +9,13 @@ Created by Anne Pajon on 2013-08-01.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
-import glob
-import logging
 import argparse
 
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
-import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
 
 ################################################################################
@@ -56,7 +52,7 @@ def main():
             if options.publish:
                 if not os.path.exists(run.publishing_assigned):
                     # publish flow-cell and update sample status
-                    glslims.publishFlowCell(run, False)
+                    glslims.publish_flowcell(run, False)
                 else:
                     log.info('%s already exists' % run.publishing_assigned)
             else:

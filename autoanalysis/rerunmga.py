@@ -9,11 +9,8 @@ Created by Anne Pajon on 2013-07-30.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
-import glob
 import argparse
-import logging
 
 # import custom modules
 import autoanalysis.log as logger

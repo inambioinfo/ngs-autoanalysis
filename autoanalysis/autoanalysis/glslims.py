@@ -10,10 +10,6 @@ Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
-import os
-import re
-import glob
 import logging
 import unittest
 
@@ -43,22 +39,22 @@ class GlsLims:
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
         
-    def isSequencingRunComplete(self, run_id):
+    def is_sequencing_run_complete(self, run_id):
         # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.isSequencingCompleted(run_id)
         
-    def isAllFastqFilesFound(self, run_id):
+    def is_all_fastq_files_found(self, run_id):
         # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
         self.log.info('... check fastq files ..........................................................')
         return self.glsutil.isFastqPipelineComplete(run_id) and self.glsutil.isDemuxPipelineComplete(run_id)
 
-    def isPrimaryFastqFilesFound(self, run_id):
+    def is_primary_fastq_files_found(self, run_id):
         # return True if all Read 1 FASTQ files from fastq process are presents; False otherwise
         self.log.info('... check primary fastq files ..................................................')
         return self.glsutil.isFastqPipelineComplete(run_id)
 
-    def createAnalysisProcesses(self, flowcell_id):
+    def create_analysis_processes(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
         """
@@ -78,28 +74,28 @@ class GlsLims:
                 self.glsutil.createAlignmentPipelineProcess(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
-    def publishFlowCell(self, run, dry_run=True):
+    def publish_flowcell(self, run, dry_run=True):
         self.log.info('... publish flow-cell ..........................................................')
-        if self.isPrimaryFastqFilesFound(run.run_folder_name):
+        if self.is_primary_fastq_files_found(run.run_folder_name):
             self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
-            self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
+            self.update_sample_progress_status_to_publishing_underway(run.flowcell_id)
             utils.touch(run.publishing_assigned, dry_run)
         else:
             self.log.info('No primary fastq files found for run %s' % run.run_folder_name)
         
-    def updateSampleProgressStatusToAnalysisUnderway(self, flowcell_id):
+    def update_sample_progress_status_to_analysis_underway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
         """
         self.log.info('... update sample progress status ..............................................')
         self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.ANALYSIS_UNDERWAY)
         
-    def updateSampleProgressStatusToPublishingUnderway(self, flowcell_id):
+    def update_sample_progress_status_to_publishing_underway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Publishing Underway'
         """
         self.log.info('... update sample progress status ..............................................')
         self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.PUBLISHING_UNDERWAY)
         
-    def findExternalData(self, run_id, demux=False):
+    def find_external_data(self, run_id, demux=False):
         self.log.info('... look for external data .....................................................')
         data = {}
         if not demux:
@@ -131,7 +127,7 @@ class GlsLimsTests(unittest.TestCase):
         self.assertIsNotNone(self.glslims.glsutil.getSamplesByUser('sarah.moffatt@cruk.cam.ac.uk'))
         
     def test_createAnalysisProcesses(self):
-        self.glslims.createAnalysisProcesses(self.flowcell_id)
+        self.glslims.create_analysis_processes(self.flowcell_id)
         process = self.glslims.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', self.flowcell_id)
         self.assertNotEqual(None, process)
         process = self.glslims.glsutil.getSingleAnalysisProcessByFlowcellId('demux', self.flowcell_id)
@@ -140,7 +136,7 @@ class GlsLimsTests(unittest.TestCase):
         self.assertNotEqual(None, process)
         
     def test_publishFlowCell(self):
-        self.glslims.publishFlowCell(self.flowcell_id)
+        self.glslims.publish_flowcell(self.flowcell_id)
 
 
 

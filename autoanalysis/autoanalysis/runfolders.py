@@ -11,9 +11,7 @@ Created by Anne Pajon on 2013-03-19.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
-import re
 import glob
 import logging
 import unittest
@@ -62,12 +60,12 @@ class RunFolders(object):
             self.run_folders = glob.glob(ONERUNFOLDER_GLOB % (self.basedir, self.one_run_folder))
         else:
             self.run_folders =  glob.glob(RUNFOLDER_GLOB % self.basedir)
-        self.completed_runs = self.getCompletedRuns()
-        self.analysed_runs = self.getAnalysedRuns()
-        self.published_runs = self.getPublishedRuns()
-        self.dest_run_folders = self.getDestinationRunFolders()
+        self.completed_runs = self.get_completed_runs()
+        self.analysed_runs = self.get_analysed_runs()
+        self.published_runs = self.get_published_runs()
+        self.dest_run_folders = self.get_destination_runfolders()
         
-    def getAllRuns(self):
+    def get_all_runs(self):
         runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
@@ -75,31 +73,31 @@ class RunFolders(object):
             runs.append(run)
         return runs
         
-    def getCompletedRuns(self):
+    def get_completed_runs(self):
         completed_runs = []
         for run_folder in self.run_folders:
             run = RunDefinition(run_folder, self.destdir, self.do_create_destdirs)
-            if run.isCompleted():
+            if run.is_completed():
                 completed_runs.append(run)
         return completed_runs
     
     #completed_runs = property(getCompletedRuns)
     
-    def getAnalysedRuns(self):
+    def get_analysed_runs(self):
         analysed_runs = []
         for run in self.completed_runs:
-            if run.isAnalysed():
+            if run.is_analysed():
                 analysed_runs.append(run)
         return analysed_runs
         
-    def getPublishedRuns(self):
+    def get_published_runs(self):
         published_runs = []
         for run in self.completed_runs:
-            if run.isAnalysed() and run.isPublished():
+            if run.is_analysed() and run.is_published():
                 published_runs.append(run)
         return published_runs
 
-    def getDestinationRunFolders(self):
+    def get_destination_runfolders(self):
         if self.one_run_folder:
             return glob.glob(ONERUNFOLDER_GLOB % (self.destdir, self.one_run_folder))
         return glob.glob(RUNFOLDER_GLOB % self.destdir)
@@ -125,19 +123,19 @@ class RunDefinition(object):
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
-        self.dest_run_folder = self.createDestinationRunFolder()
+        self.dest_run_folder = self.create_destination_runfolder()
         
-    def getHeader(self):
+    def get_header(self):
         return RUN_HEADER % {'run_folder': self.run_folder_name}
         
-    def createDestinationRunFolder(self):
-        if self.isCompleted() and self.destdir and self.do_create_destdir:
+    def create_destination_runfolder(self):
+        if self.is_completed() and self.destdir and self.do_create_destdir:
             return utils.locate_run_folder(self.run_folder_name, self.destdir)
-        elif self.isCompleted() and self.destdir:
+        elif self.is_completed() and self.destdir:
             return os.path.join(self.destdir, self.run_folder_name)
         return None
         
-    def updateSequencingStatus(self, _qc_flag=True, _dry_run=True):
+    def update_sequencing_status(self, _qc_flag=True, _dry_run=True):
         if _qc_flag is not None:
             if _qc_flag: 
                 if not os.path.exists(self.sequencing_completed):
@@ -155,7 +153,7 @@ class RunDefinition(object):
         else:
             self.log.info('unknown sequencing status')
                     
-    def isSequencingStatusPresent(self):
+    def is_sequencing_status_present(self):
         # check if Sequencing.completed or Sequencing.failed is present
         if os.path.exists(self.sequencing_completed):
             self.log.debug('%s found' % self.sequencing_completed)
@@ -165,7 +163,7 @@ class RunDefinition(object):
             return True
         return False
         
-    def updateSyncStatus(self, _dry_run=True):
+    def update_sync_status(self, _dry_run=True):
         rsync_folder = os.path.join(self.run_folder, RSYNC_FOLDER)
         if os.path.exists(rsync_folder):
             if os.path.exists(os.path.join(rsync_folder, RSYNC_STARTED)):
@@ -187,7 +185,7 @@ class RunDefinition(object):
         else:
             self.log.info('Not sync yet. %s does not exist.' % rsync_folder)
             
-    def isSyncStatusPresent(self):
+    def is_sync_status_present(self):
         # check if Sync.completed or Sync.failed is present
         if os.path.exists(self.sync_completed):
             self.log.debug('%s found' % self.sync_completed)
@@ -197,7 +195,7 @@ class RunDefinition(object):
             return True
         return False
 
-    def updateAnalysisStatus(self, _all_fastq_found=False, _dry_run=True):
+    def update_analysis_status(self, _all_fastq_found=False, _dry_run=True):
         if _all_fastq_found:
             if not os.path.exists(self.analysis_completed):
                 utils.touch(self.analysis_completed, _dry_run)
@@ -210,13 +208,13 @@ class RunDefinition(object):
             else:
                 self.log.info('%s does not exist - sequencing running' % self.sequencing_completed)
                 
-    def isAnalysisStatusPresent(self):
+    def is_analysis_status_present(self):
         # check if Analysed.completed is present
         if os.path.exists(self.analysis_completed):
             return True
         return False
             
-    def isCompleted(self):
+    def is_completed(self):
         # check Sequencing.completed is present and analysis.ignore is not present - ready for analysis
         if os.path.exists(self.run_folder):
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
@@ -231,7 +229,7 @@ class RunDefinition(object):
                     return False
         return False
         
-    def isAnalysed(self):
+    def is_analysed(self):
         # check Analysed.completed is present and dont_delete is not present - ready for cleaning
         if os.path.exists(self.run_folder):
             if os.path.exists(self.analysis_completed) and not os.path.exists(self.dont_delete):
@@ -245,7 +243,7 @@ class RunDefinition(object):
                     return False
         return False
         
-    def isPublished(self):
+    def is_published(self):
         # check Publishing.assigned is present
         if os.path.exists(self.run_folder):
             if os.path.exists(self.publishing_assigned):
@@ -367,13 +365,13 @@ class RunDefinitionTests(unittest.TestCase):
         #self.assertTrue(os.path.exists(self.run_def.archive_run_folder))
         
     def testRunHeader(self):
-        self.assertEqual(RUN_HEADER % {'run_folder': self.run_folder_name}, self.run_def.getHeader())
+        self.assertEqual(RUN_HEADER % {'run_folder': self.run_folder_name}, self.run_def.get_header())
         
     def testCompletedRun(self):
-        self.assertTrue(self.run_def.isCompleted())
+        self.assertTrue(self.run_def.is_completed())
         
     def testAnalysedRun(self):
-        self.assertFalse(self.run_def.isAnalysed())
+        self.assertFalse(self.run_def.is_analysed())
         
     def testDestinationRunFolders(self):
         folder = glob.glob("%s/%s" % (self.destdir, '130114_HWI-ST230_1016_D18MAACXX'))

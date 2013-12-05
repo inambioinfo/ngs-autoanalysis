@@ -11,7 +11,6 @@ Created by Anne Pajon on 2012-10-26.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
 import glob
 import logging
@@ -181,7 +180,7 @@ def get_smallest_volume(archive_glob):
 ################################################################################
 # UNIT TESTS
 ################################################################################
-class utilsTests(unittest.TestCase):
+class UtilsTests(unittest.TestCase):
     def setUp(self):
         pass
 
