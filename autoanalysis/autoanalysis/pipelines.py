@@ -587,7 +587,7 @@ class External(object):
                     linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
                     linkname_index = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_index))
                     utils.create_symlink(filename, linkname)
-                    #utils.create_symlink(filename_failed, linkname_failed)
+                    utils.create_symlink(filename_failed, linkname_failed)
                     utils.create_symlink(filename_md5sums, linkname_md5sums)
                     utils.create_symlink(filename_index, linkname_index)
                 except:

@@ -152,8 +152,11 @@ def create_directory(directory):
 def create_symlink(filename, linkname)            :
     if os.path.lexists(linkname):
         os.remove(linkname)
-    os.symlink(filename, linkname)
-    log.debug("%s symlink created" % linkname)
+    if os.path.isfile(filename)
+        os.symlink(filename, linkname)
+        log.debug("%s symlink created" % linkname)
+    else:
+        log.warning("%s is not a file or does not exist" % filename)
 
 def get_smallest_volume(archive_glob):
     try:
