@@ -152,7 +152,7 @@ def create_directory(directory):
 def create_symlink(filename, linkname)            :
     if os.path.lexists(linkname):
         os.remove(linkname)
-    if os.path.isfile(filename)
+    if os.path.isfile(filename):
         os.symlink(filename, linkname)
         log.debug("%s symlink created" % linkname)
     else:
