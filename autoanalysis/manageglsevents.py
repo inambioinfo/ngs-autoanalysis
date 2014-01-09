@@ -43,7 +43,7 @@ EVENT_HEADER = """
 ================================================================================
 === EVENT: %s
 ================================================================================"""
-THREE_DAYS = 60*60*24*3
+THREE_DAYS = 3
 
 ################################################################################
 # MAIN
@@ -53,10 +53,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--server", dest="server", action="store", help="server name e.g. 'sol02'", required=True)
     parser.add_argument("--volumes", dest="volumes", action="store", nargs='+', help="list of volumes e.g. '--volumes solexa01 solexa02 solexa03'", required=True)
+    parser.add_argument("--days", dest="days", action="store", default=THREE_DAYS, help="Number of days files stays on lims servers before being deleted, default is %s" % THREE_DAYS)
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     options = parser.parse_args()
+    
+    # time files stay on lims server
+    delete_time = 60*60*24*options.days
 
     # logging configuration
     if options.logfile:
