@@ -102,8 +102,8 @@ def main():
                     runfolder_age = None
                 
                 if runfolder_age:
-                    ### Delete runfolder on lims server if older than 3 days
-                    if runfolder_age > THREE_DAYS:
+                    ### Delete runfolder on lims server if older than x days usually 3
+                    if runfolder_age > delete_time:
                         log.info('Deleting run folder older than 3 days...')
                         # ssh username@domain.com 'rm /some/where/some_file.war'
                         delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
