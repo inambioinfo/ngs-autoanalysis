@@ -99,8 +99,12 @@ class GlsLims:
         self.log.info('... update sample progress status ..............................................')
         self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.PUBLISHING_UNDERWAY)
         
-    def findExternalData(self, run_id, demux=False):
+    def isExternalData(self, run_id):
         self.log.info('... look for external data .....................................................')
+        return self.glsutil.isExternalData(run_id)
+        
+    def findExternalData(self, run_id, demux=False):
+        self.log.info('... find external data files ...................................................')
         data = {}
         if not demux:
             files = self.glsutil.getRawFastqFiles(run_id)

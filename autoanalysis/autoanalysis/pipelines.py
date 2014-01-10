@@ -419,7 +419,7 @@ class Pipelines(object):
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
-    def registerCompletion(self, external_data=None):
+    def registerCompletion(self, external_data=False):
         """ Create Analysis.primary.completed and Analysis.completed when pipelines
         have been successfully ran and synchronised and that external data has been published
         """
@@ -489,7 +489,7 @@ class Pipelines(object):
                     return False
         return True
         
-    def isExternalDataPublished(self, external_data=None, external_demux_data=None):
+    def isExternalDataPublished(self, external_data=False):
         """Checks that external data has been published
         """
         external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
@@ -503,8 +503,8 @@ class Pipelines(object):
         external_demux_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_DEMUX_PIPELINE)
         demux_rsync_started = os.path.join(external_demux_directory, RSYNC_STARTED_FILENAME)
         demux_rsync_finished = os.path.join(external_demux_directory, RSYNC_ENDED_FILENAME)
-        if external_demux_data:
-            # rsync external data not finished or started
+        if external_data:
+            # rsync demux external data not finished or started
             if not os.path.exists(demux_rsync_started) or not os.path.exists(demux_rsync_finished):
                 return False
 
@@ -626,7 +626,7 @@ class External(object):
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
-            cmd = "rsync -av --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            cmd = "rsync -rpgovD --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd = rsync_cmd + cmd
             self.log.debug(rsync_cmd)
         env['rsync_cmd'] = rsync_cmd
