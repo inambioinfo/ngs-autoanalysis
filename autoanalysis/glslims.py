@@ -101,7 +101,12 @@ class GlsLims:
         
     def isExternalData(self, run_id):
         self.log.info('... look for external data .....................................................')
-        return self.glsutil.isExternalData(run_id)
+        is_external_data = self.glsutil.isExternalData(run_id)
+        if is_external_data:
+            self.log.info('external data found')
+        else:
+            self.log.info('no external data')
+        return is_external_data
         
     def findExternalData(self, run_id, demux=False):
         self.log.info('... find external data files ...................................................')
