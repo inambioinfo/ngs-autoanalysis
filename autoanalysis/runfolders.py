@@ -137,23 +137,16 @@ class RunDefinition(object):
             return os.path.join(self.destdir, self.run_folder_name)
         return None
         
-    def updateSequencingStatus(self, _qc_flag=True, _dry_run=True):
-        if _qc_flag is not None:
-            if _qc_flag: 
-                if not os.path.exists(self.sequencing_completed):
-                    utils.touch(self.sequencing_completed, _dry_run)
-                    self.log.info('create %s' % self.sequencing_completed)
-                else:
-                    self.log.debug('%s already exists' % self.sequencing_completed)
+    def updateSequencingStatus(self, _is_sequencing_complete, _dry_run=True):
+        if _is_sequencing_complete: 
+            if not os.path.exists(self.sequencing_completed):
+                utils.touch(self.sequencing_completed, _dry_run)
+                self.log.info('create %s' % self.sequencing_completed)
             else:
-                # all lanes have QC FAILED
-                if not os.path.exists(self.sequencing_failed):
-                    utils.touch(self.sequencing_failed, _dry_run)
-                    self.log.info('create %s' % self.sequencing_failed)
-                else:
-                    self.log.debug('%s already exists' % self.sequencing_failed)
+                self.log.debug('%s already exists' % self.sequencing_completed)
         else:
-            self.log.info('unknown sequencing status')
+            self.log.info('sequencing underway or failed')
+
                     
     def isSequencingStatusPresent(self):
         # check if Sequencing.completed or Sequencing.failed is present
