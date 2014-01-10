@@ -64,8 +64,8 @@ def main():
             try:
                 log.info(run.getHeader())
                 if not run.isSequencingStatusPresent():
-                    qc_flag = glslims.isSequencingRunComplete(run.run_folder_name)
-                    run.updateSequencingStatus(qc_flag, options.dry_run)
+                    is_sequencing_complete = glslims.isSequencingRunComplete(run.run_folder_name)
+                    run.updateSequencingStatus(is_sequencing_complete, options.dry_run)
                 if not run.isSyncStatusPresent():
                     run.updateSyncStatus(options.dry_run)
                     
