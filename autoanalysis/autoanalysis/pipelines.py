@@ -522,12 +522,7 @@ class External(object):
         self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
-        self.primary_completed = os.path.join(self.run.run_folder, PRIMARY_COMPLETED_FILENAME)
-        self.archive_primary_completed = os.path.join(self.run.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
-        self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
-        self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
-        
-        self.archive_completed = self.archive_primary_completed
+        self.pipelines_completed = self.arePipelinesCompleted([primary])
 
     def publish(self):
         """publish external data to ftp server - rsync to ldmz01
@@ -541,7 +536,7 @@ class External(object):
                     pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
                     pipeline_definition.printHeader()
                     # rsync fastq files when sync to archive finished
-                    if os.path.exists(self.archive_completed):
+                    if self.pipelines_completed:
                         # create symlinks for external users
                         self.createSymlinks(pipeline_definition.archive_pipeline_directory)
                         # create rsync-pipeline script
@@ -555,7 +550,26 @@ class External(object):
             else:
                 self.log.info('No external data to publish')
             
-        
+    def arePipelinesCompleted(self, list_pipelines):
+        """Checks for a list of pipelines that each of them has finished and has
+        been synchronised.
+        pipeline.started and pipeline.ended need to be present as well as 
+        rsync.started and rsync.ended 
+        """
+        for pipeline_name in list_pipelines:
+            pipeline_directory = os.path.join(self.run.run_folder, pipeline_name)
+            pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
+            pipeline_ended = os.path.join(pipeline_directory, PIPELINE_ENDED_FILENAME)
+            rsync_started = os.path.join(pipeline_directory, RSYNC_STARTED_FILENAME)
+            rsync_ended = os.path.join(pipeline_directory, RSYNC_ENDED_FILENAME)
+            # pipeline not finished or started
+            if not os.path.exists(pipeline_ended) or not os.path.exists(pipeline_started):
+                return False
+            # rsync not finished or started
+            if not os.path.exists(rsync_ended) or not os.path.exists(rsync_started):
+                return False
+        return True
+    
     def createSymlinks(self, external_directory):
         """ Create symlink to external primary data into external folder
         3 files to symlink per lane per read:
@@ -620,15 +634,12 @@ class External(object):
         for sample_id in list(self.external_data.viewkeys()):
             for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
                 ftpdirs.add(ftpdir)
-        self.log.debug(ftpdirs)
         for ftpdir in ftpdirs:
-            self.log.debug(ftpdir)
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/current/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
             cmd = "rsync -rpgovD --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd = rsync_cmd + cmd
-            self.log.debug(rsync_cmd)
         env['rsync_cmd'] = rsync_cmd
         utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
 
@@ -656,7 +667,8 @@ class ExternalDemux(External):
     def __init__(self, run, external_data, dry_run=True):
         External.__init__(self, run, external_data, dry_run)
         self.pipeline_name = EXTERNAL_DEMUX_PIPELINE
-        self.archive_completed = self.archive_all_completed
+
+        self.pipelines_completed = self.arePipelinesCompleted(PIPELINES.keys())
         
     def createSymlinks(self, external_directory):
         """
