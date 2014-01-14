@@ -522,7 +522,7 @@ class External(object):
         self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
-        self.pipelines_completed = self.arePipelinesCompleted([primary])
+        self.pipelines_completed = self.arePipelinesCompleted(['primary'])
 
     def publish(self):
         """publish external data to ftp server - rsync to ldmz01
