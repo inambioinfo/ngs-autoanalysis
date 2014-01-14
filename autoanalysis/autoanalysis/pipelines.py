@@ -557,7 +557,7 @@ class External(object):
         rsync.started and rsync.ended 
         """
         for pipeline_name in list_pipelines:
-            pipeline_directory = os.path.join(self.run.run_folder, pipeline_name)
+            pipeline_directory = os.path.join(self.run.dest_run_folder, pipeline_name)
             pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
             pipeline_ended = os.path.join(pipeline_directory, PIPELINE_ENDED_FILENAME)
             rsync_started = os.path.join(pipeline_directory, RSYNC_STARTED_FILENAME)
