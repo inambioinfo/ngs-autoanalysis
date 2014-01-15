@@ -29,8 +29,8 @@ PIPELINES = OrderedDict ([
     ("primary", []),
     ("mga", ["primary"]),
     ("fastqc", ["primary"]),
-    ("demultiplex", ["primary"]),
-    ("secondary", ["primary","demultiplex"])])
+    ("fastq", ["primary"]),
+    ("secondary", ["primary","fastq"])])
     
 # External pipeline name
 EXTERNAL_PIPELINE = 'external'
@@ -60,10 +60,10 @@ rm %(rsync_lock)s
 
 # Pipeline rsync exclude list
 PIPELINE_RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=fastqc --exclude=mga --exclude=demultiplex --exclude=secondary",
+    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=fastqc --exclude=mga --exclude=fastq --exclude=secondary",
     "mga" : "",
-    "demultiplex" : "",
     "fastqc" : "",
+    "fastq" : "",
     "secondary" : "",                   
 }
 
@@ -102,8 +102,8 @@ RUNFOLDER_RSYNC_EXCLUDE = [
 PIPELINES_SETUP_OPTIONS = {
     "primary": "--index-files",
     "mga": "--create-sample-sheet --phix",
-    "demultiplex": "--index-files",
     "fastqc": "",
+    "fastq": "--index-files",
     "secondary": ""}
         
 # Software pipeline path
@@ -672,12 +672,12 @@ class ExternalDemux(External):
         
     def createSymlinks(self, external_directory):
         """
-        demultiplex/SLX-6658.A027.D29VHACXX.s_3.r_1.fq.gz
-        demultiplex/SLX-6658.A027.D29VHACXX.s_3.md5sums.txt
-        demultiplex/SLX-6658.A025.D29VHACXX.s_3.r_1.fq.gz
-        demultiplex/SLX-6658.A025.D29VHACXX.s_3.md5sums.txt
-        demultiplex/...
-        demultiplex/SLX-6658.D29VHACXX.s_3.r_1.barcodesummary.txt
+        fastq/SLX-6658.A027.D29VHACXX.s_3.r_1.fq.gz
+        fastq/SLX-6658.A027.D29VHACXX.s_3.md5sums.txt
+        fastq/SLX-6658.A025.D29VHACXX.s_3.r_1.fq.gz
+        fastq/SLX-6658.A025.D29VHACXX.s_3.md5sums.txt
+        fastq/...
+        fastq/SLX-6658.D29VHACXX.s_3.r_1.barcodesummary.txt
         """
         self.log.info('... create symlinks to  demux external data ....................................')
         for sample_id in list(self.external_data.viewkeys()):
