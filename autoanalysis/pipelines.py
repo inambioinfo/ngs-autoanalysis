@@ -60,7 +60,7 @@ rm %(rsync_lock)s
 
 # Pipeline rsync exclude list
 PIPELINE_RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=fastqc --exclude=mga --exclude=fastq --exclude=secondary",
+    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary/*.fq.gz --exclude=primary/*.md5sums.txt --exclude=fastqc --exclude=mga --exclude=fastq --exclude=secondary",
     "mga" : "",
     "fastqc" : "",
     "fastq" : "",
@@ -101,9 +101,9 @@ RUNFOLDER_RSYNC_EXCLUDE = [
 # Pipeline create-metafile extra options
 PIPELINES_SETUP_OPTIONS = {
     "primary": "",
+    "fastq": "--index-files",
     "mga": "--create-sample-sheet --phix",
     "fastqc": "",
-    "fastq": "--index-files",
     "secondary": ""}
         
 # Software pipeline path
