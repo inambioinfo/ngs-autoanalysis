@@ -12,16 +12,21 @@ Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 ################################################################################
 import sys
 import os
+import inspect
 import re
 import glob
 import logging
 import unittest
-
 # autoanalysis modules
 import utils
 
-# genologics client
-import glsclient
+# Append root project to PYTHONPATH
+ROOT_PROJECT=os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+sys.path.append(ROOT_PROJECT)
+
+print sys.path
+# import genologics client
+import glsclient.glsclient as glsclient
 
 ################################################################################
 # CONSTANTS
@@ -133,7 +138,7 @@ class GlsLimsTests(unittest.TestCase):
         import log as logger
         self.log = logger.get_custom_logger()
         self.flowcell_id = '000000000-A474L'
-        self.glslims = GlsLims()
+        self.glslims = GlsLims('limsdev')
 
     def test_getSamplesByUser(self):
         self.log.debug('Testing logging')

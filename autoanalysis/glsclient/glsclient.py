@@ -8,6 +8,7 @@ Created by Anne Pajon on 2013-02-19.
 
 import sys
 import os
+import inspect
 import unittest
 import logging
 import requests
@@ -16,8 +17,9 @@ from collections import defaultdict
 
 from sqlalchemy.ext.sqlsoup import SqlSoup
 
-PROJECT_ROOT = os.path.join(os.path.realpath(os.path.dirname(__file__)), os.pardir)
-sys.path.append(PROJECT_ROOT)
+# Append root project to PYTHONPATH
+ROOT_PROJECT=os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+sys.path.append(ROOT_PROJECT)
 
 # import glsapi
 import glsapi.artifact

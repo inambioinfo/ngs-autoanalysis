@@ -527,7 +527,7 @@ class External(object):
     def publish(self):
         """publish external data to ftp server - rsync to ldmz01
         create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
-        synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/${institute}/current/
+        synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/${project_name}/
         """
         if self.run.isCompleted():
             if self.external_data:
@@ -571,7 +571,7 @@ class External(object):
         return True
     
     def createSymlinks(self, external_directory):
-        """ Create symlink to external primary data into external folder
+        """ Create symlink to external fastq data into external folder
         3 files to symlink per lane per read:
             primary/SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
             primary/SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
