@@ -30,7 +30,7 @@ PIPELINES = OrderedDict ([
     ("mga", ["primary"]),
     ("fastqc", ["primary"]),
     ("fastq", ["primary"]),
-    ("secondary", ["primary","fastq"])])
+    ("alignment", ["primary","fastq"])])
     
 # External pipeline name
 EXTERNAL_PIPELINE = 'external'
@@ -60,11 +60,11 @@ rm %(rsync_lock)s
 
 # Pipeline rsync exclude list
 PIPELINE_RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary/*.fq.gz --exclude=primary/*.md5sums.txt --exclude=fastqc --exclude=mga --exclude=fastq --exclude=secondary",
+    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary/*.fq.gz --exclude=primary/*.md5sums.txt --exclude=fastqc --exclude=mga --exclude=fastq --exclude=alignment",
     "mga" : "",
     "fastqc" : "",
     "fastq" : "",
-    "secondary" : "",                   
+    "alignment" : "",                   
 }
 
 PIPELINE_RSYNC_ALL_EXCLUDE = "--exclude=temp --exclude=JobOutputs"
@@ -104,7 +104,7 @@ PIPELINES_SETUP_OPTIONS = {
     "fastq": "--index-files",
     "mga": "--create-sample-sheet --phix",
     "fastqc": "",
-    "secondary": ""}
+    "alignment": ""}
         
 # Software pipeline path
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
