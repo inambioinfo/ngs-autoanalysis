@@ -24,7 +24,6 @@ import utils
 ROOT_PROJECT=os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 sys.path.append(ROOT_PROJECT)
 
-print sys.path
 # import genologics client
 import glsclient.glsclient as glsclient
 
