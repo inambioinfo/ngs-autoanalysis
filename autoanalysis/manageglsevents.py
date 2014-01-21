@@ -45,6 +45,16 @@ EVENT_HEADER = """
 ================================================================================"""
 THREE_DAYS = 3
 
+def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
+    ### Sync runfolder to lims server
+    log.info('Synchronising run folder...')
+    rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
+    utils.run_process(rsync_files_cmd, dry_run)
+    rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
+    utils.run_process(rsync_bin_cmd, dry_run)
+    rsync_ga_cmd = ["rsync", "-avr", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
+    utils.run_process(rsync_ga_cmd, dry_run)
+    
 ################################################################################
 # MAIN
 ################################################################################
@@ -54,6 +64,7 @@ def main():
     parser.add_argument("--server", dest="server", action="store", help="server name e.g. 'sol02'", required=True)
     parser.add_argument("--volumes", dest="volumes", action="store", nargs='+', help="list of volumes e.g. '--volumes solexa01 solexa02 solexa03'", required=True)
     parser.add_argument("--days", dest="days", action="store", default=THREE_DAYS, help="Number of days files stays on lims servers before being deleted, default is %s" % THREE_DAYS)
+    parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -92,34 +103,30 @@ def main():
             sequencing_failed = os.path.join(run_folder, auto_runfolders.SEQUENCING_FAILED)
             analysis_ignore = os.path.join(run_folder, auto_runfolders.ANALYSIS_IGNORE)
             
-            if not os.path.exists(analysis_ignore):
-                if os.path.exists(sequencing_completed):
-                    runfolder_age = present - os.path.getmtime(sequencing_completed)
-                elif os.path.exists(sequencing_failed):
-                    runfolder_age = present - os.path.getmtime(sequencing_failed)
-                else:
-                    log.warning('No run status found')
-                    runfolder_age = None
-                
-                if runfolder_age:
-                    ### Delete runfolder on lims server if older than x days usually 3
-                    if runfolder_age > delete_time:
-                        log.info('Deleting run folder older than 3 days...')
-                        # ssh username@domain.com 'rm /some/where/some_file.war'
-                        delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
-                        log.info(delete_runfolder_cmd)
-                        utils.run_process(delete_runfolder_cmd, options.dry_run)
-                else:
-                    ### Sync runfolder to lims server
-                    log.info('Synchronising run folder...')
-                    rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
-                    utils.run_process(rsync_files_cmd, options.dry_run)
-                    rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
-                    utils.run_process(rsync_bin_cmd, options.dry_run)
-                    rsync_ga_cmd = ["rsync", "-avr", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
-                    utils.run_process(rsync_ga_cmd, options.dry_run)
+            if run_folder_name == options.run_folder:
+                sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)
             else:
-                log.info('%s is present - run ignored' % analysis_ignore)
+                if not os.path.exists(analysis_ignore):
+                    if os.path.exists(sequencing_completed):
+                        runfolder_age = present - os.path.getmtime(sequencing_completed)
+                    elif os.path.exists(sequencing_failed):
+                        runfolder_age = present - os.path.getmtime(sequencing_failed)
+                    else:
+                        log.warning('No run status found')
+                        runfolder_age = None
+                
+                    if runfolder_age:
+                        ### Delete runfolder on lims server if older than x days usually 3
+                        if runfolder_age > delete_time:
+                            log.info('Deleting run folder older than 3 days...')
+                            # ssh username@domain.com 'rm /some/where/some_file.war'
+                            delete_runfolder_cmd = ['ssh', LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
+                            log.info(delete_runfolder_cmd)
+                            utils.run_process(delete_runfolder_cmd, options.dry_run)
+                    else:
+                        sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)
+                else:
+                    log.info('%s is present - run ignored' % analysis_ignore)
 
     ### Copy event files to lims server
     for volume in options.volumes:
