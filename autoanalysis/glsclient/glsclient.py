@@ -232,23 +232,6 @@ class GlsUtil(object):
         self.log.debug(results[0].slxid)
         return results[0].slxid
 
-    def getRunProcessesBySampleId(self, _sampleid):
-        results = self.db.execute(glssql.RUNPROCESS_BY_SAMPLEID_QUERY % _sampleid).fetchall()
-        runs = []
-        for run in results:
-            drun = {'processid': run.processid, 'daterun': run.daterun, 'name': run.displayname, 'status': run.workstatus, 'datecreated': run.createddate, 'datemodified': run.lastmodifieddate}
-            run_udfs = self.db.execute(glssql.PROCESSID_UDF_QUERY % run.processid).fetchall()
-            for udf in run_udfs:
-                drun[udf.key] = udf.value
-            runs.append(drun)
-        self.log.debug(runs)
-        return runs
-
-    def getAllUdfNamesByProcessName(self, _process_name):
-        results = self.db.execute(glssql.UDF_BY_PROCESSNAME_QUERY).fetchall()
-        self.log.debug(results)
-        return results
-        
     def getProcessByFlowcellId(self, _process_name, _flowcell_id):
         results = self.db.execute(glssql.PROCESS_BY_UDF_QUERY % (_process_name, FLOW_CELL_ID_FIELD, _flowcell_id)).fetchall()
         processes = []
@@ -276,15 +259,6 @@ class GlsUtil(object):
         self.log.debug(processes)
         return processes
         
-    def getRunProcessByFinishDate(self, _begin_date, _end_date):
-        results = self.db.execute(glssql.RUNPROCESS_BY_FINISHDATE_QUERY % {'begin_date':_begin_date, 'end_date':_end_date}).fetchall()
-        processes = []
-        for process in results:
-            dprocess = {'id': process.luid, 'daterun': process.daterun, 'name': process.displayname, 'status': process.workstatus, 'createddate': process.createddate, 'lastmodifieddate': process.lastmodifieddate, 'finishdate': process.finishdate, 'flowcellid': process.flowcellid}
-            processes.append(dprocess)
-        self.log.debug(processes)
-        return processes
-
     def getPublishingProcessByInputArtifact(self, _artifact_luid):
         results = self.db.execute(glssql.PUBLISHINGPROCESS_BY_INPUTARTIFACTLUID_QUERY % _artifact_luid).fetchall()
         processes = []
@@ -334,12 +308,6 @@ class GlsUtil(object):
         for io_elem in _process.input_output_map:
             output_uri_list.append(io_elem.output.uri)
         return set(output_uri_list)
-
-    def getUniqueResultFileUriListFromProcess(self, _process):
-        resfile_uri_list = []
-        for io_elem in _process.input_output_map:
-            if io_elem.output.output_type == 'ResultFile':
-                resfile_uri_list.append(io_elem.output.uri)
 
     def getUniqueInputPostProcessUriListFromProcess(self, _process):
         input_uri_list = []
@@ -612,6 +580,11 @@ class GlsUtil(object):
                     return False
         return True
         
+    def isPublishingComplete(self, _run_id):
+        """Check if publishing process exists
+        """
+        
+        
     def isExternalData(self, _run_id):
         """Return true if external data on this run
         """
@@ -619,20 +592,25 @@ class GlsUtil(object):
             return True
         return False
         
-    def getRawFastqFiles(self, _run_id):
-        """Return all raw fastq files for this run folder name called run id in genologics
+    def getLaneFastqFiles(self, _run_id):
+        """Return lane level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.FASTQ_FILES_QUERY % (_run_id)).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'BCL to FASTQ Pipeline','runid': _run_id}).fetchall()
         
-    def getDemuxFastqFiles(self, _run_id):
-        """Return all demultiplexed fastq files for this run folder name called run id in genologics
+    def getSampleFastqFiles(self, _run_id):
+        """Return sample level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.DEMUX_FASTQ_FILES_QUERY % (_run_id)).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'Demultiplexing Pipeline','runid': _run_id}).fetchall()
         
-    def getFtpDirFromArtifactId(self, _artifact_id):
-        """Return list of ftp directories the result file are associated with
+    def getAllExternalFtpDirs(self):
+        """Return list of all external ftp directories
         """
-        return self.db.execute(glssql.EXTERNAL_FTPDIR_QUERY % _artifact_id).fetchall()
+        results = self.db.execute(glssql.EXTERNAL_FTPDIR_QUERY).fetchall()
+        labftpdirs = {}
+        for lab in results: 
+            labftpdirs[lab.labid] = {'ftpdir': lab.ftpdir, 'nonpfdata': lab.nonpfdata}
+        self.log.debug(labftpdirs)
+        return labftpdirs
         
     def getUnasignedSamplesToWorkflows(self):
         query = """
@@ -937,12 +915,6 @@ class GlsUtilTest(unittest.TestCase):
     def test_getSlxIdBySampleId(self):
         self.assertIsNotNone(self.glsutil.getSlxIdBySampleId('16903'))
 
-    def test_getRunProcessesBySampleId(self):
-        self.assertIsNotNone(self.glsutil.getRunProcessesBySampleId('16903'))
-
-    def test_getAllUdfNamesByProcessName(self):
-        self.assertIsNotNone(self.glsutil.getAllUdfNamesByProcessName('MiSeq Run'))
-        
     def test_createBclToFastqPipelineProcess(self):
         # get latest sequencing process id for a flowcell id
         # 000000000-A3KRD
@@ -1237,17 +1209,18 @@ class GlsUtilTest(unittest.TestCase):
         run_id = '130529_HWI-ST230_1167_C231WACXX'
         self.assertTrue(self.glsutil.isFastqPipelineComplete(run_id))
         
+    def test_getAllExternalFtpDirs(self):
+        results = self.glsutil.getAllExternalFtpDirs()
+        self.assertEqual(45, len(results))
+        self.assertEqual('easih', results[2]['ftpdir'])
+        self.assertEqual('gurdon_institute', results[30]['ftpdir'])
+        self.assertEqual('True', results[30]['nonpfdata'])
+        
     def test_getRawFastqFiles(self):
         run_id = '130529_HWI-ST230_1168_D24MFACXX'
         results = self.glsutil.getRawFastqFiles(run_id)
         for raw in results:
             print raw.artifactid, raw.name, raw.contenturi
-            ftpdirs = self.glsutil.getFtpDirFromArtifactId(raw.artifactid)
-            if ftpdirs:
-                for ftpdir in ftpdirs:
-                    print ftpdir.ftpdir
-            else:
-                print 'no ftpdir'
         self.assertEqual(8, len(results))
         
     def test_assignFlowcellForBilling(self):

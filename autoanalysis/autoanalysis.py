@@ -88,15 +88,11 @@ def main():
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp:
-                    # get external data
+                    # get external data only when sample fastq files are published
                     external_data = glslims.findExternalData(run.run_folder_name)
-                    # get demultiplex external data
-                    external_demux_data = glslims.findExternalData(run.run_folder_name, True)
                     # publish external data
                     external = auto_pipelines.External(run, external_data, options.dry_run)
                     external.publish()
-                    external_demux = auto_pipelines.ExternalDemux(run, external_demux_data, options.dry_run)
-                    external_demux.publish()
                 else:
                     log.info('use --ftp option to sync external data to ftp server')
             except:

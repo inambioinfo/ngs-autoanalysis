@@ -135,46 +135,28 @@ AND artifact.name like '%s Read 1 FASTQ'
 AND resultfile.glsfileid IS NULL
 """
 
-FASTQ_FILES_QUERY = """
-SELECT artifact.artifactid, artifact.name, resultfile.glsfileid, glsfile.luid, p1.value as scheme, p2.value as host, p3.value as port, p4.value as dir, '/' || glsfile.contenturi as contenturi
-FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, resultfile LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid), 
-property as p1, property as p2, property as p3, property as p4
+FILES_QUERY = """
+SELECT artifact.artifactid, lab.labid, project.name as projectname, '/' || glsfile.contenturi as runfolder
+FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, 
+resultfile LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid), 
+artifact_sample_map, sample, project, researcher, lab
 WHERE process.typeid = processtype.typeid
-AND processtype.displayname = 'BCL to FASTQ Pipeline'
+AND processtype.displayname = '%(processname)s'
 AND process.processid = process_udf_view.processid
 AND process_udf_view.udfname = 'Run ID'
-AND process_udf_view.udfvalue = '%s'
+AND process_udf_view.udfvalue = '%(runid)s'
 AND process.processid=processiotracker.processid 
 AND outputmapping.trackerid=processiotracker.trackerid 
 AND outputmapping.outputartifactid=artifact.artifactid 
 AND artifact.artifactid=resultfile.artifactid 
-AND artifact.name like '%% FASTQ'
+AND (artifact.name like '%% FASTQ' OR artifact.name like '%% Checksums' OR artifact.name like '%% Lane Index')
 AND resultfile.glsfileid IS NOT NULL
-AND p1.name LIKE glsfile.server||'.scheme'
-AND p2.name LIKE glsfile.server||'.host'
-AND p3.name LIKE glsfile.server||'.port'
-AND p4.name LIKE glsfile.server||'.dir'
-"""
-
-DEMUX_FASTQ_FILES_QUERY = """
-SELECT artifact.artifactid, artifact.name, resultfile.glsfileid, glsfile.luid, p1.value as scheme, p2.value as host, p3.value as port, p4.value as dir, '/' || glsfile.contenturi as contenturi
-FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, resultfile LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid), 
-property as p1, property as p2, property as p3, property as p4
-WHERE process.typeid = processtype.typeid
-AND processtype.displayname = 'Demultiplexing Pipeline'
-AND process.processid = process_udf_view.processid
-AND process_udf_view.udfname = 'Run ID'
-AND process_udf_view.udfvalue = '%s'
-AND process.processid=processiotracker.processid 
-AND outputmapping.trackerid=processiotracker.trackerid 
-AND outputmapping.outputartifactid=artifact.artifactid 
-AND artifact.artifactid=resultfile.artifactid 
-AND (artifact.name like '%% FASTQ' OR artifact.name like '%% FASTQ MD5 Checksums')
-AND resultfile.glsfileid IS NOT NULL
-AND p1.name LIKE glsfile.server||'.scheme'
-AND p2.name LIKE glsfile.server||'.host'
-AND p3.name LIKE glsfile.server||'.port'
-AND p4.name LIKE glsfile.server||'.dir'
+AND artifact_sample_map.artifactid=artifact.artifactid
+AND artifact_sample_map.processid=sample.processid
+AND sample.projectid=project.projectid
+AND project.researcherid=researcher.researcherid
+AND lab.labid=researcher.labid
+AND glsfile.ispublished='t'
 """
 
 MGA_LANE_FILES_QUERY = """
@@ -220,19 +202,14 @@ AND p4.name LIKE glsfile.server||'.dir'
 """
 
 EXTERNAL_FTPDIR_QUERY = """ 
-SELECT distinct(udf2.udfvalue) as ftpdir, artifact_sample_map.artifactid
-FROM artifact_sample_map, sample, project, researcher, lab, entity_udf_view as udf1, entity_udf_view as udf2
-WHERE artifact_sample_map.artifactid=%s
-AND sample.processid=artifact_sample_map.processid
-AND sample.projectid=project.projectid
-AND project.researcherid=researcher.researcherid
-AND lab.labid=researcher.labid
-AND lab.labid=udf1.attachtoid
-AND lab.labid=udf2.attachtoid
-AND udf1.udfname='External' 
-AND udf1.udfvalue='True' 
-AND udf2.udfname='FTP Directory'
-AND udf2.udfvalue IS NOT NULL
+SELECT lab.labid, lab.name, ludf2.udfvalue as ftpdir, ludf3.udfvalue as nonpfdata
+FROM lab 
+LEFT OUTER JOIN entity_udf_view as ludf1 on (ludf1.attachtoid=lab.labid and ludf1.udfname='External')
+LEFT OUTER JOIN entity_udf_view as ludf2 on (ludf2.attachtoid=lab.labid and ludf2.udfname='FTP Directory')
+LEFT OUTER JOIN entity_udf_view as ludf3 on (ludf3.attachtoid=lab.labid and ludf3.udfname='Non PF Data')
+WHERE 
+ludf1.udfvalue='True' 
+AND ludf2.udfvalue IS NOT NULL
 """
 
 EXTERNAL_DATA_QUERY = """
