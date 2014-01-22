@@ -110,7 +110,7 @@ PIPELINES_SETUP_OPTIONS = {
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 
 # ftp server
-FTP_URL = "solexadmin@uk-cri-ldmz01:/dmz01/solexa"
+FTP_URL = "solexadmin@uk-cri-ldmz01:/dmz01/solexa/external"
 
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
@@ -522,12 +522,11 @@ class External(object):
         self.pipeline_name = EXTERNAL_PIPELINE
         self.dry_run = dry_run
         
-        self.pipelines_completed = self.arePipelinesCompleted(['primary'])
-
     def publish(self):
         """publish external data to ftp server - rsync to ldmz01
         create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
         synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/${project_name}/
+        only synchronise to ftp server when data published
         """
         if self.run.isCompleted():
             if self.external_data:
@@ -535,78 +534,49 @@ class External(object):
                     # create pipeline definition
                     pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
                     pipeline_definition.printHeader()
-                    # rsync fastq files when sync to archive finished
-                    if self.pipelines_completed:
-                        # create symlinks for external users
-                        self.createSymlinks(pipeline_definition.archive_pipeline_directory)
-                        # create rsync-pipeline script
-                        self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
-                        # run rsync-pipeline script
-                        self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                    # create symlinks for external users
+                    self.createSymlinks(pipeline_definition.archive_pipeline_directory)
+                    # create rsync-pipeline script
+                    self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                    # run rsync-pipeline script
+                    self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
                     else:
                         self.log.info('Rsync from lustre to archive not completed')
                 else:
                     self.log.warn('%s does not exist' % self.run.dest_run_folder)
             else:
                 self.log.info('No external data to publish')
-            
-    def arePipelinesCompleted(self, list_pipelines):
-        """Checks for a list of pipelines that each of them has finished and has
-        been synchronised.
-        pipeline.started and pipeline.ended need to be present as well as 
-        rsync.started and rsync.ended 
-        """
-        for pipeline_name in list_pipelines:
-            pipeline_directory = os.path.join(self.run.dest_run_folder, pipeline_name)
-            pipeline_started = os.path.join(pipeline_directory, PIPELINE_STARTED_FILENAME)
-            pipeline_ended = os.path.join(pipeline_directory, PIPELINE_ENDED_FILENAME)
-            rsync_started = os.path.join(pipeline_directory, RSYNC_STARTED_FILENAME)
-            rsync_ended = os.path.join(pipeline_directory, RSYNC_ENDED_FILENAME)
-            # pipeline not finished or started
-            if not os.path.exists(pipeline_ended) or not os.path.exists(pipeline_started):
-                return False
-            # rsync not finished or started
-            if not os.path.exists(rsync_ended) or not os.path.exists(rsync_started):
-                return False
-        return True
-    
+                
     def createSymlinks(self, external_directory):
         """ Create symlink to external fastq data into external folder
-        3 files to symlink per lane per read:
-            primary/SLX-7639.000000000-A4WMJ.s_1.r_1.fq.gz
-            primary/SLX-7639.000000000-A4WMJ.s_1.r_1.failed.fq.gz
-            primary/SLX-7639.000000000-A4WMJ.s_1.md5sums.txt
+        - files to symlink per lane:
+            SLX-7957.C3BW4ACXX.s_8.contents.csv
+            SLX-7957.C3BW4ACXX.s_8.r_1.lostreads.fq.gz
+            SLX-7957.C3BW4ACXX.s_8.lostreads.md5sums.txt
+        - files to symlink per sample:
+            SLX-7957.A002.C3BW4ACXX.s_8.r_1.fq.gz
+            SLX-7957.A002.C3BW4ACXX.s_8.md5sums.txt
+        - if non PF data requested
+            SLX-7957.C3BW4ACXX.s_8.r_1.failed.fq.gz
+            SLX-7957.C3BW4ACXX.s_8.failed.md5sums.txt
         """
         self.log.info('... create symlinks to external data ...........................................')
-        for sample_id in list(self.external_data.viewkeys()):
-            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
-                # create ftpdir in external directory in run folder
-                runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
-                utils.create_directory(runfolder_ext_ftpdir)
-                filename = self.external_data[sample_id]['from_contenturi']
-                splitted_filename = filename.split('.')
-                splitted_filename_failed = splitted_filename
-                splitted_filename_failed.insert(4, 'failed')
-                filename_failed = ".".join(splitted_filename_failed)
-                splitted_filename_md5sums = splitted_filename[:3]
-                splitted_filename_md5sums.append('md5sums.txt')
-                filename_md5sums = ".".join(splitted_filename_md5sums)
-                splitted_index_filename = splitted_filename[:3]
-                splitted_index_filename.append('index.csv')
-                filename_index = ".".join(splitted_index_filename)
-                try:
-                    # create symlink
-                    linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+        for file_id in list(self.external_data.viewkeys()):
+            # create ftpdir in external directory in run folder
+            runfolder_ext_ftpdir = os.path.join(external_directory, self.external_data[file_id]['ftpdir'])
+            utils.create_directory(runfolder_ext_ftpdir)
+            filename = self.external_data[sample_id]['runfolder']
+            try:
+                # create symlink
+                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+                utils.create_symlink(filename, linkname)
+                # symlink non PF data
+                if self.external_data[file_id]['nonpfdata'] == 'True' and '.lostreads.' in filename:
+                    filename_failed = filename.replace('lostreads', 'failed')
                     linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                    linkname_md5sums = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_md5sums))
-                    linkname_index = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_index))
-                    utils.create_symlink(filename, linkname)
-                    utils.create_symlink(filename_failed, linkname_failed)
-                    utils.create_symlink(filename_md5sums, linkname_md5sums)
-                    utils.create_symlink(filename_index, linkname_index)
-                except:
-                    self.log.exception('unexpected error when creating symlink')
-                    continue
+                    utils.create_symlink(filename_failed, linkname_failed)                
+            except:
+                continue
 
     def createFtpRsyncScript(self, rsync_script, env):
         """Create rsync script for external data
@@ -631,12 +601,12 @@ class External(object):
         rsync_cmd = ""
         # set of institutes
         ftpdirs = set()
-        for sample_id in list(self.external_data.viewkeys()):
-            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
+        for file_id in list(self.external_data.viewkeys()):
+            for ftpdir in self.external_data[file_id]['ftpdir']:
                 ftpdirs.add(ftpdir)
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
-            dest = "%s/%s/current/" % (FTP_URL, ftpdir)
+            dest = "%s/%s/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
             cmd = "rsync -rpgovD --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd = rsync_cmd + cmd
@@ -660,39 +630,6 @@ class External(object):
                     self.log.info('external data has been synchronised')
         else:
             self.log.warn('%s is missing' % sync_script)
-            
-            
-class ExternalDemux(External):
-    
-    def __init__(self, run, external_data, dry_run=True):
-        External.__init__(self, run, external_data, dry_run)
-        self.pipeline_name = EXTERNAL_DEMUX_PIPELINE
-
-        self.pipelines_completed = self.arePipelinesCompleted(PIPELINES.keys())
-        
-    def createSymlinks(self, external_directory):
-        """
-        fastq/SLX-6658.A027.D29VHACXX.s_3.r_1.fq.gz
-        fastq/SLX-6658.A027.D29VHACXX.s_3.md5sums.txt
-        fastq/SLX-6658.A025.D29VHACXX.s_3.r_1.fq.gz
-        fastq/SLX-6658.A025.D29VHACXX.s_3.md5sums.txt
-        fastq/...
-        fastq/SLX-6658.D29VHACXX.s_3.r_1.barcodesummary.txt
-        """
-        self.log.info('... create symlinks to  demux external data ....................................')
-        for sample_id in list(self.external_data.viewkeys()):
-            for ftpdir in self.external_data[sample_id]['to_ftpdirs']:
-                # create ftpdir in external directory in run folder
-                runfolder_ext_ftpdir = os.path.join(external_directory, ftpdir)
-                utils.create_directory(runfolder_ext_ftpdir)
-                filename = self.external_data[sample_id]['from_contenturi']
-                try:
-                    # create symlink
-                    linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
-                    utils.create_symlink(filename, linkname)
-                except:
-                    self.log.exception('unexpected error when creating symlink')
-                    continue
     
             
 ################################################################################

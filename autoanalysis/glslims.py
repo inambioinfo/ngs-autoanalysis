@@ -112,19 +112,16 @@ class GlsLims:
             self.log.info('no external data')
         return is_external_data
         
-    def findExternalData(self, run_id, demux=False):
+    def findExternalData(self, run_id):
         self.log.info('... find external data files ...................................................')
         data = {}
-        if not demux:
-            files = self.glsutil.getRawFastqFiles(run_id)
-        else:
-            files = self.glsutil.getDemuxFastqFiles(run_id)
-        for raw in files:
-            ftpdirs = self.glsutil.getFtpDirFromArtifactId(raw.artifactid)
-            if ftpdirs:
-                data[raw.artifactid] = {'from_contenturi': raw.contenturi, 'to_ftpdirs': []}
-                for ftpdir in ftpdirs:
-                    data[raw.artifactid]['to_ftpdirs'].append(ftpdir.ftpdir)
+        labftpdirs = self.glsutil.getAllExternalFtpDirs()
+        files = self.glsutil.getSampleFastqFiles(run_id)
+        if files:
+            files.extend(self.glsutil.getLaneFastqFiles(run_id))
+            for f in files:
+                if f.labid in labftpdirs.keys():
+                    data[f.artifactid] = {'runfolder': f.runfolder, 'ftpdir': labftpdirs[f.labid]['ftpdir'], 'project': f.projectname, 'nonpfdata': labftpdirs[f.labid]['nonpfdata']}
         if data:
             self.log.info('External data found')
         else:
@@ -154,7 +151,11 @@ class GlsLimsTests(unittest.TestCase):
         
     def test_publishFlowCell(self):
         self.glslims.publishFlowCell(self.flowcell_id)
-
+        
+    def test_findExternalData(self):
+        self.log.debug('Testing findExternalData')
+        data = self.glslims.findExternalData('131231_7001449_0083_C3BW4ACXX')
+        self.log.debug(data)
 
 
 if __name__ == '__main__':
