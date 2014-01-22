@@ -600,8 +600,7 @@ class External(object):
         # set of institutes
         ftpdirs = set()
         for file_id in list(self.external_data.viewkeys()):
-            for ftpdir in self.external_data[file_id]['ftpdir']:
-                ftpdirs.add(str(ftpdir))
+            ftpdirs.add(self.external_data[file_id]['ftpdir'])
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/%s/" % (FTP_URL, ftpdir)
