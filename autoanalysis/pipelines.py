@@ -540,8 +540,6 @@ class External(object):
                     self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
                     # run rsync-pipeline script
                     self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
-                    else:
-                        self.log.info('Rsync from lustre to archive not completed')
                 else:
                     self.log.warn('%s does not exist' % self.run.dest_run_folder)
             else:
