@@ -131,8 +131,6 @@ RSYNC_FAIL_FILENAME = "rsync.failed"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_LOCK_FILENAME = "rsync.lock"
 
-PRIMARY_COMPLETED_FILENAME = "Analysis.primary.completed"
-
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################        
@@ -392,10 +390,11 @@ class Pipelines(object):
         if self.pipeline_step:
             self.pipelines = {self.pipeline_step : ""}
             
-        self.primary_completed = os.path.join(self.run.run_folder, PRIMARY_COMPLETED_FILENAME)
-        self.archive_primary_completed = os.path.join(self.run.dest_run_folder, PRIMARY_COMPLETED_FILENAME)
         self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
         self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
+        self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
+        self.publish_completed = os.path.join(self.run.run_folder, runfolders.PUBLISH_COMPLETED)
+        self.archive_publish_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISH_COMPLETED)
         
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
@@ -420,36 +419,37 @@ class Pipelines(object):
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
     def registerCompletion(self, external_data=False):
-        """ Create Analysis.primary.completed and Analysis.completed when pipelines
+        """ Create Analysis.completed when pipelines
         have been successfully ran and synchronised and that external data has been published
         """
-        # create Analysis.primary.completed when primary pipeline completed
-        if self.arePipelinesCompleted(['primary']):
-            if not os.path.exists(self.primary_completed):
-                utils.touch (self.primary_completed)
-            if not os.path.exists(self.archive_primary_completed):
-                utils.touch (self.archive_primary_completed)
-            self.log.info('*** PRIMARY COMPLETED **********************************************************')
-        else:
-            # remove Analysis.primary.completed when primary not completed and file exists
-            if os.path.exists(self.primary_completed):
-                os.remove(self.primary_completed)
-            if os.path.exists(self.archive_primary_completed):
-                os.remove(self.archive_primary_completed)
-
-        # create Analysis.completed when all pipelines completed and rsynced and external data published
-        if self.arePipelinesCompleted(self.pipelines.keys()) and self.isExternalDataPublished(external_data):
+        # create Analysis.completed when all pipelines completed and rsynced
+        if self.arePipelinesCompleted(self.pipelines.keys()):
             if not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
             if not os.path.exists(self.archive_all_completed):
                 utils.touch(self.archive_all_completed)
-            self.log.info('*** ALL COMPLETED **************************************************************')
+            self.log.info('*** ANALYSIS COMPLETED *********************************************************')
         else:
             # remove Analysis.completed when analysis not completed and file exists
             if os.path.exists(self.all_completed):
                 os.remove(self.all_completed)
             if os.path.exists(self.archive_all_completed):
                 os.remove(self.archive_all_completed)   
+                
+        # create Publishing.completed when fc published and external data (if exists) sync to ftp
+        if self.isExternalDataPublished(external_data):
+            if not os.path.exists(self.publish_completed):
+                utils.touch(self.publish_completed)
+            if not os.path.exists(self.archive_publish_completed):
+                utils.touch(self.archive_publish_completed)
+            self.log.info('*** PUBLISH COMPLETED ******************************************************')
+        else:
+            # remove Publishing.completed
+            if os.path.exists(self.publish_completed):
+                os.remove(self.publish_completed)
+            if os.path.exists(self.archive_publish_completed):
+                os.remove(self.archive_publish_completed)
+                
                 
     ### Utility methods -------------------------------------------------------
 
@@ -499,15 +499,10 @@ class Pipelines(object):
             # rsync external data not finished or started
             if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
                 return False
-
-        external_demux_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_DEMUX_PIPELINE)
-        demux_rsync_started = os.path.join(external_demux_directory, RSYNC_STARTED_FILENAME)
-        demux_rsync_finished = os.path.join(external_demux_directory, RSYNC_ENDED_FILENAME)
-        if external_data:
-            # rsync demux external data not finished or started
-            if not os.path.exists(demux_rsync_started) or not os.path.exists(demux_rsync_finished):
+        else:
+            # fc not published
+            if not os.path.exists(self.publishing_assigned):
                 return False
-
         return True
 
 ################################################################################
@@ -793,9 +788,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                 utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, RSYNC_ENDED_FILENAME))
             pipelines.registerCompletion()
-            self.assertTrue(os.path.isfile(pipelines.primary_completed))
             self.assertTrue(os.path.isfile(pipelines.all_completed))
-            self.assertTrue(os.path.isfile(pipelines.archive_primary_completed))
             self.assertTrue(os.path.isfile(pipelines.archive_all_completed))
             
     def testExecuteOnlyPrimary(self):
@@ -869,9 +862,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, RSYNC_ENDED_FILENAME))
         pipelines.registerCompletion()
-        self.assertTrue(os.path.isfile(pipelines.primary_completed))
         self.assertTrue(os.path.isfile(pipelines.all_completed))
-        self.assertTrue(os.path.isfile(pipelines.archive_primary_completed))
         self.assertTrue(os.path.isfile(pipelines.archive_all_completed))
 
     def testExecuteOnlyPrimary(self):

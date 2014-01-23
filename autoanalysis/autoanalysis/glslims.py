@@ -52,13 +52,8 @@ class GlsLims:
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.isSequencingCompleted(run_id)
         
-    def isAllFastqFilesFound(self, run_id):
-        # return True if all Read 1 FASTQ files from fastq and demux processes are presents; False otherwise
-        self.log.info('... check fastq files ..........................................................')
-        return self.glsutil.isFastqPipelineComplete(run_id) and self.glsutil.isDemuxPipelineComplete(run_id)
-
-    def isPrimaryFastqFilesFound(self, run_id):
-        # return True if all Read 1 FASTQ files from fastq process are presents; False otherwise
+    def isFastqFilesFound(self, run_id):
+        # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
         self.log.info('... check primary fastq files ..................................................')
         return self.glsutil.isFastqPipelineComplete(run_id)
 
@@ -84,12 +79,12 @@ class GlsLims:
 
     def publishFlowCell(self, run, dry_run=True):
         self.log.info('... publish flow-cell ..........................................................')
-        if self.isPrimaryFastqFilesFound(run.run_folder_name):
+        if self.isFastqFilesFound(run.run_folder_name):
             self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
             self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
             utils.touch(run.publishing_assigned, dry_run)
         else:
-            self.log.info('No primary fastq files found for run %s' % run.run_folder_name)
+            self.log.info('No sample fastq files found for run %s' % run.run_folder_name)
         
     def updateSampleProgressStatusToAnalysisUnderway(self, flowcell_id):
         """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
@@ -125,7 +120,7 @@ class GlsLims:
         if data:
             self.log.info('External data found')
         else:
-            self.log.info('No external data')
+            self.log.info('No sample external data')
         return data
 
 class GlsLimsTests(unittest.TestCase):

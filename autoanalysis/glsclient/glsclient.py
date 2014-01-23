@@ -532,7 +532,7 @@ class GlsUtil(object):
                                 self.log.info("flow-cell id '%s': sample '%s' - Progress Status Updated to %s" % (_flowcell_id, updated_sample.limsid, f.value()))
     
     def isFastqPipelineComplete(self, _run_id):
-        """Only check if all Read 1 Fastq files exist for lanes that passed qc on sequencing
+        """Only check if all Read 1 Sample Fastq files exist for lanes that passed qc on sequencing
         """
         # get latest sequencing process for run id
         run_process = self.getLatestCompleteRunProcessByRunId(_run_id)
@@ -550,7 +550,7 @@ class GlsUtil(object):
             if artifact.qc_flag == 'PASSED':
                 location = artifact.location.value_
                 self.log.debug(location)
-                results = self.db.execute(glssql.UNASSIGNED_FASTQ1_ON_PROCESS_BY_UDF_QUERY % (ANALYSIS_PROCESS_NAMES['fastq'], RUN_ID_FIELD, _run_id, location)).fetchall()
+                results = self.db.execute(glssql.UNASSIGNED_FASTQ1_ON_PROCESS_BY_UDF_QUERY % (ANALYSIS_PROCESS_NAMES['demux'], RUN_ID_FIELD, _run_id, location)).fetchall()
                 self.log.debug(results)
                 if results: 
                     return False
