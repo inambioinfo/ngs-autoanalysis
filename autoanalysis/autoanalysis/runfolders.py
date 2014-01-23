@@ -240,6 +240,13 @@ class RunDefinition(object):
                     return False
         return False
         
+     def isPublishingAssigned(self):
+         # check Publishing.assigned is present
+         if os.path.exists(self.run_folder):
+             if os.path.exists(self.publishing_assigned):
+                 return True
+         return False
+    
     def isPublished(self):
         # check Publishing.completed is present and dont_delete is not present - ready for cleaning
         if os.path.exists(self.run_folder):
