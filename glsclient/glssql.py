@@ -164,7 +164,7 @@ SELECT artifact.artifactid, artifact.name, resultfile.glsfileid, glsfile.luid, p
 FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, resultfile LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid), 
 property as p1, property as p2, property as p3, property as p4
 WHERE process.typeid = processtype.typeid
-AND processtype.displayname = 'BCL to FASTQ Pipeline'
+AND processtype.displayname = 'FASTQ Lane Pipeline'
 AND process.processid = process_udf_view.processid
 AND process_udf_view.udfname = 'Run ID'
 AND process_udf_view.udfvalue = '%s'

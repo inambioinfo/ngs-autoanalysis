@@ -72,8 +72,8 @@ FLOW_CELL_CONTAINER_TYPE = "Illumina Flow Cell"
 MISEQ_CONTAINER_TYPE = "MiSeq Reagent Cartridge"
 
 RUN_PROCESS_NAMES = ["Illumina Sequencing Run", "MiSeq Run", "Historical Sequencing Run"]
-ANALYSIS_PROCESS_NAMES = {'fastq': 'BCL to FASTQ Pipeline',
-                          'demux': 'Demultiplexing Pipeline',
+ANALYSIS_PROCESS_NAMES = {'fastq': 'FASTQ Lane Pipeline',
+                          'demux': 'FASTQ Sample Pipeline',
                           'align': 'Alignment Pipeline',
                           'publi': 'Publishing'}
                           
@@ -595,12 +595,12 @@ class GlsUtil(object):
     def getLaneFastqFiles(self, _run_id):
         """Return lane level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.FILES_QUERY % {'processname': 'BCL to FASTQ Pipeline','runid': _run_id}).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': _run_id}).fetchall()
         
     def getSampleFastqFiles(self, _run_id):
         """Return sample level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.FILES_QUERY % {'processname': 'Demultiplexing Pipeline','runid': _run_id}).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Sample Pipeline','runid': _run_id}).fetchall()
         
     def getAllExternalFtpDirs(self):
         """Return list of all external ftp directories
@@ -669,7 +669,7 @@ class GlsClientApiTest(unittest.TestCase):
         self.workflows = self.glsclient.listFilterByName('workflow', self.workflow_name)
         self.workflow = self.workflows.workflow[0]
         # process type
-        self.process_type_name = 'BCL to FASTQ Pipeline'
+        self.process_type_name = 'FASTQ Lane Pipeline'
         self.process_types = self.glsclient.listFilterByName('process_type', self.process_type_name)
         self.process_type = self.process_types.process_type[0]
         
