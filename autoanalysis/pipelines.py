@@ -393,8 +393,8 @@ class Pipelines(object):
         self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
         self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
         self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
-        self.publish_completed = os.path.join(self.run.run_folder, runfolders.PUBLISH_COMPLETED)
-        self.archive_publish_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISH_COMPLETED)
+        self.publishing_completed = os.path.join(self.run.run_folder, runfolders.PUBLISHING_COMPLETED)
+        self.archive_publishing_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISHING_COMPLETED)
         
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
@@ -438,17 +438,17 @@ class Pipelines(object):
                 
         # create Publishing.completed when fc published and external data (if exists) sync to ftp
         if self.isExternalDataPublished(external_data):
-            if not os.path.exists(self.publish_completed):
-                utils.touch(self.publish_completed)
-            if not os.path.exists(self.archive_publish_completed):
-                utils.touch(self.archive_publish_completed)
+            if not os.path.exists(self.publishing_completed):
+                utils.touch(self.publishing_completed)
+            if not os.path.exists(self.archive_publishing_completed):
+                utils.touch(self.archive_publishing_completed)
             self.log.info('*** PUBLISH COMPLETED ******************************************************')
         else:
             # remove Publishing.completed
-            if os.path.exists(self.publish_completed):
-                os.remove(self.publish_completed)
-            if os.path.exists(self.archive_publish_completed):
-                os.remove(self.archive_publish_completed)
+            if os.path.exists(self.publishing_completed):
+                os.remove(self.publishing_completed)
+            if os.path.exists(self.archive_publishing_completed):
+                os.remove(self.archive_publishing_completed)
                 
                 
     ### Utility methods -------------------------------------------------------
