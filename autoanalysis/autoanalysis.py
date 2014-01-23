@@ -84,7 +84,7 @@ def main():
                 if options.publish:
                     # publish flow-cell and update sample status
                     if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent():
-                        glslims.publishFlowCell(run, options.dry_run)
+                        glslims.publishFlowCell(run)
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
                 if options.ftp:
