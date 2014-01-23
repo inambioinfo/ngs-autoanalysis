@@ -54,7 +54,7 @@ class GlsLims:
         
     def isFastqFilesFound(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
-        self.log.info('... check primary fastq files ..................................................')
+        self.log.info('... check sample fastq files ...................................................')
         return self.glsutil.isFastqPipelineComplete(run_id)
 
     def createAnalysisProcesses(self, flowcell_id):
