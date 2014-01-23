@@ -240,7 +240,7 @@ class RunDefinition(object):
                     return False
         return False
         
-     def isPublishingAssigned(self):
+    def isPublishingAssigned(self):
          # check Publishing.assigned is present
          if os.path.exists(self.run_folder):
              if os.path.exists(self.publishing_assigned):
