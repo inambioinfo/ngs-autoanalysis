@@ -35,6 +35,7 @@ ANALYSIS_COMPLETED = "Analysis.completed"
 ANALYSIS_IGNORE = 'analysis.ignore'
 DONT_DELETE = 'dont.delete'
 PUBLISHING_ASSIGNED = 'Publishing.assigned'
+PUBLISHING_COMPLETED = 'Publishing.completed'
 
 RSYNC_FOLDER = "rsync"
 RSYNC_STARTED = "rsync.started"
@@ -124,6 +125,7 @@ class RunDefinition(object):
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
+        self.publishing_completed = os.path.join(self.run_folder, PUBLISHING_COMPLETED)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
         self.dest_run_folder = self.createDestinationRunFolder()
         
@@ -225,7 +227,7 @@ class RunDefinition(object):
         return False
         
     def isAnalysed(self):
-        # check Analysed.completed is present and dont_delete is not present - ready for cleaning
+        # check Analysed.completed is present and dont_delete is not present - ready for publishing
         if os.path.exists(self.run_folder):
             if os.path.exists(self.analysis_completed) and not os.path.exists(self.dont_delete):
                 return True
@@ -239,12 +241,19 @@ class RunDefinition(object):
         return False
         
     def isPublished(self):
-        # check Publishing.assigned is present
+        # check Publishing.completed is present and dont_delete is not present - ready for cleaning
         if os.path.exists(self.run_folder):
-            if os.path.exists(self.publishing_assigned):
+            if os.path.exists(self.publishing_completed) and not os.path.exists(self.dont_delete):
                 return True
+            else:
+                if not os.path.exists(self.publishing_completed):
+                    self.log.debug('%s does not exists' % self.publishing_completed)
+                    return False
+                if os.path.exists(self.dont_delete):
+                    self.log.debug('%s is present' % self.dont_delete)
+                    return False
         return False
-        
+
 ################################################################################
 # UNIT TESTS
 ################################################################################
