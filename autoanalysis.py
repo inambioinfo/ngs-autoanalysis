@@ -83,7 +83,7 @@ def main():
                     log.info('use --updatelims option to update the lims')
                 if options.publish:
                     # publish flow-cell and update sample status
-                    if run.isAnalysed() and not run.isPublishingAssigned():
+                    if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent():
                         glslims.publishFlowCell(run, options.dry_run)
                 else:
                     log.info('use --publish option to assign flowcells to publishing workflow')
