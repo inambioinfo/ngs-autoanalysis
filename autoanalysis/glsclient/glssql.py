@@ -149,7 +149,7 @@ AND process.processid=processiotracker.processid
 AND outputmapping.trackerid=processiotracker.trackerid 
 AND outputmapping.outputartifactid=artifact.artifactid 
 AND artifact.artifactid=resultfile.artifactid 
-AND (artifact.name like '%% FASTQ' OR artifact.name like '%% Checksums' OR artifact.name like '%% Lane Index')
+AND (artifact.name like '%% FASTQ' OR artifact.name like '%% Checksums' OR artifact.name like '%% Lane Contents')
 AND resultfile.glsfileid IS NOT NULL
 AND artifact_sample_map.artifactid=artifact.artifactid
 AND artifact_sample_map.processid=sample.processid
