@@ -52,14 +52,17 @@ def main():
         log = logger.get_custom_logger()
                   
     try:
-        # loop over all runs that have a Analysis.completed and Publishing.assigned files in options.basedir
+        # loop over all runs that have a Analysis.completed and Publishing.completed and not dont.delete files in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
         for run in runs.published_runs:
             try:
                 log.info(run.getHeader())
                 log.info('*** run folder move to trash')
-                cmd = ['mv', run.run_folder, options.trashdir]
-                utils.run_bg_process(cmd, options.dry_run)
+                if os.path.exists(run.dont_delete):
+                    log.info('%s is present' % run.dont_delete)
+                else:
+                    cmd = ['mv', run.run_folder, options.trashdir]
+                    utils.run_bg_process(cmd, options.dry_run)
             except:
                 log.exception("Unexpected error")
                 continue

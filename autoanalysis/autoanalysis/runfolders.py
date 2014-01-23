@@ -89,14 +89,14 @@ class RunFolders(object):
     def getAnalysedRuns(self):
         analysed_runs = []
         for run in self.completed_runs:
-            if run.isAnalysed():
+            if run.isAnalysisCompletedPresent():
                 analysed_runs.append(run)
         return analysed_runs
         
     def getPublishedRuns(self):
         published_runs = []
         for run in self.completed_runs:
-            if run.isAnalysed() and run.isPublished():
+            if run.isAnalysisCompletedPresent() and run.isPublished():
                 published_runs.append(run)
         return published_runs
 
@@ -205,7 +205,7 @@ class RunDefinition(object):
             else:
                 self.log.info('%s does not exist - sequencing running' % self.sequencing_completed)
                 
-    def isAnalysisStatusPresent(self):
+    def isAnalysisCompletedPresent(self):
         # check if Analysed.completed is present
         if os.path.exists(self.analysis_completed):
             return True
@@ -226,21 +226,7 @@ class RunDefinition(object):
                     return False
         return False
         
-    def isAnalysed(self):
-        # check Analysed.completed is present and dont_delete is not present - ready for publishing
-        if os.path.exists(self.run_folder):
-            if os.path.exists(self.analysis_completed) and not os.path.exists(self.dont_delete):
-                return True
-            else:
-                if not os.path.exists(self.analysis_completed):
-                    self.log.debug('%s does not exists' % self.analysis_completed)
-                    return False
-                if os.path.exists(self.dont_delete):
-                    self.log.debug('%s is present' % self.dont_delete)
-                    return False
-        return False
-        
-    def isPublishingAssigned(self):
+    def isPublishingAssignedPresent(self):
          # check Publishing.assigned is present
          if os.path.exists(self.run_folder):
              if os.path.exists(self.publishing_assigned):
@@ -382,7 +368,7 @@ class RunDefinitionTests(unittest.TestCase):
         self.assertTrue(self.run_def.isCompleted())
         
     def testAnalysedRun(self):
-        self.assertFalse(self.run_def.isAnalysed())
+        self.assertFalse(self.run_def.isAnalysedPresent())
         
     def testDestinationRunFolders(self):
         folder = glob.glob("%s/%s" % (self.destdir, '130114_HWI-ST230_1016_D18MAACXX'))
