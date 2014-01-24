@@ -497,7 +497,7 @@ class Pipelines(object):
         rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
         if external_data:
             # rsync external data not finished or started
-            if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished):
+            if not os.path.exists(rsync_started) or not os.path.exists(rsync_finished) or not os.path.exists(self.publishing_assigned):
                 return False
         else:
             # fc not published
