@@ -550,7 +550,7 @@ class GlsUtil(object):
             if artifact.qc_flag == 'PASSED':
                 location = artifact.location.value_
                 self.log.debug(location)
-                results = self.db.execute(glssql.UNASSIGNED_FASTQ1_ON_PROCESS_BY_UDF_QUERY % (ANALYSIS_PROCESS_NAMES['demux'], RUN_ID_FIELD, _run_id, location)).fetchall()
+                results = self.db.execute(glssql.UNASSIGNED_FASTQ1_ON_PROCESS_BY_UDF_QUERY % (_run_id, location)).fetchall()
                 self.log.debug(results)
                 if results: 
                     return False
