@@ -123,15 +123,15 @@ SELECT process.processid, processiotracker.trackerid, artifact.artifactid, artif
 FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, resultfile
 LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid)
 WHERE process.typeid = processtype.typeid
-AND processtype.displayname = '%s'
+AND processtype.displayname = 'FASTQ Sample Pipeline'
 AND process.processid = process_udf_view.processid
-AND process_udf_view.udfname = '%s'
+AND process_udf_view.udfname = 'Run ID'
 AND process_udf_view.udfvalue = '%s'
 AND process.processid=processiotracker.processid 
 AND outputmapping.trackerid=processiotracker.trackerid 
 AND outputmapping.outputartifactid=artifact.artifactid 
 AND artifact.artifactid=resultfile.artifactid 
-AND artifact.name like '%s Read 1 FASTQ'
+AND artifact.name like '%s %% Read 1 FASTQ'
 AND resultfile.glsfileid IS NULL
 """
 
