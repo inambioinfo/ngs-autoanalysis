@@ -17,8 +17,8 @@ from email.mime.text import MIMEText
 
 # import custom modules
 import glsclient.log as logger
-import glsclient
-import glssql
+import glsclient.glsclient as glsclient
+import glsclient.glssql as glssql
 
 WORKFLOW_MAPPING = {
 'HiSeq': 'SLX: Sequencing for HiSeq v1',
