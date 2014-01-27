@@ -16,7 +16,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 # import custom modules
-import log as logger
+import glsclient.log as logger
 import glsclient
 import glssql
 
