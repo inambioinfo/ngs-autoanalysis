@@ -492,12 +492,17 @@ class Pipelines(object):
     def isExternalDataPublished(self, external_data=False):
         """Checks that external data has been published
         """
-        external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
+        # on current location on lustre
+        external_directory = os.path.join(self.run.run_folder, EXTERNAL_PIPELINE)
         rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
+        # at destination on sol03
+        dest_external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
+        dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+        dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
         if external_data:
             # rsync external data not finished or started
-            if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(self.publishing_assigned):
+            if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished) and os.path.exists(self.publishing_assigned):
                 return True
         else:
             # fc not published
