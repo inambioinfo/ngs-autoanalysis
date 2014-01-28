@@ -117,8 +117,6 @@ class GlsLims:
             for f in files:
                 if f.labid in labftpdirs.keys():
                     data[f.artifactid] = {'runfolder': f.runfolder, 'ftpdir': labftpdirs[f.labid]['ftpdir'], 'project': f.projectname, 'nonpfdata': labftpdirs[f.labid]['nonpfdata']}
-                else:
-                    self.log.warning('%s not found in lims' % f.labid)
         if data:
             self.log.info('External data found')
         else:
