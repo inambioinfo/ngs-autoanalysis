@@ -48,9 +48,14 @@ class GlsLims:
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
         
     def isSequencingRunComplete(self, run_id):
-        # return False if all lanes marked FAILED; True if some lanes PASSED; None otherwise
+        # return True if sequencing process has a finish date and x=y in Cycle x of y
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.isSequencingCompleted(run_id)
+        
+    def isSequencingRunFail(self, run_id):
+        # return True if sequencing process has failed
+        self.log.info('... check sequencing status ....................................................')
+        return self.glsutil.isSequencingFailed(run_id)
         
     def isFastqFilesFound(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
