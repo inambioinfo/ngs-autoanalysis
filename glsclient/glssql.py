@@ -98,20 +98,18 @@ ORDER BY process.createddate
 NONFAILEDLANE_RUNPROCESS_BY_RUNID_QUERY = """
 SELECT artifact.artifactid, artifact.name, artifactstate.qcflag
 FROM process
-LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Finish Date')
-LEFT OUTER JOIN process_udf_view as pudf2 on (pudf2.processid=process.processid AND pudf2.udfname = 'Status'), 
+LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Status'), 
 processtype, process_udf_view, processiotracker, artifact, artifactstate
 WHERE process.typeid = processtype.typeid
 AND processtype.displayname LIKE '%%Run%%'
 AND process.processid = process_udf_view.processid
 AND process_udf_view.udfname = 'Run ID'
 AND process_udf_view.udfvalue = '%s'
-AND pudf1.udfvalue is not null
 AND process.processid=processiotracker.processid 
 AND processiotracker.inputartifactid=artifact.artifactid
 AND artifactstate.artifactid=artifact.artifactid
 AND artifact.currentstateid=artifactstate.stateid
-AND NOT split_part(pudf2.udfvalue, ' ', 2) = split_part(pudf2.udfvalue, ' ', 4) -- should not be at end of cycle
+AND NOT split_part(pudf1.udfvalue, ' ', 2) = split_part(pudf1.udfvalue, ' ', 4) -- should not be at end of cycle
 AND NOT artifactstate.qcflag=2
 """
 
