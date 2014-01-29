@@ -296,6 +296,9 @@ class GlsUtil(object):
             if not len(results) == 1:
                 self.log.warning('more than one run processes found for flow-cell id %s' % _flowcell_id)
             return self.api.load('process',results[0]['id'])
+            
+    def getNonFailedLaneRunProcess(self, _run_id):
+        return self.db.execute(glssql.NONFAILEDLANE_RUNPROCESS_BY_RUNID_QUERY % _run_id).fetchall()
 
     def getUniqueInputUriListFromProcess(self, _process):
         input_uri_list = []
@@ -316,7 +319,7 @@ class GlsUtil(object):
         return set(input_uri_list)
 
     def isSequencingCompleted(self, _run_id):
-        # get latest sequencing process for run id
+        # get latest complete sequencing process where x=y in cycle x of y and finish date exists
         run_process = self.getLatestCompleteRunProcessByRunId(_run_id)
         if run_process is None:
             return False
@@ -343,6 +346,22 @@ class GlsUtil(object):
             return True
         return None
         """
+        
+    def isSequencingFailed(self, _run_id):
+        run_process_byrunid = self.getLatestCompleteRunProcessByRunId(_run_id)
+        # no complete run process found for run folder
+        if run_process_byrunid is None:
+            # check if all lane qc flags are set to failed and run not at the end of cycle
+            if self.getNonFailedLaneRunProcess(_run_id) is None:
+                return True
+            else:
+                # check if a complete run process exists for this FC
+                fc_id = _run_id.split('_')[-1]
+                run_process_byfcid = self.getLatestCompleteRunProcessByFlowcellId(fc_id)
+                # complete run process found for FC - sequencing failed for this run folder
+                if run_process_byfcid:
+                    return True
+        return False
         
     def createAnalysisProcess(self, _name, _run_process):
         technician_uri = self.api.listFilter('researcher', 'username', USERNAME).researcher[0].uri
