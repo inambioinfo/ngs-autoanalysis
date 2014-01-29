@@ -622,7 +622,10 @@ class External(object):
                     self.log.info('%s presents - another rsync process is running' % env['rsync_lock'])
             else:
                 if not os.path.exists(env['rsync_ended']):
-                    self.log.info('external data is currently being synchronised')
+                    if not os.path.exists(env['rsync_fail']):
+                        self.log.info('external data is currently being synchronised')
+                    else:
+                        self.log.info('[***FAIL***] rsync for external data onto ftp server has failed')
                 else:
                     self.log.info('external data has been synchronised')
         else:
