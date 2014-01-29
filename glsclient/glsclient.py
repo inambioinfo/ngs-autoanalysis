@@ -297,8 +297,10 @@ class GlsUtil(object):
                 self.log.warning('more than one run processes found for flow-cell id %s' % _flowcell_id)
             return self.api.load('process',results[0]['id'])
             
-    def getNonFailedLaneRunProcess(self, _run_id):
-        return self.db.execute(glssql.NONFAILEDLANE_RUNPROCESS_BY_RUNID_QUERY % _run_id).fetchall()
+    def areAllFailedLanesOnRunProcess(self, _run_id):
+        if not self.db.execute(glssql.NONFAILEDLANE_RUNPROCESS_BY_RUNID_QUERY % _run_id).fetchall():
+            return True
+        return False
 
     def getUniqueInputUriListFromProcess(self, _process):
         input_uri_list = []
@@ -352,7 +354,7 @@ class GlsUtil(object):
         # no complete run process found for run folder
         if run_process_byrunid is None:
             # check if all lane qc flags are set to failed and run not at the end of cycle
-            if self.getNonFailedLaneRunProcess(_run_id) is None:
+            if self.areAllFailedLanesOnRunProcess(_run_id):
                 return True
             else:
                 # check if a complete run process exists for this FC
