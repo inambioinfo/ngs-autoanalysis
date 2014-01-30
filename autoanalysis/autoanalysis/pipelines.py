@@ -569,10 +569,11 @@ class External(object):
                 linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
                 utils.create_symlink(filename, linkname)
                 # symlink non PF data
-                if self.external_data[file_id]['nonpfdata'] == 'True' and '.lostreads.' in filename:
-                    filename_failed = filename.replace('lostreads', 'failed')
-                    linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                    utils.create_symlink(filename_failed, linkname_failed)                
+                if self.external_data[file_id]['nonpfdata'] == 'True' and '.contents.csv' in filename:
+                    for file_extension in ['r_1.failed.fq.gz', 'r_2.failed.fq.gz', 'failed.md5sums.txt']:
+                        filename_failed = filename.repalce('.contents.csv', file_extension)
+                        linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                        utils.create_symlink(filename_failed, linkname_failed)                
             except:
                 continue
 
