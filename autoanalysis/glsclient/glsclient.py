@@ -350,18 +350,22 @@ class GlsUtil(object):
         """
         
     def isSequencingFailed(self, _run_id):
-        run_process_byrunid = self.getLatestCompleteRunProcessByRunId(_run_id)
+        complete_run_process_byrunid = self.getLatestCompleteRunProcessByRunId(_run_id)
         # no complete run process found for run folder
-        if run_process_byrunid is None:
-            # check if all lane qc flags are set to failed and run not at the end of cycle
-            if self.areAllFailedLanesOnRunProcess(_run_id):
-                return True
-            else:
+        if complete_run_process_byrunid is None:
+            # no process found for run folder
+            run_process_byrunid = self.db.execute(glssql.PROCESS_BY_UDF_QUERY % ('%%Run%%', RUN_ID, _run_id)).fetchall()
+            if run_process_byrunid is None:
                 # check if a complete run process exists for this FC
                 fc_id = _run_id.split('_')[-1]
                 run_process_byfcid = self.getLatestCompleteRunProcessByFlowcellId(fc_id)
                 # complete run process found for FC - sequencing failed for this run folder
                 if run_process_byfcid:
+                    return True
+            # process found for run folder
+            else:
+                # check if all lane qc flags are set to failed and run not at the end of cycle
+                if self.areAllFailedLanesOnRunProcess(_run_id):
                     return True
         return False
         
