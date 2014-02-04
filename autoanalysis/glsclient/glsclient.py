@@ -357,7 +357,7 @@ class GlsUtil(object):
             run_process_byrunid = self.db.execute(glssql.PROCESS_BY_UDF_QUERY % ('%%Run%%', RUN_ID_FIELD, _run_id)).fetchall()
             self.log.debug(run_process_byrunid)
             # no run process found for run folder
-            if run_process_byrunid is None:
+            if not run_process_byrunid:
                 self.log.debug('no run process found')
                 # check if a complete run process exists for this FC
                 fc_id = _run_id.split('_')[-1]
