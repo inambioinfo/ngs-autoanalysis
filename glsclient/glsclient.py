@@ -353,11 +353,8 @@ class GlsUtil(object):
         complete_run_process_byrunid = self.getLatestCompleteRunProcessByRunId(_run_id)
         # no complete run process found for run folder
         if complete_run_process_byrunid is None:
-            self.log.debug('no complete run process found')
-            self.log.debug(glssql.PROCESS_BY_UDF_QUERY % ('%%Run%%', RUN_ID_FIELD, _run_id))
-            self.log.debug('before run_process_byrunid query')
+            self.log.debug('no complete run process found v2')
             run_process_byrunid = self.db.execute(glssql.PROCESS_BY_UDF_QUERY % ('%%Run%%', RUN_ID_FIELD, _run_id)).fetchall()
-            self.log.debug('after run_process_byrunid query')
             self.log.debug(run_process_byrunid)
             # no run process found for run folder
             if run_process_byrunid is None:
