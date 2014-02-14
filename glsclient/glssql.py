@@ -83,12 +83,12 @@ ORDER BY process.createddate
 COMPLETERUNPROCESS_BY_UDF_QUERY = """
 SELECT process.luid, process.daterun, processtype.displayname, process.workstatus, process.createddate, process.lastmodifieddate, pudf2.udfvalue
 FROM process
-LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Finish Date')
+--LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Finish Date')
 LEFT OUTER JOIN process_udf_view as pudf2 on (pudf2.processid=process.processid AND pudf2.udfname = '%s')
 LEFT OUTER JOIN process_udf_view as pudf3 on (pudf3.processid=process.processid AND pudf3.udfname = 'Status'), processtype
 WHERE process.typeid = processtype.typeid
 AND processtype.displayname LIKE '%%Run%%'
-AND pudf1.udfvalue is not null
+--AND pudf1.udfvalue is not null
 AND pudf2.udfvalue = '%s'
 AND pudf3.udfvalue is not null
 AND split_part(pudf3.udfvalue, ' ', 2) = split_part(pudf3.udfvalue, ' ', 4) -- should be at end of cycle
