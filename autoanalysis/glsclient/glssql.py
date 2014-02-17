@@ -173,7 +173,7 @@ AND project.researcherid=researcher.researcherid
 AND lab.labid=researcher.labid
 """
 
-PUBLISHED_FILES_QUERY = FILE_QUERY + """
+PUBLISHED_FILES_QUERY = FILES_QUERY + """
 AND glsfile.ispublished='t'
 """
 
