@@ -654,7 +654,10 @@ class External(object):
         dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
         # rsync external data not finished or started
-        if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished) and os.path.exists(self.publishing_assigned):
+        if self.external_data:
+            if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished):
+                return True
+        else:
             return True
         return False
 

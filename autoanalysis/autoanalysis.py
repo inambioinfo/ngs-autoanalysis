@@ -78,10 +78,6 @@ def main():
                 glslims.createAnalysisProcesses(run.flowcell_id)
                 glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
                 
-                # add flow-cell into the publishing queue and update sample status
-                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent():
-                    glslims.publishFlowCell(run)
-
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.findExternalData(run.run_folder_name)
                 # get external data only when lane and sample fastq files are published in lablink
@@ -94,6 +90,10 @@ def main():
                 # move external data to public folders and register completion
                 external.publish()
                     
+                # add flow-cell into the publishing queue and update sample status
+                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
+                    glslims.publishFlowCell(run)
+
             except:
                 log.exception("Unexpected error")
                 continue
