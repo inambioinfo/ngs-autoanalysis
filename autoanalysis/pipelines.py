@@ -416,7 +416,7 @@ class Pipelines(object):
                 # run rsync-pipeline script
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
-    def registerCompletion(self, external_data=False):
+    def registerCompletion(self):
         """ Create Analysis.completed when pipelines have been successfully ran and synchronised
         """
         # create Analysis.completed when all pipelines completed and rsynced
