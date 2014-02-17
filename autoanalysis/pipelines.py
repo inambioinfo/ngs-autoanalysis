@@ -110,7 +110,8 @@ PIPELINES_SETUP_OPTIONS = {
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 
 # ftp server
-FTP_URL = "solexadmin@uk-cri-ldmz01:/dmz01/solexa/external"
+FTP_SERVER = "solexadmin@uk-cri-ldmz01"
+FTP_URL = "%s:/dmz01/solexa/external" % FTP_SERVER
 
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
@@ -392,9 +393,6 @@ class Pipelines(object):
             
         self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
         self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
-        self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
-        self.publishing_completed = os.path.join(self.run.run_folder, runfolders.PUBLISHING_COMPLETED)
-        self.archive_publishing_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISHING_COMPLETED)
         
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
@@ -419,8 +417,7 @@ class Pipelines(object):
                 pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
             
     def registerCompletion(self, external_data=False):
-        """ Create Analysis.completed when pipelines
-        have been successfully ran and synchronised and that external data has been published
+        """ Create Analysis.completed when pipelines have been successfully ran and synchronised
         """
         # create Analysis.completed when all pipelines completed and rsynced
         if self.arePipelinesCompleted(self.pipelines.keys()):
@@ -435,21 +432,7 @@ class Pipelines(object):
                 os.remove(self.all_completed)
             if os.path.exists(self.archive_all_completed):
                 os.remove(self.archive_all_completed)   
-                
-        # create Publishing.completed when fc published and external data (if exists) sync to ftp
-        if self.isExternalDataPublished(external_data):
-            if not os.path.exists(self.publishing_completed):
-                utils.touch(self.publishing_completed)
-            if not os.path.exists(self.archive_publishing_completed):
-                utils.touch(self.archive_publishing_completed)
-            self.log.info('*** PUBLISH COMPLETED ******************************************************')
-        else:
-            # remove Publishing.completed
-            if os.path.exists(self.publishing_completed):
-                os.remove(self.publishing_completed)
-            if os.path.exists(self.archive_publishing_completed):
-                os.remove(self.archive_publishing_completed)
-                
+                                
                 
     ### Utility methods -------------------------------------------------------
 
@@ -489,44 +472,26 @@ class Pipelines(object):
                     return False
         return True
         
-    def isExternalDataPublished(self, external_data=False):
-        """Checks that external data has been published
-        """
-        # on current location on lustre
-        external_directory = os.path.join(self.run.run_folder, EXTERNAL_PIPELINE)
-        rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
-        rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
-        # at destination on sol03
-        dest_external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
-        dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
-        dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
-        if external_data:
-            # rsync external data not finished or started
-            if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished) and os.path.exists(self.publishing_assigned):
-                return True
-        else:
-            # fc not published
-            if os.path.exists(self.publishing_assigned):
-                return True
-        return False
-
 ################################################################################
 # CLASS External
 ################################################################################
 class External(object):
     
-    def __init__(self, run, external_data, dry_run=True):
+    def __init__(self, run, external_data, published_external_data, dry_run=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.external_data = external_data
+        self.published_external_data = published_external_data
         self.pipeline_name = EXTERNAL_PIPELINE
+        self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
+        self.publishing_completed = os.path.join(self.run.run_folder, runfolders.PUBLISHING_COMPLETED)
+        self.archive_publishing_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISHING_COMPLETED)
         self.dry_run = dry_run
         
-    def publish(self):
-        """publish external data to ftp server - rsync to ldmz01
+    def sync(self):
+        """synchronise external data to ftp server - rsync to ldmz01
         create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
-        synchronise external data to solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/${project_name}/
-        only synchronise to ftp server when data published
+        synchronise external data to temp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
         """
         if self.run.isCompleted():
             if self.external_data:
@@ -604,7 +569,7 @@ class External(object):
             ftpdirs.add(self.external_data[file_id]['ftpdir'])
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
-            dest = "%s/%s/" % (FTP_URL, ftpdir)
+            dest = "%s/tmp/%s/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
             cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd = rsync_cmd + cmd
@@ -631,8 +596,69 @@ class External(object):
                     self.log.info('external data has been synchronised')
         else:
             self.log.warn('%s is missing' % sync_script)
-    
-            
+
+    def publish(self):
+        """Publish external data to ftp server that have been published in lims and add Publishing.completed
+        Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
+        """
+        if self.published_external_data:
+            if self.isExternalDataSynchronised():
+                if not self.isPublishingCompleted():
+                    self.log.info('... move external data to public folders .......................................')
+                    # build dictionnary of SLX-IDs to be moved
+                    data = {}
+                    for file_id in list(self.published_external_data.viewkeys()):
+                        filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
+                        slxid = filename.split('.')[0]
+                        data[slxid] = self.published_external_data[file_id]['ftpdir']
+                    # move data
+                    for slxid in data.viewkeys():
+                        # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx* /dmz01/solexa/external/gurdon_institute/
+                        src = "%s/tmp/%s/%s*" % (FTP_URL, data[slxid], slxid)
+                        dest = "%s/%s/" % (FTP_URL, data[slxid])
+                        cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
+                        utils.run_process(cmd, self.dry_run)
+                    # register completion
+                    utils.touch(self.publishing_completed)
+                    utils.touch(self.archive_publishing_completed)
+                else:
+                    self.log.info('External data already move to public folders')
+                self.log.info('*** PUBLISH COMPLETED ******************************************************')
+            else:
+                self.log.info('External data not synchronised to ftp yet')
+        else:
+            if self.external_data:
+                self.log.info('No published external data in lims')
+            else:
+                self.log.info('No external data')
+                if not self.isPublishingCompleted():
+                    # register completion
+                    utils.touch(self.publishing_completed)
+                    utils.touch(self.archive_publishing_completed)
+                self.log.info('*** PUBLISH COMPLETED ******************************************************')
+               
+    def isPublishingCompleted(self):
+        if os.path.exists(self.publishing_completed) and os.path.exists(self.archive_publishing_completed):
+            return True
+        return False
+        
+    def isExternalDataSynchronised(self):
+        """Checks that external data has been synchronised to the ftp tmp folder
+        """
+        # on current location on lustre
+        external_directory = os.path.join(self.run.run_folder, EXTERNAL_PIPELINE)
+        rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+        rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
+        # at destination on sol03
+        dest_external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
+        dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
+        dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
+        # rsync external data not finished or started
+        if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished) and os.path.exists(self.publishing_assigned):
+            return True
+        return False
+
+
 ################################################################################
 # CLASS Sync
 ################################################################################

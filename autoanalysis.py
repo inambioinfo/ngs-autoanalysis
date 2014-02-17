@@ -68,33 +68,32 @@ def main():
                 log.info(run.getHeader())
                 # create pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
-                # is there any external data?
-                is_external_data = glslims.isExternalData(run.run_folder_name)
                 if not options.donot_run_pipelines:
                     # run pipelines
                     pipelines.execute()
-                # register completion
+                # register pipelines completion
                 pipelines.registerCompletion(is_external_data)
-                if options.update_lims:
-                    # create lims processes and update sample status
-                    glslims.createAnalysisProcesses(run.flowcell_id)
-                    glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
-                else:
-                    log.info('use --updatelims option to update the lims')
-                if options.publish:
-                    # publish flow-cell and update sample status
-                    if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent():
-                        glslims.publishFlowCell(run)
-                else:
-                    log.info('use --publish option to assign flowcells to publishing workflow')
-                if options.ftp:
-                    # get external data only when sample fastq files are published
-                    external_data = glslims.findExternalData(run.run_folder_name)
-                    # publish external data
-                    external = auto_pipelines.External(run, external_data, options.dry_run)
-                    external.publish()
-                else:
-                    log.info('use --ftp option to sync external data to ftp server')
+                
+                # create lims processes and update sample status
+                glslims.createAnalysisProcesses(run.flowcell_id)
+                glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
+                
+                # add flow-cell into the publishing queue and update sample status
+                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent():
+                    glslims.publishFlowCell(run)
+
+                # get external data when lane and sample fastq files are attached in lims
+                external_data = glslims.findExternalData(run.run_folder_name)
+                # get external data only when lane and sample fastq files are published in lablink
+                published_external_data = glslims.findExternalData(run.run_folder_name, True)
+                
+                # create external
+                external = auto_pipelines.External(run, external_data, published_external_data, options.dry_run)
+                # synchronise external data to ftp server
+                external.sync()
+                # move external data to public folders and register completion
+                external.publish()
+                    
             except:
                 log.exception("Unexpected error")
                 continue
