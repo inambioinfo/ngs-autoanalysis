@@ -72,7 +72,7 @@ def main():
                     # run pipelines
                     pipelines.execute()
                 # register pipelines completion
-                pipelines.registerCompletion(is_external_data)
+                pipelines.registerCompletion()
                 
                 # create lims processes and update sample status
                 glslims.createAnalysisProcesses(run.flowcell_id)
