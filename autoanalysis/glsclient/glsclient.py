@@ -624,15 +624,19 @@ class GlsUtil(object):
             return True
         return False
         
-    def getLaneFastqFiles(self, _run_id):
+    def getLaneFastqFiles(self, run_id, is_published=False):
         """Return lane level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': _run_id}).fetchall()
+        if is_published:
+            return self.db.execute(glssql.PUBLISHED_FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': run_id}).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': run_id}).fetchall()
         
-    def getSampleFastqFiles(self, _run_id):
+    def getSampleFastqFiles(self, run_id, is_published=False):
         """Return sample level files for this run folder name called run id in genologics
         """
-        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Sample Pipeline','runid': _run_id}).fetchall()
+        if is_published:
+            return self.db.execute(glssql.PUBLISHED_FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': run_id}).fetchall()
+        return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Sample Pipeline','runid': run_id}).fetchall()
         
     def getAllExternalFtpDirs(self):
         """Return list of all external ftp directories

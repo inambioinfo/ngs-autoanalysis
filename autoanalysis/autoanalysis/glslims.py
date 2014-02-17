@@ -112,13 +112,13 @@ class GlsLims:
             self.log.info('no external data')
         return is_external_data
         
-    def findExternalData(self, run_id):
+    def findExternalData(self, run_id, is_published=False):
         self.log.info('... find external data files ...................................................')
         data = {}
         labftpdirs = self.glsutil.getAllExternalFtpDirs()
-        files = self.glsutil.getSampleFastqFiles(run_id)
+        files = self.glsutil.getSampleFastqFiles(run_id, is_published)
         if files:
-            files.extend(self.glsutil.getLaneFastqFiles(run_id))
+            files.extend(self.glsutil.getLaneFastqFiles(run_id, is_published))
             for f in files:
                 if f.labid in labftpdirs.keys():
                     data[f.artifactid] = {'runfolder': f.runfolder, 'ftpdir': labftpdirs[f.labid]['ftpdir'], 'project': f.projectname, 'nonpfdata': labftpdirs[f.labid]['nonpfdata']}

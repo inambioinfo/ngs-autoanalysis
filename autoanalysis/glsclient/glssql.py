@@ -171,6 +171,9 @@ AND artifact_sample_map.processid=sample.processid
 AND sample.projectid=project.projectid
 AND project.researcherid=researcher.researcherid
 AND lab.labid=researcher.labid
+"""
+
+PUBLISHED_FILES_QUERY = FILE_QUERY + """
 AND glsfile.ispublished='t'
 """
 
