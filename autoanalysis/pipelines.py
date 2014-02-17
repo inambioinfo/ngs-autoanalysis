@@ -111,7 +111,8 @@ SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 
 # ftp server
 FTP_SERVER = "solexadmin@uk-cri-ldmz01"
-FTP_URL = "%s:/dmz01/solexa/external" % FTP_SERVER
+FTP_PATH = "/dmz01/solexa/external"
+FTP_URL = "%s:%s" % (FTP_SERVER, FTP_PATH)
 
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
@@ -614,8 +615,8 @@ class External(object):
                     # move data
                     for slxid in data.viewkeys():
                         # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx* /dmz01/solexa/external/gurdon_institute/
-                        src = "%s/tmp/%s/%s*" % (FTP_URL, data[slxid], slxid)
-                        dest = "%s/%s/" % (FTP_URL, data[slxid])
+                        src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxid], slxid)
+                        dest = "%s/%s/" % (FTP_PATH, data[slxid])
                         cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
                         utils.run_process(cmd, self.dry_run)
                     # register completion
