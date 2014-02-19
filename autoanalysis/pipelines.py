@@ -602,41 +602,42 @@ class External(object):
         """Publish external data to ftp server that have been published in lims and add Publishing.completed
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
         """
-        if self.published_external_data:
-            if self.isExternalDataSynchronised():
-                if not self.isPublishingCompleted():
-                    self.log.info('... move external data to public folders .......................................')
-                    # build dictionnary of SLX-IDs to be moved
-                    data = {}
-                    for file_id in list(self.published_external_data.viewkeys()):
-                        filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
-                        slxid = filename.split('.')[0]
-                        data[slxid] = self.published_external_data[file_id]['ftpdir']
-                    # move data
-                    for slxid in data.viewkeys():
-                        # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx* /dmz01/solexa/external/gurdon_institute/
-                        src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxid], slxid)
-                        dest = "%s/%s/" % (FTP_PATH, data[slxid])
-                        cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
-                        utils.run_process(cmd, self.dry_run)
-                    # register completion
-                    utils.touch(self.publishing_completed)
-                    utils.touch(self.archive_publishing_completed)
+        if self.run.isCompleted():
+            if self.published_external_data:
+                if self.isExternalDataSynchronised():
+                    if not self.isPublishingCompleted():
+                        self.log.info('... move external data to public folders .......................................')
+                        # build dictionnary of SLX-IDs to be moved
+                        data = {}
+                        for file_id in list(self.published_external_data.viewkeys()):
+                            filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
+                            slxid = filename.split('.')[0]
+                            data[slxid] = self.published_external_data[file_id]['ftpdir']
+                        # move data
+                        for slxid in data.viewkeys():
+                            # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx* /dmz01/solexa/external/gurdon_institute/
+                            src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxid], slxid)
+                            dest = "%s/%s/" % (FTP_PATH, data[slxid])
+                            cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
+                            utils.run_process(cmd, self.dry_run)
+                        # register completion
+                        utils.touch(self.publishing_completed)
+                        utils.touch(self.archive_publishing_completed)
+                    else:
+                        self.log.info('External data already move to public folders')
+                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
                 else:
-                    self.log.info('External data already move to public folders')
-                self.log.info('*** PUBLISH COMPLETED ******************************************************')
+                    self.log.info('External data not synchronised to ftp yet')
             else:
-                self.log.info('External data not synchronised to ftp yet')
-        else:
-            if self.external_data:
-                self.log.info('No published external data in lims')
-            else:
-                self.log.info('No external data')
-                if not self.isPublishingCompleted():
-                    # register completion
-                    utils.touch(self.publishing_completed)
-                    utils.touch(self.archive_publishing_completed)
-                self.log.info('*** PUBLISH COMPLETED ******************************************************')
+                if self.external_data:
+                    self.log.info('No published external data in lims')
+                else:
+                    self.log.info('No external data')
+                    if not self.isPublishingCompleted():
+                        # register completion
+                        utils.touch(self.publishing_completed)
+                        utils.touch(self.archive_publishing_completed)
+                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
                
     def isPublishingCompleted(self):
         if os.path.exists(self.publishing_completed) and os.path.exists(self.archive_publishing_completed):
