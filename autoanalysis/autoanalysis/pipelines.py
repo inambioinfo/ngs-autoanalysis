@@ -494,7 +494,7 @@ class External(object):
         create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
         synchronise external data to temp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
         """
-        if self.run.isCompleted():
+        if self.run.isAnalysisCompletedPresent():
             if self.external_data:
                 if self.run.dest_run_folder:
                     # create pipeline definition
@@ -602,7 +602,7 @@ class External(object):
         """Publish external data to ftp server that have been published in lims and add Publishing.completed
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
         """
-        if self.run.isCompleted():
+        if self.run.isAnalysisCompletedPresent():
             if self.published_external_data:
                 if self.isExternalDataSynchronised():
                     if not self.isPublishingCompleted():
