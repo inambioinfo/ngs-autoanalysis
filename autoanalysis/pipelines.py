@@ -90,9 +90,9 @@ rm %(rsync_lock)s
 RUNFOLDER_RSYNC_EXCLUDE = [
     "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
     "--exclude=Data/RTALogs", 
-    "--exclude=InterOp",
     "--exclude=Logs",
     "--exclude=Thumbnail_Images", # thumbnail images
+    "--exclude=Images", # *.tif images from MiSeq
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
     "--exclude=Old*", # Anything that has been moved out of the way
     "--exclude=%s" % runfolders.SEQUENCING_COMPLETED
