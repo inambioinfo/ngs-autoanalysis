@@ -320,13 +320,7 @@ class GlsUtil(object):
             input_uri_list.append(io_elem.input.post_process_uri)
         return set(input_uri_list)
 
-    def isSequencingCompleted(self, _run_id):
-        # get latest complete sequencing process where x=y in cycle x of y and finish date exists
-        run_process = self.getLatestCompleteRunProcessByRunId(_run_id)
-        if run_process is None:
-            return False
-        else:
-            return True
+
         """
         Do not check qc flags at lane level on sequencing run anymore (10/01/2014)
         # build a unique set of input artifacts
@@ -349,32 +343,41 @@ class GlsUtil(object):
         return None
         """
         
-    def isSequencingFailed(self, _run_id):
-        complete_run_process_byrunid = self.getLatestCompleteRunProcessByRunId(_run_id)
-        # no complete run process found for run folder
-        if complete_run_process_byrunid is None:
-            self.log.debug('no complete run process found')
-            run_process_byrunid = self.db.execute(glssql.PROCESS_BY_UDF_QUERY % ('%%Run%%', RUN_ID_FIELD, _run_id)).fetchall()
-            # no run process found for run folder
-            if run_process_byrunid is None:
-                self.log.debug('no run process found')
-                # check if a complete run process exists for this FC
-                fc_id = _run_id.split('_')[-1]
-                run_process_byfcid = self.getLatestCompleteRunProcessByFlowcellId(fc_id)
-                # complete run process found for FC - sequencing failed for this run folder
-                if run_process_byfcid:
-                    self.log.debug('complete run process exists for this FC')
-                    return True
-                else:
-                    self.log.debug('no complete run process exists for this FC')
-            # process found for run folder
+    def isSequencingCompleted(self, _run_id):
+        # return True if run process at the end of cycle; False if all lanes qc failed; None otherwise
+        results = self.db.execute(glssql.RUNSTATUS_BYRINID_QUERY % (_run_id)).fetchall()
+        if results:
+            # run process at the end of cycle - sequencing COMPLETE
+            if int(results[0].currentcycle) == int(results[0].totalcycle):
+                self.log.debug('Run ID: %s - finished - status: cycle %s of %s' % (_run_id, results[0].currentcycle, results[0].totalcycle))
+                return True
             else:
-                self.log.debug('run process found')
-                # check if all lane qc flags are set to failed and run not at the end of cycle
-                if self.areAllFailedLanesOnRunProcess(_run_id):
-                    self.log.debug('all lanes failed')
-                    return True
-        return False
+                # run process not at the end of cycle but completed in clarity
+                if results[0].workstatus == 'COMPLETE':
+                    # check if all lanes qc failed = 2
+                    all_lanes_failed = True
+                    all_lanes_passed = True
+                    for lane in results:
+                        if not lane.qcflag == 2:
+                            all_lanes_failed = False
+                        if not lane.qcflag == 1:
+                            all_lanes_passed = False
+                    # all lanes failed - sequencing FAILED
+                    if all_lanes_failed:
+                        self.log.debug('Run ID: %s - failed - status: cycle %s of %s' % (_run_id, results[0].currentcycle, results[0].totalcycle))
+                        return False
+                    elif all_lanes_passed:
+                        self.log.debug('Run ID: %s - all lanes passed; sequencing underway - status: cycle %s of %s' % (_run_id, results[0].currentcycle, results[0].totalcycle))
+                        return None
+                    else:
+                        self.log.debug('Run ID: %s - some lanes failed but not all - status: cycle %s of %s' % (_run_id, results[0].currentcycle, results[0].totalcycle))
+                        return None
+                else:
+                    self.log.debug('Run ID: %s - still open in clarity - status: cycle %s of %s' % (_run_id, results[0].currentcycle, results[0].totalcycle))
+                    return None
+        else:
+            self.log.debug('Run ID: %s - no process found in lims for this run id' % _run_id)
+            return None
         
     def createAnalysisProcess(self, _name, _run_process):
         technician_uri = self.api.listFilter('researcher', 'username', USERNAME).researcher[0].uri
@@ -1229,17 +1232,19 @@ class GlsUtilTest(unittest.TestCase):
     def test_isSequencingCompleted(self):
         run_id = 'XXX'
         is_sequencing_completed = self.glsutil.isSequencingCompleted(run_id)
+        self.log.info(run_id)
         self.log.info(is_sequencing_completed)
         self.assertEqual(None, is_sequencing_completed)
         run_id = '130627_SN1078_0142_C26B3ACXX'
         is_sequencing_completed = self.glsutil.isSequencingCompleted(run_id)
+        self.log.info(run_id)
         self.log.info(is_sequencing_completed)
         self.assertEqual(True, is_sequencing_completed)
-        run_id = '130703_SN1078_0147_C22TJACXX'
+        run_id = '131105_HWI-ST230_0674_D2GAVACXX'
         is_sequencing_completed = self.glsutil.isSequencingCompleted(run_id)
+        self.log.info(run_id)
         self.log.info(is_sequencing_completed)
         self.assertEqual(False, is_sequencing_completed)
-        run_id = '140107_D00408_0023_H7NV6ADXX'
         
     def test_isFastqPipelineComplete(self):
         run_id = '130529_HWI-ST230_1167_C231WACXX'

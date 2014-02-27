@@ -139,21 +139,21 @@ class RunDefinition(object):
             return os.path.join(self.destdir, self.run_folder_name)
         return None
         
-    def updateSequencingStatus(self, _is_sequencing_complete, _is_sequencing_failed, _dry_run=True):
-        if _is_sequencing_complete: 
+    def updateSequencingStatus(self, _is_sequencing_complete, _dry_run=True):
+        if _is_sequencing_complete is True: 
             if not os.path.exists(self.sequencing_completed):
                 utils.touch(self.sequencing_completed, _dry_run)
                 self.log.info('create %s' % self.sequencing_completed)
             else:
                 self.log.debug('%s already exists' % self.sequencing_completed)
-        elif _is_sequencing_failed:
+        elif _is_sequencing_complete is False:
             if not os.path.exists(self.sequencing_failed):
                 utils.touch(self.sequencing_failed, _dry_run)
                 self.log.info('create %s' % self.sequencing_failed)
             else:
                 self.log.debug('%s already exists' % self.sequencing_failed)
         else:
-            self.log.info('sequencing underway')
+            self.log.info('sequencing underway - unknown status')
 
                     
     def isSequencingStatusPresent(self):
