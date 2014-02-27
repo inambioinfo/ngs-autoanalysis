@@ -113,6 +113,22 @@ AND NOT split_part(pudf1.udfvalue, ' ', 2) = split_part(pudf1.udfvalue, ' ', 4) 
 AND NOT artifactstate.qcflag=2
 """
 
+RUNSTATUS_BYRINID_QUERY = """
+SELECT artifact.artifactid, artifact.name, pudf1.udfvalue as runid, split_part(pudf2.udfvalue, ' ', 2) as currentcycle, split_part(pudf2.udfvalue, ' ', 4) as totalcycle, artifactstate.qcflag, pudf3.udfvalue as finishdate, process.workstatus
+FROM process
+LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Run ID')
+LEFT OUTER JOIN process_udf_view as pudf2 on (pudf2.processid=process.processid AND pudf2.udfname = 'Status')
+LEFT OUTER JOIN process_udf_view as pudf3 on (pudf3.processid=process.processid AND pudf3.udfname = 'Finish Date'), 
+processtype, processiotracker, artifact, artifactstate
+WHERE process.typeid = processtype.typeid
+AND processtype.displayname LIKE '%%Run%%'
+AND pudf1.udfvalue = '%s'
+AND process.processid=processiotracker.processid 
+AND processiotracker.inputartifactid=artifact.artifactid
+AND artifactstate.artifactid=artifact.artifactid
+AND artifact.currentstateid=artifactstate.stateid
+"""
+
 PUBLISHINGPROCESS_BY_INPUTARTIFACTLUID_QUERY = """
 SELECT process.luid, process.daterun, processtype.displayname, process.workstatus, process.createddate, process.lastmodifieddate
 FROM processiotracker, process, processtype, artifact
