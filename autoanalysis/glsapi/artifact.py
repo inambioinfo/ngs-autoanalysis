@@ -1,7 +1,7 @@
 # ./artifact.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:7a2a5ba0321ae1837db4fc6a222a04675f452018
-# Generated 2013-05-14 16:17:05.792874 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.785582 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/artifact
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,8 +22,8 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import file as _ImportedBinding_file
 
@@ -79,7 +79,7 @@ class qc_flag (pyxb.binding.datatypes.string, pyxb.binding.basis.enumeration_mix
       """
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'qc-flag')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 289, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 316, 2)
     _Documentation = u'\n        The qc-flag enumeration lists the possible values of the qc-flag element for the Artifact.\n      '
 qc_flag._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=qc_flag, enum_prefix=None)
 qc_flag.UNKNOWN = qc_flag._CF_enumeration.addEnumeration(unicode_value=u'UNKNOWN', tag=u'UNKNOWN')
@@ -169,8 +169,15 @@ classified by its type (Analyte, ResultFile, etc).</p>
     reagent_label = property(__reagent_label.value, __reagent_label.set, None, u'\n            A reagent label applied to the Artifact.\nThis element is repeated for each reagent label applied to the Artifact.\n<p>\nReagent labels can be explicitly added to Artifacts in different ways:\n</p>\n<ul>\n<li>in the client, when importing Samples;</li>\n<li>in the client, when running any Processes for adding Reagents;</li>\n<li>in the API, by updating an artifact representation to include reagent labels.</li>\n</ul>\n<p>Additionally, reagent labels will be automatically copied from inputs to outputs when a Process is run.</p>\n<p>Reagent labels are conventionally named after the type of reagent (see the Reagent Type endpoint) they correspond to.</p>\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, reagent labels are cleared\n          ')
 
     
+    # Element control-type uses Python identifier control_type
+    __control_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'control-type'), 'control_type', '__httpgenologics_comriartifact_artifact__control_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6), )
+
+    
+    control_type = property(__control_type.value, __control_type.set, None, u'\n            The control type of the Artifact. Only control sample has control type.\n<br/>Always returns with GET: No, only for control sample\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ')
+
+    
     # Element artifact-group uses Python identifier artifact_group
-    __artifact_group = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact-group'), 'artifact_group', '__httpgenologics_comriartifact_artifact__artifact_group', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6), )
+    __artifact_group = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact-group'), 'artifact_group', '__httpgenologics_comriartifact_artifact__artifact_group', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 164, 6), )
 
     
     artifact_group = property(__artifact_group.value, __artifact_group.set, None, u'\n            The artifact group that the Artifact belongs to. In the client, artifact groups are referred to as experiments.\nThis element is repeated for each artifact group that the Artifact belongs to.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, existing ArtifactGroups are cleared from Artifact.\n          ')
@@ -192,16 +199,16 @@ classified by its type (Analyte, ResultFile, etc).</p>
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriartifact_artifact__limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 166, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 166, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 176, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 176, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMS ID of the Artifact.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_artifact__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 176, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 176, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 186, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 186, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Artifact.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
@@ -215,6 +222,7 @@ classified by its type (Analyte, ResultFile, etc).</p>
         __working_flag.name() : __working_flag,
         __sample.name() : __sample,
         __reagent_label.name() : __reagent_label,
+        __control_type.name() : __control_type,
         __artifact_group.name() : __artifact_group,
         __file.name() : __file,
         __field.name() : __field
@@ -236,23 +244,23 @@ In the client, artifact groups are referred to as experiments.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'artifactgroup')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 187, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 197, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_artifactgroup_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 194, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 194, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 204, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 204, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the artifact group.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
 
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriartifact_artifactgroup_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 204, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 204, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 214, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 214, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the artifact group.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
@@ -266,6 +274,36 @@ In the client, artifact groups are referred to as experiments.
 Namespace.addCategoryObject('typeBinding', u'artifactgroup', artifactgroup)
 
 
+# Complex type {http://genologics.com/ri/artifact}control-type with content type EMPTY
+class control_type (pyxb.binding.basis.complexTypeDefinition):
+    """
+        Provide a URI linking to the control type if this artifact is a control sample
+      """
+    _TypeDefinition = None
+    _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
+    _Abstract = False
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'control-type')
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 225, 2)
+    _ElementMap = {}
+    _AttributeMap = {}
+    # Base type is pyxb.binding.datatypes.anyType
+    
+    # Attribute uri uses Python identifier uri
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_control_type_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 231, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 231, 4)
+    
+    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the control type.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+
+    _ElementMap.update({
+        
+    })
+    _AttributeMap.update({
+        __uri.name() : __uri
+    })
+Namespace.addCategoryObject('typeBinding', u'control-type', control_type)
+
+
 # Complex type {http://genologics.com/ri/artifact}parent-process with content type EMPTY
 class parent_process (pyxb.binding.basis.complexTypeDefinition):
     """
@@ -276,23 +314,23 @@ linking to the detailed representation of the process that produced the Artifact
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'parent-process')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 215, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 242, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriartifact_parent_process_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 222, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 222, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 249, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 249, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMS ID of the process.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_parent_process_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 232, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 232, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 259, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 259, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the process.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
@@ -316,15 +354,15 @@ label or reagent that has been added to the Artifact.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'reagent-label')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 243, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 270, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriartifact_reagent_label_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 250, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 250, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 277, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 277, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the label or reagent.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n        ')
 
@@ -347,23 +385,23 @@ to the detailed representation of a submitted Sample for the Artifact.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'sample')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 261, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 288, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriartifact_sample_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 268, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 268, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 295, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 295, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMS ID of the Sample.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_sample_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 278, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 278, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 305, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 305, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Sample.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
@@ -391,27 +429,27 @@ of links in the overall results.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'artifacts')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 302, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 329, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element artifact uses Python identifier artifact
-    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comriartifact_artifacts__artifact', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 314, 6), )
+    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comriartifact_artifacts__artifact', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 341, 6), )
 
     
     artifact = property(__artifact.value, __artifact.set, None, u'\n            Artifact provides a URI linking to the detailed representation of an artifact.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriartifact_artifacts__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 321, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriartifact_artifacts__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 348, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of artifacts,\nthe previous-page element provides a URI that links to the previous page of artifacts.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriartifact_artifacts__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 329, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriartifact_artifacts__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 356, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of artifacts,\nthe next-page element provides a URI that links to the next page of artifacts.\n          ')
@@ -436,23 +474,23 @@ class artifact_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'artifact-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 339, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 366, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriartifact_artifact_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 345, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 345, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 372, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 372, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the artifact.\n        ')
 
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriartifact_artifact_link_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 352, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 352, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 379, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 379, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMSID of the artifact.\n        ')
 
@@ -475,13 +513,13 @@ class details_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'details')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 360, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 387, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element artifact uses Python identifier artifact
-    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comriartifact_details__artifact', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 367, 6), )
+    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comriartifact_details__artifact', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 394, 6), )
 
     
     artifact = property(__artifact.value, __artifact.set, None, u'\n            A list of detailed resource representations.\n          ')
@@ -524,7 +562,9 @@ artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Non
 
 artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'reagent-label'), reagent_label, scope=artifact_, documentation=u'\n            A reagent label applied to the Artifact.\nThis element is repeated for each reagent label applied to the Artifact.\n<p>\nReagent labels can be explicitly added to Artifacts in different ways:\n</p>\n<ul>\n<li>in the client, when importing Samples;</li>\n<li>in the client, when running any Processes for adding Reagents;</li>\n<li>in the API, by updating an artifact representation to include reagent labels.</li>\n</ul>\n<p>Additionally, reagent labels will be automatically copied from inputs to outputs when a Process is run.</p>\n<p>Reagent labels are conventionally named after the type of reagent (see the Reagent Type endpoint) they correspond to.</p>\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, reagent labels are cleared\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 112, 6)))
 
-artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact-group'), artifactgroup, scope=artifact_, documentation=u'\n            The artifact group that the Artifact belongs to. In the client, artifact groups are referred to as experiments.\nThis element is repeated for each artifact group that the Artifact belongs to.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, existing ArtifactGroups are cleared from Artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6)))
+artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'control-type'), control_type, scope=artifact_, documentation=u'\n            The control type of the Artifact. Only control sample has control type.\n<br/>Always returns with GET: No, only for control sample\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6)))
+
+artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact-group'), artifactgroup, scope=artifact_, documentation=u'\n            The artifact group that the Artifact belongs to. In the client, artifact groups are referred to as experiments.\nThis element is repeated for each artifact group that the Artifact belongs to.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, existing ArtifactGroups are cleared from Artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 164, 6)))
 
 artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=artifact_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2)))
 
@@ -555,12 +595,14 @@ def _BuildAutomaton ():
     counters.add(cc_7)
     cc_8 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 112, 6))
     counters.add(cc_8)
-    cc_9 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6))
+    cc_9 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6))
     counters.add(cc_9)
-    cc_10 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 144, 6))
+    cc_10 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 143, 6))
     counters.add(cc_10)
-    cc_11 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6))
+    cc_11 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6))
     counters.add(cc_11)
+    cc_12 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 164, 6))
+    counters.add(cc_12)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
@@ -609,19 +651,24 @@ def _BuildAutomaton ():
     states.append(st_8)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_9, False))
-    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, u'field')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6))
+    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(None, u'control-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 133, 6))
     st_9 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_9)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_10, False))
-    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_file, u'file')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 144, 6))
+    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, u'field')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 143, 6))
     st_10 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_10)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_11, False))
-    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact-group')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6))
+    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_file, u'file')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 154, 6))
     st_11 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_11)
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_12, False))
+    symbol = pyxb.binding.content.ElementUse(artifact_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact-group')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 164, 6))
+    st_12 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_12)
     transitions = []
     transitions.append(fac.Transition(st_0, [
         fac.UpdateInstruction(cc_0, True) ]))
@@ -647,6 +694,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_0, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_0, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_0, False) ]))
     st_0._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_1, [
@@ -671,6 +720,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_1, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_1, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_1, False) ]))
     st_1._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_2, [
@@ -693,6 +744,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_2, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_2, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_2, False) ]))
     st_2._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_3, [
@@ -713,6 +766,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_3, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_3, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_3, False) ]))
     st_3._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_4, [
@@ -731,6 +786,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_4, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_4, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_4, False) ]))
     st_4._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_5, [
@@ -747,6 +804,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_5, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_5, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_5, False) ]))
     st_5._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_6, [
@@ -761,6 +820,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_6, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_6, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_6, False) ]))
     st_6._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_7, [
@@ -773,6 +834,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_7, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_7, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_7, False) ]))
     st_7._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_8, [
@@ -783,6 +846,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_8, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_8, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_8, False) ]))
     st_8._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_9, [
@@ -791,28 +856,38 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_9, False) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_9, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_9, False) ]))
     st_9._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_10, [
         fac.UpdateInstruction(cc_10, True) ]))
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_10, False) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_10, False) ]))
     st_10._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_11, [
         fac.UpdateInstruction(cc_11, True) ]))
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_11, False) ]))
     st_11._set_transitionSet(transitions)
+    transitions = []
+    transitions.append(fac.Transition(st_12, [
+        fac.UpdateInstruction(cc_12, True) ]))
+    st_12._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
 artifact_._Automaton = _BuildAutomaton()
 
 
 
 
-artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact_link, scope=artifacts_, documentation=u'\n            Artifact provides a URI linking to the detailed representation of an artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 314, 6)))
+artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact_link, scope=artifacts_, documentation=u'\n            Artifact provides a URI linking to the detailed representation of an artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 341, 6)))
 
-artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=artifacts_, documentation=u'\n            When working with large lists of artifacts,\nthe previous-page element provides a URI that links to the previous page of artifacts.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 321, 6)))
+artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=artifacts_, documentation=u'\n            When working with large lists of artifacts,\nthe previous-page element provides a URI that links to the previous page of artifacts.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 348, 6)))
 
-artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=artifacts_, documentation=u'\n            When working with large lists of artifacts,\nthe next-page element provides a URI that links to the next page of artifacts.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 329, 6)))
+artifacts_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=artifacts_, documentation=u'\n            When working with large lists of artifacts,\nthe next-page element provides a URI that links to the next page of artifacts.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 356, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -821,26 +896,26 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 314, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 341, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 321, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 348, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 329, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 356, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 314, 6))
+    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 341, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 321, 6))
+    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 348, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 329, 6))
+    symbol = pyxb.binding.content.ElementUse(artifacts_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 356, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -867,7 +942,7 @@ artifacts_._Automaton = _BuildAutomaton_()
 
 
 
-details_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact_, scope=details_, documentation=u'\n            A list of detailed resource representations.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 367, 6)))
+details_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact_, scope=details_, documentation=u'\n            A list of detailed resource representations.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 394, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -876,12 +951,12 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 367, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 394, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(details_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 367, 6))
+    symbol = pyxb.binding.content.ElementUse(details_._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 394, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []

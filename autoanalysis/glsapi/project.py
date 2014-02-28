@@ -1,7 +1,7 @@
 # ./project.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:05d18cd4162daf503adc481b4ebccd22986053ca
-# Generated 2013-05-14 16:17:05.789443 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.782388 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/project
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,8 +22,8 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import file as _ImportedBinding_file
 

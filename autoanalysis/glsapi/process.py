@@ -1,7 +1,7 @@
 # ./process.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1827247e8da5b48443263a91d844588f6e0ba800
-# Generated 2013-05-14 16:17:05.794599 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.781483 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/process
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -23,9 +23,9 @@ if pyxb.__version__ != _PyXBVersion:
 
 # Import bindings for namespaces imported into schema
 import ri as _ImportedBinding_ri
-import file as _ImportedBinding_file
-import pyxb.binding.datatypes
 import userdefined as _ImportedBinding_userdefined
+import pyxb.binding.datatypes
+import file as _ImportedBinding_file
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/process', create_if_missing=True)
@@ -120,7 +120,7 @@ class process_ (pyxb.binding.basis.complexTypeDefinition):
     __date_run = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'date-run'), 'date_run', '__httpgenologics_comriprocess_process__date_run', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 24, 6), )
 
     
-    date_run = property(__date_run.value, __date_run.set, None, u'\n            The date associated with the running of the Process, in YYYY-MM-DD format.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
+    date_run = property(__date_run.value, __date_run.set, None, u'\n            The date associated with the running of the Process, in YYYY-MM-DD format.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element technician uses Python identifier technician
@@ -597,7 +597,7 @@ process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Nam
 
 process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'type'), process_type, scope=process_, documentation=u'\n            The type of the Process.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 14, 6)))
 
-process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'date-run'), pyxb.binding.datatypes.string, scope=process_, documentation=u'\n            The date associated with the running of the Process, in YYYY-MM-DD format.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 24, 6)))
+process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'date-run'), pyxb.binding.datatypes.string, scope=process_, documentation=u'\n            The date associated with the running of the Process, in YYYY-MM-DD format.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 24, 6)))
 
 process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'technician'), technician, scope=process_, documentation=u'\n            Technician provides a URI linking to the detailed representation of the technician that ran the Process.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 34, 6)))
 

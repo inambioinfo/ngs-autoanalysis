@@ -1,7 +1,7 @@
 # ./protstepcnf.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:b40a4f9427295a291407fc3444b9031d697bd00b
-# Generated 2013-05-14 16:17:05.795436 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.783961 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/stepconfiguration [xmlns:protstepcnf]
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -72,7 +72,7 @@ class trigger_point (pyxb.binding.datatypes.string, pyxb.binding.basis.enumerati
       """
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'trigger-point')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 399, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 460, 2)
     _Documentation = u'\n        The trigger-point enumeration lists the possible values of the EPP Trigger point attribute.\n      '
 trigger_point._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=trigger_point, enum_prefix=None)
 trigger_point.BEFORE = trigger_point._CF_enumeration.addEnumeration(unicode_value=u'BEFORE', tag=u'BEFORE')
@@ -88,7 +88,7 @@ class trigger_status (pyxb.binding.datatypes.string, pyxb.binding.basis.enumerat
       """
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'trigger-status')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 410, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 471, 2)
     _Documentation = u'\n        The trigger-status enumeration lists the possible values of the EPP Trigger status attribute.\n      '
 trigger_status._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=trigger_status, enum_prefix=None)
 trigger_status.STARTED = trigger_status._CF_enumeration.addEnumeration(unicode_value=u'STARTED', tag=u'STARTED')
@@ -109,7 +109,7 @@ class trigger_type (pyxb.binding.datatypes.string, pyxb.binding.basis.enumeratio
       """
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'trigger-type')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 426, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 487, 2)
     _Documentation = u'\n        The trigger-type enumeration lists the possible values of the EPP Trigger type attribute.\n      '
 trigger_type._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=trigger_type, enum_prefix=None)
 trigger_type.MANUAL = trigger_type._CF_enumeration.addEnumeration(unicode_value=u'MANUAL', tag=u'MANUAL')
@@ -157,50 +157,64 @@ as well as configuration option and filters</p>
     permitted_containers = property(__permitted_containers.value, __permitted_containers.set, None, u'\n            List of permitted containers for this specific protocol step\n          ')
 
     
+    # Element permitted-reagent-categories uses Python identifier permitted_reagent_categories
+    __permitted_reagent_categories = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'permitted-reagent-categories'), 'permitted_reagent_categories', '__httpgenologics_comristepconfiguration_step__permitted_reagent_categories', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6), )
+
+    
+    permitted_reagent_categories = property(__permitted_reagent_categories.value, __permitted_reagent_categories.set, None, u'\n            List of permitted reagent categories for this specific protocol step\n          ')
+
+    
+    # Element permitted-control-types uses Python identifier permitted_control_types
+    __permitted_control_types = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'permitted-control-types'), 'permitted_control_types', '__httpgenologics_comristepconfiguration_step__permitted_control_types', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 67, 6), )
+
+    
+    permitted_control_types = property(__permitted_control_types.value, __permitted_control_types.set, None, u'\n            List of permitted control types for this specific protocol step\n          ')
+
+    
     # Element transitions uses Python identifier transitions
-    __transitions = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'transitions'), 'transitions', '__httpgenologics_comristepconfiguration_step__transitions', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6), )
+    __transitions = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'transitions'), 'transitions', '__httpgenologics_comristepconfiguration_step__transitions', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 85, 6), )
 
     
     transitions = property(__transitions.value, __transitions.set, None, u'\n            List of available transitions to next steps\nupon completion of this current step\n          ')
 
     
     # Element queue-fields uses Python identifier queue_fields
-    __queue_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'queue-fields'), 'queue_fields', '__httpgenologics_comristepconfiguration_step__queue_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 69, 6), )
+    __queue_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'queue-fields'), 'queue_fields', '__httpgenologics_comristepconfiguration_step__queue_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 105, 6), )
 
     
     queue_fields = property(__queue_fields.value, __queue_fields.set, None, u'\n            UDF columns that will be displayed on\nthe queue view\n          ')
 
     
     # Element step-fields uses Python identifier step_fields
-    __step_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-fields'), 'step_fields', '__httpgenologics_comristepconfiguration_step__step_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 89, 6), )
+    __step_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-fields'), 'step_fields', '__httpgenologics_comristepconfiguration_step__step_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 125, 6), )
 
     
     step_fields = property(__step_fields.value, __step_fields.set, None, u'\n            Fields that will be displayed on the\nwork view of the step\n          ')
 
     
     # Element sample-fields uses Python identifier sample_fields
-    __sample_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample-fields'), 'sample_fields', '__httpgenologics_comristepconfiguration_step__sample_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 109, 6), )
+    __sample_fields = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample-fields'), 'sample_fields', '__httpgenologics_comristepconfiguration_step__sample_fields', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 145, 6), )
 
     
     sample_fields = property(__sample_fields.value, __sample_fields.set, None, u'\n            Editable Fields that will be displayed\non the samples contained in the work view\n          ')
 
     
     # Element step-properties uses Python identifier step_properties
-    __step_properties = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-properties'), 'step_properties', '__httpgenologics_comristepconfiguration_step__step_properties', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 129, 6), )
+    __step_properties = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-properties'), 'step_properties', '__httpgenologics_comristepconfiguration_step__step_properties', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 165, 6), )
 
     
     step_properties = property(__step_properties.value, __step_properties.set, None, u'\n            A list of extra properties relevant to the step\n          ')
 
     
     # Element step-setup uses Python identifier step_setup
-    __step_setup = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-setup'), 'step_setup', '__httpgenologics_comristepconfiguration_step__step_setup', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 147, 6), )
+    __step_setup = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-setup'), 'step_setup', '__httpgenologics_comristepconfiguration_step__step_setup', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 183, 6), )
 
     
     step_setup = property(__step_setup.value, __step_setup.set, None, u'\n            The step setup details.\n          ')
 
     
     # Element epp-triggers uses Python identifier epp_triggers
-    __epp_triggers = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'epp-triggers'), 'epp_triggers', '__httpgenologics_comristepconfiguration_step__epp_triggers', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 6), )
+    __epp_triggers = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'epp-triggers'), 'epp_triggers', '__httpgenologics_comristepconfiguration_step__epp_triggers', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 190, 6), )
 
     
     epp_triggers = property(__epp_triggers.value, __epp_triggers.set, None, u'\n            A list of EPP triggers for the step.\n          ')
@@ -208,24 +222,24 @@ as well as configuration option and filters</p>
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_step__name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 4)
-    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 209, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 209, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the current step\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comristepconfiguration_step__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 180, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 180, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 216, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 216, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI address of the current step\n        ')
 
     
     # Attribute protocol-uri uses Python identifier protocol_uri
     __protocol_uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'protocol-uri'), 'protocol_uri', '__httpgenologics_comristepconfiguration_step__protocol_uri', pyxb.binding.datatypes.anyURI)
-    __protocol_uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 187, 4)
-    __protocol_uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 187, 4)
+    __protocol_uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 223, 4)
+    __protocol_uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 223, 4)
     
     protocol_uri = property(__protocol_uri.value, __protocol_uri.set, None, u'\n          The URI address of the current protocol\n        ')
 
@@ -233,6 +247,8 @@ as well as configuration option and filters</p>
         __protocol_step_index.name() : __protocol_step_index,
         __process_type.name() : __process_type,
         __permitted_containers.name() : __permitted_containers,
+        __permitted_reagent_categories.name() : __permitted_reagent_categories,
+        __permitted_control_types.name() : __permitted_control_types,
         __transitions.name() : __transitions,
         __queue_fields.name() : __queue_fields,
         __step_fields.name() : __step_fields,
@@ -281,6 +297,64 @@ class CTD_ANON (pyxb.binding.basis.complexTypeDefinition):
 # Complex type [anonymous] with content type ELEMENT_ONLY
 class CTD_ANON_ (pyxb.binding.basis.complexTypeDefinition):
     """
+            List of permitted reagent categories for this specific protocol step
+          """
+    _TypeDefinition = None
+    _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
+    _Abstract = False
+    _ExpandedName = None
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 55, 8)
+    _ElementMap = {}
+    _AttributeMap = {}
+    # Base type is pyxb.binding.datatypes.anyType
+    
+    # Element reagent-category uses Python identifier reagent_category
+    __reagent_category = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'reagent-category'), 'reagent_category', '__httpgenologics_comristepconfiguration_CTD_ANON__reagent_category', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 57, 12), )
+
+    
+    reagent_category = property(__reagent_category.value, __reagent_category.set, None, u'\n                  List of permitted reagent categories for this specific protocol step\n                ')
+
+    _ElementMap.update({
+        __reagent_category.name() : __reagent_category
+    })
+    _AttributeMap.update({
+        
+    })
+
+
+
+# Complex type [anonymous] with content type ELEMENT_ONLY
+class CTD_ANON_2 (pyxb.binding.basis.complexTypeDefinition):
+    """
+            List of permitted control types for this specific protocol step
+          """
+    _TypeDefinition = None
+    _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
+    _Abstract = False
+    _ExpandedName = None
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 73, 8)
+    _ElementMap = {}
+    _AttributeMap = {}
+    # Base type is pyxb.binding.datatypes.anyType
+    
+    # Element control-type uses Python identifier control_type
+    __control_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'control-type'), 'control_type', '__httpgenologics_comristepconfiguration_CTD_ANON_2_control_type', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 75, 12), )
+
+    
+    control_type = property(__control_type.value, __control_type.set, None, u'\n                  List of permitted control types for this specific protocol step\n                ')
+
+    _ElementMap.update({
+        __control_type.name() : __control_type
+    })
+    _AttributeMap.update({
+        
+    })
+
+
+
+# Complex type [anonymous] with content type ELEMENT_ONLY
+class CTD_ANON_3 (pyxb.binding.basis.complexTypeDefinition):
+    """
             List of available transitions to next steps
 upon completion of this current step
           """
@@ -288,13 +362,13 @@ upon completion of this current step
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 56, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 92, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element transition uses Python identifier transition
-    __transition = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'transition'), 'transition', '__httpgenologics_comristepconfiguration_CTD_ANON__transition', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 58, 12), )
+    __transition = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'transition'), 'transition', '__httpgenologics_comristepconfiguration_CTD_ANON_3_transition', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 94, 12), )
 
     
     transition = property(__transition.value, __transition.set, None, u'\n                  List of available transitions to next steps\nupon completion of this current step\n                ')
@@ -309,7 +383,7 @@ upon completion of this current step
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_2 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_4 (pyxb.binding.basis.complexTypeDefinition):
     """
             UDF columns that will be displayed on
 the queue view
@@ -318,13 +392,13 @@ the queue view
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 76, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 112, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element queue-field uses Python identifier queue_field
-    __queue_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'queue-field'), 'queue_field', '__httpgenologics_comristepconfiguration_CTD_ANON_2_queue_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 78, 12), )
+    __queue_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'queue-field'), 'queue_field', '__httpgenologics_comristepconfiguration_CTD_ANON_4_queue_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 114, 12), )
 
     
     queue_field = property(__queue_field.value, __queue_field.set, None, u'\n                  UDF columns that will be displayed on\nthe queue view\n                ')
@@ -339,7 +413,7 @@ the queue view
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_3 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_5 (pyxb.binding.basis.complexTypeDefinition):
     """
             Fields that will be displayed on the
 work view of the step
@@ -348,13 +422,13 @@ work view of the step
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 96, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 132, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element step-field uses Python identifier step_field
-    __step_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-field'), 'step_field', '__httpgenologics_comristepconfiguration_CTD_ANON_3_step_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 98, 12), )
+    __step_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-field'), 'step_field', '__httpgenologics_comristepconfiguration_CTD_ANON_5_step_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 134, 12), )
 
     
     step_field = property(__step_field.value, __step_field.set, None, u'\n                  Fields that will be displayed on the\nwork view of the step\n                ')
@@ -369,7 +443,7 @@ work view of the step
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_4 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_6 (pyxb.binding.basis.complexTypeDefinition):
     """
             Editable Fields that will be displayed
 on the samples contained in the work view
@@ -378,13 +452,13 @@ on the samples contained in the work view
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 116, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 152, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element sample-field uses Python identifier sample_field
-    __sample_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample-field'), 'sample_field', '__httpgenologics_comristepconfiguration_CTD_ANON_4_sample_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 118, 12), )
+    __sample_field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample-field'), 'sample_field', '__httpgenologics_comristepconfiguration_CTD_ANON_6_sample_field', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 12), )
 
     
     sample_field = property(__sample_field.value, __sample_field.set, None, u'\n                  Editable Fields that will be displayed\non the samples contained in the work view\n                ')
@@ -399,7 +473,7 @@ on the samples contained in the work view
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_5 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_7 (pyxb.binding.basis.complexTypeDefinition):
     """
             A list of extra properties relevant to the step
           """
@@ -407,13 +481,13 @@ class CTD_ANON_5 (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 135, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 171, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element step-property uses Python identifier step_property
-    __step_property = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-property'), 'step_property', '__httpgenologics_comristepconfiguration_CTD_ANON_5_step_property', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 137, 12), )
+    __step_property = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'step-property'), 'step_property', '__httpgenologics_comristepconfiguration_CTD_ANON_7_step_property', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 12), )
 
     
     step_property = property(__step_property.value, __step_property.set, None, u'\n                  A list of extra properties relevant to the step\n                ')
@@ -428,7 +502,7 @@ class CTD_ANON_5 (pyxb.binding.basis.complexTypeDefinition):
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_6 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_8 (pyxb.binding.basis.complexTypeDefinition):
     """
             A list of EPP triggers for the step.
           """
@@ -436,13 +510,13 @@ class CTD_ANON_6 (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 160, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 196, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element epp-trigger uses Python identifier epp_trigger
-    __epp_trigger = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'epp-trigger'), 'epp_trigger', '__httpgenologics_comristepconfiguration_CTD_ANON_6_epp_trigger', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 162, 12), )
+    __epp_trigger = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'epp-trigger'), 'epp_trigger', '__httpgenologics_comristepconfiguration_CTD_ANON_8_epp_trigger', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 198, 12), )
 
     
     epp_trigger = property(__epp_trigger.value, __epp_trigger.set, None, u'\n                  A list of EPP triggers for the step.\n                ')
@@ -454,6 +528,45 @@ class CTD_ANON_6 (pyxb.binding.basis.complexTypeDefinition):
         
     })
 
+
+
+# Complex type {http://genologics.com/ri/stepconfiguration}control-type-link with content type EMPTY
+class control_type_link (pyxb.binding.basis.complexTypeDefinition):
+    """
+        Control-type-link is a child element type of controlTypes and provides a URI linking to the detailed representation of a ControlType.
+      """
+    _TypeDefinition = None
+    _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
+    _Abstract = False
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'control-type-link')
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 231, 2)
+    _ElementMap = {}
+    _AttributeMap = {}
+    # Base type is pyxb.binding.datatypes.anyType
+    
+    # Attribute name uses Python identifier name
+    __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_control_type_link_name', pyxb.binding.datatypes.string)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 237, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 237, 4)
+    
+    name = property(__name.value, __name.set, None, u'\n          The name of the ControlType.\n<br/>Always returns with GET: Yes\n        ')
+
+    
+    # Attribute uri uses Python identifier uri
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comristepconfiguration_control_type_link_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 245, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 245, 4)
+    
+    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the ControlType.\n<br/>Always returns with GET: Yes\n        ')
+
+    _ElementMap.update({
+        
+    })
+    _AttributeMap.update({
+        __name.name() : __name,
+        __uri.name() : __uri
+    })
+Namespace.addCategoryObject('typeBinding', u'control-type-link', control_type_link)
 
 
 # Complex type {http://genologics.com/ri/stepconfiguration}field with content type EMPTY
@@ -468,23 +581,23 @@ those on the actual step
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'field')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 234, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 293, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_field_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 243, 4)
-    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 243, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 302, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 302, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the UDF Field.\n        ')
 
     
     # Attribute attach-to uses Python identifier attach_to
     __attach_to = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'attach-to'), 'attach_to', '__httpgenologics_comristepconfiguration_field_attach_to', pyxb.binding.datatypes.string)
-    __attach_to._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 250, 4)
-    __attach_to._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 250, 4)
+    __attach_to._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 309, 4)
+    __attach_to._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 309, 4)
     
     attach_to = property(__attach_to.value, __attach_to.set, None, u'\n          The element that the UDF Field will attach to.\n        ')
 
@@ -501,28 +614,28 @@ Namespace.addCategoryObject('typeBinding', u'field', field)
 # Complex type {http://genologics.com/ri/stepconfiguration}file with content type ELEMENT_ONLY
 class file (pyxb.binding.basis.complexTypeDefinition):
     """
-        The file element describes the shared result file outputs for the step.
+        The file element describes a shared result file output that will be displayed in the step-setup view.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'file')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 258, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 317, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element message uses Python identifier message
-    __message = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'message'), 'message', '__httpgenologics_comristepconfiguration_file_message', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 265, 6), )
+    __message = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'message'), 'message', '__httpgenologics_comristepconfiguration_file_message', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 324, 6), )
 
     
-    message = property(__message.value, __message.set, None, u'\n            The message to display for the shared result file.\n          ')
+    message = property(__message.value, __message.set, None, u'\n            The message to display for this shared result file in the step-setup view.\n          ')
 
     
     # Attribute shared-result-file-index uses Python identifier shared_result_file_index
     __shared_result_file_index = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'shared-result-file-index'), 'shared_result_file_index', '__httpgenologics_comristepconfiguration_file_shared_result_file_index', pyxb.binding.datatypes.string)
-    __shared_result_file_index._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 273, 4)
-    __shared_result_file_index._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 273, 4)
+    __shared_result_file_index._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 332, 4)
+    __shared_result_file_index._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 332, 4)
     
     shared_result_file_index = property(__shared_result_file_index.value, __shared_result_file_index.set, None, u'\n          The shared result file output index of the step output.\n        ')
 
@@ -545,31 +658,31 @@ access to the specific next step
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'next-step')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 281, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 340, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_next_step_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 288, 4)
-    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 288, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 347, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 347, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the next step.\n        ')
 
     
     # Attribute sequence uses Python identifier sequence
     __sequence = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'sequence'), 'sequence', '__httpgenologics_comristepconfiguration_next_step_sequence', pyxb.binding.datatypes.int)
-    __sequence._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 295, 4)
-    __sequence._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 295, 4)
+    __sequence._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 354, 4)
+    __sequence._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 354, 4)
     
     sequence = property(__sequence.value, __sequence.set, None, u'\n          The sequence of the next step.\n        ')
 
     
     # Attribute next-step-uri uses Python identifier next_step_uri
     __next_step_uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'next-step-uri'), 'next_step_uri', '__httpgenologics_comristepconfiguration_next_step_next_step_uri', pyxb.binding.datatypes.anyURI)
-    __next_step_uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 302, 4)
-    __next_step_uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 302, 4)
+    __next_step_uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 361, 4)
+    __next_step_uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 361, 4)
     
     next_step_uri = property(__next_step_uri.value, __next_step_uri.set, None, u'\n          The URI of the next step.\n        ')
 
@@ -594,15 +707,15 @@ representation of the process type that the step is associated with.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_SIMPLE
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-type')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 310, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 369, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.string
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comristepconfiguration_process_type_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 319, 8)
-    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 319, 8)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 378, 8)
+    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 378, 8)
     
     uri = property(__uri.value, __uri.set, None, u'\n              The URI of the process type.\n            ')
 
@@ -618,29 +731,32 @@ Namespace.addCategoryObject('typeBinding', u'process-type', process_type)
 # Complex type {http://genologics.com/ri/stepconfiguration}step-property with content type EMPTY
 class step_property (pyxb.binding.basis.complexTypeDefinition):
     """
-        A step configuration property, containing a name value pair specific to the property.
+        Step-property is a child element of protocol step containing key/value pairs for
+setting specific attributes of protocol steps.
+This information contains internally used properties that will change. These properties are
+suitable for use when copying protocol steps, but should not be manipulated.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'step-property')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 350, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 409, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_step_property_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 356, 4)
-    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 356, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 418, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 418, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The property name.\n        ')
 
     
     # Attribute value uses Python identifier value_
     __value = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'value'), 'value_', '__httpgenologics_comristepconfiguration_step_property_value', pyxb.binding.datatypes.string)
-    __value._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 363, 4)
-    __value._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 363, 4)
+    __value._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 425, 4)
+    __value._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 425, 4)
     
     value_ = property(__value.value, __value.set, None, u'\n          The property value.\n        ')
 
@@ -657,20 +773,19 @@ Namespace.addCategoryObject('typeBinding', u'step-property', step_property)
 # Complex type {http://genologics.com/ri/stepconfiguration}step-setup with content type ELEMENT_ONLY
 class step_setup (pyxb.binding.basis.complexTypeDefinition):
     """
-        Step-setup is a child element that provides shared result file placeholder
-information for the step.
+        Step-setup is a child element that describes the shared result file placeholder information for the step-setup view.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'step-setup')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 371, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 433, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element files uses Python identifier files
-    __files = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'files'), 'files', '__httpgenologics_comristepconfiguration_step_setup_files', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 379, 6), )
+    __files = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'files'), 'files', '__httpgenologics_comristepconfiguration_step_setup_files', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 440, 6), )
 
     
     files = property(__files.value, __files.set, None, u'\n            List of shared result file outputs.\n          ')
@@ -685,7 +800,7 @@ Namespace.addCategoryObject('typeBinding', u'step-setup', step_setup)
 
 
 # Complex type [anonymous] with content type ELEMENT_ONLY
-class CTD_ANON_7 (pyxb.binding.basis.complexTypeDefinition):
+class CTD_ANON_9 (pyxb.binding.basis.complexTypeDefinition):
     """
             List of shared result file outputs.
           """
@@ -693,13 +808,13 @@ class CTD_ANON_7 (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = None
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 385, 8)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 446, 8)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comristepconfiguration_CTD_ANON_7_file', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 387, 12), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comristepconfiguration_CTD_ANON_9_file', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 448, 12), )
 
     
     file = property(__file.value, __file.set, None, u'\n                  List of shared result file outputs.\n                ')
@@ -722,39 +837,39 @@ class epp_trigger (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'epp-trigger')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 195, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 254, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comristepconfiguration_epp_trigger_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 201, 4)
-    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 201, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 260, 4)
+    __name._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 260, 4)
     
     name = property(__name.value, __name.set, None, u"\n          The protocol step's process parameter name.\n<br/>Always returns with GET: Yes\n        ")
 
     
     # Attribute type uses Python identifier type
     __type = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'type'), 'type', '__httpgenologics_comristepconfiguration_epp_trigger_type', trigger_type)
-    __type._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 209, 4)
-    __type._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 209, 4)
+    __type._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 268, 4)
+    __type._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 268, 4)
     
     type = property(__type.value, __type.set, None, u"\n          The protocol step's trigger type.\n<br/>Always returns with GET: Yes\n        ")
 
     
     # Attribute point uses Python identifier point
     __point = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'point'), 'point', '__httpgenologics_comristepconfiguration_epp_trigger_point', trigger_point)
-    __point._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 217, 4)
-    __point._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 217, 4)
+    __point._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 276, 4)
+    __point._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 276, 4)
     
     point = property(__point.value, __point.set, None, u"\n          The protocol step's trigger point.\n<br/>Always returns with GET: No; if the type is <tt>TriggerType.MANUAL</tt> or <tt>TriggerType.UNUSED</tt>, the trigger point will not have a value.\n        ")
 
     
     # Attribute status uses Python identifier status
     __status = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'status'), 'status', '__httpgenologics_comristepconfiguration_epp_trigger_status', trigger_status)
-    __status._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 225, 4)
-    __status._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 225, 4)
+    __status._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 284, 4)
+    __status._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 284, 4)
     
     status = property(__status.value, __status.set, None, u"\n          The protocol step's trigger status.\n<br/>Always returns with GET: No; if the type is <tt>TriggerType.MANUAL</tt> or <tt>TriggerType.UNUSED</tt>, the trigger status will not have a value.\n        ")
 
@@ -782,7 +897,7 @@ those on the actual step
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'queuefield')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 329, 2)
+    _XSDLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 388, 2)
     _ElementMap = field._ElementMap.copy()
     _AttributeMap = field._AttributeMap.copy()
     # Base type is field
@@ -793,8 +908,8 @@ those on the actual step
     
     # Attribute detail uses Python identifier detail
     __detail = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'detail'), 'detail', '__httpgenologics_comristepconfiguration_queuefield_detail', pyxb.binding.datatypes.boolean)
-    __detail._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 340, 8)
-    __detail._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 340, 8)
+    __detail._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 399, 8)
+    __detail._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 399, 8)
     
     detail = property(__detail.value, __detail.set, None, u'\n              A flag indicating if this field is for detail or not.\n            ')
 
@@ -818,19 +933,23 @@ step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u
 
 step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'permitted-containers'), CTD_ANON, scope=step_, documentation=u'\n            List of permitted containers for this specific protocol step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 31, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'transitions'), CTD_ANON_, scope=step_, documentation=u'\n            List of available transitions to next steps\nupon completion of this current step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'permitted-reagent-categories'), CTD_ANON_, scope=step_, documentation=u'\n            List of permitted reagent categories for this specific protocol step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'queue-fields'), CTD_ANON_2, scope=step_, documentation=u'\n            UDF columns that will be displayed on\nthe queue view\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 69, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'permitted-control-types'), CTD_ANON_2, scope=step_, documentation=u'\n            List of permitted control types for this specific protocol step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 67, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-fields'), CTD_ANON_3, scope=step_, documentation=u'\n            Fields that will be displayed on the\nwork view of the step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 89, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'transitions'), CTD_ANON_3, scope=step_, documentation=u'\n            List of available transitions to next steps\nupon completion of this current step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 85, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample-fields'), CTD_ANON_4, scope=step_, documentation=u'\n            Editable Fields that will be displayed\non the samples contained in the work view\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 109, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'queue-fields'), CTD_ANON_4, scope=step_, documentation=u'\n            UDF columns that will be displayed on\nthe queue view\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 105, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-properties'), CTD_ANON_5, scope=step_, documentation=u'\n            A list of extra properties relevant to the step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 129, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-fields'), CTD_ANON_5, scope=step_, documentation=u'\n            Fields that will be displayed on the\nwork view of the step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 125, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-setup'), step_setup, scope=step_, documentation=u'\n            The step setup details.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 147, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample-fields'), CTD_ANON_6, scope=step_, documentation=u'\n            Editable Fields that will be displayed\non the samples contained in the work view\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 145, 6)))
 
-step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'epp-triggers'), CTD_ANON_6, scope=step_, documentation=u'\n            A list of EPP triggers for the step.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 6)))
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-properties'), CTD_ANON_7, scope=step_, documentation=u'\n            A list of extra properties relevant to the step\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 165, 6)))
+
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-setup'), step_setup, scope=step_, documentation=u'\n            The step setup details.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 183, 6)))
+
+step_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'epp-triggers'), CTD_ANON_8, scope=step_, documentation=u'\n            A list of EPP triggers for the step.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 190, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -847,18 +966,22 @@ def _BuildAutomaton ():
     counters.add(cc_2)
     cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 69, 6))
+    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 67, 6))
     counters.add(cc_4)
-    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 89, 6))
+    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 85, 6))
     counters.add(cc_5)
-    cc_6 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 109, 6))
+    cc_6 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 105, 6))
     counters.add(cc_6)
-    cc_7 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 129, 6))
+    cc_7 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 125, 6))
     counters.add(cc_7)
-    cc_8 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 147, 6))
+    cc_8 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 145, 6))
     counters.add(cc_8)
-    cc_9 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 6))
+    cc_9 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 165, 6))
     counters.add(cc_9)
+    cc_10 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 183, 6))
+    counters.add(cc_10)
+    cc_11 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 190, 6))
+    counters.add(cc_11)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
@@ -877,39 +1000,49 @@ def _BuildAutomaton ():
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'transitions')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'permitted-reagent-categories')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 49, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'queue-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 69, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'permitted-control-types')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 67, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_5, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 89, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'transitions')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 85, 6))
     st_5 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_5)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_6, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'sample-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 109, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'queue-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 105, 6))
     st_6 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_6)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_7, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-properties')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 129, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 125, 6))
     st_7 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_7)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_8, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-setup')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 147, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'sample-fields')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 145, 6))
     st_8 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_8)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_9, False))
-    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'epp-triggers')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 6))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-properties')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 165, 6))
     st_9 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_9)
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_10, False))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'step-setup')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 183, 6))
+    st_10 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_10)
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_11, False))
+    symbol = pyxb.binding.content.ElementUse(step_._UseForTag(pyxb.namespace.ExpandedName(None, u'epp-triggers')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 190, 6))
+    st_11 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_11)
     transitions = []
     transitions.append(fac.Transition(st_0, [
         fac.UpdateInstruction(cc_0, True) ]))
@@ -931,6 +1064,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_0, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_0, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_0, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_0, False) ]))
     st_0._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_1, [
@@ -951,6 +1088,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_1, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_1, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_1, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_1, False) ]))
     st_1._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_2, [
@@ -969,6 +1110,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_2, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_2, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_2, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_2, False) ]))
     st_2._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_3, [
@@ -985,6 +1130,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_3, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_3, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_3, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_3, False) ]))
     st_3._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_4, [
@@ -999,6 +1148,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_4, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_4, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_4, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_4, False) ]))
     st_4._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_5, [
@@ -1011,6 +1164,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_5, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_5, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_5, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_5, False) ]))
     st_5._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_6, [
@@ -1021,6 +1178,10 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_6, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_6, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_6, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_6, False) ]))
     st_6._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_7, [
@@ -1029,17 +1190,39 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_7, False) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_7, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_7, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_7, False) ]))
     st_7._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_8, [
         fac.UpdateInstruction(cc_8, True) ]))
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_8, False) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_8, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_8, False) ]))
     st_8._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_9, [
         fac.UpdateInstruction(cc_9, True) ]))
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_9, False) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_9, False) ]))
     st_9._set_transitionSet(transitions)
+    transitions = []
+    transitions.append(fac.Transition(st_10, [
+        fac.UpdateInstruction(cc_10, True) ]))
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_10, False) ]))
+    st_10._set_transitionSet(transitions)
+    transitions = []
+    transitions.append(fac.Transition(st_11, [
+        fac.UpdateInstruction(cc_11, True) ]))
+    st_11._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
 step_._Automaton = _BuildAutomaton()
 
@@ -1073,7 +1256,7 @@ CTD_ANON._Automaton = _BuildAutomaton_()
 
 
 
-CTD_ANON_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'transition'), next_step, scope=CTD_ANON_, documentation=u'\n                  List of available transitions to next steps\nupon completion of this current step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 58, 12)))
+CTD_ANON_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'reagent-category'), pyxb.binding.datatypes.string, scope=CTD_ANON_, documentation=u'\n                  List of permitted reagent categories for this specific protocol step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 57, 12)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1082,12 +1265,12 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 58, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 57, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_._UseForTag(pyxb.namespace.ExpandedName(None, u'transition')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 58, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_._UseForTag(pyxb.namespace.ExpandedName(None, u'reagent-category')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 57, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1100,7 +1283,7 @@ CTD_ANON_._Automaton = _BuildAutomaton_2()
 
 
 
-CTD_ANON_2._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'queue-field'), queuefield, scope=CTD_ANON_2, documentation=u'\n                  UDF columns that will be displayed on\nthe queue view\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 78, 12)))
+CTD_ANON_2._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'control-type'), control_type_link, scope=CTD_ANON_2, documentation=u'\n                  List of permitted control types for this specific protocol step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 75, 12)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1109,12 +1292,12 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 78, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 75, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_2._UseForTag(pyxb.namespace.ExpandedName(None, u'queue-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 78, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_2._UseForTag(pyxb.namespace.ExpandedName(None, u'control-type')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 75, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1127,7 +1310,7 @@ CTD_ANON_2._Automaton = _BuildAutomaton_3()
 
 
 
-CTD_ANON_3._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-field'), field, scope=CTD_ANON_3, documentation=u'\n                  Fields that will be displayed on the\nwork view of the step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 98, 12)))
+CTD_ANON_3._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'transition'), next_step, scope=CTD_ANON_3, documentation=u'\n                  List of available transitions to next steps\nupon completion of this current step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 94, 12)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1136,12 +1319,12 @@ def _BuildAutomaton_4 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 98, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 94, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_3._UseForTag(pyxb.namespace.ExpandedName(None, u'step-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 98, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_3._UseForTag(pyxb.namespace.ExpandedName(None, u'transition')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 94, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1154,7 +1337,7 @@ CTD_ANON_3._Automaton = _BuildAutomaton_4()
 
 
 
-CTD_ANON_4._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample-field'), field, scope=CTD_ANON_4, documentation=u'\n                  Editable Fields that will be displayed\non the samples contained in the work view\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 118, 12)))
+CTD_ANON_4._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'queue-field'), queuefield, scope=CTD_ANON_4, documentation=u'\n                  UDF columns that will be displayed on\nthe queue view\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 114, 12)))
 
 def _BuildAutomaton_5 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1163,12 +1346,12 @@ def _BuildAutomaton_5 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 118, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 114, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_4._UseForTag(pyxb.namespace.ExpandedName(None, u'sample-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 118, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_4._UseForTag(pyxb.namespace.ExpandedName(None, u'queue-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 114, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1181,7 +1364,7 @@ CTD_ANON_4._Automaton = _BuildAutomaton_5()
 
 
 
-CTD_ANON_5._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-property'), step_property, scope=CTD_ANON_5, documentation=u'\n                  A list of extra properties relevant to the step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 137, 12)))
+CTD_ANON_5._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-field'), field, scope=CTD_ANON_5, documentation=u'\n                  Fields that will be displayed on the\nwork view of the step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 134, 12)))
 
 def _BuildAutomaton_6 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1190,12 +1373,12 @@ def _BuildAutomaton_6 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 137, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 134, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_5._UseForTag(pyxb.namespace.ExpandedName(None, u'step-property')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 137, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_5._UseForTag(pyxb.namespace.ExpandedName(None, u'step-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 134, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1208,7 +1391,7 @@ CTD_ANON_5._Automaton = _BuildAutomaton_6()
 
 
 
-CTD_ANON_6._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'epp-trigger'), epp_trigger, scope=CTD_ANON_6, documentation=u'\n                  A list of EPP triggers for the step.\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 162, 12)))
+CTD_ANON_6._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample-field'), field, scope=CTD_ANON_6, documentation=u'\n                  Editable Fields that will be displayed\non the samples contained in the work view\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 12)))
 
 def _BuildAutomaton_7 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1217,12 +1400,12 @@ def _BuildAutomaton_7 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 162, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_6._UseForTag(pyxb.namespace.ExpandedName(None, u'epp-trigger')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 162, 12))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_6._UseForTag(pyxb.namespace.ExpandedName(None, u'sample-field')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 154, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1235,7 +1418,7 @@ CTD_ANON_6._Automaton = _BuildAutomaton_7()
 
 
 
-file._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'message'), pyxb.binding.datatypes.string, scope=file, documentation=u'\n            The message to display for the shared result file.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 265, 6)))
+CTD_ANON_7._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'step-property'), step_property, scope=CTD_ANON_7, documentation=u'\n                  A list of extra properties relevant to the step\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 12)))
 
 def _BuildAutomaton_8 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1244,12 +1427,12 @@ def _BuildAutomaton_8 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 265, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(file._UseForTag(pyxb.namespace.ExpandedName(None, u'message')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 265, 6))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_7._UseForTag(pyxb.namespace.ExpandedName(None, u'step-property')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 173, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1257,12 +1440,12 @@ def _BuildAutomaton_8 ():
         fac.UpdateInstruction(cc_0, True) ]))
     st_0._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
-file._Automaton = _BuildAutomaton_8()
+CTD_ANON_7._Automaton = _BuildAutomaton_8()
 
 
 
 
-step_setup._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'files'), CTD_ANON_7, scope=step_setup, documentation=u'\n            List of shared result file outputs.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 379, 6)))
+CTD_ANON_8._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'epp-trigger'), epp_trigger, scope=CTD_ANON_8, documentation=u'\n                  A list of EPP triggers for the step.\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 198, 12)))
 
 def _BuildAutomaton_9 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1271,12 +1454,12 @@ def _BuildAutomaton_9 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 379, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 198, 12))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(step_setup._UseForTag(pyxb.namespace.ExpandedName(None, u'files')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 379, 6))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_8._UseForTag(pyxb.namespace.ExpandedName(None, u'epp-trigger')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 198, 12))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1284,12 +1467,12 @@ def _BuildAutomaton_9 ():
         fac.UpdateInstruction(cc_0, True) ]))
     st_0._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
-step_setup._Automaton = _BuildAutomaton_9()
+CTD_ANON_8._Automaton = _BuildAutomaton_9()
 
 
 
 
-CTD_ANON_7._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), file, scope=CTD_ANON_7, documentation=u'\n                  List of shared result file outputs.\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 387, 12)))
+file._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'message'), pyxb.binding.datatypes.string, scope=file, documentation=u'\n            The message to display for this shared result file in the step-setup view.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 324, 6)))
 
 def _BuildAutomaton_10 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1298,12 +1481,12 @@ def _BuildAutomaton_10 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 387, 12))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 324, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(CTD_ANON_7._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 387, 12))
+    symbol = pyxb.binding.content.ElementUse(file._UseForTag(pyxb.namespace.ExpandedName(None, u'message')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 324, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1311,5 +1494,59 @@ def _BuildAutomaton_10 ():
         fac.UpdateInstruction(cc_0, True) ]))
     st_0._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
-CTD_ANON_7._Automaton = _BuildAutomaton_10()
+file._Automaton = _BuildAutomaton_10()
+
+
+
+
+step_setup._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'files'), CTD_ANON_9, scope=step_setup, documentation=u'\n            List of shared result file outputs.\n          ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 440, 6)))
+
+def _BuildAutomaton_11 ():
+    # Remove this helper function from the namespace after it is invoked
+    global _BuildAutomaton_11
+    del _BuildAutomaton_11
+    import pyxb.utils.fac as fac
+
+    counters = set()
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 440, 6))
+    counters.add(cc_0)
+    states = []
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_0, False))
+    symbol = pyxb.binding.content.ElementUse(step_setup._UseForTag(pyxb.namespace.ExpandedName(None, u'files')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 440, 6))
+    st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_0)
+    transitions = []
+    transitions.append(fac.Transition(st_0, [
+        fac.UpdateInstruction(cc_0, True) ]))
+    st_0._set_transitionSet(transitions)
+    return fac.Automaton(states, counters, True, containing_state=None)
+step_setup._Automaton = _BuildAutomaton_11()
+
+
+
+
+CTD_ANON_9._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), file, scope=CTD_ANON_9, documentation=u'\n                  List of shared result file outputs.\n                ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 448, 12)))
+
+def _BuildAutomaton_12 ():
+    # Remove this helper function from the namespace after it is invoked
+    global _BuildAutomaton_12
+    del _BuildAutomaton_12
+    import pyxb.utils.fac as fac
+
+    counters = set()
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 448, 12))
+    counters.add(cc_0)
+    states = []
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_0, False))
+    symbol = pyxb.binding.content.ElementUse(CTD_ANON_9._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protstepcnf.xsd', 448, 12))
+    st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_0)
+    transitions = []
+    transitions.append(fac.Transition(st_0, [
+        fac.UpdateInstruction(cc_0, True) ]))
+    st_0._set_transitionSet(transitions)
+    return fac.Automaton(states, counters, True, containing_state=None)
+CTD_ANON_9._Automaton = _BuildAutomaton_12()
 
