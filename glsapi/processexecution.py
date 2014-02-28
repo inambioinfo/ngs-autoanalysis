@@ -1,7 +1,7 @@
 # ./processexecution.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:36fc4c9e1230107065d3a4630a5cc6ec8b60107e
-# Generated 2013-05-14 16:17:05.791095 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.777900 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/processexecution
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -399,7 +399,7 @@ Output is a child element of the input-output-map element.
     __location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'location'), 'location', '__httpgenologics_comriprocessexecution_output_location', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10), )
 
     
-    location = property(__location.value, __location.set, None, u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, but only for Analyte outputs.\n              ')
+    location = property(__location.value, __location.set, None, u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte or ResultFile outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes for Analyte, No for ResultFile outputs.\n              ')
 
     
     # Attribute type uses Python identifier type
@@ -691,7 +691,7 @@ input._Automaton = _BuildAutomaton_3()
 
 
 
-output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'location'), _ImportedBinding_ri.location, scope=output, documentation=u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, but only for Analyte outputs.\n              ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10)))
+output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'location'), _ImportedBinding_ri.location, scope=output, documentation=u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte or ResultFile outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes for Analyte, No for ResultFile outputs.\n              ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked

@@ -1,7 +1,7 @@
 # ./processtype.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:7e4e49d01d5b9b8e6dba9ac3f3852e7b4e349a38
-# Generated 2013-05-14 16:17:05.797632 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.778185 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/processtype
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -107,7 +107,7 @@ class variability_type (pyxb.binding.datatypes.string, pyxb.binding.basis.enumer
       """
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'variability-type')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 315, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 320, 2)
     _Documentation = u'\n        The available options for output-type variability.\n      '
 variability_type._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=variability_type, enum_prefix=None)
 variability_type.Fixed = variability_type._CF_enumeration.addEnumeration(unicode_value=u'Fixed', tag=u'Fixed')
@@ -234,7 +234,7 @@ class process_input (pyxb.binding.basis.complexTypeDefinition):
     __remove_working_flag = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'remove-working-flag'), 'remove_working_flag', '__httpgenologics_comriprocesstype_process_input_remove_working_flag', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 125, 6), )
 
     
-    remove_working_flag = property(__remove_working_flag.value, __remove_working_flag.set, None, u'\n            Whether the working flag should be removed from the input when the process runs.\n<br/>Always returns with GET: Yes\n          ')
+    remove_working_flag = property(__remove_working_flag.value, __remove_working_flag.set, None, u'\n            Deprecated, this property is no longer supported.\nWhether the working flag should be removed from the input when the process runs.\n<br/>Always returns with GET: No\n          ')
 
     _ElementMap.update({
         __artifact_type.name() : __artifact_type,
@@ -256,65 +256,65 @@ class process_output (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-output')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 135, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 136, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element artifact-type uses Python identifier artifact_type
-    __artifact_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact-type'), 'artifact_type', '__httpgenologics_comriprocesstype_process_output_artifact_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 142, 6), )
+    __artifact_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact-type'), 'artifact_type', '__httpgenologics_comriprocesstype_process_output_artifact_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 143, 6), )
 
     
     artifact_type = property(__artifact_type.value, __artifact_type.set, None, u'\n            Artifact type for this output.\n<br/>Always returns with GET: Yes\n          ')
 
     
     # Element display-name uses Python identifier display_name
-    __display_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'display-name'), 'display_name', '__httpgenologics_comriprocesstype_process_output_display_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 150, 6), )
+    __display_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'display-name'), 'display_name', '__httpgenologics_comriprocesstype_process_output_display_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 151, 6), )
 
     
     display_name = property(__display_name.value, __display_name.set, None, u'\n            The display name for the input.\n<br/>Always returns with GET: Yes\n          ')
 
     
     # Element output-generation-type uses Python identifier output_generation_type
-    __output_generation_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output-generation-type'), 'output_generation_type', '__httpgenologics_comriprocesstype_process_output_output_generation_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 158, 6), )
+    __output_generation_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output-generation-type'), 'output_generation_type', '__httpgenologics_comriprocesstype_process_output_output_generation_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 159, 6), )
 
     
     output_generation_type = property(__output_generation_type.value, __output_generation_type.set, None, u'\n            Specifies how the outputs are generated in\nrelation to the inputs (COMPOUND, PER_REAGENT_LABEL, or PER_INPUT).\n<br/>Always returns with GET: Yes\n          ')
 
     
     # Element variability-type uses Python identifier variability_type
-    __variability_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'variability-type'), 'variability_type', '__httpgenologics_comriprocesstype_process_output_variability_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 167, 6), )
+    __variability_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'variability-type'), 'variability_type', '__httpgenologics_comriprocesstype_process_output_variability_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 168, 6), )
 
     
     variability_type = property(__variability_type.value, __variability_type.set, None, u'\n            Specifies how the process determines the\nnumber of outputs to generated (FIXED, VARIABLE, or VARIABLE_BY_INPUT).\n<br/>Always returns with GET: Yes for FIXED output, No otherwise\n          ')
 
     
     # Element number-of-outputs uses Python identifier number_of_outputs
-    __number_of_outputs = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'number-of-outputs'), 'number_of_outputs', '__httpgenologics_comriprocesstype_process_output_number_of_outputs', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 176, 6), )
+    __number_of_outputs = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'number-of-outputs'), 'number_of_outputs', '__httpgenologics_comriprocesstype_process_output_number_of_outputs', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 177, 6), )
 
     
     number_of_outputs = property(__number_of_outputs.value, __number_of_outputs.set, None, u'\n            Number of outputs to generate (only applies if variabilityType is FIXED).\n<br/>Always returns with GET: Yes\n          ')
 
     
     # Element output-name uses Python identifier output_name
-    __output_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output-name'), 'output_name', '__httpgenologics_comriprocesstype_process_output_output_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 184, 6), )
+    __output_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output-name'), 'output_name', '__httpgenologics_comriprocesstype_process_output_output_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 185, 6), )
 
     
     output_name = property(__output_name.value, __output_name.set, None, u'\n            Pattern for specifying how the output name is generated.\n<br/>Always returns with GET: Yes\n          ')
 
     
     # Element field-definition uses Python identifier field_definition
-    __field_definition = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'field-definition'), 'field_definition', '__httpgenologics_comriprocesstype_process_output_field_definition', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 192, 6), )
+    __field_definition = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'field-definition'), 'field_definition', '__httpgenologics_comriprocesstype_process_output_field_definition', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 193, 6), )
 
     
     field_definition = property(__field_definition.value, __field_definition.set, None, u'\n            Each field definition provides a URI linking to the configuration of a user-defined field for the output type.\n<br/>Always returns with GET: No\n          ')
 
     
     # Element assign-working-flag uses Python identifier assign_working_flag
-    __assign_working_flag = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'assign-working-flag'), 'assign_working_flag', '__httpgenologics_comriprocesstype_process_output_assign_working_flag', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 200, 6), )
+    __assign_working_flag = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'assign-working-flag'), 'assign_working_flag', '__httpgenologics_comriprocesstype_process_output_assign_working_flag', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 201, 6), )
 
     
-    assign_working_flag = property(__assign_working_flag.value, __assign_working_flag.set, None, u'\n            Whether the working flag should be assigned to the output when the process runs.\n<br/>Always returns with GET: Yes\n          ')
+    assign_working_flag = property(__assign_working_flag.value, __assign_working_flag.set, None, u'\n            Deprecated, this property is no longer supported.\nWhether the working flag should be assigned to the output when the process runs.\n<br/>Always returns with GET: No\n          ')
 
     _ElementMap.update({
         __artifact_type.name() : __artifact_type,
@@ -344,50 +344,50 @@ element of process-type.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'parameter')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 210, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 212, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comriprocesstype_parameter_file', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 220, 6), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comriprocesstype_parameter_file', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 222, 6), )
 
     
-    file = property(__file.value, __file.set, None, u'\n            The file of the parameter.\n<br/>Always returns with GET: No\n          ')
+    file = property(__file.value, __file.set, None, u'\n            Deprecated, this property is no longer supported.\nThe file of the parameter.\n<br/>Always returns with GET: No\n          ')
 
     
     # Element string uses Python identifier string
-    __string = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'string'), 'string', '__httpgenologics_comriprocesstype_parameter_string', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 228, 6), )
+    __string = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'string'), 'string', '__httpgenologics_comriprocesstype_parameter_string', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 231, 6), )
 
     
     string = property(__string.value, __string.set, None, u'\n            The value of the parameter.\n<br/>Always returns with GET: No\n          ')
 
     
     # Element run-program-per-event uses Python identifier run_program_per_event
-    __run_program_per_event = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'run-program-per-event'), 'run_program_per_event', '__httpgenologics_comriprocesstype_parameter_run_program_per_event', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 236, 6), )
+    __run_program_per_event = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'run-program-per-event'), 'run_program_per_event', '__httpgenologics_comriprocesstype_parameter_run_program_per_event', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 239, 6), )
 
     
-    run_program_per_event = property(__run_program_per_event.value, __run_program_per_event.set, None, u'\n            Should the EPP run once for each process related event?\n<br/>Always returns with GET: Yes\n          ')
+    run_program_per_event = property(__run_program_per_event.value, __run_program_per_event.set, None, u'\n            Deprecated, this property is no longer supported.\nShould the EPP run once for each process related event?\n<br/>Always returns with GET: No\n          ')
 
     
     # Element channel uses Python identifier channel
-    __channel = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'channel'), 'channel', '__httpgenologics_comriprocesstype_parameter_channel', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 244, 6), )
+    __channel = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'channel'), 'channel', '__httpgenologics_comriprocesstype_parameter_channel', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 248, 6), )
 
     
     channel = property(__channel.value, __channel.set, None, u'\n            The epp channel of this script.\n<br/>Always returns with GET: No\n          ')
 
     
     # Element invocation-type uses Python identifier invocation_type
-    __invocation_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'invocation-type'), 'invocation_type', '__httpgenologics_comriprocesstype_parameter_invocation_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 252, 6), )
+    __invocation_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'invocation-type'), 'invocation_type', '__httpgenologics_comriprocesstype_parameter_invocation_type', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 256, 6), )
 
     
-    invocation_type = property(__invocation_type.value, __invocation_type.set, None, u'\n            The epp invocation type of this script.\n<br/>Always returns with GET: Yes\n          ')
+    invocation_type = property(__invocation_type.value, __invocation_type.set, None, u'\n            Deprecated, this property is no longer supported.\nThe epp invocation type of this script.\n<br/>Always returns with GET: No\n          ')
 
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstype_parameter_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 261, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 261, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 266, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 266, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the process type parameter.\n<br/>Always returns with GET: Yes\n        ')
 
@@ -416,15 +416,15 @@ suitable for use when copying process types, but should not be manipulated.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_SIMPLE
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-type-attribute')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 270, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 275, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.string
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstype_process_type_attribute_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 281, 8)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 281, 8)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 286, 8)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 286, 8)
     
     name = property(__name.value, __name.set, None, u'\n              Specifies which attribute that the value will be set to.\n<br/>Always returns with GET: Yes\n            ')
 
@@ -446,23 +446,23 @@ class type_definition (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'type-definition')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 292, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 297, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstype_type_definition_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 298, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 298, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 303, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 303, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the user-defined type.\n<br/>Always returns with GET: Yes\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocesstype_type_definition_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 306, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 306, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 311, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 311, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI linking to the configuration of a user-defined type for the process type.\n<br/>Always returns with GET: Yes\n        ')
 
@@ -490,27 +490,27 @@ of links in the overall results.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-types')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 327, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 332, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element process-type uses Python identifier process_type
-    __process_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process-type'), 'process_type', '__httpgenologics_comriprocesstype_process_types__process_type', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 339, 6), )
+    __process_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process-type'), 'process_type', '__httpgenologics_comriprocesstype_process_types__process_type', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 344, 6), )
 
     
     process_type = property(__process_type.value, __process_type.set, None, u'\n            Process-type provides a URI linking to the detailed representation of a process type.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocesstype_process_types__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 346, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocesstype_process_types__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 351, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of process types,\nthe previous-page element provides a URI that links to the previous page of process types.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocesstype_process_types__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 354, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocesstype_process_types__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 359, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of process types,\nthe next-page element provides a URI that links to the next page of process types.\n          ')
@@ -535,23 +535,23 @@ class process_type_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-type-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 364, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 369, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstype_process_type_link_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 370, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 370, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 375, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 375, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the process type.\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocesstype_process_type_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 377, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 377, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 382, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 382, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the process type.\n        ')
 
@@ -699,7 +699,7 @@ process_input._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName
 
 process_input._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'display-name'), pyxb.binding.datatypes.string, scope=process_input, documentation=u'\n            The display name for the input.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 117, 6)))
 
-process_input._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'remove-working-flag'), pyxb.binding.datatypes.boolean, scope=process_input, documentation=u'\n            Whether the working flag should be removed from the input when the process runs.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 125, 6)))
+process_input._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'remove-working-flag'), pyxb.binding.datatypes.boolean, scope=process_input, documentation=u'\n            Deprecated, this property is no longer supported.\nWhether the working flag should be removed from the input when the process runs.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 125, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -754,21 +754,21 @@ process_input._Automaton = _BuildAutomaton_()
 
 
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact-type'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            Artifact type for this output.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 142, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact-type'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            Artifact type for this output.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 143, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'display-name'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            The display name for the input.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 150, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'display-name'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            The display name for the input.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 151, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output-generation-type'), output_generation_type, scope=process_output, documentation=u'\n            Specifies how the outputs are generated in\nrelation to the inputs (COMPOUND, PER_REAGENT_LABEL, or PER_INPUT).\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 158, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output-generation-type'), output_generation_type, scope=process_output, documentation=u'\n            Specifies how the outputs are generated in\nrelation to the inputs (COMPOUND, PER_REAGENT_LABEL, or PER_INPUT).\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 159, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'variability-type'), variability_type, scope=process_output, documentation=u'\n            Specifies how the process determines the\nnumber of outputs to generated (FIXED, VARIABLE, or VARIABLE_BY_INPUT).\n<br/>Always returns with GET: Yes for FIXED output, No otherwise\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 167, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'variability-type'), variability_type, scope=process_output, documentation=u'\n            Specifies how the process determines the\nnumber of outputs to generated (FIXED, VARIABLE, or VARIABLE_BY_INPUT).\n<br/>Always returns with GET: Yes for FIXED output, No otherwise\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 168, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'number-of-outputs'), pyxb.binding.datatypes.int, scope=process_output, documentation=u'\n            Number of outputs to generate (only applies if variabilityType is FIXED).\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 176, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'number-of-outputs'), pyxb.binding.datatypes.int, scope=process_output, documentation=u'\n            Number of outputs to generate (only applies if variabilityType is FIXED).\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 177, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output-name'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            Pattern for specifying how the output name is generated.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 184, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output-name'), pyxb.binding.datatypes.string, scope=process_output, documentation=u'\n            Pattern for specifying how the output name is generated.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 185, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'field-definition'), _ImportedBinding_configuration.field_link, scope=process_output, documentation=u'\n            Each field definition provides a URI linking to the configuration of a user-defined field for the output type.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 192, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'field-definition'), _ImportedBinding_configuration.field_link, scope=process_output, documentation=u'\n            Each field definition provides a URI linking to the configuration of a user-defined field for the output type.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 193, 6)))
 
-process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'assign-working-flag'), pyxb.binding.datatypes.boolean, scope=process_output, documentation=u'\n            Whether the working flag should be assigned to the output when the process runs.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 200, 6)))
+process_output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'assign-working-flag'), pyxb.binding.datatypes.boolean, scope=process_output, documentation=u'\n            Deprecated, this property is no longer supported.\nWhether the working flag should be assigned to the output when the process runs.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 201, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -777,61 +777,61 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 142, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 143, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 150, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 151, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 158, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 159, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 167, 6))
+    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 168, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 176, 6))
+    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 177, 6))
     counters.add(cc_4)
-    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 184, 6))
+    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 185, 6))
     counters.add(cc_5)
-    cc_6 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 192, 6))
+    cc_6 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 193, 6))
     counters.add(cc_6)
-    cc_7 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 200, 6))
+    cc_7 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 201, 6))
     counters.add(cc_7)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 142, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 143, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'display-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 150, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'display-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 151, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'output-generation-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 158, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'output-generation-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 159, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'variability-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 167, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'variability-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 168, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'number-of-outputs')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 176, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'number-of-outputs')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 177, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_5, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'output-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 184, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'output-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 185, 6))
     st_5 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_5)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_6, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'field-definition')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 192, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'field-definition')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 193, 6))
     st_6 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_6)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_7, False))
-    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'assign-working-flag')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 200, 6))
+    symbol = pyxb.binding.content.ElementUse(process_output._UseForTag(pyxb.namespace.ExpandedName(None, u'assign-working-flag')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 201, 6))
     st_7 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_7)
     transitions = []
@@ -928,15 +928,15 @@ process_output._Automaton = _BuildAutomaton_2()
 
 
 
-parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            The file of the parameter.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 220, 6)))
+parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            Deprecated, this property is no longer supported.\nThe file of the parameter.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 222, 6)))
 
-parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'string'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            The value of the parameter.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 228, 6)))
+parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'string'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            The value of the parameter.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 231, 6)))
 
-parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'run-program-per-event'), pyxb.binding.datatypes.boolean, scope=parameter, documentation=u'\n            Should the EPP run once for each process related event?\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 236, 6)))
+parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'run-program-per-event'), pyxb.binding.datatypes.boolean, scope=parameter, documentation=u'\n            Deprecated, this property is no longer supported.\nShould the EPP run once for each process related event?\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 239, 6)))
 
-parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'channel'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            The epp channel of this script.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 244, 6)))
+parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'channel'), pyxb.binding.datatypes.string, scope=parameter, documentation=u'\n            The epp channel of this script.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 248, 6)))
 
-parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'invocation-type'), invocation_type, scope=parameter, documentation=u'\n            The epp invocation type of this script.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 252, 6)))
+parameter._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'invocation-type'), invocation_type, scope=parameter, documentation=u'\n            Deprecated, this property is no longer supported.\nThe epp invocation type of this script.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 256, 6)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -945,40 +945,40 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 220, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 222, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 228, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 231, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 236, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 239, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 244, 6))
+    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 248, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 252, 6))
+    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 256, 6))
     counters.add(cc_4)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 220, 6))
+    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 222, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'string')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 228, 6))
+    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'string')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 231, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'run-program-per-event')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 236, 6))
+    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'run-program-per-event')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 239, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'channel')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 244, 6))
+    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'channel')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 248, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'invocation-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 252, 6))
+    symbol = pyxb.binding.content.ElementUse(parameter._UseForTag(pyxb.namespace.ExpandedName(None, u'invocation-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 256, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     transitions = []
@@ -1027,11 +1027,11 @@ parameter._Automaton = _BuildAutomaton_3()
 
 
 
-process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process-type'), process_type_link, scope=process_types_, documentation=u'\n            Process-type provides a URI linking to the detailed representation of a process type.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 339, 6)))
+process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process-type'), process_type_link, scope=process_types_, documentation=u'\n            Process-type provides a URI linking to the detailed representation of a process type.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 344, 6)))
 
-process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=process_types_, documentation=u'\n            When working with large lists of process types,\nthe previous-page element provides a URI that links to the previous page of process types.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 346, 6)))
+process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=process_types_, documentation=u'\n            When working with large lists of process types,\nthe previous-page element provides a URI that links to the previous page of process types.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 351, 6)))
 
-process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=process_types_, documentation=u'\n            When working with large lists of process types,\nthe next-page element provides a URI that links to the next page of process types.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 354, 6)))
+process_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=process_types_, documentation=u'\n            When working with large lists of process types,\nthe next-page element provides a URI that links to the next page of process types.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 359, 6)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1040,26 +1040,26 @@ def _BuildAutomaton_4 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 339, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 344, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 346, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 351, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 354, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 359, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'process-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 339, 6))
+    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'process-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 344, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 346, 6))
+    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 351, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 354, 6))
+    symbol = pyxb.binding.content.ElementUse(process_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtype.xsd', 359, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []

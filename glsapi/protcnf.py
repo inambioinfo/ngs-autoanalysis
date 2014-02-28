@@ -1,7 +1,7 @@
 # ./protcnf.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:05ba7636c7f3de005e4813c202517a26ffbb3595
-# Generated 2013-05-14 16:17:05.795889 by PyXB version 1.2.2
+# Generated 2014-02-28 18:06:31.784279 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/protocolconfiguration
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:5529b46e-bca9-11e2-9d0d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,8 +22,8 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import protstepcnf as _ImportedBinding_protstepcnf
 import pyxb.binding.datatypes
+import protstepcnf as _ImportedBinding_protstepcnf
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/protocolconfiguration', create_if_missing=True)
@@ -194,7 +194,10 @@ class CTD_ANON_ (pyxb.binding.basis.complexTypeDefinition):
 # Complex type {http://genologics.com/ri/protocolconfiguration}protocol-property with content type EMPTY
 class protocol_property (pyxb.binding.basis.complexTypeDefinition):
     """
-        Protocol property containing a name/value pair
+        Protocol-property is a child element of protocol containing key/value pairs for
+setting specific attributes of protocols.
+This information contains internally used properties that will change. These properties are
+suitable for use when copying protocols, but should not be manipulated.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
@@ -207,16 +210,16 @@ class protocol_property (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprotocolconfiguration_protocol_property_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 83, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 83, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 86, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 86, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The property name.\n        ')
 
     
     # Attribute value uses Python identifier value_
     __value = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'value'), 'value_', '__httpgenologics_comriprotocolconfiguration_protocol_property_value', pyxb.binding.datatypes.string)
-    __value._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 90, 4)
-    __value._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 90, 4)
+    __value._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 93, 4)
+    __value._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 93, 4)
     
     value_ = property(__value.value, __value.set, None, u'\n          The property value.\n        ')
 
@@ -242,13 +245,13 @@ protocols</p>
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'protocols')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 98, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 101, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element protocol uses Python identifier protocol
-    __protocol = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'protocol'), 'protocol', '__httpgenologics_comriprotocolconfiguration_protocols__protocol', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 108, 6), )
+    __protocol = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'protocol'), 'protocol', '__httpgenologics_comriprotocolconfiguration_protocols__protocol', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 111, 6), )
 
     
     protocol = property(__protocol.value, __protocol.set, None, u'\n            Each protocol provides a URI that links to a\nmore detailed representation of the protocol\n          ')
@@ -272,23 +275,23 @@ for all available protocols in the system
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'protocol-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 118, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 121, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprotocolconfiguration_protocol_link_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 125, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 125, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 128, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 128, 4)
     
     name = property(__name.value, __name.set, None, u'\n          Name of the protocol\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprotocolconfiguration_protocol_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 132, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 132, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 135, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 135, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          the URI to access a more detailed\nrepresentation of the protocol\n        ')
 
@@ -406,7 +409,7 @@ CTD_ANON_._Automaton = _BuildAutomaton_2()
 
 
 
-protocols_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'protocol'), protocol_link, scope=protocols_, documentation=u'\n            Each protocol provides a URI that links to a\nmore detailed representation of the protocol\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 108, 6)))
+protocols_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'protocol'), protocol_link, scope=protocols_, documentation=u'\n            Each protocol provides a URI that links to a\nmore detailed representation of the protocol\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 111, 6)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -415,12 +418,12 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 108, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 111, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(protocols_._UseForTag(pyxb.namespace.ExpandedName(None, u'protocol')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 108, 6))
+    symbol = pyxb.binding.content.ElementUse(protocols_._UseForTag(pyxb.namespace.ExpandedName(None, u'protocol')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/protcnf.xsd', 111, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
