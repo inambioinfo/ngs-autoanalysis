@@ -611,13 +611,16 @@ class External(object):
                         data = {}
                         for file_id in list(self.published_external_data.viewkeys()):
                             filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
-                            slxid = filename.split('.')[0]
-                            data[slxid] = self.published_external_data[file_id]['ftpdir']
+                            if filename.endswith('.contents.csv'):
+                                # "/solexa03/data/Runs/140228_SN1078_0260_C3JEHACXX/fastq/SLX-8180.C3JEHACXX.s_8.contents.csv"
+                                fparts = filename.split('.') 
+                                slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2]) # key made of SLX-ID*FC-ID*LANE-ID
+                                data[slxkey] = self.published_external_data[file_id]['ftpdir']
                         # move data
-                        for slxid in data.viewkeys():
-                            # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx* /dmz01/solexa/external/gurdon_institute/
-                            src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxid], slxid)
-                            dest = "%s/%s/" % (FTP_PATH, data[slxid])
+                        for slxkey in data.viewkeys():
+                            # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx*FCID*s_x* /dmz01/solexa/external/gurdon_institute/
+                            src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxkey], slxkey)
+                            dest = "%s/%s/" % (FTP_PATH, data[slxkey])
                             cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
                             utils.run_process(cmd, self.dry_run)
                         # register completion

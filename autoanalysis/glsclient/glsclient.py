@@ -638,7 +638,7 @@ class GlsUtil(object):
         """Return sample level files for this run folder name called run id in genologics
         """
         if is_published:
-            return self.db.execute(glssql.PUBLISHED_FILES_QUERY % {'processname': 'FASTQ Lane Pipeline','runid': run_id}).fetchall()
+            return self.db.execute(glssql.PUBLISHED_FILES_QUERY % {'processname': 'FASTQ Sample Pipeline','runid': run_id}).fetchall()
         return self.db.execute(glssql.FILES_QUERY % {'processname': 'FASTQ Sample Pipeline','runid': run_id}).fetchall()
         
     def getAllExternalFtpDirs(self):
