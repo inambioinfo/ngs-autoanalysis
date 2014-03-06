@@ -1,7 +1,7 @@
 # ./containertype.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:8d231f4d4f3ec59c26bf3cf217bda8d9ae3bbf1c
-# Generated 2014-02-28 18:06:31.780554 by PyXB version 1.2.2
+# Generated 2014-03-06 16:48:15.154029 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/containertype
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0c7eb623-a0a3-11e3-bd60-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
