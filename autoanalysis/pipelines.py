@@ -39,7 +39,7 @@ EXTERNAL_DEMUX_PIPELINE = 'external_demux'
 # Pipeline commands
 PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
 
-PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean --ignore-walltime %(run_meta)s"
+PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 PIPELINE_LOCAL_RUN_COMMAND = "cd %(work_dir)s; touch %(started)s; %(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 
 # Template for rsync pipeline command
