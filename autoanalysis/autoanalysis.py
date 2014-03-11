@@ -85,15 +85,16 @@ def main():
                 
                 # create external
                 external = auto_pipelines.External(run, external_data, published_external_data, options.dry_run)
+                
+                # add flow-cell into the publishing queue and update sample status
+                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
+                    glslims.publishFlowCell(run)                
+                
                 # synchronise external data to ftp server
                 external.sync()
                 # move external data to public folders and register completion
                 external.publish()
                     
-                # add flow-cell into the publishing queue and update sample status
-                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
-                    glslims.publishFlowCell(run)
-
             except:
                 log.exception("Unexpected error")
                 continue

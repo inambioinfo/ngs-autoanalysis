@@ -52,7 +52,7 @@ def main():
         log = logger.get_custom_logger()
                   
     try:
-        # loop over all runs that have a Analysis.completed and Publishing.completed and not dont.delete files in options.basedir
+        # loop over all runs that have a Analysis.completed, Publishing.assigned and Publishing.completed and not dont.delete files in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
         for run in runs.published_runs:
             try:
