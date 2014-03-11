@@ -423,7 +423,11 @@ sample.name as samplename,
 sudf1.udfvalue as slxid,
 sudf3.udfvalue as workflow,
 sudf4.udfvalue as readlength,
-sudf5.udfvalue as seqtype
+sudf5.udfvalue as seqtype,
+case when sudf5.udfvalue = 'Paired End' then 'PE' else 'SE' end || sudf4.udfvalue as seqinfo,
+sample.datereceived as submissiondate,
+researcher.email
+
 
 FROM 
 (	SELECT processid, COUNT(artifactid) AS occurences 
