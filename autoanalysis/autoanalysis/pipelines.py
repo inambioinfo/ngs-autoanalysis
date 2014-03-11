@@ -478,9 +478,10 @@ class Pipelines(object):
 ################################################################################
 class External(object):
     
-    def __init__(self, run, external_data, published_external_data, dry_run=True):
+    def __init__(self, run, all_data, external_data, published_external_data, dry_run=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
+        self.all_data = all_data
         self.external_data = external_data
         self.published_external_data = published_external_data
         self.pipeline_name = EXTERNAL_PIPELINE
@@ -603,44 +604,47 @@ class External(object):
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
         """
         if self.run.isAnalysisCompletedPresent():
-            if self.published_external_data:
-                if self.isExternalDataSynchronised():
-                    if not self.isPublishingCompleted():
-                        self.log.info('... move external data to public folders .......................................')
-                        # build dictionnary of SLX-IDs to be moved
-                        data = {}
-                        for file_id in list(self.published_external_data.viewkeys()):
-                            filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
-                            if filename.endswith('.contents.csv'):
-                                # "/solexa03/data/Runs/140228_SN1078_0260_C3JEHACXX/fastq/SLX-8180.C3JEHACXX.s_8.contents.csv"
-                                fparts = filename.split('.') 
-                                slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2]) # key made of SLX-ID*FC-ID*LANE-ID
-                                data[slxkey] = self.published_external_data[file_id]['ftpdir']
-                        # move data
-                        for slxkey in data.viewkeys():
-                            # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx*FCID*s_x* /dmz01/solexa/external/gurdon_institute/
-                            src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxkey], slxkey)
-                            dest = "%s/%s/" % (FTP_PATH, data[slxkey])
-                            cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
-                            utils.run_process(cmd, self.dry_run)
-                        # register completion
-                        utils.touch(self.publishing_completed)
-                        utils.touch(self.archive_publishing_completed)
+            if self.all_data:
+                if self.published_external_data:
+                    if self.isExternalDataSynchronised():
+                        if not self.isPublishingCompleted():
+                            self.log.info('... move external data to public folders .......................................')
+                            # build dictionnary of SLX-IDs to be moved
+                            data = {}
+                            for file_id in list(self.published_external_data.viewkeys()):
+                                filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
+                                if filename.endswith('.contents.csv'):
+                                    # "/solexa03/data/Runs/140228_SN1078_0260_C3JEHACXX/fastq/SLX-8180.C3JEHACXX.s_8.contents.csv"
+                                    fparts = filename.split('.') 
+                                    slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2]) # key made of SLX-ID*FC-ID*LANE-ID
+                                    data[slxkey] = self.published_external_data[file_id]['ftpdir']
+                            # move data
+                            for slxkey in data.viewkeys():
+                                # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx*FCID*s_x* /dmz01/solexa/external/gurdon_institute/
+                                src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxkey], slxkey)
+                                dest = "%s/%s/" % (FTP_PATH, data[slxkey])
+                                cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
+                                utils.run_process(cmd, self.dry_run)
+                            # register completion
+                            utils.touch(self.publishing_completed)
+                            utils.touch(self.archive_publishing_completed)
+                        else:
+                            self.log.info('External data already move to public folders')
+                        self.log.info('*** PUBLISH COMPLETED ******************************************************')
                     else:
-                        self.log.info('External data already move to public folders')
-                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
+                        self.log.info('External data not synchronised to ftp yet')
                 else:
-                    self.log.info('External data not synchronised to ftp yet')
+                    if self.external_data:
+                        self.log.info('No published external data in lims')
+                    else:
+                        self.log.info('No external data')
+                        if not self.isPublishingCompleted():
+                            # register completion
+                            utils.touch(self.publishing_completed)
+                            utils.touch(self.archive_publishing_completed)
+                        self.log.info('*** PUBLISH COMPLETED ******************************************************')
             else:
-                if self.external_data:
-                    self.log.info('No published external data in lims')
-                else:
-                    self.log.info('No external data')
-                    if not self.isPublishingCompleted():
-                        # register completion
-                        utils.touch(self.publishing_completed)
-                        utils.touch(self.archive_publishing_completed)
-                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
+                self.log.info('Sample FASTQ files not attached in lims yet')
                
     def isPublishingCompleted(self):
         if os.path.exists(self.publishing_completed) and os.path.exists(self.archive_publishing_completed):
@@ -658,12 +662,13 @@ class External(object):
         dest_external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
         dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
-        # rsync external data not finished or started
-        if self.external_data:
-            if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished):
+        if self.all_data:
+            # rsync external data not finished or started
+            if self.external_data:
+                if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished):
+                    return True
+            else:
                 return True
-        else:
-            return True
         return False
 
 
