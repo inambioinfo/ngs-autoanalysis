@@ -96,7 +96,7 @@ class RunFolders(object):
     def getPublishedRuns(self):
         published_runs = []
         for run in self.completed_runs:
-            if run.isAnalysisCompletedPresent() and run.isPublished():
+            if run.isAnalysisCompletedPresent() and run.isPublishingAssignedPresent() and run.isPublished():
                 published_runs.append(run)
         return published_runs
 
