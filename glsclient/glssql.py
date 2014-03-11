@@ -324,7 +324,6 @@ case when sudf5.udfvalue = 'Paired End' then 'PE' else 'SE' end || sudf4.udfvalu
 sample.datereceived as submissiondate,
 researcher.email
 
-
 FROM 
 (	SELECT processid, COUNT(artifactid) AS occurences 
 	FROM artifact_sample_map 
@@ -351,3 +350,28 @@ AND artifact_sample_map.processid=sample.processid
 AND artifact_sample_map.artifactid=artifact.artifactid
 AND project.researcherid=researcher.researcherid
 """
+
+SAMPLES_WITH_NODATE_QUERY = """
+WITH accept as (
+	SELECT artifact.luid as artifactluid, process.daterun as daterun
+	FROM processiotracker, process, processtype, artifact
+	WHERE processiotracker.processid=process.processid 
+	AND process.typeid=processtype.typeid 
+	AND (processtype.displayname='Accept SLX' or processtype.displayname='Aggregate QC (Library Validation)')
+	AND processiotracker.inputartifactid=artifact.artifactid 
+) 
+SELECT 
+artifact.luid as artifactid,
+sample.name as samplename,
+sample.datereceived as submissiondate,
+to_char(accept.daterun, 'YYYY-MM-DD') as acceptancedate
+FROM 
+sample,
+artifact_sample_map,
+artifact,
+accept
+WHERE
+sample.datereceived is NULL
+AND artifact_sample_map.processid=sample.processid
+AND artifact_sample_map.artifactid=artifact.artifactid
+AND artifact.luid=accept.artifactluid"""
