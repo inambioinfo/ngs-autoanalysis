@@ -100,23 +100,24 @@ def main():
         for row in results:
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,seqinfo,submissiondate,email
             try:                
+                # update sample date received if empty
+                if row.submissiondate is None or row.submissiondate == '':
+                    log.info('No date received on sample %s' % row.samplename)
+                    if options.updatesamples:
+                        artifact = glsutil.api.load('artifact', row.artifactid)
+                        sample = glsutil.api.load('sample', artifact.sample[0].limsid)
+                        sample.date_received = str(datetime.date.today())
+                        log.debug(sample.toxml('utf-8'))
+                        updated_sample = glsutil.api.update(sample)
+                        log.info('Date set to %s on sample %s' % (updated_sample.date_received, updated_sample.name))
+                        log.debug(updated_sample.toxml('utf-8'))
+
+                # assign samples to workflow
                 if row.workflow in WORKFLOW_MAPPING.keys():
                     details = "[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row.artifactid, row.projectname, row.samplename, row.slxid, row.workflow, WORKFLOW_MAPPING[row.workflow])
                     miseqexpress_details = "%s\t| %s\t| %s\t| %s\t| %s" % (row.slxid, row.projectname, row.researcher, row.readlength, row.seqtype)
                     report_assignedsamples += details + "\n"
                     log.info(details)
-                    # update sample date received if empty
-                    if row.submissiondate is None or row.submissiondate == '':
-                        log.info('No date received on sample %s' % row.samplename)
-                        if options.updatesamples:
-                            artifact = glsutil.api.load('artifact', row.artifactid)
-                            sample = glsutil.api.load('sample', artifact.sample[0].limsid)
-                            sample.date_received = str(datetime.date.today())
-                            log.debug(sample.toxml('utf-8'))
-                            updated_sample = glsutil.api.update(sample)
-                            log.info('Date set to %s on sample %s' % (updated_sample.date_received, updated_sample.name))
-                            log.debug(updated_sample.toxml('utf-8'))
-                    # assign samples to workflow
                     if options.update:
                         workflows = glsutil.api.listFilterByName('workflow', WORKFLOW_MAPPING[row.workflow])
                         workflow = workflows.workflow[0]
