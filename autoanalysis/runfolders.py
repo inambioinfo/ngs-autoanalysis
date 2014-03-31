@@ -27,6 +27,7 @@ import utils
 
 RUNFOLDER_GLOB = "%s/??????_*_*_*"
 ONERUNFOLDER_GLOB = "%s/%s"
+RTA_COMPLETED = 'RTAComplete.txt'
 SEQUENCING_COMPLETED = 'Sequencing.completed'
 SEQUENCING_FAILED = 'Sequencing.failed'
 SYNC_COMPLETED = 'Sync.completed'
@@ -118,6 +119,7 @@ class RunDefinition(object):
         self.flowcell_id = self.run_folder_name.split('_')[-1]
         # TODO add reagent cartridge ID from runParameter.xml
         self.run_uid = '%s_%s' % (self.start_date, self.flowcell_id)
+        self.rta_completed = os.path.join(self.run_folder, RTA_COMPLETED)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
         self.sequencing_failed = os.path.join(self.run_folder, SEQUENCING_FAILED)
         self.sync_completed = os.path.join(self.run_folder, SYNC_COMPLETED)
@@ -140,7 +142,7 @@ class RunDefinition(object):
         return None
         
     def updateSequencingStatus(self, _is_sequencing_complete, _dry_run=True):
-        if _is_sequencing_complete is True: 
+        if _is_sequencing_complete is True and os.path.exists(self.rta_completed): 
             if not os.path.exists(self.sequencing_completed):
                 utils.touch(self.sequencing_completed, _dry_run)
                 self.log.info('create %s' % self.sequencing_completed)
