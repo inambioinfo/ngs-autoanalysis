@@ -1,7 +1,7 @@
 # ./project.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:05d18cd4162daf503adc481b4ebccd22986053ca
-# Generated 2014-03-06 16:48:15.142549 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.254649 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/project
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,10 +22,10 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
-import ri as _ImportedBinding_ri
-import pyxb.binding.datatypes
 import file as _ImportedBinding_file
+import userdefined as _ImportedBinding_userdefined
+import pyxb.binding.datatypes
+import ri as _ImportedBinding_ri
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/project', create_if_missing=True)
@@ -95,7 +95,7 @@ class project_ (pyxb.binding.basis.complexTypeDefinition):
 
     
     # Element {http://genologics.com/ri/file}file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriproject_project__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriproject_project__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2), )
 
     
     file = property(__file.value, __file.set, None, None)
@@ -319,7 +319,7 @@ Namespace.addCategoryObject('elementBinding', projects.name().localName(), proje
 
 project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=project_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=project_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=project_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
 
 project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=project_, documentation=u'\n            The name of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6)))
 

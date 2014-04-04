@@ -1,7 +1,7 @@
 # ./routing.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:b9ea9adfd9a15d9a0b8998bd9820ee0f8ccf1db4
-# Generated 2014-03-06 16:48:15.160237 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.257066 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/routing
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'

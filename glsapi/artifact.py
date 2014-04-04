@@ -1,7 +1,7 @@
 # ./artifact.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:7a2a5ba0321ae1837db4fc6a222a04675f452018
-# Generated 2014-03-06 16:48:15.159892 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.258793 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/artifact
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,10 +22,10 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
-import ri as _ImportedBinding_ri
-import pyxb.binding.datatypes
 import file as _ImportedBinding_file
+import userdefined as _ImportedBinding_userdefined
+import pyxb.binding.datatypes
+import ri as _ImportedBinding_ri
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/artifact', create_if_missing=True)
@@ -184,7 +184,7 @@ classified by its type (Analyte, ResultFile, etc).</p>
 
     
     # Element {http://genologics.com/ri/file}file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriartifact_artifact__httpgenologics_comrifilefile', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriartifact_artifact__httpgenologics_comrifilefile', False, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2), )
 
     
     file = property(__file.value, __file.set, None, None)
@@ -566,7 +566,7 @@ artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Non
 
 artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact-group'), artifactgroup, scope=artifact_, documentation=u'\n            The artifact group that the Artifact belongs to. In the client, artifact groups are referred to as experiments.\nThis element is repeated for each artifact group that the Artifact belongs to.\n<br/>Always returns with GET: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided, existing ArtifactGroups are cleared from Artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/artifact.xsd', 164, 6)))
 
-artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=artifact_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2)))
+artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=artifact_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
 
 artifact_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_udf, u'field'), _ImportedBinding_userdefined.field_, scope=artifact_, documentation=u'\n        A User-Defined Field that is associated with the researcher.\nThis element is repeated for each UDF associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDF has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDF has been configured as required. If a current UDF is not provided, existing values are deleted.\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/userdefined.xsd', 58, 2)))
 
