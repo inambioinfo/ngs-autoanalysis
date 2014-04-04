@@ -1,7 +1,7 @@
 # ./ver.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:381c942b531cca3d7411c1ea854e1a0cdf36777b
-# Generated 2014-03-06 16:48:15.161172 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.260399 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/version
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'

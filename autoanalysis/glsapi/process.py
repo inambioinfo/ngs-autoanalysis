@@ -1,7 +1,7 @@
 # ./process.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1827247e8da5b48443263a91d844588f6e0ba800
-# Generated 2014-03-06 16:48:15.142871 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.262006 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/process
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,10 +22,10 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import ri as _ImportedBinding_ri
-import pyxb.binding.datatypes
 import file as _ImportedBinding_file
+import pyxb.binding.datatypes
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/process', create_if_missing=True)
@@ -103,7 +103,7 @@ class process_ (pyxb.binding.basis.complexTypeDefinition):
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element {http://genologics.com/ri/file}file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriprocess_process__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriprocess_process__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2), )
 
     
     file = property(__file.value, __file.set, None, None)
@@ -593,7 +593,7 @@ Namespace.addCategoryObject('elementBinding', processes.name().localName(), proc
 
 
 
-process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=process_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2)))
+process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=process_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
 
 process_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'type'), process_type, scope=process_, documentation=u'\n            The type of the Process.\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 14, 6)))
 

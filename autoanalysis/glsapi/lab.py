@@ -1,7 +1,7 @@
 # ./lab.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:09b4ec6a03e2b94a8089882fb5e37b9c062c8ab0
-# Generated 2014-03-06 16:48:15.143185 by PyXB version 1.2.2
+# Generated 2014-04-04 17:46:47.252322 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/lab
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:1b9f0e11-a54f-11e3-925d-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import ri as _ImportedBinding_ri
-import pyxb.binding.datatypes
 import userdefined as _ImportedBinding_userdefined
+import pyxb.binding.datatypes
+import ri as _ImportedBinding_ri
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/lab', create_if_missing=True)
