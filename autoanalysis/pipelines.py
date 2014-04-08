@@ -666,13 +666,17 @@ class External(object):
         dest_external_directory = os.path.join(self.run.dest_run_folder, EXTERNAL_PIPELINE)
         dest_rsync_started = os.path.join(external_directory, RSYNC_STARTED_FILENAME)
         dest_rsync_finished = os.path.join(external_directory, RSYNC_ENDED_FILENAME)
+        # data files attached in lims 
         if self.all_data:
-            # rsync external data not finished or started
+            # external data found
             if self.external_data:
+                # rsync to ftp finished - data synchronised
                 if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished):
                     return True
-            else:
-                return True
+                return False
+            # no external data found
+            return True
+        # no data files attached
         return False
 
 
