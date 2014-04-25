@@ -82,15 +82,11 @@ def main():
                 all_data = glslims.isFastqFilesFound(run.run_folder_name)
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.findExternalData(run.run_folder_name)
-                # get external data only when lane and sample fastq files are published in lablink
-                published_external_data = glslims.findExternalData(run.run_folder_name, True)
                 
                 # create external
-                external = auto_pipelines.External(run, all_data, external_data, published_external_data, options.dry_run)
+                external = auto_pipelines.External(run, all_data, external_data, options.dry_run)
                 # synchronise external data to ftp server
                 external.sync()
-                # move external data to public folders and register completion
-                external.publish()
 
                 # add flow-cell into the publishing queue and update sample status
                 if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
