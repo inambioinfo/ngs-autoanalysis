@@ -95,9 +95,10 @@ class RunFolders(object):
         return analysed_runs
         
     def getPublishedRuns(self):
+        # Analysis completed and publishing assigned - data may not be yet publically available
         published_runs = []
         for run in self.completed_runs:
-            if run.isAnalysisCompletedPresent() and run.isPublishingAssignedPresent() and run.isPublished():
+            if run.isAnalysisCompletedPresent() and run.isPublishingAssignedPresent():
                 published_runs.append(run)
         return published_runs
 
@@ -235,26 +236,12 @@ class RunDefinition(object):
         return False
         
     def isPublishingAssignedPresent(self):
-         # check Publishing.assigned is present
+         # check Publishing.assigned is present and dont_delete is not present - ready for cleaning
          if os.path.exists(self.run_folder):
-             if os.path.exists(self.publishing_assigned):
+             if os.path.exists(self.publishing_assigned) and not os.path.exists(self.dont_delete):
                  return True
          return False
     
-    def isPublished(self):
-        # check Publishing.completed is present and dont_delete is not present - ready for cleaning
-        if os.path.exists(self.run_folder):
-            if os.path.exists(self.publishing_completed) and not os.path.exists(self.dont_delete):
-                return True
-            else:
-                if not os.path.exists(self.publishing_completed):
-                    self.log.debug('%s does not exists' % self.publishing_completed)
-                    return False
-                if os.path.exists(self.dont_delete):
-                    self.log.debug('%s is present' % self.dont_delete)
-                    return False
-        return False
-
 ################################################################################
 # UNIT TESTS
 ################################################################################

@@ -482,12 +482,12 @@ class Pipelines(object):
 ################################################################################
 class External(object):
     
-    def __init__(self, run, all_data, external_data, published_external_data, dry_run=True):
+    def __init__(self, run, all_data, external_data, dry_run=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.all_data = all_data
         self.external_data = external_data
-        self.published_external_data = published_external_data
+        #self.published_external_data = published_external_data
         self.pipeline_name = EXTERNAL_PIPELINE
         self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
         self.publishing_completed = os.path.join(self.run.run_folder, runfolders.PUBLISHING_COMPLETED)
@@ -606,6 +606,7 @@ class External(object):
     def publish(self):
         """Publish external data to ftp server that have been published in lims and add Publishing.completed
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
+        THIS IS NOW DONE AS PART OF AN EPP SCRIPT ATTACHED TO THE PUBLISHING PROCESS
         """
         if self.run.isAnalysisCompletedPresent():
             if self.all_data:
