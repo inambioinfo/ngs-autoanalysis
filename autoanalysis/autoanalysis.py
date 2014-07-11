@@ -74,9 +74,8 @@ def main():
                 # register pipelines completion
                 pipelines.registerCompletion()
                 
-                # create lims processes and update sample status
+                # create lims processes
                 glslims.createAnalysisProcesses(run.flowcell_id)
-                glslims.updateSampleProgressStatusToAnalysisUnderway(run.flowcell_id)
 
                 # get all flow-cell sample fastq files when attached in lims
                 all_data = glslims.isFastqFilesFound(run.run_folder_name)
@@ -88,7 +87,7 @@ def main():
                 # synchronise external data to ftp server
                 external.sync()
 
-                # add flow-cell into the publishing queue and update sample status
+                # add flow-cell into the publishing queue
                 if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
                     glslims.publishFlowCell(run)                
                 
