@@ -56,7 +56,7 @@ def main():
         runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
         for run in runs.published_runs:
             try:
-                log.info(run.getHeader())
+                log.info(run.get_header())
                 log.info('*** run folder move to trash')
                 if os.path.exists(run.dont_delete):
                     log.info('%s is present' % run.dont_delete)

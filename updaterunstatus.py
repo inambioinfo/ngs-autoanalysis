@@ -12,22 +12,14 @@ Created by Anne Pajon on 2013-06-11.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
-import glob
 import argparse
-import logging
-
-# to connect to old lims for checking status of old runs
-from sqlalchemy.ext.sqlsoup import SqlSoup
-from sqlalchemy.orm.exc import NoResultFound
 
 # import custom modules
 import autoanalysis.log as logger
-import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
-import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
+
 
 ################################################################################
 # MAIN
@@ -35,11 +27,11 @@ import autoanalysis.glslims as auto_glslims
 def main():
     # get the options
     parser = argparse.ArgumentParser()
-    parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+    parser.add_argument("--basedir", dest="basedir", action="store", help="sequencing server base directories e.g. '/processing'", required=True)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--dev-lims", dest="use_dev_lims", action="store_true", default=False, help="Use the development LIMS url")
-    parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
+    parser.add_argument("--logfile", dest="logfile", action="store", default=False,  help="File to print logging information")
 
     options = parser.parse_args()
 
@@ -54,7 +46,7 @@ def main():
         glslims = auto_glslims.GlsLims(options.use_dev_lims)
         # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, None, options.run_folder)
-        all_runs = runs.getAllRuns()
+        all_runs = runs.get_all_runs()
         completed_runs = []
         tosync_runs = []
         syncfail_runs = []
@@ -62,12 +54,12 @@ def main():
         unknown_runs = []
         for run in all_runs:
             try:
-                log.info(run.getHeader())
-                if not run.isSequencingStatusPresent():
+                log.info(run.get_header())
+                if not run.is_sequencing_status_present():
                     is_sequencing_complete = glslims.isSequencingRunComplete(run.run_folder_name)
-                    run.updateSequencingStatus(is_sequencing_complete, options.dry_run)
-                if not run.isSyncStatusPresent():
-                    run.updateSyncStatus(options.dry_run)
+                    run.update_sequencing_status(is_sequencing_complete, options.dry_run)
+                if not run.is_sync_status_present():
+                    run.update_sync_status(options.dry_run)
                     
                 # reporting
                 if os.path.exists(run.sequencing_completed):
@@ -107,5 +99,5 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+    main()
 

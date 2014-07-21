@@ -359,7 +359,7 @@ class PipelineDefinition(object):
         if os.path.exists(self.rsync_script_path):
             if not os.path.exists(self.rsync_started):
                 if not os.path.exists(self.rsync_lock):
-                    if self.run.isCompleted():
+                    if self.run.is_sequencing_completed():
                         utils.touch(self.rsync_lock, _dry_run)
                         utils.run_bg_process(['sh', '%s' % self.rsync_script_path], _dry_run)
                     else:
@@ -403,7 +403,7 @@ class Pipelines(object):
         """execute all pipelines or just one by creating a shell script and running it for
         each of these three steps: setup_pipeline, run_pipeline, and rsync_pipeline
         """
-        if self.run.isCompleted():
+        if self.run.is_sequencing_completed():
             for pipeline_name in self.pipelines.keys():
                 # create pipeline definition
                 pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev)
@@ -499,7 +499,7 @@ class External(object):
         create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
         synchronise external data to temp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
         """
-        if self.run.isAnalysisCompletedPresent():
+        if self.run.is_analysis_completed_present():
             if self.external_data:
                 if self.run.dest_run_folder:
                     # create pipeline definition
@@ -608,7 +608,7 @@ class External(object):
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
         THIS IS NOW DONE AS PART OF AN EPP SCRIPT ATTACHED TO THE PUBLISHING PROCESS
         """
-        if self.run.isAnalysisCompletedPresent():
+        if self.run.is_analysis_completed_present():
             if self.all_data:
                 if self.published_external_data:
                     if self.isExternalDataSynchronised():
@@ -695,7 +695,7 @@ class Sync(object):
     def execute(self):
         """execute rsync_runfolder by creating a shell script and running it
         """
-        if self.run.isCompleted():
+        if self.run.is_sequencing_completed():
             # create pipeline definition
             pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
             pipeline_definition.printHeader()

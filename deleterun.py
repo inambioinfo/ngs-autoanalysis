@@ -27,7 +27,6 @@ import time
 import datetime
 
 # import custom modules
-# import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
@@ -148,10 +147,10 @@ def main():
 
         # loop over all runs in options.basedir
         runs = auto_runfolders.RunFolders(options.basedir, None)
-        all_runs = runs.getAllRuns()
+        all_runs = runs.get_all_runs()
         for run in all_runs:
             try:
-                log.info(run.getHeader())
+                log.info(run.get_header())
                 # check dont.delete is not present - stop cleaning if present
                 if not os.path.exists(run.dont_delete):
                     
