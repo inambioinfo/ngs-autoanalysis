@@ -19,10 +19,6 @@ Usage:
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
-import os
-import glob
-import logging
 import argparse
 
 # import custom modules
@@ -31,6 +27,7 @@ import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
 import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
+
 
 ################################################################################
 # MAIN
@@ -65,7 +62,7 @@ def main():
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.completed_runs:
             try:
-                log.info(run.getHeader())
+                log.info(run.get_header())
                 # create pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
                 if not options.donot_run_pipelines:
@@ -89,7 +86,7 @@ def main():
                 external.sync()
 
                 # add flow-cell into the publishing queue and update sample status
-                if run.isAnalysisCompletedPresent() and not run.isPublishingAssignedPresent() and external.isExternalDataSynchronised():
+                if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.isExternalDataSynchronised():
                     glslims.publishFlowCell(run)                
                 
                     

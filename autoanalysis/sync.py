@@ -20,13 +20,10 @@ Usage:
 ################################################################################
 import sys
 import os
-import glob
 import argparse
-import logging
 
 # import custom modules
 import autoanalysis.log as logger
-import autoanalysis.utils as utils
 import autoanalysis.runfolders as auto_runfolders
 import autoanalysis.pipelines as auto_pipelines
 
@@ -56,7 +53,7 @@ def main():
         runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder, False)
         for run in runs.completed_runs:
             try:
-                log.info(run.getHeader())
+                log.info(run.get_header())
                 if not os.path.exists(run.sync_completed):
                     log.info('%s does not exists - to be synchronised' % run.sync_completed)
                     # create sync 
