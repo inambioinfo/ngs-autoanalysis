@@ -329,6 +329,13 @@ FROM
 	FROM artifact_sample_map 
 	GROUP BY processid
 ) AS samplewithoneartifact,
+(
+	SELECT artifact.artifactid, COUNT(processiotracker.processid) AS occurences
+	FROM processiotracker, process, artifact
+	WHERE processiotracker.processid=process.processid
+	AND processiotracker.inputartifactid=artifact.artifactid
+	GROUP BY artifactid
+) AS processnumberperartifact,
 sample
 LEFT OUTER JOIN sample_udf_view as sudf1 on (sudf1.sampleid=sample.sampleid AND sudf1.udfname = 'SLX Identifier')
 LEFT OUTER JOIN sample_udf_view as sudf2 on (sudf2.sampleid=sample.sampleid AND sudf2.udfname = 'Progress')
@@ -342,8 +349,10 @@ artifact
 LEFT OUTER JOIN stagetransition on (stagetransition.artifactid=artifact.artifactid)
 
 WHERE samplewithoneartifact.occurences=1
+AND processnumberperartifact.occurences<=1
 AND (sample.datereceived is NULL OR sample.datereceived >= '2013-08-01')
 AND sample.processid=samplewithoneartifact.processid
+AND artifact.artifactid=processnumberperartifact.artifactid
 AND sudf2.udfvalue is NULL
 AND sample.projectid=project.projectid
 AND artifact_sample_map.processid=sample.processid
