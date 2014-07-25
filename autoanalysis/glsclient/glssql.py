@@ -330,11 +330,10 @@ FROM
 	GROUP BY processid
 ) AS samplewithoneartifact,
 (
-	SELECT artifact.artifactid, COUNT(processiotracker.processid) AS occurences
-	FROM processiotracker, process, artifact
-	WHERE processiotracker.processid=process.processid
-	AND processiotracker.inputartifactid=artifact.artifactid
-	GROUP BY artifactid
+ 	SELECT artifact.artifactid, COUNT(processiotracker.processid) AS occurences
+ 	FROM artifact LEFT OUTER JOIN processiotracker on (processiotracker.inputartifactid=artifact.artifactid)
+ 	LEFT OUTER JOIN process on (processiotracker.processid=process.processid)
+ 	GROUP BY artifactid
 ) AS processnumberperartifact,
 sample
 LEFT OUTER JOIN sample_udf_view as sudf1 on (sudf1.sampleid=sample.sampleid AND sudf1.udfname = 'SLX Identifier')
@@ -358,6 +357,8 @@ AND sample.projectid=project.projectid
 AND artifact_sample_map.processid=sample.processid
 AND artifact_sample_map.artifactid=artifact.artifactid
 AND project.researcherid=researcher.researcherid
+
+ORDER BY slxid
 """
 
 SAMPLES_WITH_NODATE_QUERY = """
