@@ -406,9 +406,9 @@ class GlsUtil(object):
         for input_artifact_uri in input_uri_set: 
             input_artifact = glsapi.processexecution.input()
             input_artifact.uri = input_artifact_uri
-            # 7 output result files per lane for fastq pipeline
-            # Read 1 FASTQ,Read 2 FASTQ,FASTQ MD5 Checksums,Lane Index,MGA Lane Report,FASTQC Lane Report,Demultiplex Barcode Summary
-            for i in range(7):
+            # 8 output result files per lane for fastq pipeline
+            # Lost Reads 1 FASTQ,Lost Reads 2 FASTQ,Lost Reads MD5 Checksums,Lane Contents,Demultiplex Barcode Summary,MGA Lane Report,FASTQC Lane Report 1,FASTQC Lane Report 2
+            for i in range(8):
                 io_map = glsapi.processexecution.input_output_map()
                 io_map.input.append(input_artifact) 
                 io_map.output = glsapi.processexecution.output()

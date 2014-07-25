@@ -24,6 +24,8 @@ import glsclient.glssql as glssql
 
 WORKFLOW_MAPPING = {
 'HiSeq': 'SLX: Sequencing for HiSeq v1',
+'HiSeq 2000':'SLX: Sequencing for HiSeq 2000 v1',
+'HiSeq 2-lane': 'SLX: Sequencing for HiSeq Rapid Run v1',
 'HiSeq Express': 'SLX: Sequencing for HiSeq Express v1',
 'Resubmit for HiSeq': 'SLX: Resubmit for HiSeq v1',
 'MiSeq': 'SLX: Sequencing for MiSeq v1',
@@ -31,12 +33,21 @@ WORKFLOW_MAPPING = {
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 
+# New LPP submission form v16
+'TruSeq stranded mRNA': 'LPS: TruSeq RNA v3',
+'Nextera': 'LPS: Nextera v2',
+'Access Array': 'LPS: Access Array v3',
+'ChIP Seq': 'LPS: TruSeq ChIP v3',
+'Nextera Rapid Exome': 'LPS: Rapid Exome',
+'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
+
+# Old LPP submission - to be deleted later
 'Truseq DNA with MiSeq': 'LPS: TruSeq DNA v3',
 'Truseq RNA with MiSeq': 'LPS: TruSeq RNA v3',
 'Truseq ChIPseq with MiSeq': 'LPS: TruSeq ChIP v3',
 'Nextera with MiSeq': 'LPS: Nextera v2',
 'Access Array with MiSeq': 'LPS: Access Array v3',
-'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
+
 }
 
 def send_email(txt_msg):
