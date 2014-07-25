@@ -151,13 +151,14 @@ def create_directory(directory):
 
 def create_symlink(filename, linkname):
     try:
-        if os.path.lexists(linkname):
-            os.remove(linkname)
-        if os.path.isfile(filename):
-            os.symlink(filename, linkname)
-            log.debug("%s symlink created" % linkname)
+        if not os.path.lexists(linkname):
+            if os.path.isfile(filename):
+                os.symlink(filename, linkname)
+                log.debug("%s symlink created" % linkname)
+            else:
+                log.warning("%s is not a file or does not exist" % filename)
         else:
-            log.warning("%s is not a file or does not exist" % filename)
+            log.debug("%s symlink already exists" % linkname)
     except:
         log.exception('unexpected error when creating symlink')
         raise

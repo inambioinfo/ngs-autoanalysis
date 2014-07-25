@@ -81,7 +81,6 @@ class GlsLims:
         self.log.info('... publish flow-cell ..........................................................')
         if self.isFastqFilesFound(run.run_folder_name):
             self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
-            self.updateSampleProgressStatusToPublishingUnderway(run.flowcell_id)
             utils.touch(run.publishing_assigned)
         else:
             self.log.info('No sample fastq files found for run %s' % run.run_folder_name)
