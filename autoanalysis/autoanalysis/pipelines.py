@@ -573,14 +573,12 @@ class External(object):
         ftpdirs = set()
         for file_id in list(self.external_data.viewkeys()):
             ftpdirs.add(self.external_data[file_id]['ftpdir'])
-        self.log.debug(ftpdirs)
         for ftpdir in ftpdirs:
             src = os.path.join(env['archive_pipedir'], ftpdir)
             dest = "%s/tmp/%s/" % (FTP_URL, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
             cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
-        self.log.debug(rsync_cmd)
         env['rsync_cmd'] = rsync_cmd
         utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
 
