@@ -50,56 +50,44 @@ class GlsLims:
     def isSequencingRunComplete(self, run_id):
         # return True if sequencing process at the end of cycle; False if all lanes qc failed; None otherwise
         self.log.info('... check sequencing status ....................................................')
-        return self.glsutil.isSequencingCompleted(run_id)
+        return self.glsutil.is_sequencing_completed(run_id)
         
     def isFastqFilesFound(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
         self.log.info('... check sample fastq files ...................................................')
-        return self.glsutil.isFastqPipelineComplete(run_id)
+        return self.glsutil.is_sample_fastq_files_attached(run_id)
 
     def createAnalysisProcesses(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
         """
         self.log.info('... create analysis processes ..................................................')
-        run = self.glsutil.getLatestCompleteRunProcessByFlowcellId(flowcell_id)
+        run = self.glsutil.get_latest_complete_run_process_by_flowcell_id(flowcell_id)
         if run is not None:
-            fastq = self.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', flowcell_id)
+            fastq = self.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
             if fastq is None:
-                self.glsutil.createBclToFastqPipelineProcess(flowcell_id)
-                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['fastq'], flowcell_id))
-            demux = self.glsutil.getSingleAnalysisProcessByFlowcellId('demux', flowcell_id)
+                self.glsutil.create_fastq_lane_pipeline_process(flowcell_id)
+                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['lanfq'], flowcell_id))
+            demux = self.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
             if demux is None:
-                self.glsutil.createDemuxPipelineProcess(flowcell_id)
-                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['demux'], flowcell_id))
-            align = self.glsutil.getSingleAnalysisProcessByFlowcellId('align', flowcell_id)
+                self.glsutil.create_fastq_sample_pipeline_process(flowcell_id)
+                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['samfq'], flowcell_id))
+            align = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
             if align is None:
-                self.glsutil.createAlignmentPipelineProcess(flowcell_id)
+                self.glsutil.create_alignment_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
     def publishFlowCell(self, run):
         self.log.info('... publish flow-cell ..........................................................')
         if self.isFastqFilesFound(run.run_folder_name):
-            self.glsutil.assignFlowcellToPublishingWorkflow(run.flowcell_id)
+            self.glsutil.assign_flowcell_to_publishing_workflow(run.flowcell_id)
             utils.touch(run.publishing_assigned)
         else:
             self.log.info('No sample fastq files found for run %s' % run.run_folder_name)
-        
-    def updateSampleProgressStatusToAnalysisUnderway(self, flowcell_id):
-        """ Notify lims by updating Progress status UDF on samples to 'Analysis Underway'
-        """
-        self.log.info('... update sample progress status ..............................................')
-        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.ANALYSIS_UNDERWAY)
-        
-    def updateSampleProgressStatusToPublishingUnderway(self, flowcell_id):
-        """ Notify lims by updating Progress status UDF on samples to 'Publishing Underway'
-        """
-        self.log.info('... update sample progress status ..............................................')
-        self.glsutil.updateFlowcellSamplesProgressStatus(flowcell_id, glsclient.PUBLISHING_UNDERWAY)
-        
+
     def isExternalData(self, run_id):
         self.log.info('... look for external data .....................................................')
-        is_external_data = self.glsutil.isExternalData(run_id)
+        is_external_data = self.glsutil.is_external_data(run_id)
         if is_external_data:
             self.log.info('external data found')
         else:
@@ -109,13 +97,13 @@ class GlsLims:
     def findExternalData(self, run_id, is_published=False):
         self.log.info('... find external data files ...................................................')
         data = {}
-        labftpdirs = self.glsutil.getAllExternalFtpDirs()
-        files = self.glsutil.getSampleFastqFiles(run_id, is_published)
+        labftpdirs = self.glsutil.get_all_external_ftp_dirs()
+        files = self.glsutil.get_sample_fastq_files(run_id, is_published)
         if files:
-            files.extend(self.glsutil.getLaneFastqFiles(run_id, is_published))
+            files.extend(self.glsutil.get_lane_fastq_files(run_id, is_published))
             for f in files:
-                if f.labid in labftpdirs.keys():
-                    data[f.artifactid] = {'runfolder': f.runfolder, 'ftpdir': labftpdirs[f.labid]['ftpdir'], 'project': f.projectname, 'nonpfdata': labftpdirs[f.labid]['nonpfdata']}
+                if f['labid'] in labftpdirs.keys():
+                    data[f['artifactid']] = {'runfolder': f['runfolder'], 'ftpdir': labftpdirs[f['labid']]['ftpdir'], 'project': f['projectname'], 'nonpfdata': labftpdirs[f['labid']]['nonpfdata']}
         if data:
             self.log.info('External data found')
         else:
@@ -130,17 +118,13 @@ class GlsLimsTests(unittest.TestCase):
         self.flowcell_id = '000000000-A474L'
         self.glslims = GlsLims('limsdev')
 
-    def test_getSamplesByUser(self):
-        self.log.debug('Testing logging')
-        self.assertIsNotNone(self.glslims.glsutil.getSamplesByUser('sarah.moffatt@cruk.cam.ac.uk'))
-        
     def test_createAnalysisProcesses(self):
         self.glslims.createAnalysisProcesses(self.flowcell_id)
-        process = self.glslims.glsutil.getSingleAnalysisProcessByFlowcellId('fastq', self.flowcell_id)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', self.flowcell_id)
         self.assertNotEqual(None, process)
-        process = self.glslims.glsutil.getSingleAnalysisProcessByFlowcellId('demux', self.flowcell_id)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('samfq', self.flowcell_id)
         self.assertNotEqual(None, process)
-        process = self.glslims.glsutil.getSingleAnalysisProcessByFlowcellId('align', self.flowcell_id)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', self.flowcell_id)
         self.assertNotEqual(None, process)
         
     def test_publishFlowCell(self):
