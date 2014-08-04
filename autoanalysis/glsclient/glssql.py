@@ -186,7 +186,7 @@ artifact
 LEFT OUTER JOIN stagetransition on (stagetransition.artifactid=artifact.artifactid)
 
 WHERE samplewithoneartifact.occurences=1
-AND processnumberperartifact.occurences<=1
+AND processnumberperartifact.occurences<1
 AND (sample.datereceived is NULL OR sample.datereceived >= '2013-08-01')
 AND sample.processid=samplewithoneartifact.processid
 AND artifact.artifactid=processnumberperartifact.artifactid
