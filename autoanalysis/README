@@ -4,7 +4,7 @@
 
 - bcl2fastq to run locally on the server itself, not on the cluster anymore
 - architecture slightly different: two volumes /processing/ & /staging/ containing all runs
-- 4 new processing servers : sol-srv001/2/3/4 with /lustre/ mounted for processing alignment
+- 4 new processing servers : sol-srv001/2/3/4 with /lustre/ mounted for processing alignment pipeline
 
 Checking scripts:
 - [TODO] sync.py

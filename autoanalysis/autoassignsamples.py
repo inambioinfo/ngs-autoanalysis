@@ -130,11 +130,11 @@ def main():
                     report_assignedsamples += details + "\n"
                     log.info(details)
                     if options.update:
-                        workflows = glsutil.api.listFilterByName('workflow', WORKFLOW_MAPPING[row.workflow])
+                        workflows = glsutil.api.list_filter_by_name('workflow', WORKFLOW_MAPPING[row.workflow])
                         workflow = workflows.workflow[0]
                         log.debug(workflow)
                         artifact = glsutil.api.load('artifact', row.artifactid)
-                        glsutil.routeEachArtifactToWorkflow([artifact.uri], WORKFLOW_MAPPING[row.workflow])
+                        glsutil.route_each_artifact_to_workflow([artifact.uri], WORKFLOW_MAPPING[row.workflow])
                         count += 1
                         if row.workflow == 'MiSeq Express':
                             log.debug(miseqexpress_details)
