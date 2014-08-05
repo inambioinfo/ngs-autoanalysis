@@ -14,8 +14,6 @@ import logging
 import requests
 from xml.dom import minidom
 
-#from sqlalchemy.ext.sqlsoup import SqlSoup
-
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
@@ -495,20 +493,6 @@ class GlsUtil(object):
 ################################################################################    
 class GlsClientApiTest(unittest.TestCase):
 
-    """
-    def list(self, _resource_name):
-    def list_filter_by_name(self, _resource_name, _name):
-    def list_filter(self, _resource_name, _filter_key, _filter_value):
-    def list_filters(self, _resource_name, _filters):
-    def load(self, _resource_name, _limsid):
-    def load_by_uri(self, _resource_name, _uri):
-    def update(self, _object):
-    def create(self, _resource_name, _object):
-    def delete(self, _object):
-    def pretty_xml(self, _rough_xml):
-
-    """
-
     def setUp(self):
         import log as logger
         self.log = logger.get_custom_logger()
@@ -516,10 +500,10 @@ class GlsClientApiTest(unittest.TestCase):
         self.unknown_id = 'unknown'
         self.containertype_id = '1' 
         self.containertype_name = '96 well plate'
-        self.instrument_id = '3'
-        self.instrument_name = 'Hiseq [HWI-ST230]'
-        self.lab_id = '2'
-        self.lab_name = 'Genomics Core'
+        self.instrument_id = '5'
+        self.instrument_name = 'Luke-Leia [HWI-ST230]'
+        self.lab_id = '11'
+        self.lab_name = 'Core - Genomics'
         # load project
         self.project_name = 'Python Unit Tests'
         self.projects = self.glsclient.list_filter_by_name('project', self.project_name)
@@ -543,40 +527,77 @@ class GlsClientApiTest(unittest.TestCase):
         
     def test_session(self):
         self.assertEqual(self.glsclient.session.auth, (USERNAME, PASSWORD))
-        self.assertEqual(self.glsclient.session.headers, {'content-type': 'application/xml', 'Accept-Encoding': 'gzip, deflate, compress', 'charset': 'UTF-8', 'Accept': 'application/xml', 'User-Agent': 'python-requests/1.2.0 CPython/2.7.5 Darwin/12.5.0'})
-        
+        self.assertDictContainsSubset({'content-type': 'application/xml', 'Accept-Encoding': 'gzip, deflate, compress', 'charset': 'UTF-8', 'Accept': 'application/xml'}, self.glsclient.session.headers)
+
     def test_session_response(self):
         uri = REST_URI_TEMPLATE % {'hostname': self.glsclient.hostname, 'api_version': API_VERSION, 'resource': 'labs', 'luid': self.lab_id}
         response = self.glsclient.session.get(uri)
         self.assertEqual(response.status_code, requests.codes.ok)
         
-    def test_load_unknown(self):
-        self.assertRaises(KeyError, self.glsclient.load, 'unknown', self.unknown_id)
-
-    def test_list_containertypes(self):
-        containertype_list = self.glsclient.list('container_type')
-        containertypename_list = []
-        for containertype in containertype_list.container_type:
-            containertypename_list.append(containertype.name)
-        self.assertIn(self.containertype_name, containertypename_list)
+    def test_list_container_types(self):
+        container_type_list = self.glsclient.list('container_type')
+        container_type_name_list = []
+        for containertype in container_type_list.container_type:
+            container_type_name_list.append(containertype.name)
+        self.assertIn(self.containertype_name, container_type_name_list)
          
     def test_list_instruments(self):
         instrument_list = self.glsclient.list('instrument')
-        instrumentname_list = []
+        instrument_name_list = []
         for instrument in instrument_list.instrument:
-            instrumentname_list.append(instrument.name)
-        self.assertIn(self.instrument_name, instrumentname_list)
-        
-    def test_load_instrument(self):
-        instrument = self.glsclient.load('instrument', self.instrument_id)
-        self.assertEqual(instrument.name, self.instrument_name)
+            instrument_name_list.append(instrument.name)
+        self.assertIn(self.instrument_name, instrument_name_list)
         
     def test_list_labs(self):
         lab_list = self.glsclient.list('lab')
-        labname_list = []
+        lab_name_list = []
         for lab in lab_list.lab:
-            labname_list.append(lab.name)
-        self.assertIn(self.lab_name, labname_list)
+            lab_name_list.append(lab.name)
+        self.assertIn(self.lab_name, lab_name_list)
+
+    def test_list_workflows(self):
+        workflows = self.glsclient.list('workflow')
+        workflow_names = []
+        for workflow in workflows.workflow:
+            workflow_names.append(workflow.name)
+        self.assertIn(self.workflow_name, workflow_names)
+
+    def test_list_process_types(self):
+        process_types = self.glsclient.list('process_type')
+        process_type_names = []
+        for process_type in process_types.process_type:
+            process_type_names.append(process_type.name)
+        self.assertIn(self.process_type_name, process_type_names)
+
+    def test_list_filter_researchers_by_username(self):
+        # TODO: need api upgrade to work with 3.1.2
+        #researcher_links = self.glsclient.list_filter('researcher', 'username', USERNAME)
+        #researcher = self.glsclient.load_by_uri('researcher', researcher_links.researcher[0].uri)
+        #self.assertEqual(USERNAME, researcher.credentials.username)
+        pass
+
+    def test_list_filters_open_projects(self):
+        filters = {'close-date': 'NULL'}
+        projects = self.glsclient.list_filters('project', filters)
+        self.assertEqual(500, len(projects.project))
+
+    def test_list_filters_sequencing_runs(self):
+        filters = {'type': 'Illumina Sequencing Run', 'type': 'MiSeq Run', 'type': 'Historical Sequencing Run'}
+        self.glsclient.list_filters('process', filters)
+
+    def test_list_filters_fastq_result_files(self):
+        filters = {'type': 'ResultFile', 'File Type': 'FASTQ'}
+        result_files = self.glsclient.list_filters('artifact', filters)
+        for link in result_files.artifact:
+            result_file = self.glsclient.load_by_uri('artifact', link.uri)
+            self.assertEqual(result_file.type, 'ResultFile')
+
+    def test_load_unknown(self):
+        self.assertRaises(KeyError, self.glsclient.load, 'unknown', self.unknown_id)
+
+    def test_load_instrument(self):
+        instrument = self.glsclient.load('instrument', self.instrument_id)
+        self.assertEqual(instrument.name, self.instrument_name)
         
     def test_load_lab(self):
         lab = self.glsclient.load('lab', self.lab_id)
@@ -591,6 +612,20 @@ class GlsClientApiTest(unittest.TestCase):
         self.assertEqual(1, len(self.container_types.container_type))
         self.assertEqual(self.container_types.container_type[0].name, self.container_type_name)
         self.assertEqual(self.container_type.name, self.container_type_name)
+
+    def test_load_samples_within_project(self):
+        samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
+        for sample_link in samples.sample:
+            sample = self.glsclient.load('sample', sample_link.limsid)
+            self.assertEqual(sample.name, self.sample_name)
+        self.assertRaises(requests.exceptions.HTTPError, self.glsclient.load, 'sample', self.unknown_id)
+
+    def test_load_artifact_of_sample(self):
+        samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
+        sample = self.glsclient.load('sample', samples.sample[0].limsid)
+        artifact = self.glsclient.load('artifact', sample.artifact.limsid)
+        self.assertEqual(sample.artifact.limsid, artifact.limsid)
+        self.assertRaises(requests.exceptions.HTTPError, self.glsclient.load, 'artifact', self.unknown_id)
 
     def test_create_delete_empty_container(self):
         container = glsapi.container.container(self.container_name)
@@ -623,23 +658,29 @@ class GlsClientApiTest(unittest.TestCase):
         sample.location.container.uri = created_container.uri
         sample.location.value_ = '1:1'
         # add required UDF
-        # Sample Type = DNA
-        sample_type_field = glsapi.userdefined.field('DNA')
-        sample_type_field.name = 'Sample Type'
-        sample.field.append(sample_type_field)
-        # Priority Status = Standard
-        priority_status_field = glsapi.userdefined.field('Standard')
-        priority_status_field.name = 'Priority Status'
-        sample.field.append(priority_status_field)
+        samples_required_fields = {'Sample Type': 'DNA',
+                                   'Priority Status': 'Standard',
+                                   'Read Length': '10',
+                                   'Sequencing Type': 'Not Assigned',
+                                   'Index Type': 'Not Assigned',
+                                   'Concentration': '1',
+                                   'Number of Lanes': '1',
+                                   'Pool Size': '1',
+                                   'Reference Genome': 'Homo sapiens [GRCh37]',
+                                   'Row': '1',
+                                   'Sample Source': 'Not Assigned',
+                                   'Sequencer': 'Not Assigned',
+                                   'SLX Identifier': 'SLX-9999',
+                                   'Volume': '1',
+                                   'Average Library Length': '10',
+                                   'Version Number': 'SLX Version 19',
+                                   'Workflow': 'HiSeq'}
+        for name, value in samples_required_fields.items():
+            field = glsapi.userdefined.field(value)
+            field.name = name
+            sample.field.append(field)
         created_sample = self.glsclient.create('sample', sample)
         self.assertEqual(created_sample.name, self.sample_name)
-        
-    def test_load_samples_within_project(self):
-        samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
-        for sample_link in samples.sample:
-            sample = self.glsclient.load('sample', sample_link.limsid)
-            self.assertEqual(sample.name, self.sample_name)
-        self.assertRaises(requests.exceptions.HTTPError, self.glsclient.load, 'sample', self.unknown_id)
         
     def test_update_sample_names_within_project(self):
         samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
@@ -655,20 +696,6 @@ class GlsClientApiTest(unittest.TestCase):
             self.assertEqual(updated_sample.name, updated_name)
             self.assertEqual(original_sample.name, original_name)
             
-    def test_list_workflows(self):
-        workflows = self.glsclient.list('workflow')
-        workflow_names = []
-        for workflow in workflows.workflow:
-            workflow_names.append(workflow.name)
-        self.assertIn(self.workflow_name, workflow_names)
-        
-    def test_load_artifact_of_sample(self):
-        samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
-        sample = self.glsclient.load('sample', samples.sample[0].limsid)
-        artifact = self.glsclient.load('artifact', sample.artifact.limsid)
-        self.assertEqual(sample.artifact.limsid, artifact.limsid)
-        self.assertRaises(requests.exceptions.HTTPError, self.glsclient.load, 'artifact', self.unknown_id)
-
     def test_update_artifact_name(self):
         samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
         sample = self.glsclient.load('sample', samples.sample[0].limsid)
@@ -682,18 +709,6 @@ class GlsClientApiTest(unittest.TestCase):
         original_artifact = self.glsclient.update(artifact)
         self.assertEqual(updated_artifact.name, updated_name)
         self.assertEqual(original_artifact.name, original_name)
-        
-    def test_list_process_types(self):
-        process_types = self.glsclient.list('process_type')
-        process_type_names = []
-        for process_type in process_types.process_type:
-            process_type_names.append(process_type.name)
-        self.assertIn(self.process_type_name, process_type_names)
-        
-    def test_list_researchers_by_username(self):
-        researcher_links = self.glsclient.list_filter('researcher', 'username', USERNAME)
-        researcher = self.glsclient.load_by_uri('researcher', researcher_links.researcher[0].uri)
-        self.assertEqual(USERNAME, researcher.credentials.username)
         
     def test_create_process_with_result_file(self):
         technician_uri = self.glsclient.list_filter('researcher', 'username', USERNAME).researcher[0].uri
@@ -710,59 +725,19 @@ class GlsClientApiTest(unittest.TestCase):
         process.technician = glsapi.processexecution.technician()
         process.technician.uri = technician_uri
         process.input_output_map.append(io_map)
+        # add required UDF
+        required_fields = {'Flow Cell ID': 'C4EKWANXX',
+                           'Run ID': '140702_D00491_0074_C4EKWANXX',
+                           }
+        for name, value in required_fields.items():
+            field = glsapi.userdefined.field(value)
+            field.name = name
+            process.field.append(field)
         self.log.debug(process.toxml('utf-8'))
         created_process = self.glsclient.create('process', process)
         self.assertEqual(process.type, self.process_type_name)
         process_type = self.glsclient.load_by_uri('process_type', created_process.type.uri)
         self.assertEqual(process_type.name, self.process_type_name)
-        
-    def test_add_filetype_to_result_file(self):
-        processes = self.glsclient.list_filter('process', 'type', self.process_type_name)
-        process_link = processes.process[0]
-        process = self.glsclient.load_by_uri('process', process_link.uri)
-        process_type = self.glsclient.load_by_uri('process_type', process.type.uri)
-        self.assertEqual(process_type.name, self.process_type_name)
-        output_artifact = self.glsclient.load_by_uri('artifact', process.input_output_map[0].output.uri)
-        self.assertEqual(output_artifact.type, 'ResultFile')
-        create_filetype = True
-        for field in output_artifact.field:
-            if field.name is 'File Type':
-                create_filetype = False
-        if create_filetype:
-            filetype_field = glsapi.userdefined.field('FASTQ')
-            filetype_field.name = 'File Type'
-            output_artifact.field.append(filetype_field)
-            updated_output_artifact = self.glsclient.update(output_artifact)
-            self.assertEqual(updated_output_artifact.type, 'ResultFile')
-        
-    def test_search_fastq_result_files(self):
-        filters = {'type': 'ResultFile', 'udf.File Type': 'FASTQ'}
-        result_files = self.glsclient.list_filters('artifact', filters)
-        for link in result_files.artifact:
-            result_file = self.glsclient.load_by_uri('artifact', link.uri)
-            self.assertEqual(result_file.type, 'ResultFile')
-            
-    def test_submit_samples_to_workflow(self):
-        samples = self.glsclient.list_filter('sample', self.glsclient.sample_filter_by_projectname, self.project.name)
-        sample = self.glsclient.load('sample', samples.sample[0].limsid)
-        artifact = self.glsclient.load('artifact', sample.artifact.limsid)
-        routing_artifact = glsapi.routing.artifact()
-        routing_artifact.uri = artifact.uri
-        routing_assignment = glsapi.routing.extArtifactAssignments()
-        routing_assignment.workflow_uri = self.workflow.uri
-        routing_assignment.artifact.append(routing_artifact)
-        routing = glsapi.routing.routing()
-        routing.assign.append(routing_assignment)
-        self.glsclient.create('routing', routing)
-        
-    def test_list_pending_projects(self):
-        filters = {'open-date': 'NULL'}
-        projects = self.glsclient.list_filters('project', filters)
-        self.assertEqual(7, len(projects.project))
-        
-    def test_list_all_sequencing_runs(self):
-        filters = {'type': 'Illumina Sequencing Run', 'type': 'MiSeq Run', 'type': 'Historical Sequencing Run'}
-        self.glsclient.list_filters('process', filters)
 
 
 ################################################################################

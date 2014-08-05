@@ -155,7 +155,7 @@ def main():
                 if not os.path.exists(run.dont_delete):
                     
                     # check Sequencing.completed and Sync.completed and Primary Fastq Files Found in lims OR Sequencing.failed present
-                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) and glslims.isFastqFilesFound(run.run_folder_name) ) or os.path.exists(run.sequencing_failed) ):
+                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) and glslims.is_fastq_files_found(run.run_folder_name) ) or os.path.exists(run.sequencing_failed) ):
                         if os.path.exists(run.sequencing_completed):
                             runfolder_age = present - os.path.getmtime(os.path.join(run.run_folder, 'Data'))
                             log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))

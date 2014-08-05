@@ -56,7 +56,7 @@ def main():
             if options.publish:
                 if not os.path.exists(run.publishing_assigned):
                     # publish flow-cell and update sample status
-                    glslims.publishFlowCell(run, False)
+                    glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
                 else:
                     log.info('%s already exists' % run.publishing_assigned)
             else:

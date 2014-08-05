@@ -72,12 +72,12 @@ def main():
                 pipelines.registerCompletion()
                 
                 # create lims processes
-                glslims.createAnalysisProcesses(run.flowcell_id)
+                glslims.create_analysis_processes(run.flowcell_id)
 
                 # get all flow-cell sample fastq files when attached in lims
-                all_data = glslims.isFastqFilesFound(run.run_folder_name)
+                all_data = glslims.is_fastq_files_found(run.run_folder_name)
                 # get external data when lane and sample fastq files are attached in lims
-                external_data = glslims.findExternalData(run.run_folder_name)
+                external_data = glslims.find_external_data(run.run_folder_name)
                 
                 # create external
                 external = auto_pipelines.External(run, all_data, external_data, options.dry_run)
@@ -86,7 +86,7 @@ def main():
 
                 # add flow-cell into the publishing queue
                 if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.isExternalDataSynchronised():
-                    glslims.publishFlowCell(run)                
+                    glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
                 
                     
             except:
