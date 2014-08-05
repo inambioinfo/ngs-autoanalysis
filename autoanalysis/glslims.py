@@ -13,15 +13,13 @@ Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 import sys
 import os
 import inspect
-import re
-import glob
 import logging
 import unittest
 # autoanalysis modules
 import utils
 
 # Append root project to PYTHONPATH
-ROOT_PROJECT=os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+ROOT_PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 sys.path.append(ROOT_PROJECT)
 
 # import genologics client
@@ -36,6 +34,7 @@ LIMS_SERVERS = {
     "pro": "lims"
 }
 
+
 class GlsLims:
     
     def __init__(self, use_dev_lims=True):
@@ -47,17 +46,17 @@ class GlsLims:
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
         
-    def isSequencingRunComplete(self, run_id):
+    def is_sequencing_run_complete(self, run_id):
         # return True if sequencing process at the end of cycle; False if all lanes qc failed; None otherwise
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.is_sequencing_completed(run_id)
         
-    def isFastqFilesFound(self, run_id):
+    def is_fastq_files_found(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
         self.log.info('... check sample fastq files ...................................................')
         return self.glsutil.is_sample_fastq_files_attached(run_id)
 
-    def createAnalysisProcesses(self, flowcell_id):
+    def create_analysis_processes(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
         and fastq/demux/align do not exist - just single analysis processes per flow-cell
         """
@@ -77,24 +76,15 @@ class GlsLims:
                 self.glsutil.create_alignment_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
-    def publishFlowCell(self, run):
+    def publish_flowcell(self, run_id, flowcell_id, touch_file):
         self.log.info('... publish flow-cell ..........................................................')
-        if self.isFastqFilesFound(run.run_folder_name):
-            self.glsutil.assign_flowcell_to_publishing_workflow(run.flowcell_id)
-            utils.touch(run.publishing_assigned)
+        if self.is_fastq_files_found(run_id):
+            self.glsutil.assign_flowcell_to_publishing_workflow(flowcell_id)
+            utils.touch(touch_file)
         else:
-            self.log.info('No sample fastq files found for run %s' % run.run_folder_name)
+            self.log.info('No sample fastq files found for run %s' % run_id)
 
-    def isExternalData(self, run_id):
-        self.log.info('... look for external data .....................................................')
-        is_external_data = self.glsutil.is_external_data(run_id)
-        if is_external_data:
-            self.log.info('external data found')
-        else:
-            self.log.info('no external data')
-        return is_external_data
-        
-    def findExternalData(self, run_id, is_published=False):
+    def find_external_data(self, run_id, is_published=False):
         self.log.info('... find external data files ...................................................')
         data = {}
         labftpdirs = self.glsutil.get_all_external_ftp_dirs()
@@ -110,16 +100,18 @@ class GlsLims:
             self.log.info('No sample external data')
         return data
 
+
 class GlsLimsTests(unittest.TestCase):
     
     def setUp(self):
         import log as logger
         self.log = logger.get_custom_logger()
-        self.flowcell_id = '000000000-A474L'
-        self.glslims = GlsLims('limsdev')
+        self.flowcell_id = 'H9VT6ADXX'
+        self.run_id = '140729_D00408_0159_H9VT6ADXX'
+        self.glslims = GlsLims()
 
-    def test_createAnalysisProcesses(self):
-        self.glslims.createAnalysisProcesses(self.flowcell_id)
+    def test_create_analysis_processes(self):
+        self.glslims.create_analysis_processes(self.flowcell_id)
         process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', self.flowcell_id)
         self.assertNotEqual(None, process)
         process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('samfq', self.flowcell_id)
@@ -127,17 +119,14 @@ class GlsLimsTests(unittest.TestCase):
         process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', self.flowcell_id)
         self.assertNotEqual(None, process)
         
-    def test_publishFlowCell(self):
-        self.glslims.publishFlowCell(self.flowcell_id)
+    def test_publish_flowcell(self):
+        self.glslims.publish_flowcell(self.run_id, self.flowcell_id, 'test_publishing.assigned')
         
-    def test_findExternalData(self):
+    def test_find_external_data(self):
         self.log.debug('Testing findExternalData')
-        data = self.glslims.findExternalData('131231_7001449_0083_C3BW4ACXX')
+        data = self.glslims.find_external_data('131231_7001449_0083_C3BW4ACXX')
         self.log.debug(data)
 
 
 if __name__ == '__main__':
     unittest.main()
-    
-    
-    
