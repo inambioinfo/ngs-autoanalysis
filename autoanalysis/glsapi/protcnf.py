@@ -1,7 +1,7 @@
 # ./protcnf.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:05ba7636c7f3de005e4813c202517a26ffbb3595
-# Generated 2014-04-04 17:46:47.258378 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.848030 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/protocolconfiguration
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,8 +22,8 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import protstepcnf as _ImportedBinding_protstepcnf
 import pyxb.binding.datatypes
+import protstepcnf as _ImportedBinding_protstepcnf
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/protocolconfiguration', create_if_missing=True)
@@ -68,11 +68,11 @@ def CreateFromDOM (node, default_namespace=None):
 # Complex type {http://genologics.com/ri/protocolconfiguration}protocol with content type ELEMENT_ONLY
 class protocol_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        <p> Detailed representation of a protocol.</p>
-<p> A protocol represents a collection of different steps.
+        Detailed representation of a protocol.<br/><br/>
+A protocol represents a collection of different steps.
 A protocol can be a QC protocol meaning samples go through the process
 mostly in parallel or a normal protocol, where samples go
-through in series.</p>
+through in series.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -236,10 +236,10 @@ Namespace.addCategoryObject('typeBinding', u'protocol-property', protocol_proper
 # Complex type {http://genologics.com/ri/protocolconfiguration}protocols with content type ELEMENT_ONLY
 class protocols_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        Returns the representation of a list of protocols
-<p> A list of protocols available in the system,
+        Returns the representation of a list of protocols.<br/><br/>
+A list of protocols available in the system,
 providing names and URIs to access more detailed representations of the
-protocols</p>
+protocols.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY

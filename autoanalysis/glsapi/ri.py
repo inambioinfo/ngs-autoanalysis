@@ -1,7 +1,7 @@
 # ./ri.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:0e7cebb1cc6752a9121228ba67d5f7d0a246eb45
-# Generated 2014-04-04 17:46:47.250700 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.832628 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri [xmlns:ri]
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -173,9 +173,9 @@ Namespace.addCategoryObject('typeBinding', u'links', links_)
 # Complex type {http://genologics.com/ri}location with content type ELEMENT_ONLY
 class location (pyxb.binding.basis.complexTypeDefinition):
     """
-        <p>Location provides a URI linking to the detailed representation of a Container along with the well location within that Container.</p>
-<p>Location is used by representations to describe their location within a Container. For example Artifact and
-reagent use location to describe which Container they are located in.</p>
+        Location provides a URI linking to the detailed representation of a Container along with the well location within that Container.<br/><br/>
+Location is used by representations to describe their location within a Container. For example Artifact and
+reagent use location to describe which Container they are located in.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -253,12 +253,12 @@ Namespace.addCategoryObject('typeBinding', u'container', container)
 class externalid_ (pyxb.binding.basis.complexTypeDefinition):
     """
         An external id is a reference to an identifier in an external system that contains additional information
-about a representation within the API.
-<p>External id is supported on representations that contain links back to external systems.</p>
-<p>External id consists of two different URI type elements: id and URI. ID is the URI referencing
+about a representation within the API.<br/><br/>
+External id is supported on representations that contain links back to external systems.<br/><br/>
+External id consists of two different URI type elements: id and URI. ID is the URI referencing
 the external system, and provides context and identification of the representation within that system. URI
 is the URI within the system, and provides a means of looking up the representation that the external id
-is associated with.</p>
+is associated with.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
@@ -274,7 +274,7 @@ is associated with.</p>
     __id._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 151, 4)
     __id._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 151, 4)
     
-    id = property(__id.value, __id.set, None, u'\n          A URI identifying the representation in an external system.\n<p>The form of the id URI can be either a URL or URN, but it must include\nsufficient information to identify both the external system and the representation\nwithin that system.</p>\n<p>For a URN, the namespace identifier component should identify the external system.</p>\n<p>For a URL, the URL should be an absolute URL and not a relative URL to identify the external system.</p>\n        ')
+    id = property(__id.value, __id.set, None, u'\n          A URI identifying the representation in an external system.<br/><br/>\nThe form of the id URI can be either a URL or URN, but it must include\nsufficient information to identify both the external system and the representation\nwithin that system.<br/><br/>\nFor a URN, the namespace identifier component should identify the external system.\nFor a URL, the URL should be an absolute URL and not a relative URL to identify the external system.\n        ')
 
     
     # Attribute uri uses Python identifier uri
@@ -326,10 +326,10 @@ Namespace.addCategoryObject('typeBinding', u'index', index_)
 # Complex type {http://genologics.com/ri}link with content type EMPTY
 class link (pyxb.binding.basis.complexTypeDefinition):
     """
-        A link provides a URI linking to an additional resource.
-<p>The link is modelled on the link element defined by the
+        A link provides a URI linking to an additional resource.<br/><br/>
+The link is modelled on the link element defined by the
 <a href="http://atompub.org/rfc4287.html">Atom Syndication Format</a>. The link includes
-a rel attribute that describes the URI of the link.</p>
+a rel attribute that describes the URI of the link.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
@@ -368,13 +368,12 @@ Namespace.addCategoryObject('typeBinding', u'link', link)
 # Complex type {http://genologics.com/ri}page with content type EMPTY
 class page (pyxb.binding.basis.complexTypeDefinition):
     """
-        The link to a page of additional content.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The link to a page of additional content.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
-of links in the overall results.
-</p>
-<p>The previous-page and next-page elements are represented using the page type.</p>
+of links in the overall results.<br/><br/>
+The previous-page and next-page elements are represented using the page type.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
@@ -387,8 +386,8 @@ of links in the overall results.
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comri_page_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 223, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 223, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 222, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 222, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI linking to the page of additional content.\n        ')
 
@@ -407,7 +406,7 @@ Namespace.addCategoryObject('elementBinding', links.name().localName(), links)
 index = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'index'), index_, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 3, 2))
 Namespace.addCategoryObject('elementBinding', index.name().localName(), index)
 
-externalid = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'externalid'), externalid_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2))
+externalid = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'externalid'), externalid_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2))
 Namespace.addCategoryObject('elementBinding', externalid.name().localName(), externalid)
 
 

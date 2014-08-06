@@ -5,7 +5,7 @@
 
 ### For generating the xml binding classes:
 ### http://pyxb.sourceforge.net/
-# based on REST API v2r17 - Introduced in Clarity LIMS 2.5
+# based on REST API v2r19 - Introduced in Clarity LIMS 3.1
 
 cd glsapi/
 rm *
@@ -20,20 +20,22 @@ pyxbgen --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/download
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location file.xsd --module file \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location instrument.xsd --module instrument \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location lab.xsd --module lab \
+        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location permission.xsd --module permission \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location process.xsd --module process \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location processexecution.xsd --module processexecution \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location processtemplate.xsd --module processtemplate \
-        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentkit.xsd --module reagentkit \
-        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentlot.xsd --module reagentlot \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location processtype.xsd --module processtype \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location project.xsd --module project \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location property.xsd --module property \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location protcnf.xsd --module protcnf \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location protstepcnf.xsd --module protstepcnf \
-        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location ns1.xsd --module queue \
+        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location queue.xsd --module queue \
+        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentkit.xsd --module reagentkit \
+        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentlot.xsd --module reagentlot \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagenttype.xsd --module reagenttype \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location researcher.xsd --module researcher \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location ri.xsd --module ri \
+        --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location role.xsd --module role \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location routing.xsd --module routing \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location sample.xsd --module sample \
         --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ --schema-location stage.xsd --module stage \

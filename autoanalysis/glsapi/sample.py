@@ -1,7 +1,7 @@
 # ./sample.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:473fe42cde944a1c5e3f9c6b0c3c89d11db4e77b
-# Generated 2014-04-04 17:46:47.262802 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.849245 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/sample
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,10 +22,10 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import file as _ImportedBinding_file
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
+import userdefined as _ImportedBinding_userdefined
 import ri as _ImportedBinding_ri
+import file as _ImportedBinding_file
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/sample', create_if_missing=True)
@@ -153,7 +153,7 @@ Namespace.addCategoryObject('typeBinding', u'controlType', controlType)
 # Complex type {http://genologics.com/ri/sample}samplebase with content type ELEMENT_ONLY
 class samplebase (pyxb.binding.basis.complexTypeDefinition):
     """
-        <p>The base representation of a Sample, defining common elements for both Sample and Sample creation.</p>
+        The base representation of a Sample, defining common elements for both Sample and Sample creation.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -165,7 +165,7 @@ class samplebase (pyxb.binding.basis.complexTypeDefinition):
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element {http://genologics.com/ri}externalid uses Python identifier externalid
-    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comrisample_samplebase_httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2), )
+    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comrisample_samplebase_httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2), )
 
     
     externalid = property(__externalid.value, __externalid.set, None, u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ')
@@ -448,12 +448,11 @@ Namespace.addCategoryObject('typeBinding', u'submitter', submitter)
 # Complex type {http://genologics.com/ri/sample}samples with content type ELEMENT_ONLY
 class samples_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        The representation for a list of sample links.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The representation for a list of sample links.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
 of links in the overall results.
-</p>
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -465,21 +464,21 @@ of links in the overall results.
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element sample uses Python identifier sample
-    __sample = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample'), 'sample', '__httpgenologics_comrisample_samples__sample', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 445, 6), )
+    __sample = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'sample'), 'sample', '__httpgenologics_comrisample_samples__sample', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 444, 6), )
 
     
     sample = property(__sample.value, __sample.set, None, u'\n            Sample provides a URI linking to the detailed representation of a sample.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrisample_samples__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 452, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrisample_samples__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 451, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of samples,\nthe previous-page element provides a URI that links to the previous page of samples.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrisample_samples__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 460, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrisample_samples__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 459, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of samples,\nthe next-page element provides a URI that links to the next page of samples.\n          ')
@@ -504,23 +503,23 @@ class sample_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'sample-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 470, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 469, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comrisample_sample_link_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 476, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 476, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 475, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 475, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMSID of the sample.\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrisample_sample_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 483, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 483, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 482, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 482, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the sample.\n        ')
 
@@ -592,7 +591,7 @@ Namespace.addCategoryObject('typeBinding', u'sample', sample_)
 # Complex type {http://genologics.com/ri/sample}samplecreation with content type ELEMENT_ONLY
 class samplecreation_ (samplebase):
     """
-        <p>Sample creation is the detailed representation required when creating a new Sample in the system.</p>
+        Sample creation is the detailed representation required when creating a new Sample in the system.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -700,7 +699,7 @@ details_._Automaton = _BuildAutomaton()
 
 
 
-samplebase._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=samplebase, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2)))
+samplebase._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=samplebase, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2)))
 
 samplebase._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=samplebase, location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
 
@@ -1051,11 +1050,11 @@ submitter._Automaton = _BuildAutomaton_3()
 
 
 
-samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample'), sample_link, scope=samples_, documentation=u'\n            Sample provides a URI linking to the detailed representation of a sample.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 445, 6)))
+samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'sample'), sample_link, scope=samples_, documentation=u'\n            Sample provides a URI linking to the detailed representation of a sample.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 444, 6)))
 
-samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=samples_, documentation=u'\n            When working with large lists of samples,\nthe previous-page element provides a URI that links to the previous page of samples.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 452, 6)))
+samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=samples_, documentation=u'\n            When working with large lists of samples,\nthe previous-page element provides a URI that links to the previous page of samples.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 451, 6)))
 
-samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=samples_, documentation=u'\n            When working with large lists of samples,\nthe next-page element provides a URI that links to the next page of samples.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 460, 6)))
+samples_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=samples_, documentation=u'\n            When working with large lists of samples,\nthe next-page element provides a URI that links to the next page of samples.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 459, 6)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1064,26 +1063,26 @@ def _BuildAutomaton_4 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 445, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 444, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 452, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 451, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 460, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 459, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'sample')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 445, 6))
+    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'sample')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 444, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 452, 6))
+    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 451, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 460, 6))
+    symbol = pyxb.binding.content.ElementUse(samples_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/sample.xsd', 459, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []

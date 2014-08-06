@@ -46,7 +46,7 @@ import glssql
 #SERVER = 'limsdev.cri.camres.org'
 #SERVER = 'genomicsequencing.cruk.cam.ac.uk'
 SERVERS = {'lims': 'genomicsequencing.cruk.cam.ac.uk',
-           'limsdev': 'limsdev.cri.camres.org'}
+           'limsdev': 'limsdev.cruk.cam.ac.uk'}
 
 # Genologics REST API
 HOSTNAME = 'http://%(server)s:8080' 

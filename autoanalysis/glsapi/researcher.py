@@ -1,7 +1,7 @@
 # ./researcher.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:0c34714c6fbc3708410b99027877d580abb25000
-# Generated 2014-04-04 17:46:47.261603 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.846195 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/researcher
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/researcher', create_if_missing=True)
@@ -85,7 +85,7 @@ class researcher_ (pyxb.binding.basis.complexTypeDefinition):
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element {http://genologics.com/ri}externalid uses Python identifier externalid
-    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comriresearcher_researcher__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2), )
+    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comriresearcher_researcher__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2), )
 
     
     externalid = property(__externalid.value, __externalid.set, None, u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ')
@@ -229,7 +229,7 @@ information is being stored for contact purposes only.
     __role = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'role'), 'role', '__httpgenologics_comriresearcher_credentials_role', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 212, 6), )
 
     
-    role = property(__role.value, __role.set, None, u"\n            The type of system access assigned to the researcher's user account.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but existing roles must be included or the system will remove the roles not present\n          ")
+    role = property(__role.value, __role.set, None, u"\n            The type of system access assigned to the researcher's user account. When adding a new role you must provide\nat least one of: URI, name, or roleName.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but existing roles must be included or the system will remove the roles not present\n          ")
 
     _ElementMap.update({
         __username.name() : __username,
@@ -252,15 +252,15 @@ class lab (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'lab')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 226, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 227, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriresearcher_lab_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 232, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 232, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 233, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 233, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          A URI that links to the lab that the researcher is associated with.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but old lab value will remain\n        ')
 
@@ -281,29 +281,47 @@ You can repeat the element to provide a researcher with access to more
 than one area of the system. When submitting a PUT request to update a researcher's credentials
 (any child elements within the credentials element), your XML must include the current roles for the researcher.
 If you do not include all of the current roles, the system will remove the current data and the researcher will
-no longer have access to the system.
+no longer have access to the system. When adding a new role you must provide at least one of: URI, name, or roleName.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'role')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 245, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 246, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute roleName uses Python identifier roleName
     __roleName = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'roleName'), 'roleName', '__httpgenologics_comriresearcher_role_roleName', pyxb.binding.datatypes.string)
-    __roleName._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 256, 4)
-    __roleName._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 256, 4)
+    __roleName._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 257, 4)
+    __roleName._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 257, 4)
     
-    roleName = property(__roleName.value, __roleName.set, None, u'\n          The name of the security role assigned to the researcher.\nAcceptable values are: "systemadministrator", "administrator", "labtech", and "webclient".\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
+    roleName = property(__roleName.value, __roleName.set, None, u'\n          The internal name of the security role assigned to the researcher. Only used by built-in roles.\nAcceptable values are: "systemadministrator", "administrator", "labtech", and "webclient".\nThis attribute is deprecated and will be removed in the next major API version.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n        ')
+
+    
+    # Attribute name uses Python identifier name
+    __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriresearcher_role_name', pyxb.binding.datatypes.string)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 271, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 271, 4)
+    
+    name = property(__name.value, __name.set, None, u'\n          The user-facing name of the security role assigned to the researcher. Must be unique.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
+
+    
+    # Attribute uri uses Python identifier uri
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriresearcher_role_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 283, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 283, 4)
+    
+    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Role.\n<br/>Always returns with GET: Yes\n        ')
 
     _ElementMap.update({
         
     })
     _AttributeMap.update({
-        __roleName.name() : __roleName
+        __roleName.name() : __roleName,
+        __name.name() : __name,
+        __uri.name() : __uri
     })
 Namespace.addCategoryObject('typeBinding', u'role', role)
 
@@ -311,38 +329,37 @@ Namespace.addCategoryObject('typeBinding', u'role', role)
 # Complex type {http://genologics.com/ri/researcher}researchers with content type ELEMENT_ONLY
 class researchers_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        The representation of a list of researcher links.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The representation of a list of researcher links.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
 of links in the overall results.
-</p>
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'researchers')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 270, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 292, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element researcher uses Python identifier researcher
-    __researcher = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'researcher'), 'researcher', '__httpgenologics_comriresearcher_researchers__researcher', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 282, 6), )
+    __researcher = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'researcher'), 'researcher', '__httpgenologics_comriresearcher_researchers__researcher', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 303, 6), )
 
     
     researcher = property(__researcher.value, __researcher.set, None, u'\n            Researcher provides a URI linking to the detailed representation of a researcher.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriresearcher_researchers__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 289, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriresearcher_researchers__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 310, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of researchers,\nthe previous-page element provides a URI that links to the previous page of researchers.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriresearcher_researchers__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 297, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriresearcher_researchers__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 318, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of researchers,\nthe next-page element provides a URI that links to the next page of researchers.\n          ')
@@ -367,20 +384,20 @@ class researcher_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'researcher-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 307, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 328, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element first-name uses Python identifier first_name
-    __first_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'first-name'), 'first_name', '__httpgenologics_comriresearcher_researcher_link_first_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 314, 6), )
+    __first_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'first-name'), 'first_name', '__httpgenologics_comriresearcher_researcher_link_first_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 335, 6), )
 
     
     first_name = property(__first_name.value, __first_name.set, None, u'\n            The first name of the researcher.\n          ')
 
     
     # Element last-name uses Python identifier last_name
-    __last_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'last-name'), 'last_name', '__httpgenologics_comriresearcher_researcher_link_last_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 321, 6), )
+    __last_name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'last-name'), 'last_name', '__httpgenologics_comriresearcher_researcher_link_last_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 342, 6), )
 
     
     last_name = property(__last_name.value, __last_name.set, None, u'\n            The last name of the researcher.\n          ')
@@ -388,8 +405,8 @@ class researcher_link (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriresearcher_researcher_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 329, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 329, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 350, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 350, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the researcher.\n        ')
 
@@ -411,7 +428,7 @@ Namespace.addCategoryObject('elementBinding', researchers.name().localName(), re
 
 
 
-researcher_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=researcher_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2)))
+researcher_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=researcher_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2)))
 
 researcher_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'first-name'), pyxb.binding.datatypes.string, scope=researcher_, documentation=u"\n            The researcher's first name.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ", location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 13, 6)))
 
@@ -684,7 +701,7 @@ credentials._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(N
 
 credentials._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'account-locked'), pyxb.binding.datatypes.boolean, scope=credentials, documentation=u"\n            The researcher's account status.\nA value of 'true' indicates that the account can be used by the researcher.\nA value of 'false' indicates that the account is locked and the researcher\ncannot log into the system.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ", location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 197, 6)))
 
-credentials._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'role'), role, scope=credentials, documentation=u"\n            The type of system access assigned to the researcher's user account.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but existing roles must be included or the system will remove the roles not present\n          ", location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 212, 6)))
+credentials._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'role'), role, scope=credentials, documentation=u"\n            The type of system access assigned to the researcher's user account. When adding a new role you must provide\nat least one of: URI, name, or roleName.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but existing roles must be included or the system will remove the roles not present\n          ", location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 212, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -756,11 +773,11 @@ credentials._Automaton = _BuildAutomaton_()
 
 
 
-researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'researcher'), researcher_link, scope=researchers_, documentation=u'\n            Researcher provides a URI linking to the detailed representation of a researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 282, 6)))
+researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'researcher'), researcher_link, scope=researchers_, documentation=u'\n            Researcher provides a URI linking to the detailed representation of a researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 303, 6)))
 
-researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=researchers_, documentation=u'\n            When working with large lists of researchers,\nthe previous-page element provides a URI that links to the previous page of researchers.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 289, 6)))
+researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=researchers_, documentation=u'\n            When working with large lists of researchers,\nthe previous-page element provides a URI that links to the previous page of researchers.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 310, 6)))
 
-researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=researchers_, documentation=u'\n            When working with large lists of researchers,\nthe next-page element provides a URI that links to the next page of researchers.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 297, 6)))
+researchers_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=researchers_, documentation=u'\n            When working with large lists of researchers,\nthe next-page element provides a URI that links to the next page of researchers.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 318, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -769,26 +786,26 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 282, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 303, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 289, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 310, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 297, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 318, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'researcher')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 282, 6))
+    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'researcher')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 303, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 289, 6))
+    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 310, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 297, 6))
+    symbol = pyxb.binding.content.ElementUse(researchers_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 318, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -815,9 +832,9 @@ researchers_._Automaton = _BuildAutomaton_2()
 
 
 
-researcher_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'first-name'), pyxb.binding.datatypes.string, scope=researcher_link, documentation=u'\n            The first name of the researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 314, 6)))
+researcher_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'first-name'), pyxb.binding.datatypes.string, scope=researcher_link, documentation=u'\n            The first name of the researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 335, 6)))
 
-researcher_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'last-name'), pyxb.binding.datatypes.string, scope=researcher_link, documentation=u'\n            The last name of the researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 321, 6)))
+researcher_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'last-name'), pyxb.binding.datatypes.string, scope=researcher_link, documentation=u'\n            The last name of the researcher.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 342, 6)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -826,19 +843,19 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 314, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 335, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 321, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 342, 6))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(researcher_link._UseForTag(pyxb.namespace.ExpandedName(None, u'first-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 314, 6))
+    symbol = pyxb.binding.content.ElementUse(researcher_link._UseForTag(pyxb.namespace.ExpandedName(None, u'first-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 335, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(researcher_link._UseForTag(pyxb.namespace.ExpandedName(None, u'last-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 321, 6))
+    symbol = pyxb.binding.content.ElementUse(researcher_link._UseForTag(pyxb.namespace.ExpandedName(None, u'last-name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/researcher.xsd', 342, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []

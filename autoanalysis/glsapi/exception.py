@@ -1,7 +1,7 @@
 # ./exception.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1e7571504d82bdef8a1168b00aca66147c3c0bba
-# Generated 2014-04-04 17:46:47.252611 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.836953 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/exception
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -68,14 +68,14 @@ def CreateFromDOM (node, default_namespace=None):
 class exception_ (pyxb.binding.basis.complexTypeDefinition):
     """
         Exception is a descriptive error message that is returned instead of the standard response for
-any request that the system was unable to process.
-<p>Exception will include a code corresponding to the HTTP response code of the error. Typical response
+any request that the system was unable to process.<br/><br/>
+Exception will include a code corresponding to the HTTP response code of the error. Typical response
 codes are 400, indicating that the submitted request was not valid and cannot be reattempted without
 corrective action being taken, or 500 indicating that there was an internal error in the server when
 attempting to process the request. Refer to the section on HTTP response codes in the API reference
-documentation for further details about the categories and meanings of HTTP response codes.</p>
-<p>Exception will include a message element with a textual summary of the error, and may also provide a
-suggested-actions element with details on how to correct the problem.</p>
+documentation for further details about the categories and meanings of HTTP response codes.<br/><br/>
+Exception will include a message element with a textual summary of the error, and may also provide a
+suggested-actions element with details on how to correct the problem.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
