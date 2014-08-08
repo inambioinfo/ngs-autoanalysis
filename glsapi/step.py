@@ -1,7 +1,7 @@
 # ./step.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:8918431e508ba51505d6101ffc70374ded684580
-# Generated 2014-04-04 17:46:47.251972 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.847114 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/step
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/step', create_if_missing=True)
@@ -1197,9 +1197,9 @@ class CTD_ANON_5 (pyxb.binding.basis.complexTypeDefinition):
 # Complex type {http://genologics.com/ri/step}input-output-map with content type ELEMENT_ONLY
 class input_output_map (pyxb.binding.basis.complexTypeDefinition):
     """
-        Input-output-map is a child element of Step and relates one of the Step inputs to one of the outputs that was produced for that input.
-<p>There will be a distinct input-output-map for each pairing of Step input to Step output.</p>
-<p>If an input is not mapped to any outputs, the input will be listed with no outputs.</p>
+        Input-output-map is a child element of Step and relates one of the Step inputs to one of the outputs that was produced for that input.<br/><br/>
+There will be a distinct input-output-map for each pairing of Step input to Step output.
+If an input is not mapped to any outputs, the input will be listed with no outputs.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY

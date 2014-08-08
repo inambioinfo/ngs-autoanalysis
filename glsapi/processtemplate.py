@@ -1,7 +1,7 @@
 # ./processtemplate.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:53103cfdd48dfbb43c4c6d92862c227a92790eef
-# Generated 2014-04-04 17:46:47.255198 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.846803 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/processtemplate
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/processtemplate', create_if_missing=True)
@@ -305,12 +305,11 @@ Namespace.addCategoryObject('typeBinding', u'technician', technician)
 # Complex type {http://genologics.com/ri/processtemplate}process-templates with content type ELEMENT_ONLY
 class process_templates_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        The representation of a list of Process Template links.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The representation of a list of Process Template links.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
 of links in the overall results.
-</p>
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -322,21 +321,21 @@ of links in the overall results.
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element process-template uses Python identifier process_template
-    __process_template = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process-template'), 'process_template', '__httpgenologics_comriprocesstemplate_process_templates__process_template', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 189, 6), )
+    __process_template = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process-template'), 'process_template', '__httpgenologics_comriprocesstemplate_process_templates__process_template', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 188, 6), )
 
     
     process_template = property(__process_template.value, __process_template.set, None, u'\n            Provides a URI linking to the detailed representation of a Process Template.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocesstemplate_process_templates__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 196, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocesstemplate_process_templates__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 195, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of Process Templates,\nthe previous-page element provides a URI that links to the previous page of Process Templates.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocesstemplate_process_templates__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 204, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocesstemplate_process_templates__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 203, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of Process Templates,\nthe next-page element provides a URI that links to the next page of Process Templates.\n          ')
@@ -362,13 +361,13 @@ representation of a Process Template.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-template-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 214, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 213, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstemplate_process_template_link_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 222, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocesstemplate_process_template_link_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 221, 6), )
 
     
     name = property(__name.value, __name.set, None, u'\n            The name of the Process Template.\n          ')
@@ -376,8 +375,8 @@ representation of a Process Template.
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocesstemplate_process_template_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 230, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 230, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 229, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 229, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Process Template.\n        ')
 
@@ -614,11 +613,11 @@ technician._Automaton = _BuildAutomaton_()
 
 
 
-process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process-template'), process_template_link, scope=process_templates_, documentation=u'\n            Provides a URI linking to the detailed representation of a Process Template.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 189, 6)))
+process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process-template'), process_template_link, scope=process_templates_, documentation=u'\n            Provides a URI linking to the detailed representation of a Process Template.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 188, 6)))
 
-process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=process_templates_, documentation=u'\n            When working with large lists of Process Templates,\nthe previous-page element provides a URI that links to the previous page of Process Templates.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 196, 6)))
+process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=process_templates_, documentation=u'\n            When working with large lists of Process Templates,\nthe previous-page element provides a URI that links to the previous page of Process Templates.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 195, 6)))
 
-process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=process_templates_, documentation=u'\n            When working with large lists of Process Templates,\nthe next-page element provides a URI that links to the next page of Process Templates.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 204, 6)))
+process_templates_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=process_templates_, documentation=u'\n            When working with large lists of Process Templates,\nthe next-page element provides a URI that links to the next page of Process Templates.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 203, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -627,26 +626,26 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 189, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 188, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 196, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 195, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 204, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 203, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'process-template')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 189, 6))
+    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'process-template')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 188, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 196, 6))
+    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 195, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 204, 6))
+    symbol = pyxb.binding.content.ElementUse(process_templates_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 203, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -673,7 +672,7 @@ process_templates_._Automaton = _BuildAutomaton_2()
 
 
 
-process_template_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=process_template_link, documentation=u'\n            The name of the Process Template.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 222, 6)))
+process_template_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=process_template_link, documentation=u'\n            The name of the Process Template.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 221, 6)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -682,12 +681,12 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 222, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 221, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(process_template_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 222, 6))
+    symbol = pyxb.binding.content.ElementUse(process_template_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processtemplate.xsd', 221, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []

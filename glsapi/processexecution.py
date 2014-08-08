@@ -1,7 +1,7 @@
 # ./processexecution.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:36fc4c9e1230107065d3a4630a5cc6ec8b60107e
-# Generated 2014-04-04 17:46:47.261176 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.835244 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/processexecution
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/processexecution', create_if_missing=True)
@@ -204,11 +204,9 @@ Namespace.addCategoryObject('typeBinding', u'artifactbase', artifactbase)
 class input_output_map (pyxb.binding.basis.complexTypeDefinition):
     """
         Processes link inputs to outputs and this relationship is called an input-output map.
-Input-output-map is a child element of the Process element.
-<p>
+Input-output-map is a child element of the Process element.<br/><br/>
 When a Process creates multiple outputs per input, there is a distinct input-output map for each input to output relationship.
-When a Process produces a shared output, there is a single input-output map for the shared output and all its related inputs.
-<p>
+When a Process produces a shared output, there is a single input-output map for the shared output and all its related inputs.<br/><br/>
 In situations where a Process is used to affect the properties of inputs only and therefore, does not create outputs, you can omit the output element.
       """
     _TypeDefinition = None
@@ -221,14 +219,14 @@ In situations where a Process is used to affect the properties of inputs only an
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element input uses Python identifier input
-    __input = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'input'), 'input', '__httpgenologics_comriprocessexecution_input_output_map_input', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 156, 6), )
+    __input = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'input'), 'input', '__httpgenologics_comriprocessexecution_input_output_map_input', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 154, 6), )
 
     
     input = property(__input.value, __input.set, None, u'\n            This element provides a URI for input Artifacts in the input-output map.\nThere may be cases where multiple inputs are associated with a single output, such as when working with a shared output.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n          ')
 
     
     # Element output uses Python identifier output
-    __output = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output'), 'output', '__httpgenologics_comriprocessexecution_input_output_map_output', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 166, 6), )
+    __output = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'output'), 'output', '__httpgenologics_comriprocessexecution_input_output_map_output', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 164, 6), )
 
     
     output = property(__output.value, __output.set, None, u'\n            This element provides information about the output Artifact that will be created by the Process.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n          ')
@@ -236,8 +234,8 @@ In situations where a Process is used to affect the properties of inputs only an
     
     # Attribute shared uses Python identifier shared
     __shared = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'shared'), 'shared', '__httpgenologics_comriprocessexecution_input_output_map_shared', pyxb.binding.datatypes.boolean)
-    __shared._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 176, 4)
-    __shared._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 176, 4)
+    __shared._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 174, 4)
+    __shared._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 174, 4)
     
     shared = property(__shared.value, __shared.set, None, u'\n          A value that specifies whether the input-output map applies to a single or shared output. To define a shared input-output map,\nuse true. To define a single input-output map, use false. If the value is omitted, the system will default to false.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n        ')
 
@@ -261,15 +259,15 @@ This instrument must have a single software defined to be valid for process exec
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'instrument')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 187, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 185, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocessexecution_instrument_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 194, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 194, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 192, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 192, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          A URI that identifies and links to the desired Instrument.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n        ')
 
@@ -293,15 +291,15 @@ process parameter this element represents.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'parameter')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 238, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 236, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriprocessexecution_parameter_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 246, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 246, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 244, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 244, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the process type parameter.\nMust match a parameter declared in the corresponding process type.\n        ')
 
@@ -324,15 +322,15 @@ Once the Process completes, this user is listed as the technician that ran the P
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'technician')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 255, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 253, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocessexecution_technician_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 262, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 262, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 260, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 260, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          A URI that identifies and links to the desired technician.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n        ')
 
@@ -388,7 +386,7 @@ Output is a child element of the input-output-map element.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'output')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 204, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 202, 2)
     _ElementMap = artifactbase._ElementMap.copy()
     _AttributeMap = artifactbase._AttributeMap.copy()
     # Base type is artifactbase
@@ -396,7 +394,7 @@ Output is a child element of the input-output-map element.
     # Element qc_flag (qc-flag) inherited from {http://genologics.com/ri/processexecution}artifactbase
     
     # Element location uses Python identifier location
-    __location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'location'), 'location', '__httpgenologics_comriprocessexecution_output_location', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10), )
+    __location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'location'), 'location', '__httpgenologics_comriprocessexecution_output_location', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 212, 10), )
 
     
     location = property(__location.value, __location.set, None, u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte or ResultFile outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes for Analyte, No for ResultFile outputs.\n              ')
@@ -404,8 +402,8 @@ Output is a child element of the input-output-map element.
     
     # Attribute type uses Python identifier type
     __type = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'type'), 'type', '__httpgenologics_comriprocessexecution_output_type', pyxb.binding.datatypes.string)
-    __type._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 225, 8)
-    __type._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 225, 8)
+    __type._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 223, 8)
+    __type._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 223, 8)
     
     type = property(__type.value, __type.set, None, u'\n              The type of output the system is creating. This value is case sensitive.\nValid values are: ResultFile, SearchResultFile, Analyte, Gel 1D, Gel 2D, Gel Spot, and Image.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n            ')
 
@@ -624,9 +622,9 @@ artifactbase._Automaton = _BuildAutomaton_()
 
 
 
-input_output_map._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'input'), input, scope=input_output_map, documentation=u'\n            This element provides a URI for input Artifacts in the input-output map.\nThere may be cases where multiple inputs are associated with a single output, such as when working with a shared output.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 156, 6)))
+input_output_map._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'input'), input, scope=input_output_map, documentation=u'\n            This element provides a URI for input Artifacts in the input-output map.\nThere may be cases where multiple inputs are associated with a single output, such as when working with a shared output.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 154, 6)))
 
-input_output_map._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output'), output, scope=input_output_map, documentation=u'\n            This element provides information about the output Artifact that will be created by the Process.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 166, 6)))
+input_output_map._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'output'), output, scope=input_output_map, documentation=u'\n            This element provides information about the output Artifact that will be created by the Process.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 164, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -635,19 +633,19 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 156, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 154, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 166, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 164, 6))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(input_output_map._UseForTag(pyxb.namespace.ExpandedName(None, u'input')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 156, 6))
+    symbol = pyxb.binding.content.ElementUse(input_output_map._UseForTag(pyxb.namespace.ExpandedName(None, u'input')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 154, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(input_output_map._UseForTag(pyxb.namespace.ExpandedName(None, u'output')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 166, 6))
+    symbol = pyxb.binding.content.ElementUse(input_output_map._UseForTag(pyxb.namespace.ExpandedName(None, u'output')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 164, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
@@ -691,7 +689,7 @@ input._Automaton = _BuildAutomaton_3()
 
 
 
-output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'location'), _ImportedBinding_ri.location, scope=output, documentation=u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte or ResultFile outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes for Analyte, No for ResultFile outputs.\n              ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10)))
+output._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'location'), _ImportedBinding_ri.location, scope=output, documentation=u'\n                The container where the output Artifact will be placed.\nThis child element is only used when working with Analyte or ResultFile outputs.\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes for Analyte, No for ResultFile outputs.\n              ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 212, 10)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked
@@ -702,7 +700,7 @@ def _BuildAutomaton_4 ():
     counters = set()
     cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 97, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 212, 10))
     counters.add(cc_1)
     states = []
     final_update = set()
@@ -712,7 +710,7 @@ def _BuildAutomaton_4 ():
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(output._UseForTag(pyxb.namespace.ExpandedName(None, u'location')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 214, 10))
+    symbol = pyxb.binding.content.ElementUse(output._UseForTag(pyxb.namespace.ExpandedName(None, u'location')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/processexecution.xsd', 212, 10))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []

@@ -1,7 +1,7 @@
 # ./process.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1827247e8da5b48443263a91d844588f6e0ba800
-# Generated 2014-04-04 17:46:47.262006 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.847742 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/process
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,10 +22,10 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import ri as _ImportedBinding_ri
-import file as _ImportedBinding_file
 import pyxb.binding.datatypes
 import userdefined as _ImportedBinding_userdefined
+import ri as _ImportedBinding_ri
+import file as _ImportedBinding_file
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/process', create_if_missing=True)
@@ -209,9 +209,9 @@ Namespace.addCategoryObject('typeBinding', u'process', process_)
 # Complex type {http://genologics.com/ri/process}input-output-map with content type ELEMENT_ONLY
 class input_output_map (pyxb.binding.basis.complexTypeDefinition):
     """
-        Input-output-map is a child element of Process and relates one of the Process inputs to one of the outputs that was produced for that input.
-<p>There will be a distinct input-output-map for each pairing of Process input to Process output.</p>
-<p>If an input is not mapped to any outputs, the input will be listed with no outputs.</p>
+        Input-output-map is a child element of Process and relates one of the Process inputs to one of the outputs that was produced for that input.<br/><br/>
+There will be a distinct input-output-map for each pairing of Process input to Process output.
+If an input is not mapped to any outputs, the input will be listed with no outputs.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -425,12 +425,11 @@ Namespace.addCategoryObject('typeBinding', u'technician', technician)
 # Complex type {http://genologics.com/ri/process}processes with content type ELEMENT_ONLY
 class processes_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        The representation of a list of process links.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The representation of a list of process links.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
 of links in the overall results.
-</p>
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -442,21 +441,21 @@ of links in the overall results.
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element process uses Python identifier process
-    __process = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process'), 'process', '__httpgenologics_comriprocess_processes__process', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 386, 6), )
+    __process = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'process'), 'process', '__httpgenologics_comriprocess_processes__process', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 385, 6), )
 
     
     process = property(__process.value, __process.set, None, u'\n            Process provides a URI linking to the detailed representation of a process.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocess_processes__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 393, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriprocess_processes__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 392, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of processes,\nthe previous-page element provides a URI that links to the previous page of processes.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocess_processes__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 401, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriprocess_processes__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 400, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of processes,\nthe next-page element provides a URI that links to the next page of processes.\n          ')
@@ -481,23 +480,23 @@ class process_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'process-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 411, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 410, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute limsid uses Python identifier limsid
     __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriprocess_process_link_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 417, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 417, 4)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 416, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 416, 4)
     
     limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMSID of the process.\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriprocess_process_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 424, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 424, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 423, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 423, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the process.\n        ')
 
@@ -562,7 +561,7 @@ an input or output of the Process for the input-output-map.
     __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 216, 4)
     __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 216, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Artifact before the Process was run.\n<p>Artifact URIs include a state query parameter, and the state changes as Processes are run on the Artifact.\nThis allows linking to the values for the Artifact at a particular point in time, such as before executing the\nProcess or after the Process completed. Values such as volume, concentration and qc-flag that are affected\nby Process execution are reflected for the particular state of the Artifact.</p>\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Artifact before the Process was run.<br/><br/>\nArtifact URIs include a state query parameter, and the state changes as Processes are run on the Artifact.\nThis allows linking to the values for the Artifact at a particular point in time, such as before executing the\nProcess or after the Process completed. Values such as volume, concentration and qc-flag that are affected\nby Process execution are reflected for the particular state of the Artifact.<br/>\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute post-process-uri uses Python identifier post_process_uri
@@ -570,7 +569,7 @@ an input or output of the Process for the input-output-map.
     __post_process_uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 230, 4)
     __post_process_uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 230, 4)
     
-    post_process_uri = property(__post_process_uri.value, __post_process_uri.set, None, u'\n          The URI of the Artifact after the Process was run.\n<p>Artifact URIs include a state query parameter, and the state changes as Processes are run on the Artifact.\nThis allows linking to the values for the Artifact at a particular point in time, such as before executing the\nProcess or after the Process completed. Values such as volume, concentration and qc-flag that are affected\nby Process execution are reflected for the particular state of the Artifact.</p>\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    post_process_uri = property(__post_process_uri.value, __post_process_uri.set, None, u'\n          The URI of the Artifact after the Process was run.<br/><br/>\nArtifact URIs include a state query parameter, and the state changes as Processes are run on the Artifact.\nThis allows linking to the values for the Artifact at a particular point in time, such as before executing the\nProcess or after the Process completed. Values such as volume, concentration and qc-flag that are affected\nby Process execution are reflected for the particular state of the Artifact.<br/>\n<br/>Always returns with GET: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     _ElementMap.update({
         __parent_process.name() : __parent_process
@@ -911,11 +910,11 @@ technician._Automaton = _BuildAutomaton_2()
 
 
 
-processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process'), process_link, scope=processes_, documentation=u'\n            Process provides a URI linking to the detailed representation of a process.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 386, 6)))
+processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'process'), process_link, scope=processes_, documentation=u'\n            Process provides a URI linking to the detailed representation of a process.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 385, 6)))
 
-processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=processes_, documentation=u'\n            When working with large lists of processes,\nthe previous-page element provides a URI that links to the previous page of processes.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 393, 6)))
+processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=processes_, documentation=u'\n            When working with large lists of processes,\nthe previous-page element provides a URI that links to the previous page of processes.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 392, 6)))
 
-processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=processes_, documentation=u'\n            When working with large lists of processes,\nthe next-page element provides a URI that links to the next page of processes.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 401, 6)))
+processes_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=processes_, documentation=u'\n            When working with large lists of processes,\nthe next-page element provides a URI that links to the next page of processes.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 400, 6)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -924,26 +923,26 @@ def _BuildAutomaton_3 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 386, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 385, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 393, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 392, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 401, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 400, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'process')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 386, 6))
+    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'process')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 385, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 393, 6))
+    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 392, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 401, 6))
+    symbol = pyxb.binding.content.ElementUse(processes_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/process.xsd', 400, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []

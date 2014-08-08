@@ -34,7 +34,7 @@ WORKFLOW_MAPPING = {
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 
 # New LPP submission form v16
-'TruSeq stranded mRNA': 'LPS: TruSeq RNA v3',
+'Truseq stranded mRNA': 'LPS: TruSeq RNA v3',
 'Nextera': 'LPS: Nextera v2',
 'Access Array': 'LPS: Access Array v3',
 'ChIP Seq': 'LPS: TruSeq ChIP v3',
