@@ -28,7 +28,7 @@ import time
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
@@ -53,7 +53,7 @@ def main():
                   
     try:
         # loop over all runs that have a Analysis.completed and Publishing.assigned and not dont.delete files in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, '', options.run_folder)
+        runs = auto_data.RunFolderList(options.basedir, '', None, options.run_folder)
         for run in runs.published_runs:
             try:
                 log.info(run.get_header())

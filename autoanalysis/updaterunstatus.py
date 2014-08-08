@@ -17,7 +17,7 @@ import argparse
 
 # import custom modules
 import autoanalysis.log as logger
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.glslims as auto_glslims
 
 
@@ -45,8 +45,8 @@ def main():
         # lims connection
         glslims = auto_glslims.GlsLims(options.use_dev_lims)
         # loop over all runs in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, None, options.run_folder)
-        all_runs = runs.get_all_runs()
+        runs = auto_data.RunFolderList(options.basedir, None, None, options.run_folder)
+        all_runs = runs.all_runs()
         completed_runs = []
         tosync_runs = []
         syncfail_runs = []

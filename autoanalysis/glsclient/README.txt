@@ -45,7 +45,7 @@ pyxbgen --schema-root=http://lims.cri.camres.org:8080/glsstatic/lablink/download
 touch __init__.py
 
 ### For accessing the database directly:
-### http://www.sqlalchemy.org/ 0.7.10 with SqlSoup included
+### http://initd.org/psycopg/
 
 ### For running the unit tests:
 ### Before testing you need a 'unittest' user and a 'Python Unit Tests' project 

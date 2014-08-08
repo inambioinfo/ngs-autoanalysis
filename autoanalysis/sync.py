@@ -24,7 +24,7 @@ import argparse
 
 # import custom modules
 import autoanalysis.log as logger
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
@@ -50,7 +50,7 @@ def main():
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.lustredir, options.run_folder, False)
+        runs = auto_data.RunFolderList(options.basedir, options.lustredir, None, options.run_folder, False)
         for run in runs.completed_runs:
             try:
                 log.info(run.get_header())

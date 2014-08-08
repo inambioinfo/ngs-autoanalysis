@@ -29,7 +29,7 @@ import datetime
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.glslims as auto_glslims
 
 ################################################################################
@@ -146,8 +146,8 @@ def main():
         move_folder_older_than = convert_day(options.thumbnails+options.images+options.intensities)
 
         # loop over all runs in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, None)
-        all_runs = runs.get_all_runs()
+        runs = auto_data.RunFolderList(options.basedir, None, None)
+        all_runs = runs.all_runs()
         for run in all_runs:
             try:
                 log.info(run.get_header())

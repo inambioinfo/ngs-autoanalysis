@@ -116,8 +116,8 @@ def output_job_success(output_files):
     else:
         return False
 
-def locate_run_folder(run_folder_name, archive_glob, create=True):
-    run_folders = glob.glob("%s/%s" % (archive_glob,run_folder_name))
+def locate_run_folder(run_folder_name, path, create=True):
+    run_folders = glob.glob("%s/%s" % (path, run_folder_name))
     if run_folders:
         if len(run_folders) == 1:
             log.debug("run folder %s already exists" % run_folders)
@@ -126,16 +126,12 @@ def locate_run_folder(run_folder_name, archive_glob, create=True):
             log.error("more than one run folders %s found in %s" % (run_folder_name, run_folders))
     else:
         if create:
-                volume_name = get_smallest_volume(archive_glob)
-                if volume_name:
-                    run_folder = os.path.join(volume_name, run_folder_name)
-                    os.makedirs(run_folder)
-                    log.debug("run folder %s created" % run_folder)
-                    return run_folder
-                else:
-                    log.error('no volume %s found' % archive_glob)
+                run_folder = os.path.join(path, run_folder_name)
+                os.makedirs(run_folder)
+                log.debug("run folder %s created" % run_folder)
+                return run_folder
         else:
-            log.info('no run folder %s found in %s' % (run_folder_name, archive_glob))
+            log.info('no run folder %s found in %s' % (run_folder_name, path))
     return None
     
 def create_directory(directory):

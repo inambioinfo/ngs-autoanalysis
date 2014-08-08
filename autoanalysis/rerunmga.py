@@ -18,7 +18,7 @@ import logging
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 
 RSYNC = """
@@ -61,7 +61,7 @@ def main():
     # get list of run folders from command line
     log.debug("List of runfolders to process: " % options.runfolders)
     for runfolder in options.runfolders:
-        log.info(auto_runfolders.RUN_HEADER % {'run_folder': runfolder})
+        log.info(auto_data.RUN_HEADER % {'run_folder': runfolder})
         # find runfolder in basedir
         runfolder_path = utils.locate_run_folder(runfolder, options.basedir, False)
         log.debug(runfolder_path)
@@ -96,8 +96,8 @@ def main():
         utils.touch(os.path.join(process_runfolder_path,'Sequencing.completed'), False)
         ### setup/run mga pipeline
         # create pipelines
-        run = auto_runfolders.RunDefinition(process_runfolder_path, options.basedir)
-        log.debug(run.dest_run_folder)
+        run = auto_data.RunFolder(process_runfolder_path, options.basedir)
+        log.debug(run.staging_run_folder)
         pipelines = auto_pipelines.Pipelines(run, 'mga', options.softdir, options.cluster, options.dry_run, options.use_limsdev)
         # run pipelines
         pipelines.execute()

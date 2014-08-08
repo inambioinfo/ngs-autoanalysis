@@ -24,7 +24,7 @@ import argparse
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
 
@@ -35,8 +35,10 @@ import autoanalysis.glslims as auto_glslims
 def main():
     # get the options
     parser = argparse.ArgumentParser()
-    parser.add_argument("--basedir", dest="basedir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
-    parser.add_argument("--archivedir", dest="archivedir", action="store", help="archive base directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
+    parser.add_argument("--processingdir", dest="processingdir", action="store", help="processing base directories e.g. '/processing'", required=True)
+    parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
+
     parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
@@ -44,9 +46,6 @@ def main():
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
-    parser.add_argument("--updatelims", dest="update_lims", action="store_true", default=False, help="use this option to update the lims")
-    parser.add_argument("--publish", dest="publish", action="store_true", default=False, help="use this option to assign flowcells to publishing workflow")
-    parser.add_argument("--ftp", dest="ftp", action="store_true", default=False, help="use this option to sync external data to ftp server")
     parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
     parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
 
@@ -57,7 +56,7 @@ def main():
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_runfolders.RunFolders(options.basedir, options.archivedir, options.run_folder)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, None, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.completed_runs:
@@ -88,16 +87,16 @@ def main():
                 if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.isExternalDataSynchronised():
                     glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
                 
-                    
-            except:
+            except Exception, e:
                 log.exception("Unexpected error")
+                log.exception(e)
                 continue
     except:
         log.exception("Unexpected error")
         raise
     
 if __name__ == "__main__":
-	main()
+    main()
 
 
         

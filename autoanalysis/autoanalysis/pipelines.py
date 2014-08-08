@@ -18,20 +18,26 @@ import unittest
 from collections import OrderedDict
 
 # autoanalysis modules
-import runfolders
+import data
 import utils
 
 ################################################################################
 # CONSTANTS
 ################################################################################
 # Pipeline definitions and dependencies
-PIPELINES = OrderedDict ([
+OLD_PIPELINES = OrderedDict ([
     ("primary", []),
     ("mga", ["primary"]),
     ("fastqc", ["primary"]),
     ("fastq", ["primary"]),
     ("alignment", ["primary","fastq"])])
     
+PIPELINES = OrderedDict ([
+    ("fastq", []),
+    ("qc", ["fastq"]),
+    ("alignment", ["fastq"])])
+
+
 # External pipeline name
 EXTERNAL_PIPELINE = 'external'
 EXTERNAL_DEMUX_PIPELINE = 'external_demux'
@@ -96,7 +102,7 @@ RUNFOLDER_RSYNC_EXCLUDE = [
     "--exclude=Images", # *.tif images from MiSeq
     "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
     "--exclude=Old*", # Anything that has been moved out of the way
-    "--exclude=%s" % runfolders.SEQUENCING_COMPLETED
+    "--exclude=%s" % data.SEQUENCING_COMPLETED
 ]
 
 # Pipeline create-metafile extra options
@@ -148,7 +154,7 @@ class PipelineDefinition(object):
         self.pipeline_directory = os.path.join(self.run.run_folder, self.pipeline_name)
         utils.create_directory(self.pipeline_directory)
 
-        # create archive pipeline directory
+        # create archive pipeline directory in staging area
         self.log.debug(self.run.dest_run_folder)
         self.log.debug(self.pipeline_name)
         self.archive_pipeline_directory = os.path.join(self.run.dest_run_folder, self.pipeline_name)
@@ -168,7 +174,7 @@ class PipelineDefinition(object):
         self.rsync_fail = os.path.join(self.pipeline_directory, RSYNC_FAIL_FILENAME)
         self.rsync_log = os.path.join(self.pipeline_directory, RSYNC_LOG_FILENAME)
 
-        # enviroment variables for setting up and running each pipeline
+        # environment variables for setting up and running each pipeline
         self.env = {}
         self.setEnv(software_path, cluster_host, use_limsdev)
         
@@ -206,10 +212,7 @@ class PipelineDefinition(object):
         self.env['cluster'] = _cluster_host
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
-        if self.pipeline_name == 'primary':
-            self.env['cmd'] = PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME % self.env
-        else:
-            self.env['cmd'] = PIPELINE_RUN_COMMAND % self.env
+        self.env['cmd'] = PIPELINE_RUN_COMMAND % self.env
         self.env['rsync_started'] = self.rsync_started
         self.env['rsync_lock'] = self.rsync_lock
         self.env['rsync_ended'] = self.rsync_ended
@@ -396,8 +399,8 @@ class Pipelines(object):
         if self.pipeline_step:
             self.pipelines = {self.pipeline_step : ""}
             
-        self.all_completed = os.path.join(self.run.run_folder, runfolders.ANALYSIS_COMPLETED)
-        self.archive_all_completed = os.path.join(self.run.dest_run_folder, runfolders.ANALYSIS_COMPLETED)
+        self.all_completed = os.path.join(self.run.run_folder, data.ANALYSIS_COMPLETED)
+        self.archive_all_completed = os.path.join(self.run.dest_run_folder, data.ANALYSIS_COMPLETED)
         
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
@@ -489,9 +492,9 @@ class External(object):
         self.external_data = external_data
         #self.published_external_data = published_external_data
         self.pipeline_name = EXTERNAL_PIPELINE
-        self.publishing_assigned = os.path.join(self.run.run_folder, runfolders.PUBLISHING_ASSIGNED)
-        self.publishing_completed = os.path.join(self.run.run_folder, runfolders.PUBLISHING_COMPLETED)
-        self.archive_publishing_completed = os.path.join(self.run.dest_run_folder, runfolders.PUBLISHING_COMPLETED)
+        self.publishing_assigned = os.path.join(self.run.run_folder, data.PUBLISHING_ASSIGNED)
+        self.publishing_completed = os.path.join(self.run.run_folder, data.PUBLISHING_COMPLETED)
+        self.archive_publishing_completed = os.path.join(self.run.dest_run_folder, data.PUBLISHING_COMPLETED)
         self.dry_run = dry_run
         
     def sync(self):
@@ -716,7 +719,7 @@ class PipelineDefinitionTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
-        self.runs = runfolders.RunFolders(self.basedir, self.archivedir)
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, None)
         self.run = self.runs.completed_runs[0]
         self.log.debug('Testing logging')
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test') 
@@ -767,7 +770,7 @@ class SyncPipelineDefinitionTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/seqdir/vol0[1-2]/data/Runs/')
         self.destdir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
-        self.runs = runfolders.RunFolders(self.basedir, self.destdir)
+        self.runs = data.RunFolderList(self.basedir, self.destdir, None)
         self.run = self.runs.completed_runs[0]
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='rsync')
         self.pipeline_definition.printHeader()
@@ -791,7 +794,7 @@ class SyncPipelineDefinitionTests(unittest.TestCase):
         self.assertTrue(os.path.exists(self.pipeline_definition.archive_pipeline_directory))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, RSYNC_STARTED_FILENAME)))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, RSYNC_ENDED_FILENAME)))
-        self.assertTrue(os.path.isfile(os.path.join(self.run.dest_run_folder, runfolders.SEQUENCING_COMPLETED)))
+        self.assertTrue(os.path.isfile(os.path.join(self.run.dest_run_folder, data.SEQUENCING_COMPLETED)))
 
 class AutonalaysisPipelinesTests(unittest.TestCase):
     
@@ -801,7 +804,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
-        self.runs = runfolders.RunFolders(self.basedir, self.archivedir)
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, None)
         
     def tearDown(self):
         import shutil
@@ -838,7 +841,8 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                 utils.touch(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME))
                 utils.touch(os.path.join(pipeline_folder, RSYNC_STARTED_FILENAME))
                 utils.touch(os.path.join(pipeline_folder, RSYNC_ENDED_FILENAME))
-                archive_pipeline_folder = os.path.join(utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
+                archive_pipeline_folder = os.path.join(
+                    utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
                 utils.create_directory(archive_pipeline_folder)
                 utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_STARTED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
@@ -871,7 +875,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/archivedir/vol0[1-2]/data/Runs/')
-        self.runs = runfolders.RunFolders(self.basedir, self.archivedir, '130114_HWI-ST230_1016_D18MAACXX')
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, None, '130114_HWI-ST230_1016_D18MAACXX')
 
     def tearDown(self):
         import shutil
@@ -912,7 +916,8 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             utils.touch(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME))
             utils.touch(os.path.join(pipeline_folder, RSYNC_STARTED_FILENAME))
             utils.touch(os.path.join(pipeline_folder, RSYNC_ENDED_FILENAME))
-            archive_pipeline_folder = os.path.join(utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
+            archive_pipeline_folder = os.path.join(
+                utils.locate_run_folder(os.path.basename(run.run_folder), self.archivedir), pipeline_name)
             utils.create_directory(archive_pipeline_folder)
             utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_STARTED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
@@ -945,7 +950,7 @@ class SyncTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/seqdir/vol0[1-2]/data/Runs/')
         self.archivedir = os.path.join(self.current_path, '../testdata/analysisdir/data/Runs/')
-        self.runs = runfolders.RunFolders(self.basedir, self.archivedir)
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, None)
         
     def tearDown(self):
         import shutil
@@ -970,7 +975,7 @@ class SyncTests(unittest.TestCase):
             self.assertTrue(os.path.exists(dest_pipeline_folder))
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, RSYNC_STARTED_FILENAME)))
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, RSYNC_ENDED_FILENAME)))
-            self.assertTrue(os.path.isfile(os.path.join(run.dest_run_folder, runfolders.SEQUENCING_COMPLETED)))
+            self.assertTrue(os.path.isfile(os.path.join(run.dest_run_folder, data.SEQUENCING_COMPLETED)))
                                                     
 if __name__ == '__main__':
 	unittest.main()

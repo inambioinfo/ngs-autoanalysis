@@ -20,7 +20,7 @@ import datetime
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 
 """
 ----------
@@ -100,9 +100,9 @@ def main():
         for run_folder in run_folders:
             log.info(RUN_HEADER % {'run_folder': run_folder})
             run_folder_name = os.path.basename(run_folder)
-            sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
-            sequencing_failed = os.path.join(run_folder, auto_runfolders.SEQUENCING_FAILED)
-            analysis_ignore = os.path.join(run_folder, auto_runfolders.ANALYSIS_IGNORE)
+            sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
+            sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
+            analysis_ignore = os.path.join(run_folder, auto_data.ANALYSIS_IGNORE)
             
             if run_folder_name == options.run_folder:
                 sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)
