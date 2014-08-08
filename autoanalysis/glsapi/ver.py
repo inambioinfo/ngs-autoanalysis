@@ -1,7 +1,7 @@
 # ./ver.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:381c942b531cca3d7411c1ea854e1a0cdf36777b
-# Generated 2014-04-04 17:46:47.260399 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.845908 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/version
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -89,7 +89,7 @@ class version_ (pyxb.binding.basis.complexTypeDefinition):
     __major._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ver.xsd', 12, 4)
     __major._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ver.xsd', 12, 4)
     
-    major = property(__major.value, __major.set, None, u'\n          The major version of the version.\n<p>Major version indicates forward and backwards compatibility for API clients among minor versions\nwithin the major version.</p>\n        ')
+    major = property(__major.value, __major.set, None, u'\n          The major version of the version.<br/><br/>\nMajor version indicates forward and backwards compatibility for API clients among minor versions\nwithin the major version.\n        ')
 
     
     # Attribute minor uses Python identifier minor
@@ -97,7 +97,7 @@ class version_ (pyxb.binding.basis.complexTypeDefinition):
     __minor._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ver.xsd', 21, 4)
     __minor._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ver.xsd', 21, 4)
     
-    minor = property(__minor.value, __minor.set, None, u'\n          The minor version of the version.\n<p>Minor version indicates additional non-breaking changes to the version.</p>\n        ')
+    minor = property(__minor.value, __minor.set, None, u'\n          The minor version of the version.<br/><br/>\nMinor version indicates additional non-breaking changes to the version.\n        ')
 
     _ElementMap.update({
         

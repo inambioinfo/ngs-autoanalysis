@@ -1,7 +1,7 @@
 # ./reagentlot.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1fc19fb9085be7b7c633a0af081a40d537b08b36
-# Generated 2014-04-04 17:46:47.253609 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.847404 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/reagentlot
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'

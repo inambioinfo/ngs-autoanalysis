@@ -1,7 +1,7 @@
 # ./lab.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:09b4ec6a03e2b94a8089882fb5e37b9c062c8ab0
-# Generated 2014-04-04 17:46:47.252322 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.834202 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/lab
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -22,9 +22,9 @@ if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import userdefined as _ImportedBinding_userdefined
 import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import userdefined as _ImportedBinding_userdefined
 
 # NOTE: All namespace declarations are reserved within the binding
 Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/lab', create_if_missing=True)
@@ -85,7 +85,7 @@ class lab_ (pyxb.binding.basis.complexTypeDefinition):
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element {http://genologics.com/ri}externalid uses Python identifier externalid
-    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comrilab_lab__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2), )
+    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comrilab_lab__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2), )
 
     
     externalid = property(__externalid.value, __externalid.set, None, u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ')
@@ -158,12 +158,11 @@ Namespace.addCategoryObject('typeBinding', u'lab', lab_)
 # Complex type {http://genologics.com/ri/lab}labs with content type ELEMENT_ONLY
 class labs_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        The representation of a list of lab links.
-<p>The system enforces a maximum number of elements when generating the list of links. When the size of
+        The representation of a list of lab links.<br/><br/>
+The system enforces a maximum number of elements when generating the list of links. When the size of
 the request result set is larger than the system maximum, the list represents a paged view of the overall
 results, and the previous-page and next-page elements provide URIs linking to the previous or next page
 of links in the overall results.
-</p>
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
@@ -175,21 +174,21 @@ of links in the overall results.
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element lab uses Python identifier lab
-    __lab = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'lab'), 'lab', '__httpgenologics_comrilab_labs__lab', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 124, 6), )
+    __lab = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'lab'), 'lab', '__httpgenologics_comrilab_labs__lab', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 123, 6), )
 
     
     lab = property(__lab.value, __lab.set, None, u'\n            Lab provides a URI linking to the detailed representation of a lab.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrilab_labs__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 131, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrilab_labs__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 130, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of labs,\nthe previous-page element provides a URI that links to the previous page of labs.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrilab_labs__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 139, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrilab_labs__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 138, 6), )
 
     
     next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of labs,\nthe next-page element provides a URI that links to the next page of labs.\n          ')
@@ -214,13 +213,13 @@ class lab_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'lab-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 149, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 148, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comrilab_lab_link_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 156, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comrilab_lab_link_name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 155, 6), )
 
     
     name = property(__name.value, __name.set, None, u'\n            The name of the lab.\n          ')
@@ -228,8 +227,8 @@ class lab_link (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrilab_lab_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 164, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 164, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 163, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 163, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the lab.\n        ')
 
@@ -250,7 +249,7 @@ Namespace.addCategoryObject('elementBinding', labs.name().localName(), labs)
 
 
 
-lab_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=lab_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 231, 2)))
+lab_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=lab_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2)))
 
 lab_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=lab_, documentation=u'\n            The name of the lab.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 13, 6)))
 
@@ -397,11 +396,11 @@ lab_._Automaton = _BuildAutomaton()
 
 
 
-labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'lab'), lab_link, scope=labs_, documentation=u'\n            Lab provides a URI linking to the detailed representation of a lab.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 124, 6)))
+labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'lab'), lab_link, scope=labs_, documentation=u'\n            Lab provides a URI linking to the detailed representation of a lab.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 123, 6)))
 
-labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=labs_, documentation=u'\n            When working with large lists of labs,\nthe previous-page element provides a URI that links to the previous page of labs.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 131, 6)))
+labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=labs_, documentation=u'\n            When working with large lists of labs,\nthe previous-page element provides a URI that links to the previous page of labs.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 130, 6)))
 
-labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=labs_, documentation=u'\n            When working with large lists of labs,\nthe next-page element provides a URI that links to the next page of labs.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 139, 6)))
+labs_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=labs_, documentation=u'\n            When working with large lists of labs,\nthe next-page element provides a URI that links to the next page of labs.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 138, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -410,26 +409,26 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 124, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 123, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 131, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 130, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 139, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 138, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'lab')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 124, 6))
+    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'lab')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 123, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 131, 6))
+    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 130, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 139, 6))
+    symbol = pyxb.binding.content.ElementUse(labs_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 138, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -456,7 +455,7 @@ labs_._Automaton = _BuildAutomaton_()
 
 
 
-lab_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=lab_link, documentation=u'\n            The name of the lab.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 156, 6)))
+lab_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=lab_link, documentation=u'\n            The name of the lab.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 155, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -465,12 +464,12 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 156, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 155, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(lab_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 156, 6))
+    symbol = pyxb.binding.content.ElementUse(lab_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/lab.xsd', 155, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []

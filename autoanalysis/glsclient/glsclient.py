@@ -422,7 +422,7 @@ class GlsUtil(object):
                 self.route_each_artifact_to_workflow(input_uri_set, WORKFLOW_NAMES['publi'])
                 self.log.info("flow-cell id '%s' assigned to '%s' workflow for publishing." % (_flowcell_id, WORKFLOW_NAMES['publi']))
         else:
-            self.log.info("flow-cell id '%s' has already a publishing process '%s'." % (_flowcell_id, publi[0]['id']))
+            self.log.info("flow-cell id '%s' has already a publishing process '%s'." % (_flowcell_id, publi[0]['luid']))
 
     def is_sample_fastq_files_attached(self, _run_id):
         """Only check if all Read 1 Sample Fastq files exist for lanes that passed qc on sequencing
@@ -570,10 +570,9 @@ class GlsClientApiTest(unittest.TestCase):
         self.assertIn(self.process_type_name, process_type_names)
 
     def test_list_filter_researchers_by_username(self):
-        # TODO: need api upgrade to work with 3.1.2
-        #researcher_links = self.glsclient.list_filter('researcher', 'username', USERNAME)
-        #researcher = self.glsclient.load_by_uri('researcher', researcher_links.researcher[0].uri)
-        #self.assertEqual(USERNAME, researcher.credentials.username)
+        researcher_links = self.glsclient.list_filter('researcher', 'username', USERNAME)
+        researcher = self.glsclient.load_by_uri('researcher', researcher_links.researcher[0].uri)
+        self.assertEqual(USERNAME, researcher.credentials.username)
         pass
 
     def test_list_filters_open_projects(self):
@@ -833,7 +832,7 @@ class GlsUtilTest(unittest.TestCase):
 
     def test_get_all_external_ftp_dirs(self):
         results = self.glsutil.get_all_external_ftp_dirs()
-        self.assertEqual(43, len(results))
+        self.assertEqual(44, len(results))
         self.assertEqual('lmb_debono', results[4]['ftpdir'])
         self.assertEqual('gurdon_institute', results[30]['ftpdir'])
         self.assertEqual('True', results[30]['nonpfdata'])

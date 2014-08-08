@@ -1,7 +1,7 @@
 # ./protstepcnf.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:b40a4f9427295a291407fc3444b9031d697bd00b
-# Generated 2014-04-04 17:46:47.257815 by PyXB version 1.2.2
+# Generated 2014-08-06 17:32:28.834545 by PyXB version 1.2.2
 # Namespace http://genologics.com/ri/stepconfiguration [xmlns:protstepcnf]
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b568e09c-bc18-11e3-b84b-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:40a41507-1d87-11e4-8a92-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.2'
@@ -121,11 +121,11 @@ Namespace.addCategoryObject('typeBinding', u'trigger-type', trigger_type)
 # Complex type {http://genologics.com/ri/stepconfiguration}step with content type ELEMENT_ONLY
 class step_ (pyxb.binding.basis.complexTypeDefinition):
     """
-        <p>Detailed representation of a Step</p>
-<p>Steps are the elements that compose
+        Detailed representation of a Step.<br/><br/>
+Steps are the elements that compose
 protocols. They have various properties
 regarding different UDFs contained on each view of the step
-as well as configuration option and filters</p>
+as well as configuration option and filters.
       """
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
