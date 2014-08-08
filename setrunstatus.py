@@ -27,7 +27,7 @@ import logging
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 
 ################################################################################
@@ -44,11 +44,11 @@ INSTRUMENTS = {
 }
 
 def create_sequencing_completed(run_folder, dry_run):
-    sequencing_completed = os.path.join(run_folder, auto_runfolders.SEQUENCING_COMPLETED)
+    sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
     if is_sequencing_completed(run_folder):
         if not os.path.exists(sequencing_completed):
             utils.touch(sequencing_completed, dry_run)
-            log.info("%s created" % auto_runfolders.SEQUENCING_COMPLETED)
+            log.info("%s created" % auto_data.SEQUENCING_COMPLETED)
         else:
             log.info("Sequencing COMPLETED")
     else:
@@ -86,12 +86,12 @@ def main(argv=None):
         log = logger.get_custom_logger()
 
     try:
-        runs = auto_runfolders.RunFolders(options.basedir, "", options.run_folder)
+        runs = auto_data.RunFolderList(options.basedir, "", None, options.run_folder)
         # loop over all run folders in options.basedir
         for run_folder in runs.run_folders:
             try:
                 # create Sequencing.completed 
-                log.info(auto_runfolders.RUN_HEADER % {'run_folder': run_folder})
+                log.info(auto_data.RUN_HEADER % {'run_folder': run_folder})
                 create_sequencing_completed(run_folder, options.dry_run)
             except:
                 log.exception("Unexpected error")

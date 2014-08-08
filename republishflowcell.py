@@ -18,7 +18,7 @@ import argparse
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.runfolders as auto_runfolders
+import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
 
@@ -47,10 +47,10 @@ def main():
     # connect to lims
     glslims = auto_glslims.GlsLims(options.use_limsdev)
     for runfolder in options.runfolders:
-        log.info(auto_runfolders.RUN_HEADER % {'run_folder': runfolder})
+        log.info(auto_data.RUN_HEADER % {'run_folder': runfolder})
         # find runfolder in basedir
         runfolder_path = utils.locate_run_folder(runfolder, options.basedir, False)
-        run = auto_runfolders.RunDefinition(runfolder_path)
+        run = auto_data.RunFolder(runfolder_path)
         if os.path.exists(run.analysis_completed):
             log.info('Analysis completed')
             if options.publish:
