@@ -34,7 +34,7 @@ gls_events needs to be created at the destination prior to run the script
 """
 
 LIMS="glsadmin@lims.cri.camres.org"
-NEW_LIMS="glsadmin@bioinf-srv003"
+NEW_LIMS="glsjboss@bioinf-srv003"
 RUNFOLDER_GLOB = "%s/??????_*_*_*"
 RUN_HEADER = """
 ================================================================================
@@ -146,7 +146,7 @@ def main():
         from_events="%s/gls_events/" % from_path
         from_events_archive="%s/archive/" % from_events
         to_events="%s/gls_events/" % to_path_rsync
-        to_events_new_lims="%s/gls_events/" % to_path_rsync
+        to_events_new_lims="%s/gls_events/" % to_path_rsync_new_lims
         if os.path.exists(from_events):
             event_files = glob.glob("%s/event-*.txt" % from_events)
             log.info('List of events file to sync: %s' % event_files)
