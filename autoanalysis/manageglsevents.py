@@ -34,7 +34,7 @@ gls_events needs to be created at the destination prior to run the script
 """
 
 LIMS="glsadmin@lims.cri.camres.org"
-NEW_LIMS="glsadmin@bioinf-srv003"
+NEW_LIMS="glsjboss@bioinf-srv003"
 RUNFOLDER_GLOB = "%s/??????_*_*_*"
 RUN_HEADER = """
 ================================================================================
