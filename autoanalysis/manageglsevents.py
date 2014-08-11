@@ -108,7 +108,8 @@ def main():
             
             if run_folder_name == options.run_folder:
                 sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)
-                sync_runfolder(log, run_folder, to_path_rsync_new_lims, options.dry_run)
+                # sync run folders onto new lims
+                #sync_runfolder(log, run_folder, to_path_rsync_new_lims, options.dry_run)
             else:
                 if not os.path.exists(analysis_ignore):
                     if os.path.exists(sequencing_completed):
@@ -128,8 +129,8 @@ def main():
                             log.info(delete_runfolder_cmd)
                             utils.run_process(delete_runfolder_cmd, options.dry_run)
                             # delete on new lims
-                            delete_runfolder_cmd = ['ssh', NEW_LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
-                            log.info(delete_runfolder_cmd)
+                            #delete_runfolder_cmd = ['ssh', NEW_LIMS, 'rm -rf %s/%s' % (to_path, run_folder_name)]
+                            #log.info(delete_runfolder_cmd)
                             utils.run_process(delete_runfolder_cmd, options.dry_run)
                     else:
                         sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)
@@ -159,8 +160,8 @@ def main():
                 scp_cmd = ["scp", "-r", "-p", event_file, to_events]
                 utils.run_process(scp_cmd, options.dry_run)
                 # copy event files on new lims
-                scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
-                utils.run_process(scp_cmd, options.dry_run)
+                #scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
+                #utils.run_process(scp_cmd, options.dry_run)
                 mv_cmd = ["mv", event_file, from_events_archive]
                 utils.run_process(mv_cmd, options.dry_run)
 
