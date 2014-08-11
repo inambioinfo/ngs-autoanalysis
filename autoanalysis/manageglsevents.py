@@ -146,7 +146,7 @@ def main():
         from_events="%s/gls_events/" % from_path
         from_events_archive="%s/archive/" % from_events
         to_events="%s/gls_events/" % to_path_rsync
-        to_events_new_lims="%s/gls_events/" % to_path_rsync
+        to_events_new_lims="%s/gls_events/" % to_path_rsync_new_lims
         if os.path.exists(from_events):
             event_files = glob.glob("%s/event-*.txt" % from_events)
             log.info('List of events file to sync: %s' % event_files)
