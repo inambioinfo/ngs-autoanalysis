@@ -206,7 +206,7 @@ class PipelineDefinition(object):
         self.env['cluster'] = _cluster_host
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
-        if self.pipeline_name == 'primary':
+        if self.pipeline_name in ['primary', 'fastq']:
             self.env['cmd'] = PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME % self.env
         else:
             self.env['cmd'] = PIPELINE_RUN_COMMAND % self.env
