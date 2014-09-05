@@ -42,7 +42,7 @@ def main():
     parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
-    parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.PIPELINES.viewkeys()))
+    parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.Pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.Pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
@@ -68,7 +68,7 @@ def main():
                     # run pipelines
                     pipelines.execute()
                 # register pipelines completion
-                pipelines.registerCompletion()
+                pipelines.register_completion()
                 
                 # create lims processes
                 glslims.create_analysis_processes(run.flowcell_id)
@@ -84,7 +84,7 @@ def main():
                 external.sync()
 
                 # add flow-cell into the publishing queue
-                if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.isExternalDataSynchronised():
+                if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.is_external_data_synchronised():
                     glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
                 
             except Exception, e:

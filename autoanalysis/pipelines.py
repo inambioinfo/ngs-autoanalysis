@@ -10,7 +10,6 @@ Created by Anne Pajon on 2012-11-22.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
 import glob
 import logging
@@ -24,19 +23,6 @@ import utils
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Pipeline definitions and dependencies
-OLD_PIPELINES = OrderedDict ([
-    ("primary", []),
-    ("mga", ["primary"]),
-    ("fastqc", ["primary"]),
-    ("fastq", ["primary"]),
-    ("alignment", ["primary","fastq"])])
-    
-PIPELINES = OrderedDict ([
-    ("fastq", []),
-    ("qc", ["fastq"]),
-    ("alignment", ["fastq"])])
-
 
 # External pipeline name
 EXTERNAL_PIPELINE = 'external'
@@ -67,11 +53,11 @@ rm %(rsync_lock)s
 
 # Pipeline rsync exclude list
 PIPELINE_RSYNC_EXCLUDE = { 
-    "primary" : "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary --exclude=fastqc --exclude=mga --exclude=fastq --exclude=alignment",
-    "mga" : "",
-    "fastqc" : "",
-    "fastq" : "",
-    "alignment" : "",                   
+    "primary": "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary --exclude=fastqc --exclude=mga --exclude=fastq --exclude=alignment",
+    "mga": "",
+    "fastqc": "",
+    "fastq": "",
+    "alignment": "",
 }
 
 PIPELINE_RSYNC_ALL_EXCLUDE = "--exclude=temp --exclude=JobOutputs"
@@ -95,13 +81,13 @@ rm %(rsync_lock)s
 
 # rsync exclude list
 RUNFOLDER_RSYNC_EXCLUDE = [
-    "--exclude=Data/Intensities/L00?/C*/*.tif", # images - not generated anymore by sequencers
+    "--exclude=Data/Intensities/L00?/C*/*.tif",  # images - not generated anymore by sequencers
     "--exclude=Data/RTALogs", 
     "--exclude=Logs",
-    "--exclude=Thumbnail_Images", # thumbnail images
-    "--exclude=Images", # *.tif images from MiSeq
-    "--exclude=Data/Intensities/L00?/C*/*.cif", # intensitites
-    "--exclude=Old*", # Anything that has been moved out of the way
+    "--exclude=Thumbnail_Images",  # thumbnail images
+    "--exclude=Images",  # *.tif images from MiSeq
+    "--exclude=Data/Intensities/L00?/C*/*.cif",  # intensitites
+    "--exclude=Old*",  # Anything that has been moved out of the way
     "--exclude=%s" % data.SEQUENCING_COMPLETED
 ]
 
@@ -140,6 +126,7 @@ RSYNC_FAIL_FILENAME = "rsync.failed"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_LOCK_FILENAME = "rsync.lock"
 
+
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################        
@@ -176,15 +163,15 @@ class PipelineDefinition(object):
 
         # environment variables for setting up and running each pipeline
         self.env = {}
-        self.setEnv(software_path, cluster_host, use_limsdev)
+        self.set_env(software_path, cluster_host, use_limsdev)
         
-    def getHeader(self):
+    def get_header(self):
         return '--- %s' % self.pipeline_name.upper()
         
-    def printHeader(self):
-        self.log.info(self.getHeader())
+    def print_header(self):
+        self.log.info(self.get_header())
         
-    def setEnv(self, _software_path, _cluster_host, _use_limsdev):
+    def set_env(self, _software_path, _cluster_host, _use_limsdev):
         """set environment variables for generating shell scripts from their templates
         """
         self.env['bin_meta'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
@@ -229,7 +216,7 @@ class PipelineDefinition(object):
         self.env['pipedir'] = self.pipeline_directory
         self.env['archive_pipedir'] = self.archive_pipeline_directory
         
-    def createSetupPipelineScript(self):
+    def create_setup_pipeline_script(self):
         self.log.info('... create setup pipeline script ...............................................')
         try:
             if not os.path.exists(self.setup_script_path):
@@ -240,7 +227,7 @@ class PipelineDefinition(object):
             self.log.exception('unexpected error when creating setup pipeline script')
             raise
         
-    def runSetupPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
+    def run_setup_pipeline_script(self, _dependencies_satisfied=True, _dry_run=True):
         self.log.info('... run setup pipeline script ..................................................')
         try:
             if not os.path.exists(self.env['run_meta']):
@@ -254,7 +241,7 @@ class PipelineDefinition(object):
             self.log.exception('unexpected error when running setup pipeline script')
             raise
             
-    def createRunPipelineScript(self):
+    def create_run_pipeline_script(self):
         self.log.info('... create run pipeline script .................................................')
         try:
             if self.env['mode'] == 'lsf':
@@ -265,7 +252,7 @@ class PipelineDefinition(object):
             self.log.exception('unexpected error when creating run pipeline script')
             raise
             
-    def runRunPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
+    def run_run_pipeline_script(self, _dependencies_satisfied=True, _dry_run=True):
         self.log.info('... run run pipeline script ....................................................')
         if os.path.exists(self.env['run_meta']):
             # pipeline not started
@@ -298,7 +285,7 @@ class PipelineDefinition(object):
         else:
             self.log.warn("%s is missing" % self.env['run_meta'])
             
-    def createRsyncPipelineScript(self):
+    def create_rsync_pipeline_script(self):
         self.log.info('... create rsync pipeline script ...............................................')
         try:
             if not os.path.exists(self.rsync_script_path):
@@ -309,7 +296,7 @@ class PipelineDefinition(object):
             self.log.exception('unexpected error when creating rsync pipeline script')
             raise
             
-    def runRsyncPipelineScript(self, _dependencies_satisfied=True, _dry_run=True):
+    def run_rsync_pipeline_script(self, _dependencies_satisfied=True, _dry_run=True):
         """Run rsync script to synchronise data from lustre to lbio03
         Synchronise primary directory first, and then all the other pipeline folders
         """
@@ -344,7 +331,7 @@ class PipelineDefinition(object):
         else:
             self.log.warn('%s is missing' % self.rsync_script_path)
             
-    def createRsyncRunFolderScript(self):
+    def create_rsync_runfolder_script(self):
         self.log.info('... create rsync runfolder script ..............................................')
         try:
             if not os.path.exists(self.rsync_script_path):
@@ -355,7 +342,7 @@ class PipelineDefinition(object):
             self.log.exception('unexpected error when creating rsync runfolder script')
             raise
 
-    def runRsyncRunFolderScript(self, _dry_run=True):
+    def run_rsync_runfolder_script(self, _dry_run=True):
         """Run rsync script to synchronise runfolder data from sequencing servers to lustre
         """
         self.log.info('... run rsync runfolder script .................................................')
@@ -381,10 +368,24 @@ class PipelineDefinition(object):
         else:
             self.log.warn('%s is missing' % self.rsync_script_path)
         
+
 ################################################################################
 # CLASS Pipelines
 ################################################################################
 class Pipelines(object):
+
+    # Pipeline definitions and dependencies
+    OLD_PIPELINES = OrderedDict([
+        ("primary", []),
+        ("mga", ["primary"]),
+        ("fastqc", ["primary"]),
+        ("fastq", ["primary"]),
+        ("alignment", ["primary", "fastq"])])
+
+    PIPELINES = OrderedDict([
+        ("fastq", []),
+        ("qc", ["fastq"]),
+        ("alignment", ["fastq"])])
 
     def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True):
         self.log = logging.getLogger(__name__) 
@@ -395,9 +396,9 @@ class Pipelines(object):
         self.dry_run = dry_run
         self.use_limsdev = use_limsdev 
 
-        self.pipelines = PIPELINES
+        self.pipelines = Pipelines.PIPELINES
         if self.pipeline_step:
-            self.pipelines = {self.pipeline_step : ""}
+            self.pipelines = {self.pipeline_step: ""}
             
         self.all_completed = os.path.join(self.run.run_folder, data.ANALYSIS_COMPLETED)
         self.archive_all_completed = os.path.join(self.run.dest_run_folder, data.ANALYSIS_COMPLETED)
@@ -410,25 +411,26 @@ class Pipelines(object):
             for pipeline_name in self.pipelines.keys():
                 # create pipeline definition
                 pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev)
-                pipeline_definition.printHeader()
+                pipeline_definition.print_header()
                 # - step 1 - create setup-pipeline script 
-                pipeline_definition.createSetupPipelineScript()
+                pipeline_definition.create_setup_pipeline_script()
                 # run setup-pipeline script to create meta data 
-                pipeline_definition.runSetupPipelineScript(self.areDependenciesSatisfied(pipeline_name), self.dry_run)
+                pipeline_definition.run_setup_pipeline_script(self.are_dependencies_satisfied(pipeline_name),
+                                                              self.dry_run)
                 # - step 2 - create run-pipeline script
-                pipeline_definition.createRunPipelineScript()
+                pipeline_definition.create_run_pipeline_script()
                 # run run-pipeline script to run the pipeline
-                pipeline_definition.runRunPipelineScript(self.areDependenciesSatisfied(pipeline_name), self.dry_run)
+                pipeline_definition.run_run_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
                 # - setp 3 - create rsync-pipeline script
-                pipeline_definition.createRsyncPipelineScript()
+                pipeline_definition.create_rsync_pipeline_script()
                 # run rsync-pipeline script
-                pipeline_definition.runRsyncPipelineScript(self.areDependenciesSatisfied('primary'), self.dry_run)
+                pipeline_definition.run_rsync_pipeline_script(self.are_dependencies_satisfied('primary'), self.dry_run)
             
-    def registerCompletion(self):
+    def register_completion(self):
         """ Create Analysis.completed when pipelines have been successfully ran and synchronised
         """
         # create Analysis.completed when all pipelines completed and rsynced
-        if self.arePipelinesCompleted(self.pipelines.keys()):
+        if self.are_pipelines_completed(self.pipelines.keys()):
             if not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
             if not os.path.exists(self.archive_all_completed):
@@ -440,15 +442,13 @@ class Pipelines(object):
                 os.remove(self.all_completed)
             if os.path.exists(self.archive_all_completed):
                 os.remove(self.archive_all_completed)   
-                                
-                
-    ### Utility methods -------------------------------------------------------
 
-    def areDependenciesSatisfied(self, pipeline_name):
+    ### Utility methods -------------------------------------------------------
+    def are_dependencies_satisfied(self, pipeline_name):
         """For a given pipeline, checks that all dependent pipelines have finished
         Both pipeline.started and pipeline.ended need to be present
         """
-        pipeline_dependencies = PIPELINES[pipeline_name]
+        pipeline_dependencies = Pipelines.PIPELINES[pipeline_name]
         self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
         for dep_pipeline_name in pipeline_dependencies:
             pipeline_directory = os.path.join(self.run.run_folder, dep_pipeline_name)
@@ -459,7 +459,7 @@ class Pipelines(object):
                 return False
         return True
 
-    def arePipelinesCompleted(self, list_pipelines, check_rsync=True):
+    def are_pipelines_completed(self, list_pipelines, check_rsync=True):
         """Checks for a list of pipelines that each of them has finished and has
         been synchronised.
         pipeline.started and pipeline.ended need to be present as well as 
@@ -480,6 +480,7 @@ class Pipelines(object):
                     return False
         return True
         
+
 ################################################################################
 # CLASS External
 ################################################################################
@@ -507,19 +508,19 @@ class External(object):
                 if self.run.dest_run_folder:
                     # create pipeline definition
                     pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
-                    pipeline_definition.printHeader()
+                    pipeline_definition.print_header()
                     # create symlinks for external users
-                    self.createSymlinks(pipeline_definition.archive_pipeline_directory)
+                    self.create_symlinks(pipeline_definition.archive_pipeline_directory)
                     # create rsync-pipeline script
-                    self.createFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                    self.create_ftp_rsync_script(pipeline_definition.rsync_script_path, pipeline_definition.env)
                     # run rsync-pipeline script
-                    self.runFtpRsyncScript(pipeline_definition.rsync_script_path, pipeline_definition.env)
+                    self.run_ftp_rsync_script(pipeline_definition.rsync_script_path, pipeline_definition.env)
                 else:
                     self.log.warn('%s does not exist' % self.run.dest_run_folder)
             else:
                 self.log.info('No external data to publish')
                 
-    def createSymlinks(self, external_directory):
+    def create_symlinks(self, external_directory):
         """ Create symlink to external fastq data into external folder
         - files to symlink per lane:
             SLX-7957.C3BW4ACXX.s_8.contents.csv
@@ -551,11 +552,11 @@ class External(object):
             except:
                 continue
 
-    def createFtpRsyncScript(self, rsync_script, env):
+    def create_ftp_rsync_script(self, rsync_script, env):
         """Create rsync script for external data
         """
         self.log.info('... create ftp rsync pipeline script ...........................................')
-        FTP_RSYNC_COMMAND = '''
+        ftp_rsync_command = '''
         touch %(rsync_started)s
         touch %(rsync_lock)s
 
@@ -583,9 +584,9 @@ class External(object):
             cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
         env['rsync_cmd'] = rsync_cmd
-        utils.create_script(rsync_script, FTP_RSYNC_COMMAND % env)
+        utils.create_script(rsync_script, ftp_rsync_command % env)
 
-    def runFtpRsyncScript(self, rsync_script, env):
+    def run_ftp_rsync_script(self, rsync_script, env):
         """Run rsync script for external data
         """
         self.log.info('... run ftp rsync pipeline script ..............................................')
@@ -604,7 +605,7 @@ class External(object):
                 else:
                     self.log.info('external data has been synchronised')
         else:
-            self.log.warn('%s is missing' % sync_script)
+            self.log.warn('%s is missing' % rsync_script)
 
     def publish(self):
         """Publish external data to ftp server that have been published in lims and add Publishing.completed
@@ -613,19 +614,19 @@ class External(object):
         """
         if self.run.is_analysis_completed_present():
             if self.all_data:
-                if self.published_external_data:
-                    if self.isExternalDataSynchronised():
-                        if not self.isPublishingCompleted():
+                if self.external_data:
+                    if self.is_external_data_synchronised():
+                        if not self.is_publishing_completed():
                             self.log.info('... move external data to public folders .......................................')
                             # build dictionnary of SLX-IDs to be moved
                             data = {}
-                            for file_id in list(self.published_external_data.viewkeys()):
-                                filename = os.path.basename(self.published_external_data[file_id]['runfolder'])
+                            for file_id in list(self.external_data.viewkeys()):
+                                filename = os.path.basename(self.external_data[file_id]['runfolder'])
                                 if filename.endswith('.contents.csv'):
                                     # "/solexa03/data/Runs/140228_SN1078_0260_C3JEHACXX/fastq/SLX-8180.C3JEHACXX.s_8.contents.csv"
                                     fparts = filename.split('.') 
-                                    slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2]) # key made of SLX-ID*FC-ID*LANE-ID
-                                    data[slxkey] = self.published_external_data[file_id]['ftpdir']
+                                    slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2])  # key made of SLX-ID*FC-ID*LANE-ID
+                                    data[slxkey] = self.external_data[file_id]['ftpdir']
                             # move data
                             for slxkey in data.viewkeys():
                                 # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx*FCID*s_x* /dmz01/solexa/external/gurdon_institute/
@@ -642,24 +643,21 @@ class External(object):
                     else:
                         self.log.info('External data not synchronised to ftp yet')
                 else:
-                    if self.external_data:
-                        self.log.info('No published external data in lims')
-                    else:
-                        self.log.info('No external data')
-                        if not self.isPublishingCompleted():
-                            # register completion
-                            utils.touch(self.publishing_completed)
-                            utils.touch(self.archive_publishing_completed)
-                        self.log.info('*** PUBLISH COMPLETED ******************************************************')
+                    self.log.info('No external data')
+                    if not self.is_publishing_completed():
+                        # register completion
+                        utils.touch(self.publishing_completed)
+                        utils.touch(self.archive_publishing_completed)
+                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
             else:
                 self.log.info('Sample FASTQ files not attached in lims yet')
                
-    def isPublishingCompleted(self):
+    def is_publishing_completed(self):
         if os.path.exists(self.publishing_completed) and os.path.exists(self.archive_publishing_completed):
             return True
         return False
         
-    def isExternalDataSynchronised(self):
+    def is_external_data_synchronised(self):
         """Checks that external data has been synchronised to the ftp tmp folder
         """
         # on current location on lustre
@@ -701,18 +699,18 @@ class Sync(object):
         if self.run.is_sequencing_completed():
             # create pipeline definition
             pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
-            pipeline_definition.printHeader()
+            pipeline_definition.print_header()
             # create rsync-pipeline script
-            pipeline_definition.createRsyncRunFolderScript()
+            pipeline_definition.create_rsync_runfolder_script()
             # run rsync-pipeline script
-            pipeline_definition.runRsyncRunFolderScript(self.dry_run)
+            pipeline_definition.run_rsync_runfolder_script(self.dry_run)
+
 
 ################################################################################
 # Unit tests
 ################################################################################
-
 class PipelineDefinitionTests(unittest.TestCase):
-	
+
     def setUp(self):
         import log as logger
         self.log = logger.get_custom_logger()
@@ -724,7 +722,7 @@ class PipelineDefinitionTests(unittest.TestCase):
         self.log.debug('Testing logging')
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test') 
         self.pipeline_definition_cluster = PipelineDefinition(run=self.run, pipeline_name='test', cluster_host='uk-cri-test')
-        self.pipeline_definition.printHeader()
+        self.pipeline_definition.print_header()
         
     def tearDown(self):
         import shutil
@@ -732,36 +730,37 @@ class PipelineDefinitionTests(unittest.TestCase):
         for run in self.runs.completed_runs:
             shutil.rmtree(run.dest_run_folder)
         
-    def testCreateSetupScript(self):
+    def test_create_setup_script(self):
         self.assertEqual('test', self.pipeline_definition.pipeline_name)
-        self.pipeline_definition.createSetupPipelineScript()
+        self.pipeline_definition.create_setup_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.pipeline_directory))
         self.assertTrue(os.path.exists(self.pipeline_definition.setup_script_path))
 
-    def testCreateRunScript(self):
-        self.pipeline_definition.createRunPipelineScript()
+    def test_create_run_script(self):
+        self.pipeline_definition.create_run_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.run_script_path))
 
-    def testCreateRunScriptCluster(self):
-        self.pipeline_definition_cluster.createRunPipelineScript()
+    def test_create_run_script_cluster(self):
+        self.pipeline_definition_cluster.create_run_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition_cluster.run_script_path))
         
-    def testCreateRsyncScript(self):
-        self.pipeline_definition.createRsyncPipelineScript()
+    def test_create_rsync_script(self):
+        self.pipeline_definition.create_rsync_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.rsync_script_path))
         
-    def testRunRsyncScript(self):
+    def test_run_rsync_script(self):
         import time
         utils.touch(self.pipeline_definition.pipeline_started)
         utils.touch(self.pipeline_definition.pipeline_ended)
-        self.pipeline_definition.createRsyncPipelineScript()
+        self.pipeline_definition.create_rsync_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.rsync_script_path))
-        self.pipeline_definition.runRsyncPipelineScript(True, False)
-        time.sleep(5) # wait for rsync to synchronise files
+        self.pipeline_definition.run_rsync_pipeline_script(True, False)
+        time.sleep(5)  # wait for rsync to synchronise files
         self.assertTrue(os.path.exists(self.pipeline_definition.archive_pipeline_directory))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, PIPELINE_STARTED_FILENAME)))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, PIPELINE_ENDED_FILENAME)))
         
+
 class SyncPipelineDefinitionTests(unittest.TestCase):
 
     def setUp(self):
@@ -773,7 +772,7 @@ class SyncPipelineDefinitionTests(unittest.TestCase):
         self.runs = data.RunFolderList(self.basedir, self.destdir, None)
         self.run = self.runs.completed_runs[0]
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='rsync')
-        self.pipeline_definition.printHeader()
+        self.pipeline_definition.print_header()
 
     def tearDown(self):
         import shutil
@@ -781,20 +780,22 @@ class SyncPipelineDefinitionTests(unittest.TestCase):
         for run in self.runs.completed_runs:
             shutil.rmtree(self.run.dest_run_folder)
 
-    def testCreateRsyncScript(self):
-        self.pipeline_definition.createRsyncRunFolderScript()
+    def test_create_rsync_script(self):
+        self.pipeline_definition.create_rsync_runfolder_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.rsync_script_path))
 
-    def testRunRsyncScript(self):
+    def test_run_rsync_script(self):
         import time
-        self.pipeline_definition.createRsyncRunFolderScript()
+
+        self.pipeline_definition.create_rsync_runfolder_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.rsync_script_path))
-        self.pipeline_definition.runRsyncRunFolderScript(False)
-        time.sleep(5) # wait for rsync to synchronise files
+        self.pipeline_definition.run_rsync_runfolder_script(False)
+        time.sleep(5)  # wait for rsync to synchronise files
         self.assertTrue(os.path.exists(self.pipeline_definition.archive_pipeline_directory))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, RSYNC_STARTED_FILENAME)))
         self.assertTrue(os.path.isfile(os.path.join(self.pipeline_definition.archive_pipeline_directory, RSYNC_ENDED_FILENAME)))
         self.assertTrue(os.path.isfile(os.path.join(self.run.dest_run_folder, data.SEQUENCING_COMPLETED)))
+
 
 class AutonalaysisPipelinesTests(unittest.TestCase):
     
@@ -810,7 +811,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
         import shutil
         for run in self.runs.completed_runs:
             shutil.rmtree(run.dest_run_folder)
-            for pipeline_name in PIPELINES.keys():
+            for pipeline_name in Pipelines.PIPELINES.keys():
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
                     shutil.rmtree(pipeline_folder)
@@ -820,22 +821,22 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
             for f in filelist:
                 os.remove(f)
 
-    def testExecute(self):
+    def test_execute(self):
         for run in self.runs.completed_runs:
             pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
-            for pipeline_name in PIPELINES.keys():
+            for pipeline_name in Pipelines.PIPELINES.keys():
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 self.assertTrue(os.path.exists(pipeline_folder))
                 self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
                 
-    def testRegisterCompletion(self):
+    def test_register_completion(self):
         for run in self.runs.completed_runs:
             pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
-            for pipeline_name in PIPELINES.keys():
+            for pipeline_name in Pipelines.PIPELINES.keys():
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 utils.touch(os.path.join(pipeline_folder, PIPELINE_STARTED_FILENAME))
                 utils.touch(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME))
@@ -848,16 +849,16 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                 utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
                 utils.touch(os.path.join(archive_pipeline_folder, RSYNC_ENDED_FILENAME))
-            pipelines.registerCompletion()
+            pipelines.register_completion()
             self.assertTrue(os.path.isfile(pipelines.all_completed))
             self.assertTrue(os.path.isfile(pipelines.archive_all_completed))
             
-    def testExecuteOnlyPrimary(self):
+    def test_execute_only_primary(self):
         for run in self.runs.completed_runs:
             pipelines = Pipelines(run=run, pipeline_step='primary')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
-            for pipeline_name in PIPELINES.keys():
+            for pipeline_name in Pipelines.PIPELINES.keys():
                 if pipeline_name == 'primary':
                     pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                     self.assertTrue(os.path.exists(pipeline_folder))
@@ -867,6 +868,7 @@ class AutonalaysisPipelinesTests(unittest.TestCase):
                     self.assertFalse(os.path.exists(pipeline_folder))
                     self.assertFalse(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
                     
+
 class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def setUp(self):
@@ -881,7 +883,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         import shutil
         run = self.runs.completed_runs[0]
         shutil.rmtree(run.dest_run_folder)
-        for pipeline_name in PIPELINES.keys():
+        for pipeline_name in Pipelines.PIPELINES.keys():
             pipeline_folder = os.path.join(run.run_folder, pipeline_name)
             if os.path.exists(pipeline_folder):
                 shutil.rmtree(pipeline_folder)
@@ -890,27 +892,27 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         for f in filelist:
             os.remove(f)
 
-    def testOneRunFolder(self):
+    def test_one_runfolder(self):
         self.assertEqual(1, len(self.runs.run_folders))
         self.assertEqual(1, len(self.runs.completed_runs))
         self.assertEqual(0, len(self.runs.analysed_runs))
 
-    def testExecute(self):
+    def test_execute(self):
         run = self.runs.completed_runs[0]
         pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
-        for pipeline_name in PIPELINES.keys():
+        for pipeline_name in Pipelines.PIPELINES.keys():
             pipeline_folder = os.path.join(run.run_folder, pipeline_name)
             self.assertTrue(os.path.exists(pipeline_folder))
             self.assertTrue(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
 
-    def testRegisterCompletion(self):
+    def test_register_completion(self):
         run = self.runs.completed_runs[0]
         pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
-        for pipeline_name in PIPELINES.keys():
+        for pipeline_name in Pipelines.PIPELINES.keys():
             pipeline_folder = os.path.join(run.run_folder, pipeline_name)
             utils.touch(os.path.join(pipeline_folder, PIPELINE_STARTED_FILENAME))
             utils.touch(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME))
@@ -923,16 +925,16 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             utils.touch(os.path.join(archive_pipeline_folder, PIPELINE_ENDED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, RSYNC_STARTED_FILENAME))
             utils.touch(os.path.join(archive_pipeline_folder, RSYNC_ENDED_FILENAME))
-        pipelines.registerCompletion()
+        pipelines.register_completion()
         self.assertTrue(os.path.isfile(pipelines.all_completed))
         self.assertTrue(os.path.isfile(pipelines.archive_all_completed))
 
-    def testExecuteOnlyPrimary(self):
+    def test_execute_only_primary(self):
         for run in self.runs.completed_runs:
             pipelines = Pipelines(run=run, pipeline_step='primary')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
-            for pipeline_name in PIPELINES.keys():
+            for pipeline_name in Pipelines.PIPELINES.keys():
                 if pipeline_name == 'primary':
                     pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                     self.assertTrue(os.path.exists(pipeline_folder))
@@ -942,6 +944,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
                     self.assertFalse(os.path.exists(pipeline_folder))
                     self.assertFalse(os.path.exists(os.path.join(pipeline_folder, SETUP_SCRIPT_FILENAME)))
                     
+
 class SyncTests(unittest.TestCase):
 
     def setUp(self):
@@ -959,13 +962,13 @@ class SyncTests(unittest.TestCase):
             shutil.rmtree(pipeline_folder)
             shutil.rmtree(run.dest_run_folder)
 
-    def testExecute(self):
+    def test_execute(self):
         import time
         for run in self.runs.completed_runs:
             sync = Sync(run=run, dry_run=False)
             self.assertEqual(run.run_folder_name, sync.run.run_folder_name)
             sync.execute()
-            time.sleep(5) # wait for rsync to synchronise files
+            time.sleep(5)  # wait for rsync to synchronise files
             pipeline_folder = os.path.join(run.run_folder, sync.pipeline_name)
             dest_pipeline_folder = os.path.join(run.dest_run_folder, sync.pipeline_name)
             self.assertTrue(os.path.exists(pipeline_folder))
@@ -978,4 +981,4 @@ class SyncTests(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(run.dest_run_folder, data.SEQUENCING_COMPLETED)))
                                                     
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()
