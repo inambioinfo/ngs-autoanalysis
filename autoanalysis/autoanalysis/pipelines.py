@@ -28,12 +28,17 @@ import utils
 EXTERNAL_PIPELINE = 'external'
 EXTERNAL_DEMUX_PIPELINE = 'external_demux'
 
-# Pipeline commands
-PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --queue=solexa --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
+# Pipeline setup command to generate metadata file
+PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --notifications --credentials=apiuser:apipassword %(options)s %(flowcell_id)s %(run_meta)s"
 
+PIPELINES_SETUP_OPTIONS = {
+    "fastq": "",
+    "primaryqc": "--create-sample-sheet --phix",
+    "alignment": "--queue=solexa"}
+
+# Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME = "%(bin_run)s --mode=%(mode)s --clean --ignore-walltime %(run_meta)s"
-PIPELINE_LOCAL_RUN_COMMAND = "cd %(work_dir)s; touch %(started)s; %(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
 
 # Template for rsync pipeline command
 PIPELINE_RSYNC_COMMAND = '''
@@ -53,10 +58,8 @@ rm %(rsync_lock)s
 
 # Pipeline rsync exclude list
 PIPELINE_RSYNC_EXCLUDE = { 
-    "primary": "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary --exclude=fastqc --exclude=mga --exclude=fastq --exclude=alignment",
-    "mga": "",
-    "fastqc": "",
-    "fastq": "",
+    "fastq": "--exclude=Data/Intensities/*_pos.txt --exclude=Data/Intensities/L00? --exclude=Data/Intensities/BaseCalls --exclude=primary --exclude=fastqc --exclude=mga --exclude=fastq --exclude=alignment",
+    "primaryqc": "",
     "alignment": "",
 }
 
@@ -91,14 +94,6 @@ RUNFOLDER_RSYNC_EXCLUDE = [
     "--exclude=%s" % data.SEQUENCING_COMPLETED
 ]
 
-# Pipeline create-metafile extra options
-PIPELINES_SETUP_OPTIONS = {
-    "primary": "",
-    "fastq": "--index-files",
-    "mga": "--create-sample-sheet --phix",
-    "fastqc": "",
-    "alignment": ""}
-        
 # Software pipeline path
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 
@@ -125,32 +120,6 @@ RSYNC_ENDED_FILENAME = "rsync.ended"
 RSYNC_FAIL_FILENAME = "rsync.failed"
 RSYNC_LOG_FILENAME = "rsync.log"
 RSYNC_LOCK_FILENAME = "rsync.lock"
-
-
-"""
-class Step(object):
-
-    SETUP_SCRIPT = "setup.sh"
-    RUN_SCRIPT = "run.sh"
-    STEP_STARTED = "step.started"
-    STEP_ENDED = "step.ended"
-
-    def __init__(self, name):
-        self.log = logging.getLogger(__name__)
-        self.name = name
-        self.step_directory = self.name
-        self.setup_script = os.path.join(self.step_directory, Step.SETUP_SCRIPT)
-        self.run_script = os.path.join(self.step_directory, Step.RUN_SCRIPT)
-        self.step_started = os.path.join(self.step_directory, Step.STEP_STARTED)
-        self.step_ended = os.path.join(self.step_directory, Step.STEP_ENDED)
-
-    def get_header(self):
-        return '--- %s' % self.name.upper()
-
-    def print_header(self):
-        self.log.info(self.get_header())
-
-"""
 
 
 ################################################################################
@@ -213,13 +182,13 @@ class PipelineDefinition(object):
                 self.env['options'] = '--dev'
             else:
                 self.env['options'] = ''
-        self.env['run_uid'] = self.run.run_uid
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
         if _cluster_host and _mode == 'lsf':
             self.env['mode'] = 'lsf' 
         else:
             self.env['mode'] = 'local'
+        self.env['lsf_queue'] = 'solexa'
         self.env['started'] = PIPELINE_STARTED_FILENAME
         self.env['mem_value'] = '2048'
         self.env['cluster'] = _cluster_host
@@ -231,7 +200,7 @@ class PipelineDefinition(object):
         self.env['rsync_ended'] = self.rsync_ended
         self.env['rsync_fail'] = self.rsync_fail
         self.env['seq_completed'] = self.run.sequencing_completed
-        if self.pipeline_name == 'primary':
+        if self.pipeline_name == 'fastq':
             self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.rsync_log)
         elif self.pipeline_name in PIPELINE_RSYNC_EXCLUDE.keys():
             self.env['rsync_options'] = "-av %s %s %s %s > %s 2>&1" % (PIPELINE_RSYNC_ALL_EXCLUDE, PIPELINE_RSYNC_EXCLUDE[self.pipeline_name], self.pipeline_directory, self.run.staging_run_folder, self.rsync_log)
@@ -273,7 +242,7 @@ class PipelineDefinition(object):
             if self.env['mode'] == 'lsf':
                 utils.create_script(self.run_script_path, utils.LSF_CMD_TEMPLATE % self.env)
             else:
-                utils.create_script(self.run_script_path, PIPELINE_LOCAL_RUN_COMMAND % self.env)
+                utils.create_script(self.run_script_path, utils.LOCAL_CMD_TEMPLATE % self.env)
         except:
             self.log.exception('unexpected error when creating run pipeline script')
             raise

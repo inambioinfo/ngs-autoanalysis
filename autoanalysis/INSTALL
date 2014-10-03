@@ -1,3 +1,9 @@
+Python dependencies:
+- requests http://docs.python-requests.org
+- psycopg2 http://initd.org/psycopg/
+- pyxb http://pyxb.sourceforge.net/
+
+
 --------------------------------------------------------------------------------
 -- INSTALLING DEPENDENCIES ON SOLs
 --------------------------------------------------------------------------------
