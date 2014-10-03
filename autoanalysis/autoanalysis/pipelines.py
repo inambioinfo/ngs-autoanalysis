@@ -255,7 +255,10 @@ class PipelineDefinition(object):
                 # no pipeline.finished file, then run-pipeline
                 if not os.path.exists(self.pipeline_ended):
                     if _dependencies_satisfied:
-                        utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
+                        if self.env['mode'] == 'local':
+                            utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
+                        else:
+                            utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
                         self.log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
                 else:
