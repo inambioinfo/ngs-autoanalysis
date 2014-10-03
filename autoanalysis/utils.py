@@ -40,13 +40,16 @@ set -v
 
 '''
 
+# Template for local command
+LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s"
+
 # Template for lsf command
 LSF_CMD_TEMPLATE = '''
 export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
 
-ssh %(cluster)s "cd %(work_dir)s; touch pipeline.started; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q solexa %(cmd)s"
+ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -o %(job_name)s_%%J.out -q %(lsf_queue)s %(cmd)s"
 
 '''
 
