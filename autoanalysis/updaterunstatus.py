@@ -48,27 +48,20 @@ def main():
         runs = auto_data.RunFolderList(options.basedir, None, None, options.run_folder)
         all_runs = runs.all_runs()
         completed_runs = []
-        tosync_runs = []
-        syncfail_runs = []
         seqfail_runs = []
         unknown_runs = []
         for run in all_runs:
             try:
                 log.info(run.get_header())
+
+                # add sequencing complete status by retrieving info from lims on run
                 if not run.is_sequencing_status_present():
                     is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
                     run.update_sequencing_status(is_sequencing_complete, options.dry_run)
-                if not run.is_sync_status_present():
-                    run.update_sync_status(options.dry_run)
-                    
+
                 # reporting
                 if os.path.exists(run.sequencing_completed):
-                    if os.path.exists(run.sync_completed):
-                        completed_runs.append(run)
-                    elif os.path.exists(run.sync_failed):
-                        syncfail_runs.append(run)
-                    else:
-                        tosync_runs.append(run)
+                    completed_runs.append(run)
                 elif os.path.exists(run.sequencing_failed):
                     seqfail_runs.append(run)
                 else:
@@ -82,16 +75,10 @@ def main():
             log.info('COMPLETE  %s' % run.run_folder)
         for run in seqfail_runs:
             log.info('SEQ FAIL  %s' % run.run_folder)
-        for run in syncfail_runs:
-            log.info('SYNC FAIL %s' % run.run_folder)
-        for run in tosync_runs:
-            log.info('TO SYNC   %s' % run.run_folder)
         for run in unknown_runs:
             log.info('UNKNOWN   %s' % run.run_folder)
         log.info('COMPLETE  RUNS: %s' % len(completed_runs))
         log.info('SEQ FAIL  RUNS: %s' % len(seqfail_runs))
-        log.info('SYNC FAIL RUNS: %s' % len(syncfail_runs))
-        log.info('TO SYNC   RUNS: %s' % len(tosync_runs))
         log.info('UNKNOWN   RUNS: %s' % len(unknown_runs))
     except:
         log.exception("Unexpected error")

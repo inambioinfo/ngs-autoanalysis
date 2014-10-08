@@ -29,20 +29,14 @@ RTA_COMPLETED = 'RTAComplete.txt'
 SEQUENCING_COMPLETED = 'SequencingComplete.txt'
 SEQUENCING_FAILED = 'SequencingFail.txt'
 
-SYNC_COMPLETED = 'Sync.completed'
-SYNC_FAILED = 'Sync.failed'
-
 ANALYSIS_COMPLETED = "AnalysisComplete.txt"
 ANALYSIS_IGNORE = 'analysis.ignore'
 DONT_DELETE = 'dont.delete'
 
-PUBLISHING_ASSIGNED = 'PublishingAssign.txt'
-PUBLISHING_COMPLETED = 'PublishingComplete.txt'
+SYNC_COMPLETED = 'SyncComplete.txt'
+SYNC_FAILED = 'SyncFail.txt'
 
-RSYNC_FOLDER = "rsync"
-RSYNC_STARTED = "rsync.started"
-RSYNC_ENDED = "rsync.ended"
-RSYNC_FAILED = "rsync.failed"
+PUBLISHING_ASSIGNED = 'PublishingAssign.txt'
 
 
 class Folder(object):
@@ -105,9 +99,9 @@ class RunFolder(Folder):
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
         self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
-        self.publishing_completed = os.path.join(self.run_folder, PUBLISHING_COMPLETED)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
 
+        # only create run folders when sequencing is complete
         self.staging_run_folder = self.create_runfolder(self.staging_dir)
         self.lustre_run_folder = self.create_runfolder(self.lustre_dir)
 
@@ -152,51 +146,6 @@ class RunFolder(Folder):
                     return False
         return False
 
-    def update_sync_status(self, _dry_run=True):
-        rsync_folder = os.path.join(self.run_folder, RSYNC_FOLDER)
-        if os.path.exists(rsync_folder):
-            if os.path.exists(os.path.join(rsync_folder, RSYNC_STARTED)):
-                if os.path.exists(os.path.join(rsync_folder, RSYNC_ENDED)):
-                    if not os.path.exists(self.sync_completed):
-                        utils.touch(self.sync_completed, _dry_run)
-                        self.log.info('create %s' % self.sync_completed)
-                    else:
-                        self.log.debug('%s already exists' % self.sync_completed)
-                elif os.path.exists(os.path.join(rsync_folder, RSYNC_FAILED)):
-                    if not os.path.exists(self.sync_failed):
-                        utils.touch(self.sync_failed)
-                        self.log.info('create %s' % self.sync_failed)
-                    else:
-                        self.log.debug('%s already exists' % self.sync_failed)
-                else:
-                    self.log.info('Sync not finished.')
-
-        else:
-            self.log.info('Not sync yet. %s does not exist.' % rsync_folder)
-
-    def is_sync_status_present(self):
-        # check if Sync.completed or Sync.failed is present
-        if os.path.exists(self.sync_completed):
-            self.log.debug('%s found' % self.sync_completed)
-            return True
-        if os.path.exists(self.sync_failed):
-            self.log.debug('%s found' % self.sync_failed)
-            return True
-        return False
-
-    def update_analysis_status(self, _all_fastq_found=False, _dry_run=True):
-        if _all_fastq_found:
-            if not os.path.exists(self.analysis_completed):
-                utils.touch(self.analysis_completed, _dry_run)
-                self.log.info('create %s' % self.analysis_completed)
-            else:
-                self.log.debug('%s already exists' % self.analysis_completed)
-        else:
-            if os.path.exists(self.sequencing_completed):
-                self.log.info('All fastq files not found - analysis running')
-            else:
-                self.log.info('%s does not exist - sequencing running' % self.sequencing_completed)
-
     def is_analysis_completed_present(self):
         # check if Analysed.completed is present
         return os.path.exists(self.analysis_completed)
@@ -225,34 +174,39 @@ class RunFolderList(object):
         self.lustre_dir = lustre_dir
         self.one_run_folder = one_run_folder
 
-        if self.one_run_folder:
-            self.run_folders = glob.glob(RunFolderList.ONERUNFOLDER_GLOB % (self.processing_dir, self.one_run_folder))
-        else:
-            self.run_folders = glob.glob(RunFolderList.RUNFOLDER_GLOB % self.processing_dir)
-
-        self.all_runs, self.completed_runs, self.analysed_runs, self.published_runs = self.populate_runs()
+        self.run_folders = self.get_folders(self.processing_dir)
+        self.all_runs, self.completed_runs, self.toanalyse_runs, self.analysed_runs, self.published_runs = self.populate_runs()
 
     def populate_runs(self):
         all_runs = []
         completed_runs = []
+        toanalyse_runs = []
         analysed_runs = []
         published_runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
-            run = RunFolder(run_folder, self.staging_dir, do_create_dir=self.do_create_dir)
+            run = RunFolder(run_folder, self.staging_dir, self.lustre_dir, do_create_dir=self.do_create_dir)
             all_runs.append(run)
             if run.is_sequencing_completed():
                 completed_runs.append(run)
+                if not run.is_analysis_completed_present():
+                    toanalyse_runs.append(run)
             if run.is_analysis_completed_present():
                 analysed_runs.append(run)
             if run.is_analysis_completed_present() and run.is_publishing_assigned_present():
                 published_runs.append(run)
-        return all_runs, completed_runs, analysed_runs, published_runs
+        return all_runs, completed_runs, toanalyse_runs, analysed_runs, published_runs
 
     def get_destination_runfolders(self):
+        return self.get_folders(self.staging_dir)
+
+    def get_lustre_runfolders(self):
+        return self.get_folders(self.lustre_dir)
+
+    def get_folders(self, this_dir):
         if self.one_run_folder:
-            return glob.glob(RunFolderList.ONERUNFOLDER_GLOB % (self.staging_dir, self.one_run_folder))
-        return glob.glob(RunFolderList.RUNFOLDER_GLOB % self.staging_dir)
+            return glob.glob(RunFolderList.ONERUNFOLDER_GLOB % (this_dir, self.one_run_folder))
+        return glob.glob(RunFolderList.RUNFOLDER_GLOB % this_dir)
 
 
 ################################################################################
@@ -267,15 +221,16 @@ class RunFolderTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
+        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
 
         self.run_folder_name = '130417_HWI-ST230_1122_C1YH9ACXX'
         self.run_folder = os.path.join(self.basedir, self.run_folder_name)
-        self.run = RunFolder(self.run_folder, self.destdir)
+        self.run = RunFolder(self.run_folder, self.destdir, self.lustredir)
 
     def tearDown(self):
         import shutil
         shutil.rmtree(self.run.staging_run_folder)
-        pass
+        shutil.rmtree(self.run.lustre_run_folder)
 
     def test_run(self):
         self.assertEqual(self.run_folder, self.run.run_folder)
@@ -297,6 +252,8 @@ class RunFolderTests(unittest.TestCase):
     def test_destination_runfolders(self):
         folder = glob.glob("%s/%s" % (self.destdir, '130417_HWI-ST230_1122_C1YH9ACXX'))
         self.assertIsNotNone(folder)
+        folder = glob.glob("%s/%s" % (self.lustredir, '130417_HWI-ST230_1122_C1YH9ACXX'))
+        self.assertIsNotNone(folder)
 
 
 class RunFolderListTests(unittest.TestCase):
@@ -307,59 +264,38 @@ class RunFolderListTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir, lustre_dir=None)
-        
-    def tearDown(self):
-        import shutil
-        folder = os.path.join(self.destdir, '130417_HWI-ST230_1122_C1YH9ACXX')
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-        
-    def test_run_folders(self):
-        self.assertEqual(self.basedir, self.runs.processing_dir)
-        self.assertEqual(self.destdir, self.runs.staging_dir)
-        self.assertEqual(3, len(self.runs.run_folders))
-        self.assertEqual(len(self.runs.run_folders), len(self.runs.all_runs))
-        
-    def test_runs_to_process(self):
-        self.assertEqual(1, len(self.runs.completed_runs))
-        self.assertEqual(0, len(self.runs.analysed_runs))
-        self.assertEqual(0, len(self.runs.published_runs))
-        
-    def test_destination_run_folders(self):
-        self.assertEqual(1, len(self.runs.get_destination_runfolders()))
-        
-
-class AnalysisRunFoldersTests(unittest.TestCase):
-    
-    def setUp(self):
-        import log as logger
-        self.log = logger.get_custom_logger()
-        self.current_path = os.path.abspath(os.path.dirname(__file__))
-        self.basedir = os.path.join(self.current_path, '../testdata/processing/')
-        self.destdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir, lustre_dir=None)
+        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
+        self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir, lustre_dir=self.lustredir)
         
     def tearDown(self):
         import shutil
         for folder in self.runs.get_destination_runfolders():
             shutil.rmtree(folder)
+        for folder in self.runs.get_lustre_runfolders():
+            shutil.rmtree(folder)
 
-    def test_runfolders(self):
+    def test_all_run_folders(self):
         self.assertEqual(self.basedir, self.runs.processing_dir)
         self.assertEqual(self.destdir, self.runs.staging_dir)
-        self.assertEqual(3, len(self.runs.run_folders))
+        self.assertEqual(self.lustredir, self.runs.lustre_dir)
+        self.assertEqual(5, len(self.runs.run_folders))
+        self.assertEqual(len(self.runs.run_folders), len(self.runs.all_runs))
         
     def test_completed_runs(self):
-        self.assertEqual(1, len(self.runs.completed_runs))
-        self.assertEqual(1, len(self.runs.completed_runs))
+        self.assertEqual(3, len(self.runs.completed_runs))
+
+    def test_toanalyse_runs(self):
+        self.assertEqual(1, len(self.runs.toanalyse_runs))
 
     def test_analysed_runs(self):
-        self.assertEqual(0, len(self.runs.analysed_runs))
+        self.assertEqual(2, len(self.runs.analysed_runs))
+
+    def test_published_runs(self):
+        self.assertEqual(1, len(self.runs.published_runs))
         
-    def test_destination_runfolders(self):
-        self.assertEqual(1, len(self.runs.get_destination_runfolders()))
-        
+    def test_destination_run_folders(self):
+        self.assertEqual(3, len(self.runs.get_destination_runfolders()))
+        self.assertEqual(3, len(self.runs.get_lustre_runfolders()))
 
 class OneRunFolderTests(unittest.TestCase):
 

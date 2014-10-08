@@ -41,7 +41,7 @@ set -v
 '''
 
 # Template for local command
-LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s"
+LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s > %(log)s 2>&1;"
 
 # Template for lsf command
 LSF_CMD_TEMPLATE = '''
@@ -59,7 +59,7 @@ ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'se
 def create_script(script_path, command):
     if not os.path.exists(script_path):    
         script_file = open(script_path, 'w')
-        script_file.write(SCRIPT_TEMPLATE % {'cmd':command})
+        script_file.write(SCRIPT_TEMPLATE % {'cmd': command})
         script_file.close()
         os.chmod(script_path, 0755)
         log.info('%s created' % script_path)
