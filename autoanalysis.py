@@ -56,7 +56,7 @@ def main():
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lusterdir, options.run_folder)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.completed_runs:
