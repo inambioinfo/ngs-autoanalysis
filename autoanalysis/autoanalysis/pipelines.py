@@ -105,7 +105,7 @@ class PipelineDefinition(object):
         """
         self.env['bin_meta'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
         self.env['bin_run'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
-        self.env['basedir'] = os.path.dirname(self.run.run_folder)
+        self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
             if _use_limsdev:
                 self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
