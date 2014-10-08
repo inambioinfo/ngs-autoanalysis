@@ -30,7 +30,7 @@ PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --notifications %(o
 PIPELINES_SETUP_OPTIONS = {
     "fastq": "",
     "primaryqc": "--create-sample-sheet --phix",
-    "alignment": "--queue=solexa"}
+    "alignment": "--queue=solexa --sync"}
 
 # Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
