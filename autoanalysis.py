@@ -56,36 +56,43 @@ def main():
                   
     try:
         # loop over all runs that have a Sequencing.completed file in options.basedir
-        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, None, options.run_folder)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lusterdir, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.completed_runs:
             try:
                 log.info(run.get_header())
-                # create pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
-                if not options.donot_run_pipelines:
-                    # run pipelines
-                    pipelines.execute()
-                # register pipelines completion
-                pipelines.register_completion()
-                
-                # create lims processes
-                glslims.create_analysis_processes(run.flowcell_id)
 
                 # get all flow-cell sample fastq files when attached in lims
                 all_data = glslims.is_fastq_files_found(run.run_folder_name)
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.find_external_data(run.run_folder_name)
+
+                # get alignment info for this run
+                active_alignment = False
+
+                # setup and run pipelines
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
+                if not options.donot_run_pipelines:
+                    pipelines.execute()
+
+                # register completion
+                pipelines.register_completion()
                 
-                # create external
-                external = auto_pipelines.External(run, all_data, external_data, options.dry_run)
+                # create analysis processes in lims
+                #glslims.create_analysis_processes(run.flowcell_id)
+
                 # synchronise external data to ftp server
+                external = auto_pipelines.External(run, all_data, external_data, options.dry_run)
                 external.sync()
 
+                # synchronise data to staging area
+                sync = auto_pipelines.Sync(run, options.dry_run)
+                sync.execute()
+
                 # add flow-cell into the publishing queue
-                if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.is_external_data_synchronised():
-                    glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
+                #if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.is_external_data_synchronised():
+                #    glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
                 
             except Exception, e:
                 log.exception("Unexpected error")
