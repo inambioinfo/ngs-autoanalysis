@@ -430,7 +430,7 @@ class External(object):
             self.log.warn('%s is missing' % rsync_script)
 
     def publish(self):
-        """Publish external data to ftp server that have been published in lims and add Publishing.completed
+        """Publish external data to ftp server that have been published in lims and add PublishingAssign.txt
         Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
         THIS IS NOW DONE AS PART OF AN EPP SCRIPT ATTACHED TO THE PUBLISHING PROCESS
         """
