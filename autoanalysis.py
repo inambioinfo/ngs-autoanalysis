@@ -65,7 +65,7 @@ def main():
                 log.info(run.get_header())
 
                 # are all sample fastq files attached in lims for this run?
-                are_fastq_files_attached = glslims.are_fastq_files_attached(run.run_folder_name)
+                are_files_attached = glslims.are_fastq_files_attached(run.run_folder_name)
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.find_external_data(run.run_folder_name)
                 # is alignment active for this run?
@@ -84,7 +84,7 @@ def main():
                 sync.execute()
 
                 # synchronise external data to ftp server
-                external = auto_pipelines.External(run, are_fastq_files_attached, external_data, options.dry_run)
+                external = auto_pipelines.External(run, are_files_attached, external_data, options.dry_run)
                 external.execute()
 
                 # add flow-cell into the publishing queue
