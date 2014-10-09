@@ -42,7 +42,6 @@ SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 # ftp server
 FTP_SERVER = "solexadmin@uk-cri-ldmz01"
 FTP_PATH = "/dmz01/solexa/external"
-FTP_URL = "%s:%s" % (FTP_SERVER, FTP_PATH)
 
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
@@ -66,6 +65,10 @@ class PipelineDefinition(object):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = pipeline_name
+        self.software_path = software_path
+        self.cluster_host = cluster_host
+        self.use_limsdev = use_limsdev
+        self.mode = mode
 
         # create pipeline directory
         if cluster_host and mode == 'lsf':
@@ -75,56 +78,61 @@ class PipelineDefinition(object):
             self.pipeline_directory = os.path.join(self.run.run_folder, self.pipeline_name)
             utils.create_directory(self.pipeline_directory)
 
-        # create archive pipeline directory in staging area
-        self.log.debug(self.run.staging_run_folder)
-        self.log.debug(self.pipeline_name)
+        # set path to pipeline directory in staging area
         self.archive_pipeline_directory = os.path.join(self.run.staging_run_folder, self.pipeline_name)
         
-        # shell script paths
-        self.setup_script_path = os.path.join(self.pipeline_directory, SETUP_SCRIPT_FILENAME)
-        self.run_script_path = os.path.join(self.pipeline_directory, RUN_SCRIPT_FILENAME)
-
-        self.pipeline_started = os.path.join(self.pipeline_directory, PIPELINE_STARTED_FILENAME)
-        self.pipeline_ended = os.path.join(self.pipeline_directory, PIPELINE_ENDED_FILENAME)
-        self.pipeline_failed = os.path.join(self.pipeline_directory, PIPELINE_FAILED_FILENAME)
-        self.pipeline_lock = os.path.join(self.run.run_folder, PIPELINE_LOCK_FILENAME)
-        self.pipeline_log = os.path.join(self.pipeline_directory, PIPELINE_LOG_FILENAME)
-
-        # environment variables for setting up and running each pipeline
+        # set environment
+        self.setup_script_path = ""
+        self.run_script_path = ""
+        self.pipeline_started = ""
+        self.pipeline_ended = ""
+        self.pipeline_failed = ""
+        self.pipeline_lock = ""
+        self.pipeline_log = ""
         self.env = {}
-        self.set_env(software_path, cluster_host, use_limsdev, mode)
+        self.set_env()
         
     def get_header(self):
         return '--- %s' % self.pipeline_name.upper()
         
     def print_header(self):
         self.log.info(self.get_header())
-        
-    def set_env(self, _software_path, _cluster_host, _use_limsdev, _mode):
-        """set environment variables for generating shell scripts from their templates
+
+    def set_env(self):
+        """ set environment : set path to pipeline files
+        and create an env dictionary containing variables for generating shell scripts from their templates
         """
-        self.env['bin_meta'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
-        self.env['bin_run'] = '%s/%s/bin/%s' % (_software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
+        # set paths to pipeline files
+        self.setup_script_path = os.path.join(self.pipeline_directory, SETUP_SCRIPT_FILENAME)
+        self.run_script_path = os.path.join(self.pipeline_directory, RUN_SCRIPT_FILENAME)
+        self.pipeline_started = os.path.join(self.pipeline_directory, PIPELINE_STARTED_FILENAME)
+        self.pipeline_ended = os.path.join(self.pipeline_directory, PIPELINE_ENDED_FILENAME)
+        self.pipeline_failed = os.path.join(self.pipeline_directory, PIPELINE_FAILED_FILENAME)
+        self.pipeline_lock = os.path.join(self.pipeline_directory, PIPELINE_LOCK_FILENAME)
+        self.pipeline_log = os.path.join(self.pipeline_directory, PIPELINE_LOG_FILENAME)
+        # environment variables for setting up and running each pipeline
+        self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
+        self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
         self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
-            if _use_limsdev:
+            if self.use_limsdev:
                 self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
             else:
                 self.env['options'] = PIPELINES_SETUP_OPTIONS[self.pipeline_name]
         else:
-            if _use_limsdev:
+            if self.use_limsdev:
                 self.env['options'] = '--dev'
             else:
                 self.env['options'] = ''
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
-        if _cluster_host and _mode == 'lsf':
+        if self.cluster_host and self.mode == 'lsf':
             self.env['mode'] = 'lsf' 
         else:
             self.env['mode'] = 'local'
         self.env['lsf_queue'] = 'solexa'
         self.env['mem_value'] = '2048'
-        self.env['cluster'] = _cluster_host
+        self.env['cluster'] = self.cluster_host
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
         self.env['cmd'] = PIPELINE_RUN_COMMAND % self.env
@@ -243,8 +251,7 @@ class Pipelines(object):
         self.pipeline_definitions = {}
             
         self.all_completed = os.path.join(self.run.run_folder, data.ANALYSIS_COMPLETED)
-        self.archive_all_completed = os.path.join(self.run.staging_run_folder, data.ANALYSIS_COMPLETED)
-        
+
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
         each of these three steps: setup_pipeline, run_pipeline, and rsync_pipeline
@@ -263,17 +270,20 @@ class Pipelines(object):
                 pipeline_definition.create_run_pipeline_script()
                 # run run-pipeline script to run the pipeline
                 pipeline_definition.run_run_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
+            # - step 3 - register completion of all pipelines
+            self.register_completion()
 
     def register_completion(self):
-        """ Create Analysis.completed when pipelines have been successfully ran and synchronised
+        """ Create AnalysisComplete.txt when all pipelines have been successfully ran
         """
-        # create AnalysisComplete.txt flag when all pipelines completed
+        # create AnalysisComplete.txt flag when all pipelines completed and when not
+        # running only one step
         if self.are_pipelines_completed(self.pipeline_definitions):
-            if not os.path.exists(self.all_completed):
+            if not self.pipeline_step and not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
             self.log.info('*** ANALYSIS COMPLETED *********************************************************')
         else:
-            # remove Analysis.completed when analysis not completed and file exists
+            # remove AnalysisComplete.txt when analysis not completed and file exists
             if os.path.exists(self.all_completed):
                 os.remove(self.all_completed)
 
@@ -300,209 +310,6 @@ class Pipelines(object):
                 return False
         return True
         
-
-################################################################################
-# CLASS External
-################################################################################
-class External(object):
-
-    # External pipeline name
-    EXTERNAL_PIPELINE = 'external'
-
-    def __init__(self, run, all_data, external_data, dry_run=True):
-        self.log = logging.getLogger(__name__) 
-        self.run = run
-        self.all_data = all_data
-        self.external_data = external_data
-        self.pipeline_name = self.EXTERNAL_PIPELINE
-        self.publishing_assigned = os.path.join(self.run.run_folder, data.PUBLISHING_ASSIGNED)
-        self.publishing_completed = os.path.join(self.run.run_folder, data.PUBLISHING_COMPLETED)
-        self.archive_publishing_completed = os.path.join(self.run.staging_run_folder, data.PUBLISHING_COMPLETED)
-        self.dry_run = dry_run
-        
-    def sync(self):
-        """synchronise external data to ftp server - rsync to ldmz01
-        create external directory with symlink to fastq files on archivedir (sol03) - not basedir (lustre) -
-        synchronise external data to temp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
-        """
-        if self.run.is_analysis_completed_present():
-            if self.external_data:
-                if self.run.staging_run_folder:
-                    # create pipeline definition
-                    pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
-                    pipeline_definition.print_header()
-                    # create symlinks for external users
-                    self.create_symlinks(pipeline_definition.archive_pipeline_directory)
-                    # create rsync-pipeline script
-                    self.create_ftp_rsync_script(pipeline_definition.run_script_path, pipeline_definition.env)
-                    # run rsync-pipeline script
-                    self.run_ftp_rsync_script(pipeline_definition.run_script_path, pipeline_definition.env)
-                else:
-                    self.log.warn('%s does not exist' % self.run.staging_run_folder)
-            else:
-                self.log.info('No external data to publish')
-                
-    def create_symlinks(self, external_directory):
-        """ Create symlink to external fastq data into external folder
-        - files to symlink per lane:
-            SLX-7957.C3BW4ACXX.s_8.contents.csv
-            SLX-7957.C3BW4ACXX.s_8.r_1.lostreads.fq.gz
-            SLX-7957.C3BW4ACXX.s_8.lostreads.md5sums.txt
-        - files to symlink per sample:
-            SLX-7957.A002.C3BW4ACXX.s_8.r_1.fq.gz
-            SLX-7957.A002.C3BW4ACXX.s_8.md5sums.txt
-        - if non PF data requested
-            SLX-7957.C3BW4ACXX.s_8.r_1.failed.fq.gz
-            SLX-7957.C3BW4ACXX.s_8.failed.md5sums.txt
-        """
-        self.log.info('... create symlinks to external data ...........................................')
-        for file_id in list(self.external_data.viewkeys()):
-            # create ftpdir in external directory in run folder
-            runfolder_ext_ftpdir = os.path.join(external_directory, self.external_data[file_id]['ftpdir'])
-            utils.create_directory(runfolder_ext_ftpdir)
-            filename = self.external_data[file_id]['runfolder']
-            try:
-                # create symlink
-                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
-                utils.create_symlink(filename, linkname)
-                # symlink non PF data
-                if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
-                    for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
-                        filename_failed = filename.replace('.contents.csv', file_extension)
-                        linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                        utils.create_symlink(filename_failed, linkname_failed)                
-            except:
-                continue
-
-    def create_ftp_rsync_script(self, rsync_script, env):
-        """Create rsync script for external data
-        """
-        self.log.info('... create ftp rsync pipeline script ...........................................')
-        ftp_rsync_command = '''
-        touch %(started)s
-        touch %(lock)s
-
-        if ( %(rsync_cmd)s ) 
-        then
-           touch %(ended)s
-        else
-            touch %(failed)s
-        fi
-        
-        rsync -av %(pipedir)s/ %(archive_pipedir)s/
-        
-        rm %(lock)s
-        '''
-        
-        rsync_cmd = ""
-        # set of institutes
-        ftpdirs = set()
-        for file_id in list(self.external_data.viewkeys()):
-            ftpdirs.add(self.external_data[file_id]['ftpdir'])
-        for ftpdir in ftpdirs:
-            src = os.path.join(env['archive_pipedir'], ftpdir)
-            dest = "%s/tmp/%s/" % (FTP_URL, ftpdir)
-            rsync_log = "%s/rsync_%s.log" % (env['archive_pipedir'], ftpdir)
-            cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
-            rsync_cmd += cmd
-        env['rsync_cmd'] = rsync_cmd
-        utils.create_script(rsync_script, ftp_rsync_command % env)
-
-    def run_ftp_rsync_script(self, rsync_script, env):
-        """Run rsync script for external data
-        """
-        self.log.info('... run ftp rsync pipeline script ..............................................')
-        if os.path.exists(rsync_script):
-            if not os.path.exists(env['started']):
-                if not os.path.exists(env['lock']):
-                    utils.run_bg_process(['sh', '%s' % rsync_script], self.dry_run)
-                else:
-                    self.log.info('%s presents - another rsync process is running' % env['lock'])
-            else:
-                if not os.path.exists(env['ended']):
-                    if not os.path.exists(env['failed']):
-                        self.log.info('external data is currently being synchronised')
-                    else:
-                        self.log.info('[***FAIL***] rsync for external data onto ftp server has failed')
-                else:
-                    self.log.info('external data has been synchronised')
-        else:
-            self.log.warn('%s is missing' % rsync_script)
-
-    def publish(self):
-        """Publish external data to ftp server that have been published in lims and add PublishingAssign.txt
-        Move external data from tmp to public directory solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/${ftp_group_dir}/
-        THIS IS NOW DONE AS PART OF AN EPP SCRIPT ATTACHED TO THE PUBLISHING PROCESS
-        """
-        if self.run.is_analysis_completed_present():
-            if self.all_data:
-                if self.external_data:
-                    if self.is_external_data_synchronised():
-                        if not self.is_publishing_completed():
-                            self.log.info('... move external data to public folders .......................................')
-                            # build dictionnary of SLX-IDs to be moved
-                            data = {}
-                            for file_id in list(self.external_data.viewkeys()):
-                                filename = os.path.basename(self.external_data[file_id]['runfolder'])
-                                if filename.endswith('.contents.csv'):
-                                    # "/solexa03/data/Runs/140228_SN1078_0260_C3JEHACXX/fastq/SLX-8180.C3JEHACXX.s_8.contents.csv"
-                                    fparts = filename.split('.') 
-                                    slxkey = '%s*%s*%s' % (fparts[0], fparts[1], fparts[2])  # key made of SLX-ID*FC-ID*LANE-ID
-                                    data[slxkey] = self.external_data[file_id]['ftpdir']
-                            # move data
-                            for slxkey in data.viewkeys():
-                                # ssh solexadmin@uk-cri-ldmz01 mv /dmz01/solexa/external/tmp/gurdon_institute/SLX-xxxx*FCID*s_x* /dmz01/solexa/external/gurdon_institute/
-                                src = "%s/tmp/%s/%s*" % (FTP_PATH, data[slxkey], slxkey)
-                                dest = "%s/%s/" % (FTP_PATH, data[slxkey])
-                                cmd = ['ssh', FTP_SERVER, 'mv %s %s' % (src, dest)]
-                                utils.run_process(cmd, self.dry_run)
-                            # register completion
-                            utils.touch(self.publishing_completed)
-                            utils.touch(self.archive_publishing_completed)
-                        else:
-                            self.log.info('External data already move to public folders')
-                        self.log.info('*** PUBLISH COMPLETED ******************************************************')
-                    else:
-                        self.log.info('External data not synchronised to ftp yet')
-                else:
-                    self.log.info('No external data')
-                    if not self.is_publishing_completed():
-                        # register completion
-                        utils.touch(self.publishing_completed)
-                        utils.touch(self.archive_publishing_completed)
-                    self.log.info('*** PUBLISH COMPLETED ******************************************************')
-            else:
-                self.log.info('Sample FASTQ files not attached in lims yet')
-               
-    def is_publishing_completed(self):
-        if os.path.exists(self.publishing_completed) and os.path.exists(self.archive_publishing_completed):
-            return True
-        return False
-        
-    def is_external_data_synchronised(self):
-        """Checks that external data has been synchronised to the ftp tmp folder
-        """
-        # on current location
-        external_directory = os.path.join(self.run.run_folder, self.pipeline_name)
-        rsync_started = os.path.join(external_directory, PIPELINE_STARTED_FILENAME)
-        rsync_finished = os.path.join(external_directory, PIPELINE_ENDED_FILENAME)
-        # at destination
-        dest_external_directory = os.path.join(self.run.staging_run_folder, self.pipeline_name)
-        dest_rsync_started = os.path.join(dest_external_directory, PIPELINE_STARTED_FILENAME)
-        dest_rsync_finished = os.path.join(dest_external_directory, PIPELINE_ENDED_FILENAME)
-        # data files attached in lims 
-        if self.all_data:
-            # external data found
-            if self.external_data:
-                # rsync to ftp finished - data synchronised
-                if os.path.exists(rsync_started) and os.path.exists(rsync_finished) and os.path.exists(dest_rsync_started) and os.path.exists(dest_rsync_finished):
-                    return True
-                return False
-            # no external data found
-            return True
-        # no data files attached
-        return False
-
 
 ################################################################################
 # CLASS Sync
@@ -540,9 +347,8 @@ rm %(lock)s
     "--exclude=primaryqc"
     ]
 
-
     def __init__(self, run, dry_run=True):
-        self.log = logging.getLogger(__name__) 
+        self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = 'sync'
         self.dry_run = dry_run
@@ -554,18 +360,22 @@ rm %(lock)s
         self.env = self.pipeline_definition.env
         self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(self.RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.pipeline_definition.pipeline_log)
 
+        self.sync_completed = os.path.join(self.run.run_folder, data.SYNC_COMPLETED)
+        self.staging_sync_completed = os.path.join(self.run.staging_run_folder, data.SYNC_COMPLETED)
 
     def execute(self):
         """execute synchronisation of run folder into staging by creating a shell script and running it
         """
-        if self.run.is_sequencing_completed():
+        if self.run.is_sequencing_completed() and self.run.is_analysis_completed_present():
             # create rsync-pipeline script
             self.create_rsync_runfolder_script()
             # run rsync-pipeline script
             self.run_rsync_runfolder_script(self.dry_run)
+            # register completion
+            self.register_completion()
 
     def create_rsync_runfolder_script(self):
-        self.log.info('... create rsync runfolder script ..............................................')
+        self.log.info('... create staging sync script .................................................')
         try:
             if not os.path.exists(self.pipeline_definition.run_script_path):
                 utils.create_script(self.pipeline_definition.run_script_path, self.RUNFOLDER_RSYNC_COMMAND % self.env)
@@ -578,7 +388,7 @@ rm %(lock)s
     def run_rsync_runfolder_script(self, _dry_run=True):
         """Run rsync script to synchronise runfolder data from sequencing servers to lustre
         """
-        self.log.info('... run rsync runfolder script .................................................')
+        self.log.info('... run staging sync script ....................................................')
         if os.path.exists(self.pipeline_definition.run_script_path):
             if not os.path.exists(self.pipeline_definition.pipeline_started):
                 if not os.path.exists(self.pipeline_definition.pipeline_lock):
@@ -586,13 +396,13 @@ rm %(lock)s
                         utils.touch(self.pipeline_definition.pipeline_lock, _dry_run)
                         utils.run_bg_process(['sh', '%s' % self.pipeline_definition.run_script_path], _dry_run)
                     else:
-                        self.log.debug("nothing to rsync yet - analysis not completed")
+                        self.log.debug("nothing to sync yet - analysis not completed")
                 else:
-                    self.log.info('%s presents - another rsync process is running' % self.pipeline_definition.pipeline_lock)
+                    self.log.info('%s presents - another sync process is running' % self.pipeline_definition.pipeline_lock)
             else:
                 if not os.path.exists(self.pipeline_definition.pipeline_ended):
                     if os.path.exists(self.pipeline_definition.pipeline_failed):
-                        self.log.error("[***FAIL***] rsync for %s has failed." % self.run.run_folder)
+                        self.log.error("[***FAIL***] sync for %s has failed." % self.run.run_folder)
                         self.log.error("please investigate %s." % self.pipeline_definition.pipeline_log)
                     else:
                         self.log.info('runfolder is currently being synchronised')
@@ -600,6 +410,179 @@ rm %(lock)s
                     self.log.info('runfolder has been synchronised')
         else:
             self.log.warn('%s is missing' % self.pipeline_definition.run_script_path)
+
+    def register_completion(self):
+        """ Create SyncComplete.txt when data has been successfully synced to staging
+        """
+        if os.path.exists(self.pipeline_definition.pipeline_ended) and os.path.exists(self.pipeline_definition.pipeline_started):
+            if not os.path.exists(self.sync_completed):
+                utils.touch(self.sync_completed)
+            if not os.path.exists(self.staging_sync_completed):
+                utils.touch(self.staging_sync_completed)
+            self.log.info('*** SYNC COMPLETED *************************************************************')
+        else:
+            # remove AnalysisComplete.txt when analysis not completed and file exists
+            if os.path.exists(self.sync_completed):
+                os.remove(self.sync_completed)
+            if os.path.exists(self.staging_sync_completed):
+                os.remove(self.staging_sync_completed)
+
+
+################################################################################
+# CLASS External
+################################################################################
+class External(object):
+
+    # External pipeline name
+    EXTERNAL_PIPELINE = 'external'
+
+    def __init__(self, run, are_files_attached, external_data, dry_run=True, ftp_server=FTP_SERVER, ftp_path=FTP_PATH):
+        self.log = logging.getLogger(__name__) 
+        self.run = run
+        self.are_files_attached = are_files_attached
+        self.external_data = external_data
+        self.dry_run = dry_run
+        self.ftp_server = ftp_server
+        self.ftp_path = ftp_path
+        self.pipeline_name = self.EXTERNAL_PIPELINE
+        self.pipeline_definition = None
+        self.external_completed = os.path.join(self.run.run_folder, data.EXTERNAL_COMPLETED)
+        self.staging_external_completed = os.path.join(self.run.staging_run_folder, data.EXTERNAL_COMPLETED)
+        
+    def execute(self):
+        """synchronise external data to ftp server
+        create external directory with symlink to fastq files
+        synchronise external data to tmp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
+        """
+        if self.run.is_analysis_completed_present() and self.run.is_sync_completed_present() and self.are_files_attached:
+            if self.external_data:
+                # create pipeline definition
+                self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
+                # re-set pipeline directory to be in staging area
+                self.pipeline_definition.pipeline_directory = self.pipeline_definition.archive_pipeline_directory
+                self.pipeline_definition.set_env()
+                self.pipeline_definition.print_header()
+                # create symlinks for external users
+                self.create_symlinks()
+                # create rsync-pipeline script
+                self.create_ftp_rsync_script()
+                # run rsync-pipeline script
+                self.run_ftp_rsync_script()
+                # register completion
+                self.register_completion()
+            else:
+                self.log.info('No external data to publish')
+                if not os.path.exists(self.external_completed):
+                    utils.touch(self.external_completed)
+                if not os.path.exists(self.staging_external_completed):
+                    utils.touch(self.staging_external_completed)
+                self.log.info('*** EXTERNAL COMPLETED *********************************************************')
+
+    def create_symlinks(self):
+        """ Create symlink to external fastq data into external folder
+        - files to symlink per lane:
+            SLX-7957.C3BW4ACXX.s_8.contents.csv
+            SLX-7957.C3BW4ACXX.s_8.r_1.lostreads.fq.gz
+            SLX-7957.C3BW4ACXX.s_8.lostreads.md5sums.txt
+        - files to symlink per sample:
+            SLX-7957.A002.C3BW4ACXX.s_8.r_1.fq.gz
+            SLX-7957.A002.C3BW4ACXX.s_8.md5sums.txt
+        - if non PF data requested
+            SLX-7957.C3BW4ACXX.s_8.r_1.failed.fq.gz
+            SLX-7957.C3BW4ACXX.s_8.failed.md5sums.txt
+        """
+        self.log.info('... create symlinks to external data ...........................................')
+        for file_id in list(self.external_data.viewkeys()):
+            # create ftpdir in external directory in run folder
+            runfolder_ext_ftpdir = os.path.join(self.pipeline_definition.pipeline_directory, self.external_data[file_id]['ftpdir'])
+            utils.create_directory(runfolder_ext_ftpdir)
+            filename = self.external_data[file_id]['runfolder']
+            try:
+                # create symlink
+                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
+                utils.create_symlink(filename, linkname)
+                # symlink non PF data
+                if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
+                    for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
+                        filename_failed = filename.replace('.contents.csv', file_extension)
+                        linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                        utils.create_symlink(filename_failed, linkname_failed)                
+            except:
+                continue
+
+    def create_ftp_rsync_script(self):
+        """Create rsync script for external data
+        """
+        self.log.info('... create external sync pipeline script .......................................')
+        ftp_rsync_command = '''
+        touch %(started)s
+        touch %(lock)s
+
+        if ( %(rsync_cmd)s ) 
+        then
+           touch %(ended)s
+        else
+            touch %(failed)s
+        fi
+        
+        rsync -av %(pipedir)s/ %(archive_pipedir)s/
+        
+        rm %(lock)s
+        '''
+        
+        rsync_cmd = ""
+        # set of institutes
+        ftpdirs = set()
+        for file_id in list(self.external_data.viewkeys()):
+            ftpdirs.add(self.external_data[file_id]['ftpdir'])
+        for ftpdir in ftpdirs:
+            src = os.path.join(self.pipeline_definition.env['archive_pipedir'], ftpdir)
+            if self.ftp_server:
+                dest = "%s:%s/tmp/%s/" % (self.ftp_server, self.ftp_path, ftpdir)
+            else:
+                dest = "%s/tmp/%s/" % (self.ftp_path, ftpdir)
+            rsync_log = "%s/rsync_%s.log" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
+            cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            rsync_cmd += cmd
+        self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
+        utils.create_script(self.pipeline_definition.run_script_path, ftp_rsync_command % self.pipeline_definition.env)
+
+    def run_ftp_rsync_script(self):
+        """Run rsync script for external data
+        """
+        self.log.info('... run external sync pipeline script ..........................................')
+        if os.path.exists(self.pipeline_definition.run_script_path):
+            if not os.path.exists(self.pipeline_definition.env['started']):
+                if not os.path.exists(self.pipeline_definition.env['lock']):
+                    utils.run_bg_process(['sh', '%s' % self.pipeline_definition.run_script_path], self.dry_run)
+                else:
+                    self.log.info('%s presents - another rsync process is running' % self.pipeline_definition.env['lock'])
+            else:
+                if not os.path.exists(self.pipeline_definition.env['ended']):
+                    if not os.path.exists(self.pipeline_definition.env['failed']):
+                        self.log.info('external data is currently being synchronised')
+                    else:
+                        self.log.info('[***FAIL***] rsync for external data onto ftp server has failed')
+                else:
+                    self.log.info('external data has been synchronised')
+        else:
+            self.log.warn('%s is missing' % self.pipeline_definition.run_script_path)
+
+    def register_completion(self):
+        """ Create ExternalComplete.txt when external data has been successfully synced
+        """
+        if os.path.exists(self.pipeline_definition.pipeline_ended) or os.path.exists(self.pipeline_definition.pipeline_started):
+            if not os.path.exists(self.external_completed):
+                utils.touch(self.external_completed)
+            if not os.path.exists(self.staging_external_completed):
+                utils.touch(self.staging_external_completed)
+            self.log.info('*** EXTERNAL COMPLETED *********************************************************')
+        else:
+            # remove AnalysisComplete.txt when analysis not completed and file exists
+            if os.path.exists(self.external_completed):
+                os.remove(self.external_completed)
+            if os.path.exists(self.staging_external_completed):
+                os.remove(self.staging_external_completed)
 
 
 ################################################################################
@@ -784,6 +767,9 @@ class SyncTests(unittest.TestCase):
             pipeline_folder = os.path.join(run.run_folder, 'sync')
             if os.path.exists(pipeline_folder):
                 shutil.rmtree(pipeline_folder)
+            completed = os.path.join(run.run_folder, data.SYNC_COMPLETED)
+            if os.path.exists(completed):
+                os.remove(completed)
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.lustre_run_folder)
 
@@ -804,6 +790,72 @@ class SyncTests(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, PIPELINE_STARTED_FILENAME)))
             self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, PIPELINE_ENDED_FILENAME)))
             self.assertTrue(os.path.isfile(os.path.join(run.staging_run_folder, data.SEQUENCING_COMPLETED)))
+            sync.register_completion()
+            self.assertTrue(os.path.isfile(sync.sync_completed))
+            self.assertTrue(os.path.isfile(sync.staging_sync_completed))
+
+
+class ExternalTests(unittest.TestCase):
+
+    def setUp(self):
+        import log as logger
+        self.log = logger.get_custom_logger()
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/processing4external/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/staging4external/')
+        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
+        self.ftpdir = os.path.join(self.current_path, '../testdata/external')
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
+        self.are_fastq_files_attached = True
+
+    def tearDown(self):
+        import shutil
+        for run in self.runs.synced_runs:
+            pipeline_folder = os.path.join(run.run_folder, 'external')
+            if os.path.exists(pipeline_folder):
+                shutil.rmtree(pipeline_folder)
+            staging_pipeline_folder = os.path.join(run.staging_run_folder, 'external')
+            if os.path.exists(staging_pipeline_folder):
+                shutil.rmtree(staging_pipeline_folder)
+            completed = os.path.join(run.run_folder, data.EXTERNAL_COMPLETED)
+            if os.path.exists(completed):
+                os.remove(completed)
+            staging_completed = os.path.join(run.staging_run_folder, data.EXTERNAL_COMPLETED)
+            if os.path.exists(staging_completed):
+                os.remove(staging_completed)
+            shutil.rmtree(run.lustre_run_folder)
+        for folder in os.listdir(os.path.join(self.ftpdir, 'tmp')):
+            shutil.rmtree(os.path.join(self.ftpdir, 'tmp', folder))
+
+    def test_execute_non_external(self):
+        external_data = {}
+        for run in self.runs.synced_runs:
+            external = External(run, self.are_fastq_files_attached, external_data, False, None, self.ftpdir)
+            external.execute()
+            self.assertTrue(os.path.isfile(external.external_completed))
+
+    def test_execute_external(self):
+        external_data = {
+            2169090L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169091L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169092L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.md5sums.txt'},
+
+            2169093L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169086L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169087L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.md5sums.txt'},
+
+            2169088L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169089L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169113L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.md5sums.txt'},
+         }
+        import time
+        for run in self.runs.synced_runs:
+            external = External(run, self.are_fastq_files_attached, external_data, False, None, self.ftpdir)
+            external.execute()
+            time.sleep(5)  # wait for rsync to synchronise files
+            external.register_completion()
+            self.assertTrue(os.path.isfile(external.external_completed))
+
                                                     
 if __name__ == '__main__':
     unittest.main()

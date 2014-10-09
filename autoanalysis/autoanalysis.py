@@ -41,6 +41,7 @@ def main():
 
     parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
+
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.Pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.Pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
@@ -63,32 +64,28 @@ def main():
             try:
                 log.info(run.get_header())
 
-                # get all flow-cell sample fastq files when attached in lims
-                all_data = glslims.is_fastq_files_found(run.run_folder_name)
+                # are all sample fastq files attached in lims for this run?
+                are_fastq_files_attached = glslims.are_fastq_files_attached(run.run_folder_name)
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.find_external_data(run.run_folder_name)
-
-                # get alignment info for this run
-                active_alignment = False
+                # is alignment active for this run?
+                is_alignment_active = False
 
                 # setup and run pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev)
                 if not options.donot_run_pipelines:
                     pipelines.execute()
 
-                # register completion
-                pipelines.register_completion()
-                
                 # create analysis processes in lims
                 #glslims.create_analysis_processes(run.flowcell_id)
-
-                # synchronise external data to ftp server
-                external = auto_pipelines.External(run, all_data, external_data, options.dry_run)
-                external.sync()
 
                 # synchronise data to staging area
                 sync = auto_pipelines.Sync(run, options.dry_run)
                 sync.execute()
+
+                # synchronise external data to ftp server
+                external = auto_pipelines.External(run, are_fastq_files_attached, external_data, options.dry_run)
+                external.execute()
 
                 # add flow-cell into the publishing queue
                 #if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.is_external_data_synchronised():

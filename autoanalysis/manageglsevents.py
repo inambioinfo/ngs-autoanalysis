@@ -104,7 +104,7 @@ def main():
             run_folder_name = os.path.basename(run_folder)
             sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
             sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
-            analysis_ignore = os.path.join(run_folder, auto_data.ANALYSIS_IGNORE)
+            analysis_ignore = os.path.join(run_folder, auto_data.IGNORE_ME)
             
             if run_folder_name == options.run_folder:
                 sync_runfolder(log, run_folder, to_path_rsync, options.dry_run)

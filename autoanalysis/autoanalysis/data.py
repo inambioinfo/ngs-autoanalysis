@@ -25,17 +25,15 @@ import utils
 ################################################################################
 
 RTA_COMPLETED = 'RTAComplete.txt'
-
 SEQUENCING_COMPLETED = 'SequencingComplete.txt'
 SEQUENCING_FAILED = 'SequencingFail.txt'
 
-ANALYSIS_COMPLETED = "AnalysisComplete.txt"
-ANALYSIS_IGNORE = 'analysis.ignore'
+IGNORE_ME = 'ignore.me'
 DONT_DELETE = 'dont.delete'
 
+ANALYSIS_COMPLETED = "AnalysisComplete.txt"
+EXTERNAL_COMPLETED = 'ExternalComplete.txt'
 SYNC_COMPLETED = 'SyncComplete.txt'
-SYNC_FAILED = 'SyncFail.txt'
-
 PUBLISHING_ASSIGNED = 'PublishingAssign.txt'
 
 
@@ -94,11 +92,11 @@ class RunFolder(Folder):
         self.rta_completed = os.path.join(self.run_folder, RTA_COMPLETED)
         self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
         self.sequencing_failed = os.path.join(self.run_folder, SEQUENCING_FAILED)
-        self.sync_completed = os.path.join(self.run_folder, SYNC_COMPLETED)
-        self.sync_failed = os.path.join(self.run_folder, SYNC_FAILED)
         self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
-        self.analysis_ignore = os.path.join(self.run_folder, ANALYSIS_IGNORE)
+        self.sync_completed = os.path.join(self.run_folder, SYNC_COMPLETED)
+        self.external_completed = os.path.join(self.run_folder, EXTERNAL_COMPLETED)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
+        self.ignore_me = os.path.join(self.run_folder, IGNORE_ME)
         self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
 
         # only create run folders when sequencing is complete
@@ -122,7 +120,7 @@ class RunFolder(Folder):
             self.log.info('sequencing underway or sequencing failed')
 
     def is_sequencing_status_present(self):
-        # check if Sequencing.completed or Sequencing.failed is present
+        # check if SequencingComplete.txt or SequencingFail.txt is present
         if os.path.exists(self.sequencing_completed):
             self.log.debug('%s found' % self.sequencing_completed)
             return True
@@ -132,30 +130,35 @@ class RunFolder(Folder):
         return False
 
     def is_sequencing_completed(self):
-        # check Sequencing.completed is present and analysis.ignore is not present - ready for analysis
+        # check SequencingComplete.txt is present and ignore.me is not present
         if os.path.exists(self.run_folder):
-            if os.path.exists(self.sequencing_completed) and not os.path.exists(self.analysis_ignore):
+            if os.path.exists(self.sequencing_completed) and not os.path.exists(self.ignore_me):
                 self.log.debug('%s is present' % self.sequencing_completed)
                 return True
             else:
                 if not os.path.exists(self.sequencing_completed):
                     self.log.debug('%s does not exists' % self.sequencing_completed)
                     return False
-                if os.path.exists(self.analysis_ignore):
-                    self.log.debug('%s is present' % self.analysis_ignore)
+                if os.path.exists(self.ignore_me):
+                    self.log.debug('%s is present' % self.ignore_me)
                     return False
         return False
 
     def is_analysis_completed_present(self):
-        # check if Analysed.completed is present
+        # check if AnalysisComplete.txt is present
         return os.path.exists(self.analysis_completed)
 
+    def is_sync_completed_present(self):
+        # check if SyncComplete.txt is present
+        return os.path.exists(self.sync_completed)
+
+    def is_external_completed_present(self):
+        # check if ExternalComplete.txt is present
+        return os.path.exists(self.external_completed)
+
     def is_publishing_assigned_present(self):
-        # check Publishing.assigned is present and dont_delete is not present - ready for cleaning
-        if os.path.exists(self.run_folder):
-            if os.path.exists(self.publishing_assigned) and not os.path.exists(self.dont_delete):
-                return True
-        return False
+        # check PublishingAssigned.txt is present
+        return os.path.exists(self.publishing_assigned)
 
 
 class RunFolderList(object):
@@ -175,13 +178,14 @@ class RunFolderList(object):
         self.one_run_folder = one_run_folder
 
         self.run_folders = self.get_folders(self.processing_dir)
-        self.all_runs, self.completed_runs, self.toanalyse_runs, self.analysed_runs, self.published_runs = self.populate_runs()
+        self.all_runs, self.completed_runs, self.toanalyse_runs, self.analysed_runs, self.synced_runs, self.published_runs = self.populate_runs()
 
     def populate_runs(self):
         all_runs = []
         completed_runs = []
         toanalyse_runs = []
         analysed_runs = []
+        synced_runs = []
         published_runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
@@ -193,9 +197,11 @@ class RunFolderList(object):
                     toanalyse_runs.append(run)
             if run.is_analysis_completed_present():
                 analysed_runs.append(run)
+            if run.is_analysis_completed_present() and run.is_sync_completed_present():
+                synced_runs.append(run)
             if run.is_analysis_completed_present() and run.is_publishing_assigned_present():
                 published_runs.append(run)
-        return all_runs, completed_runs, toanalyse_runs, analysed_runs, published_runs
+        return all_runs, completed_runs, toanalyse_runs, analysed_runs, synced_runs, published_runs
 
     def get_destination_runfolders(self):
         return self.get_folders(self.staging_dir)
