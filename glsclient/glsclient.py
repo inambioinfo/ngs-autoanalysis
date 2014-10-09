@@ -424,7 +424,7 @@ class GlsUtil(object):
         else:
             self.log.info("flow-cell id '%s' has already a publishing process '%s'." % (_flowcell_id, publi[0]['luid']))
 
-    def is_sample_fastq_files_attached(self, _run_id):
+    def are_sample_fastq_files_attached(self, _run_id):
         """Only check if all Read 1 Sample Fastq files exist for lanes that passed qc on sequencing
         """
         # get latest sequencing process for run id
@@ -811,7 +811,7 @@ class GlsUtilTest(unittest.TestCase):
         
     def test_is_sample_fastq_files_attached(self):
         run_id = '140618_D00408_0148_C4W0MACXX'
-        self.assertTrue(self.glsutil.is_sample_fastq_files_attached(run_id))
+        self.assertTrue(self.glsutil.are_sample_fastq_files_attached(run_id))
         
     def test_is_sequencing_completed(self):
         run_id = 'XXX'

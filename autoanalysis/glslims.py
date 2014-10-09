@@ -51,10 +51,10 @@ class GlsLims:
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.is_sequencing_completed(run_id)
         
-    def is_fastq_files_found(self, run_id):
+    def are_fastq_files_attached(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
         self.log.info('... check sample fastq files ...................................................')
-        return self.glsutil.is_sample_fastq_files_attached(run_id)
+        return self.glsutil.are_sample_fastq_files_attached(run_id)
 
     def create_analysis_processes(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
@@ -78,26 +78,26 @@ class GlsLims:
 
     def publish_flowcell(self, run_id, flowcell_id, touch_file):
         self.log.info('... publish flow-cell ..........................................................')
-        if self.is_fastq_files_found(run_id):
+        if self.are_fastq_files_attached(run_id):
             self.glsutil.assign_flowcell_to_publishing_workflow(flowcell_id)
             utils.touch(touch_file)
         else:
             self.log.info('No sample fastq files found for run %s' % run_id)
 
-    def find_external_data(self, run_id, is_published=False):
+    def find_external_data(self, run_id):
         self.log.info('... find external data files ...................................................')
         data = {}
         labftpdirs = self.glsutil.get_all_external_ftp_dirs()
-        files = self.glsutil.get_sample_fastq_files(run_id, is_published)
+        files = self.glsutil.get_sample_fastq_files(run_id)
         if files:
-            files.extend(self.glsutil.get_lane_fastq_files(run_id, is_published))
+            files.extend(self.glsutil.get_lane_fastq_files(run_id))
             for f in files:
                 if f['labid'] in labftpdirs.keys():
                     data[f['artifactid']] = {'runfolder': f['runfolder'], 'ftpdir': labftpdirs[f['labid']]['ftpdir'], 'project': f['projectname'], 'nonpfdata': labftpdirs[f['labid']]['nonpfdata']}
         if data:
             self.log.info('External data found')
         else:
-            self.log.info('No sample external data')
+            self.log.info('No external data found')
         return data
 
 
@@ -126,6 +126,12 @@ class GlsLimsTests(unittest.TestCase):
         self.log.debug('Testing findExternalData')
         data = self.glslims.find_external_data('131231_7001449_0083_C3BW4ACXX')
         self.log.debug(data)
+
+    def test_find_external_data(self):
+        all_data = self.glslims.are_fastq_files_attached('140813_M01712_0104_000000000-A9YBB')
+        self.log.info(all_data)
+        data = self.glslims.find_external_data('140813_M01712_0104_000000000-A9YBB')
+        self.log.info(data)
 
 
 if __name__ == '__main__':
