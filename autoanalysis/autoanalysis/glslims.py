@@ -56,9 +56,15 @@ class GlsLims:
         self.log.info('... check sample fastq files ...................................................')
         return self.glsutil.are_sample_fastq_files_attached(run_id)
 
-    def create_analysis_processes(self, flowcell_id):
+    def is_alignment_active(self, run_id):
+        # return True if passed QC, not external and project core supported or auto alignment lab
+        self.log.info('... check alignment status .....................................................')
+        return self.glsutil.is_alignment_active(run_id)
+
+    def create_analysis_processes(self, flowcell_id, is_alignment_active):
         """ Create analysis processes in lims only if sequencing run process exists
         and lane & sample fastq & alignment do not exist - just one single analysis processes per flow-cell
+        do only create alignment process when ii is active
         """
         self.log.info('... create analysis processes ..................................................')
         run = self.glsutil.get_latest_complete_run_process_by_flowcell_id(flowcell_id)
@@ -72,7 +78,7 @@ class GlsLims:
                 self.glsutil.create_fastq_sample_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['samfq'], flowcell_id))
             align = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
-            if align is None:
+            if align is None and is_alignment_active:
                 self.glsutil.create_alignment_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
@@ -169,6 +175,10 @@ class GlsLimsTests(unittest.TestCase):
         data = self.glslims.find_external_data('140813_M01712_0104_000000000-A9YBB')
         self.log.info(data)
         self.assertIsNotNone(data)
+
+    def test_is_alignment_active(self):
+        self.assertTrue(self.glslims.is_alignment_active('140815_D00408_0163_C4EYLANXX'))
+        self.assertFalse(self.glslims.is_alignment_active('140813_M01712_0104_000000000-A9YBB'))
 
 
 if __name__ == '__main__':

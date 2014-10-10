@@ -224,3 +224,36 @@ AND artifact_sample_map.processid=sample.processid
 AND artifact_sample_map.artifactid=artifact.artifactid
 AND artifact.luid=accept.artifactluid
 """
+
+IS_ALIGNMENT_ACTIVE_QUERY = """
+SELECT
+artifact.artifactid,
+artifact.name,
+pudf1.udfvalue as runid,
+artifactstate.qcflag,
+ludf2.udfvalue as externallab,
+judf1.udfvalue as coresupported,
+ludf1.udfvalue as alignment
+FROM process
+LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Run ID'),
+processtype, processiotracker, artifact, artifactstate, artifact_sample_map, sample, project
+LEFT OUTER JOIN entity_udf_view as judf1 on (judf1.attachtoid=project.projectid and judf1.udfname='Core Supported'),
+researcher, lab
+LEFT OUTER JOIN entity_udf_view as ludf1 on (ludf1.attachtoid=lab.labid and ludf1.udfname='Auto Alignment')
+LEFT OUTER JOIN entity_udf_view as ludf2 on (ludf2.attachtoid=lab.labid and ludf2.udfname='External')
+WHERE process.typeid = processtype.typeid
+AND processtype.displayname LIKE '%%Run%%'
+AND pudf1.udfvalue = '%s'
+AND process.processid=processiotracker.processid
+AND processiotracker.inputartifactid=artifact.artifactid
+AND artifactstate.artifactid=artifact.artifactid
+AND artifact.currentstateid=artifactstate.stateid
+AND artifact_sample_map.artifactid=artifact.artifactid
+AND artifact_sample_map.processid=sample.processid
+AND sample.projectid=project.projectid
+AND project.researcherid=researcher.researcherid
+AND researcher.labid=lab.labid
+AND artifactstate.qcflag = 1 -- passed qc
+AND ludf2.udfvalue = 'False' -- non external
+AND (judf1.udfvalue = 'True' OR ludf1.udfvalue = 'True') -- project supported by core OR auto alignment set for this lab
+"""

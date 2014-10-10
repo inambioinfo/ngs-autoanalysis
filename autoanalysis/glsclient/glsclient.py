@@ -408,12 +408,11 @@ class GlsUtil(object):
         publi = self.get_publishing_process_by_input_artifact(input_artifact.limsid)
         # if publishing process do not already exist
         if not publi:
-            # get fastq & demux & alignment processes
-            fastq = self.get_single_analysis_process_by_flowcell_id('lanfq', _flowcell_id)
-            demux = self.get_single_analysis_process_by_flowcell_id('samfq', _flowcell_id)
-            align = self.get_single_analysis_process_by_flowcell_id('align', _flowcell_id)
+            # get main alignment processes
+            lanfq = self.get_single_analysis_process_by_flowcell_id('lanfq', _flowcell_id)
+            samfq = self.get_single_analysis_process_by_flowcell_id('samfq', _flowcell_id)
             # check fastq & demux & alignment processes exist
-            if fastq and demux and align:
+            if lanfq and samfq:
                 # build a unique set of input artifacts
                 input_uri_set = self.get_unique_input_uri_from_process(fastq)
                 # assign each artifact to publish queue in analyses workflow
@@ -484,6 +483,12 @@ class GlsUtil(object):
             labftpdirs[lab['labid']] = {'ftpdir': lab['ftpdir'], 'nonpfdata': lab['nonpfdata']}
         self.log.debug(labftpdirs)
         return labftpdirs
+
+    def is_alignment_active(self, _run_id):
+        self.db.execute(glssql.IS_ALIGNMENT_ACTIVE_QUERY % _run_id)
+        if self.db.fetchall():
+            return True
+        return False
 
 
 ################################################################################
@@ -834,6 +839,10 @@ class GlsUtilTest(unittest.TestCase):
         self.assertEqual('lmb_debono', results[4]['ftpdir'])
         self.assertEqual('gurdon_institute', results[30]['ftpdir'])
         self.assertEqual('True', results[30]['nonpfdata'])
+
+    def test_is_alignment_active(self):
+        self.assertTrue(self.glsutil.is_alignment_active('140815_D00408_0163_C4EYLANXX'))
+        self.assertFalse(self.glsutil.is_alignment_active('140813_M01712_0104_000000000-A9YBB'))
 
 if __name__ == '__main__':
     unittest.main()
