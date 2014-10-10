@@ -10,7 +10,7 @@ Scripts currently in used:
 - manageglsevents.py [ready to be moved to new server - working with new lims server already]
 - updaterunstatus.py [to be retired]
 - sync.py [to be retired]
-- deleterun.py [to be upgraded]
+- deleterun.py [to be upgraded to cleanprocessing.py]
 - autoassignsamples.py [ready to be moved to new server]
 - autoanalysis.py [more work to be done on alignment pipeline and publishing]
 - cleanlustre.py [to be upgraded]
@@ -78,9 +78,11 @@ python setrunstatus.py --basedir=/solexa0[1-3]/data/Runs --debug
 ################################################################################
 ### TESTING
 ################################################################################
-> python -m unittest --verbose glsclient
 > python -m unittest --verbose autoanalysis.data
 > python -m unittest --verbose autoanalysis.pipelines
+> python -m unittest --verbose autoanalysis.glslims
+### Before testing against the limsdev you need a 'unittest' user and a 'Python Unit Tests' project
+> python -m unittest --verbose glsclient.glsclient
 
 ################################################################################
 ### DEPENDENCIES updated 9-Oct-2014

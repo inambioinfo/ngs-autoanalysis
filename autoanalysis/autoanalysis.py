@@ -88,8 +88,7 @@ def main():
                 external.execute()
 
                 # add flow-cell into the publishing queue
-                #if run.is_analysis_completed_present() and not run.is_publishing_assigned_present() and external.is_external_data_synchronised():
-                #    glslims.publish_flowcell(run.run_folder_name, run.flowcell_id, run.publishing_assigned)
+                glslims.publish_flowcell(run, are_files_attached)
                 
             except Exception, e:
                 log.exception("Unexpected error")
