@@ -235,14 +235,15 @@ class Pipelines(object):
         "alignment": "lsf"
     }
 
-    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True):
+    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.pipeline_step = pipeline_step
         self.software_path = software_path
         self.cluster_host = cluster_host
         self.dry_run = dry_run
-        self.use_limsdev = use_limsdev 
+        self.use_limsdev = use_limsdev
+        self.is_alignment_active = is_alignment_active
 
         self.pipelines = Pipelines.PIPELINES
         if self.pipeline_step:
@@ -258,20 +259,26 @@ class Pipelines(object):
         """
         if self.run.is_sequencing_completed():
             for pipeline_name in self.pipelines.keys():
-                # create pipeline definition
-                pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev, Pipelines.PIPELINES_DEFAULT_MODE[pipeline_name])
-                pipeline_definition.print_header()
-                self.pipeline_definitions[pipeline_name] = pipeline_definition
-                # - step 1 - create setup-pipeline script
-                pipeline_definition.create_setup_pipeline_script()
-                # run setup-pipeline script to create meta data 
-                pipeline_definition.run_setup_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
-                # - step 2 - create run-pipeline script
-                pipeline_definition.create_run_pipeline_script()
-                # run run-pipeline script to run the pipeline
-                pipeline_definition.run_run_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
-            # - step 3 - register completion of all pipelines
+                if pipeline_name == 'alignment':
+                    if self.is_alignment_active:
+                        self._execute_steps(pipeline_name)
+                else:
+                    self._execute_steps(pipeline_name)
             self.register_completion()
+
+    def _execute_steps(self, pipeline_name):
+        # create pipeline definition
+        pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev, Pipelines.PIPELINES_DEFAULT_MODE[pipeline_name])
+        pipeline_definition.print_header()
+        self.pipeline_definitions[pipeline_name] = pipeline_definition
+        # - step 1 - create setup-pipeline script
+        pipeline_definition.create_setup_pipeline_script()
+        # run setup-pipeline script to create meta data
+        pipeline_definition.run_setup_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
+        # - step 2 - create run-pipeline script
+        pipeline_definition.create_run_pipeline_script()
+        # run run-pipeline script to run the pipeline
+        pipeline_definition.run_run_pipeline_script(self.are_dependencies_satisfied(pipeline_name), self.dry_run)
 
     def register_completion(self):
         """ Create AnalysisComplete.txt when all pipelines have been successfully ran
@@ -659,6 +666,17 @@ class PipelinesTests(unittest.TestCase):
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
                 
+    def test_execute_without_alignment(self):
+        for run in self.runs.toanalyse_runs:
+            pipelines = Pipelines(run=run, cluster_host='uk-cri-test', is_alignment_active=False)
+            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
+            pipelines.execute()
+            self.assertFalse(os.path.exists(os.path.join(run.run_folder, 'alignment')))
+            for pipeline_name in pipelines.pipeline_definitions.keys():
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
+
     def test_register_completion(self):
         for run in self.runs.toanalyse_runs:
             pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
