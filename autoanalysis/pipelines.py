@@ -334,9 +334,8 @@ rm %(lock)s
 
     # rsync exclude list
     RUNFOLDER_RSYNC_EXCLUDE = [
-    "--exclude=Data/Intensities/*_pos.txt",
     "--exclude=Data/Intensities/L00?",
-    "--exclude=Data/Intensities/BaseCalls",
+    "--exclude=Data/Intensities/BaseCalls/L00?",
     "--exclude=Data/RTALogs",
     "--exclude=Logs",
     "--exclude=Thumbnail_Images",  # thumbnail images
@@ -344,6 +343,7 @@ rm %(lock)s
     "--exclude=Old*",  # Anything that has been moved out of the way
     "--exclude=temp",
     "--exclude=JobOutputs",
+    "--exclude=BCLtoFASTQ",
     "--exclude=primaryqc"
     ]
 
