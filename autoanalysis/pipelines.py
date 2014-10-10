@@ -250,7 +250,7 @@ class Pipelines(object):
 
         self.pipeline_definitions = {}
             
-        self.all_completed = os.path.join(self.run.run_folder, data.ANALYSIS_COMPLETED)
+        self.all_completed = self.run.analysis_completed
 
     def execute(self):
         """execute all pipelines or just one by creating a shell script and running it for
@@ -360,7 +360,7 @@ rm %(lock)s
         self.env = self.pipeline_definition.env
         self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(self.RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.pipeline_definition.pipeline_log)
 
-        self.sync_completed = os.path.join(self.run.run_folder, data.SYNC_COMPLETED)
+        self.sync_completed = self.run.sync_completed
         self.staging_sync_completed = os.path.join(self.run.staging_run_folder, data.SYNC_COMPLETED)
 
     def execute(self):
@@ -415,17 +415,13 @@ rm %(lock)s
         """ Create SyncComplete.txt when data has been successfully synced to staging
         """
         if os.path.exists(self.pipeline_definition.pipeline_ended) and os.path.exists(self.pipeline_definition.pipeline_started):
-            if not os.path.exists(self.sync_completed):
-                utils.touch(self.sync_completed)
-            if not os.path.exists(self.staging_sync_completed):
-                utils.touch(self.staging_sync_completed)
+            self.run.touch_event(data.SYNC_COMPLETED)
+            self.run.copy_event_to_staging(data.SYNC_COMPLETED)
             self.log.info('*** SYNC COMPLETED *************************************************************')
         else:
-            # remove AnalysisComplete.txt when analysis not completed and file exists
-            if os.path.exists(self.sync_completed):
-                os.remove(self.sync_completed)
-            if os.path.exists(self.staging_sync_completed):
-                os.remove(self.staging_sync_completed)
+            # remove SyncComplete.txt when pipeline not completed and file exists
+            self.run.remove_event(data.SYNC_COMPLETED)
+            self.run.remove_event_from_staging(data.SYNC_COMPLETED)
 
 
 ################################################################################
@@ -446,7 +442,7 @@ class External(object):
         self.ftp_path = ftp_path
         self.pipeline_name = self.EXTERNAL_PIPELINE
         self.pipeline_definition = None
-        self.external_completed = os.path.join(self.run.run_folder, data.EXTERNAL_COMPLETED)
+        self.external_completed = self.run.external_completed
         self.staging_external_completed = os.path.join(self.run.staging_run_folder, data.EXTERNAL_COMPLETED)
         
     def execute(self):
@@ -572,17 +568,13 @@ class External(object):
         """ Create ExternalComplete.txt when external data has been successfully synced
         """
         if os.path.exists(self.pipeline_definition.pipeline_ended) or os.path.exists(self.pipeline_definition.pipeline_started):
-            if not os.path.exists(self.external_completed):
-                utils.touch(self.external_completed)
-            if not os.path.exists(self.staging_external_completed):
-                utils.touch(self.staging_external_completed)
+            self.run.touch_event(data.EXTERNAL_COMPLETED)
+            self.run.copy_event_to_staging(data.EXTERNAL_COMPLETED)
             self.log.info('*** EXTERNAL COMPLETED *********************************************************')
         else:
-            # remove AnalysisComplete.txt when analysis not completed and file exists
-            if os.path.exists(self.external_completed):
-                os.remove(self.external_completed)
-            if os.path.exists(self.staging_external_completed):
-                os.remove(self.staging_external_completed)
+            # remove ExternalComplete.txt when pipeline not completed and file exists
+            self.run.remove_event(data.EXTERNAL_COMPLETED)
+            self.run.remove_event_from_staging(data.EXTERNAL_COMPLETED)
 
 
 ################################################################################
@@ -836,18 +828,21 @@ class ExternalTests(unittest.TestCase):
 
     def test_execute_external(self):
         external_data = {
-            2169090L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_1.fq.gz'},
-            2169091L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_2.fq.gz'},
-            2169092L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.md5sums.txt'},
+            2169090L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169091L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169092L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.md5sums.txt'},
 
-            2169093L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_1.fq.gz'},
-            2169086L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_2.fq.gz'},
-            2169087L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.md5sums.txt'},
+            2169093L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169086L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169087L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.md5sums.txt'},
 
-            2169088L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_1.fq.gz'},
-            2169089L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_2.fq.gz'},
-            2169113L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/Users/pajon01/workspace/autoanalysis_1.6/testdata/staging4external/140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.md5sums.txt'},
+            2169088L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_1.fq.gz'},
+            2169089L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_2.fq.gz'},
+            2169113L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.md5sums.txt'},
          }
+        for file_id in list(external_data.viewkeys()):
+            external_data[file_id]['runfolder'] = os.path.join(self.archivedir, external_data[file_id]['runfolder'])
+        self.log.info(external_data)
         import time
         for run in self.runs.synced_runs:
             external = External(run, self.are_fastq_files_attached, external_data, False, None, self.ftpdir)

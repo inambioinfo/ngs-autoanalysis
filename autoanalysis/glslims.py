@@ -58,7 +58,7 @@ class GlsLims:
 
     def create_analysis_processes(self, flowcell_id):
         """ Create analysis processes in lims only if sequencing run process exists
-        and fastq/demux/align do not exist - just single analysis processes per flow-cell
+        and lane & sample fastq & alignment do not exist - just one single analysis processes per flow-cell
         """
         self.log.info('... create analysis processes ..................................................')
         run = self.glsutil.get_latest_complete_run_process_by_flowcell_id(flowcell_id)
@@ -76,13 +76,23 @@ class GlsLims:
                 self.glsutil.create_alignment_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
 
-    def publish_flowcell(self, run_id, flowcell_id, touch_file):
+    def publish_flowcell(self, run, are_files_attached):
+        """ Assign flow-cell to publishing queue, if no publishing process found
+        and lane & sample fastq & alignment processes exist - just one single publishing process per flow-cell
+        """
         self.log.info('... publish flow-cell ..........................................................')
-        if self.are_fastq_files_attached(run_id):
-            self.glsutil.assign_flowcell_to_publishing_workflow(flowcell_id)
-            utils.touch(touch_file)
+        if are_files_attached and run.is_analysis_completed_present() and run.is_external_completed_present() and not run.is_publishing_assigned_present():
+            try:
+                self.glsutil.assign_flowcell_to_publishing_workflow(run.flowcell_id)
+                run.touch_publishing_assign()
+                run.copy_publishing_assign_to_staging()
+                self.log.info('*** PUBLISHING ASSIGNED ********************************************************')
+            except Exception, e:
+                self.log.error("[***FAIL***] publish flow-cell %s has failed." % run.flowcell_id)
+                self.log.exception(e)
+                raise
         else:
-            self.log.info('No sample fastq files found for run %s' % run_id)
+            self.log.info('No fastq files attached yet for run %s' % run.run_folder_name)
 
     def find_external_data(self, run_id):
         self.log.info('... find external data files ...................................................')
@@ -104,34 +114,61 @@ class GlsLims:
 class GlsLimsTests(unittest.TestCase):
     
     def setUp(self):
+        import data
         import log as logger
         self.log = logger.get_custom_logger()
-        self.flowcell_id = 'H9VT6ADXX'
-        self.run_id = '140729_D00408_0159_H9VT6ADXX'
-        self.glslims = GlsLims()
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/processing4publishing/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/staging4publishing/')
+        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
+        self.PUBLISHING_ASSIGNED = data.PUBLISHING_ASSIGNED
+        self.are_fastq_files_attached = True
+
+        self.glslims = GlsLims('limsdev')
+
+    def tearDown(self):
+        import shutil
+        for run in self.runs.synced_runs:
+            completed = os.path.join(run.run_folder, self.PUBLISHING_ASSIGNED)
+            if os.path.exists(completed):
+                os.remove(completed)
+            staging_completed = os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)
+            if os.path.exists(staging_completed):
+                os.remove(staging_completed)
+            shutil.rmtree(run.lustre_run_folder)
 
     def test_create_analysis_processes(self):
-        self.glslims.create_analysis_processes(self.flowcell_id)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', self.flowcell_id)
-        self.assertNotEqual(None, process)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('samfq', self.flowcell_id)
-        self.assertNotEqual(None, process)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', self.flowcell_id)
-        self.assertNotEqual(None, process)
+        flowcell_id = 'H9VT6ADXX' # 140729_D00408_0159_H9VT6ADXX
+        self.glslims.create_analysis_processes(flowcell_id)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
+        self.assertIsNotNone(process)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
+        self.assertIsNotNone(process)
+        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
+        self.assertIsNotNone(process)
         
     def test_publish_flowcell(self):
-        self.glslims.publish_flowcell(self.run_id, self.flowcell_id, 'test_publishing.assigned')
+        for run in self.runs.synced_runs:
+            self.log.info(run.flowcell_id)
+            self.glslims.publish_flowcell(run, self.are_fastq_files_attached)
+            self.assertTrue(os.path.isfile(run.publishing_assigned))
+            self.assertTrue(os.path.isfile(os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)))
         
-    def test_find_external_data(self):
-        self.log.debug('Testing findExternalData')
-        data = self.glslims.find_external_data('131231_7001449_0083_C3BW4ACXX')
-        self.log.debug(data)
+    def test_no_publish_flowcell(self):
+        for run in self.runs.synced_runs:
+            self.log.info(run.flowcell_id)
+            self.glslims.publish_flowcell(run, False)
+            self.assertFalse(os.path.isfile(run.publishing_assigned))
+            self.assertFalse(os.path.isfile(os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)))
 
     def test_find_external_data(self):
-        all_data = self.glslims.are_fastq_files_attached('140813_M01712_0104_000000000-A9YBB')
-        self.log.info(all_data)
+        are_fastq_files_attached = self.glslims.are_fastq_files_attached('140813_M01712_0104_000000000-A9YBB')
+        self.log.info(are_fastq_files_attached)
+        self.assertTrue(are_fastq_files_attached)
         data = self.glslims.find_external_data('140813_M01712_0104_000000000-A9YBB')
         self.log.info(data)
+        self.assertIsNotNone(data)
 
 
 if __name__ == '__main__':

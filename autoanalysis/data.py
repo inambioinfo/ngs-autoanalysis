@@ -160,6 +160,34 @@ class RunFolder(Folder):
         # check PublishingAssigned.txt is present
         return os.path.exists(self.publishing_assigned)
 
+    def copy_event_to_staging(self, event_filename):
+        # copy event file to staging
+        event_file = os.path.join(self.staging_run_folder, event_filename)
+        if not os.path.exists(event_file):
+            utils.touch(event_file)
+
+    def copy_publishing_assign_to_staging(self):
+        self.copy_event_to_staging(PUBLISHING_ASSIGNED)
+
+    def touch_event(self, event_filename):
+        # touch event file in run folder
+        event_file = os.path.join(self.run_folder, event_filename)
+        if not os.path.exists(event_file):
+            utils.touch(event_file)
+
+    def touch_publishing_assign(self):
+        self.touch_event(PUBLISHING_ASSIGNED)
+
+    def remove_event(self, event_filename):
+        event_file = os.path.join(self.run_folder, event_filename)
+        if os.path.exists(event_file):
+            os.remove(event_file)
+
+    def remove_event_from_staging(self, event_filename):
+        event_file = os.path.join(self.staging_run_folder, event_filename)
+        if os.path.exists(event_file):
+            os.remove(event_file)
+
 
 class RunFolderList(object):
     """
