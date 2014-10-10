@@ -401,7 +401,7 @@ class GlsUtil(object):
             self.api.create('routing', routing)
 
     def assign_flowcell_to_publishing_workflow(self, _flowcell_id):
-        # get run process 
+        # get run process
         run = self.get_latest_complete_run_process_by_flowcell_id(_flowcell_id)
         # get one input artifact from run process
         input_artifact = self.api.load_by_uri('artifact', run.input_output_map[0].input.uri)

@@ -50,7 +50,7 @@ PIPELINE_STARTED_FILENAME = "pipeline.started"
 PIPELINE_ENDED_FILENAME = "pipeline.ended"
 PIPELINE_FAILED_FILENAME = "pipeline.failed"
 PIPELINE_LOG_FILENAME = "pipeline.log"
-PIPELINE_LOCK_FILENAME = "pipeline.lock"
+PIPELINE_LOCK_FILENAME = "rsync.lock"
 
 CREATE_METAFILE_FILENAME = "create-metafile"
 RUN_META_FILENAME = "run-meta.xml"
@@ -108,7 +108,7 @@ class PipelineDefinition(object):
         self.pipeline_started = os.path.join(self.pipeline_directory, PIPELINE_STARTED_FILENAME)
         self.pipeline_ended = os.path.join(self.pipeline_directory, PIPELINE_ENDED_FILENAME)
         self.pipeline_failed = os.path.join(self.pipeline_directory, PIPELINE_FAILED_FILENAME)
-        self.pipeline_lock = os.path.join(self.pipeline_directory, PIPELINE_LOCK_FILENAME)
+        self.pipeline_lock = os.path.join(os.path.dirname(self.pipeline_directory), PIPELINE_LOCK_FILENAME)
         self.pipeline_log = os.path.join(self.pipeline_directory, PIPELINE_LOG_FILENAME)
         # environment variables for setting up and running each pipeline
         self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
