@@ -115,7 +115,7 @@ class PipelineDefinition(object):
         self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
         self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
         self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
-        PIPELINES_SETUP_OPTIONS['alignment'] = PIPELINES_SETUP_OPTIONS['alignment'] % (socket.gethostname(), self.run.run_folder[1:])
+        PIPELINES_SETUP_OPTIONS['alignment'] = PIPELINES_SETUP_OPTIONS['alignment'] % (socket.gethostname(), str(self.run.run_folder)[1:])
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
             if self.use_limsdev:
                 self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
@@ -612,6 +612,11 @@ class PipelineDefinitionTests(unittest.TestCase):
         for run in self.runs.completed_runs:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.lustre_run_folder)
+
+    def test_alignment(self):
+        PIPELINES_SETUP_OPTIONS = {"alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq"}
+        PIPELINES_SETUP_OPTIONS['alignment'] = PIPELINES_SETUP_OPTIONS['alignment'] % (socket.gethostname(), str(self.run.run_folder)[1:])
+        self.log.info(PIPELINES_SETUP_OPTIONS)
 
     def test_create_setup_script(self):
         self.assertEqual('test_local', self.pipeline_definition.pipeline_name)
