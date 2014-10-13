@@ -100,7 +100,8 @@ def main():
         else:
             lims_server = 'lims'
         glsutil = glsclient.GlsUtil(server=lims_server)
-        results = glsutil.db.execute(glssql.UNASSIGNED_SAMPLES_QUERY).fetchall()
+        glsutil.db.execute(glssql.UNASSIGNED_SAMPLES_QUERY)
+        results = glsutil.db.fetchall()
         
         count = 0
         count_miseqexpress = 0
@@ -112,10 +113,10 @@ def main():
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,seqinfo,submissiondate,email
             try:                
                 # update sample date received if empty
-                if row.submissiondate is None or row.submissiondate == '':
-                    log.info('No date received on sample %s' % row.samplename)
+                if row['submissiondate'] is None or row['submissiondate'] == '':
+                    log.info('No date received on sample %s' % row['samplename'])
                     if options.updatesamples:
-                        artifact = glsutil.api.load('artifact', row.artifactid)
+                        artifact = glsutil.api.load('artifact', row['artifactid'])
                         sample = glsutil.api.load('sample', artifact.sample[0].limsid)
                         sample.date_received = str(datetime.date.today())
                         log.debug(sample.toxml('utf-8'))
@@ -124,24 +125,24 @@ def main():
                         log.debug(updated_sample.toxml('utf-8'))
 
                 # assign samples to workflow
-                if row.workflow in WORKFLOW_MAPPING.keys():
-                    details = "[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row.artifactid, row.projectname, row.samplename, row.slxid, row.workflow, WORKFLOW_MAPPING[row.workflow])
-                    miseqexpress_details = "%s\t| %s\t| %s\t| %s\t| %s" % (row.slxid, row.projectname, row.researcher, row.readlength, row.seqtype)
+                if row['workflow'] in WORKFLOW_MAPPING.keys():
+                    details = "[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], WORKFLOW_MAPPING[row['workflow']])
+                    miseqexpress_details = "%s\t| %s\t| %s\t| %s\t| %s" % (row['slxid'], row['projectname'], row['researcher'], row['readlength'], row['seqtype'])
                     report_assignedsamples += details + "\n"
                     log.info(details)
                     if options.update:
-                        workflows = glsutil.api.list_filter_by_name('workflow', WORKFLOW_MAPPING[row.workflow])
+                        workflows = glsutil.api.list_filter_by_name('workflow', WORKFLOW_MAPPING[row['workflow']])
                         workflow = workflows.workflow[0]
                         log.debug(workflow)
-                        artifact = glsutil.api.load('artifact', row.artifactid)
-                        glsutil.route_each_artifact_to_workflow([artifact.uri], WORKFLOW_MAPPING[row.workflow])
+                        artifact = glsutil.api.load('artifact', row['artifactid'])
+                        glsutil.route_each_artifact_to_workflow([artifact.uri], WORKFLOW_MAPPING[row['workflow']])
                         count += 1
-                        if row.workflow == 'MiSeq Express':
+                        if row['workflow'] == 'MiSeq Express':
                             log.debug(miseqexpress_details)
                             report_miseqexpresssamples += miseqexpress_details + "\n"
                             count_miseqexpress += 1
                 else:
-                    details = "[%s,%s,%s,%s,%s] not assigned" % (row.artifactid, row.projectname, row.samplename, row.slxid, row.workflow)
+                    details = "[%s,%s,%s,%s,%s] not assigned" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'])
                     report_unassignedsamples += details + "\n"
                     log.warn(details)
             except:
