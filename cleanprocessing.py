@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-deleterun.py
+cleanprocessing.py
 
 $Id$
 
@@ -9,10 +9,10 @@ Created by Anne Pajon on 2013-03-08.
 
 --------------------------------------------------------------------------------
 
-Sequencing server script that deletes old runs and moves them to OldRuns
+Sequencing server script that cleans old runs
 
 Usage:
-> python deleterun.py --basedir=/solexa0[1-3]/data/Runs/ --debug
+> python cleanprocessing.py --basedir=/processing/OldRuns/ --debug
 """
 
 ################################################################################
@@ -118,7 +118,7 @@ def is_completed(run_folder, clean_task):
 def main():
     # get the options
     parser = argparse.ArgumentParser()
-    parser.add_argument("--basedir", dest="basedir", action="store", help="run folder directories e.g. '/solexa0[1-8]/data/Runs'", required=True)
+    parser.add_argument("--basedir", dest="basedir", action="store", help="old run folder directories e.g. '/processing/OldRuns/'", required=True)
     parser.add_argument("--thumbnails", dest="thumbnails", action="store", help="number of days to keep thumbnails - default set to 90", default=90, type=int)
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
     parser.add_argument("--images", dest="images", action="store", help="number of days to keep images - default set to 14", default=14, type=int)
@@ -151,11 +151,11 @@ def main():
         for run in all_runs:
             try:
                 log.info(run.get_header())
-                # check dont.delete is not present - stop cleaning if present
+                # check dont.delete is not present - do not clean if present
                 if not os.path.exists(run.dont_delete):
                     
-                    # check Sequencing.completed and Sync.completed and Primary Fastq Files Found in lims OR Sequencing.failed present
-                    if ( ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) and glslims.are_fastq_files_attached(run.run_folder_name) ) or os.path.exists(run.sequencing_failed) ):
+                    # check SequencingComplete.txt and SyncComplete.txt and Primary Fastq Files Found in lims OR SequencingFail.txt present
+                    if ( os.path.exists(run.sequencing_completed) and os.path.exists(run.sync_completed) and glslims.are_fastq_files_attached(run.run_folder_name) ) or os.path.exists(run.sequencing_failed):
                         if os.path.exists(run.sequencing_completed):
                             runfolder_age = present - os.path.getmtime(os.path.join(run.run_folder, 'Data'))
                             log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))

@@ -7,13 +7,15 @@
 - 4 new processing servers : sol-srv001/2/3/4 with /lustre/ mounted for processing alignment pipeline
 
 Scripts currently in used:
-- manageglsevents.py [ready to be moved to new server - working with new lims server already]
+- manageglsevents.py [done]
+- autoassignsamples.py [done]
+- autoanalysis.py [done]
+- manageruns.py [new script taking care of creating status, cleaning processing and lustre space]
+
 - updaterunstatus.py [to be retired]
 - sync.py [to be retired]
-- deleterun.py [to be upgraded to cleanprocessing.py]
-- autoassignsamples.py [ready to be moved to new server]
-- autoanalysis.py [ready and has been running in crontab over test runs]
-- cleanlustre.py [to be upgraded]
+- deleterun.py [to be retired]
+- cleanlustre.py [to be retired]
 
 
 PROCESSING SERVERS (sol01/2/5):
