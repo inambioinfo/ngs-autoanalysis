@@ -15,6 +15,7 @@ import glob
 import logging
 import unittest
 from collections import OrderedDict
+import socket
 
 # autoanalysis modules
 import data
@@ -30,7 +31,7 @@ PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --notifications %(o
 PIPELINES_SETUP_OPTIONS = {
     "fastq": "",
     "primaryqc": "--create-sample-sheet --phix",
-    "alignment": "--queue=solexa --sync"}
+    "alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq"}
 
 # Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
@@ -114,6 +115,7 @@ class PipelineDefinition(object):
         self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
         self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
         self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
+        PIPELINES_SETUP_OPTIONS['alignment'] = PIPELINES_SETUP_OPTIONS['alignment'] % (socket.gethostname(), self.run.run_folder[1:])
         if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
             if self.use_limsdev:
                 self.env['options'] = "%s --dev" % PIPELINES_SETUP_OPTIONS[self.pipeline_name]
