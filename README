@@ -12,7 +12,7 @@ Scripts currently in used:
 - sync.py [to be retired]
 - deleterun.py [to be upgraded to cleanprocessing.py]
 - autoassignsamples.py [ready to be moved to new server]
-- autoanalysis.py [more work to be done on alignment pipeline and publishing]
+- autoanalysis.py [ready and has been running in crontab over test runs]
 - cleanlustre.py [to be upgraded]
 
 
