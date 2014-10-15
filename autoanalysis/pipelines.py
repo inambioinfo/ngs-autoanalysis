@@ -505,7 +505,7 @@ class External(object):
             # create ftpdir in external directory in run folder
             runfolder_ext_ftpdir = os.path.join(self.pipeline_definition.pipeline_directory, self.external_data[file_id]['ftpdir'])
             utils.create_directory(runfolder_ext_ftpdir)
-            filename = self.external_data[file_id]['runfolder']
+            filename = self.external_data[file_id]['runfolder'].replace('/runs/', '/staging/')
             try:
                 # create symlink
                 linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
