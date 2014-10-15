@@ -98,7 +98,7 @@ class GlsLims:
                 self.log.exception(e)
                 raise
         else:
-            self.log.info('No fastq files attached yet for run %s' % run.run_folder_name)
+            self.log.info('No fastq files attached or no external data synced yet for run %s' % run.run_folder_name)
 
     def find_external_data(self, run_id):
         self.log.info('... find external data files ...................................................')

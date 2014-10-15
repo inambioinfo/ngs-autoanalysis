@@ -357,7 +357,8 @@ rm %(lock)s
     "--exclude=temp",
     "--exclude=JobOutputs",
     "--exclude=BCLtoFASTQ",
-    "--exclude=primaryqc"
+    "--exclude=primaryqc",
+    "--exclude=%s" % PIPELINE_LOCK_FILENAME
     ]
 
     def __init__(self, run, dry_run=True):
