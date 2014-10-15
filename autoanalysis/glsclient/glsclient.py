@@ -414,7 +414,7 @@ class GlsUtil(object):
             # check fastq & demux & alignment processes exist
             if lanfq and samfq:
                 # build a unique set of input artifacts
-                input_uri_set = self.get_unique_input_uri_from_process(fastq)
+                input_uri_set = self.get_unique_input_uri_from_process(lanfq)
                 # assign each artifact to publish queue in analyses workflow
                 self.route_each_artifact_to_workflow(input_uri_set, WORKFLOW_NAMES['publi'])
                 self.log.info("flow-cell id '%s' assigned to '%s' workflow for publishing." % (_flowcell_id, WORKFLOW_NAMES['publi']))

@@ -581,7 +581,7 @@ class External(object):
     def register_completion(self):
         """ Create ExternalComplete.txt when external data has been successfully synced
         """
-        if os.path.exists(self.pipeline_definition.pipeline_ended) or os.path.exists(self.pipeline_definition.pipeline_started):
+        if os.path.exists(self.pipeline_definition.pipeline_ended) and os.path.exists(self.pipeline_definition.pipeline_started):
             self.run.touch_event(data.EXTERNAL_COMPLETED)
             self.run.copy_event_to_staging(data.EXTERNAL_COMPLETED)
             self.log.info('*** EXTERNAL COMPLETED *********************************************************')
