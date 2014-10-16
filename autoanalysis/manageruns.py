@@ -155,7 +155,7 @@ def main():
             try:
                 # add SequencingComplete.txt or SequencingFail.txt by retrieving info from lims on run
                 if not run.is_sequencing_status_present():
-                    log.info('checking run status for %s' % run.run_folder_name)
+                    log.info('*** %s' % run.run_folder_name)
                     is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
                     run.update_sequencing_status(is_sequencing_complete, options.dry_run)
             except Exception, e:
@@ -171,6 +171,7 @@ def main():
             log.info('TO ANALYSE  %s' % run.run_folder)
         for run in runs.unknown_runs:
             log.info('UNKNOWN     %s' % run.run_folder)
+        log.info('--------------------')
         log.info(' COMPLETED RUNS: %s' % len(runs.completed_runs))
         log.info('    FAILED RUNS: %s' % len(runs.failed_runs))
         log.info('   UNKNOWN RUNS: %s' % len(runs.unknown_runs))
@@ -179,6 +180,7 @@ def main():
         log.info('  ANALYSED RUNS: %s' % len(runs.analysed_runs))
         log.info('    SYNCED RUNS: %s' % len(runs.synced_runs))
         log.info(' PUBLISHED RUNS: %s' % len(runs.published_runs))
+        log.info('--------------------')
 
         ### manage runs .................................................................
         log.info('********************************************************************************')
