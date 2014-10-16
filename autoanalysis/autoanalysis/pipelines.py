@@ -263,7 +263,7 @@ class Pipelines(object):
         """execute all pipelines or just one by creating a shell script and running it for
         each of these three steps: setup_pipeline, run_pipeline, and rsync_pipeline
         """
-        if self.run.is_sequencing_completed():
+        if self.run.is_ready_for_processing():
             for pipeline_name in self.pipelines.keys():
                 if pipeline_name == 'alignment':
                     if self.is_alignment_active:
@@ -380,7 +380,7 @@ rm %(lock)s
     def execute(self):
         """execute synchronisation of run folder into staging by creating a shell script and running it
         """
-        if self.run.is_sequencing_completed() and self.run.is_analysis_completed_present():
+        if self.run.is_ready_for_processing() and self.run.is_analysis_completed_present():
             # create rsync-pipeline script
             self.create_rsync_runfolder_script()
             # run rsync-pipeline script
@@ -464,7 +464,7 @@ class External(object):
         create external directory with symlink to fastq files
         synchronise external data to tmp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
         """
-        if self.run.is_analysis_completed_present() and self.run.is_sync_completed_present() and self.are_files_attached:
+        if self.run.is_ready_for_processing() and self.run.is_analysis_completed_present() and self.run.is_sync_completed_present() and self.are_files_attached:
             if self.external_data:
                 # create pipeline definition
                 self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name=self.pipeline_name)
@@ -604,7 +604,7 @@ class PipelineDefinitionTests(unittest.TestCase):
         self.archivedir = os.path.join(self.current_path, '../testdata/staging/')
         self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
         self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
-        self.run = self.runs.toanalyse_runs[0]
+        self.run = self.runs.runs_to_analyse[0]
         self.log.debug('Testing logging')
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test_local')
         self.pipeline_definition.print_header()
@@ -614,7 +614,7 @@ class PipelineDefinitionTests(unittest.TestCase):
     def tearDown(self):
         import shutil
         shutil.rmtree(self.pipeline_definition.pipeline_directory)
-        for run in self.runs.completed_runs:
+        for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.lustre_run_folder)
 
@@ -653,7 +653,7 @@ class PipelinesTests(unittest.TestCase):
         
     def tearDown(self):
         import shutil
-        for run in self.runs.completed_runs:
+        for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.lustre_run_folder)
             for pipeline_name in Pipelines.PIPELINES.keys():
@@ -664,7 +664,7 @@ class PipelinesTests(unittest.TestCase):
                 os.remove(run.analysis_completed)
 
     def test_execute(self):
-        for run in self.runs.toanalyse_runs:
+        for run in self.runs.runs_to_analyse:
             pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
@@ -674,7 +674,7 @@ class PipelinesTests(unittest.TestCase):
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
                 
     def test_execute_without_alignment(self):
-        for run in self.runs.toanalyse_runs:
+        for run in self.runs.runs_to_analyse:
             pipelines = Pipelines(run=run, cluster_host='uk-cri-test', is_alignment_active=False)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
@@ -685,7 +685,7 @@ class PipelinesTests(unittest.TestCase):
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
 
     def test_register_completion(self):
-        for run in self.runs.toanalyse_runs:
+        for run in self.runs.runs_to_analyse:
             pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
@@ -696,7 +696,7 @@ class PipelinesTests(unittest.TestCase):
             self.assertTrue(os.path.isfile(pipelines.all_completed))
 
     def test_execute_only_fastq(self):
-        for run in self.runs.toanalyse_runs:
+        for run in self.runs.runs_to_analyse:
             pipelines = Pipelines(run=run, pipeline_step='fastq')
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
@@ -719,7 +719,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def tearDown(self):
         import shutil
-        for run in self.runs.completed_runs:
+        for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.lustre_run_folder)
             for pipeline_name in Pipelines.PIPELINES.keys():
@@ -732,11 +732,11 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
     def test_one_runfolder(self):
         self.assertEqual(1, len(self.runs.run_folders))
         self.assertEqual(1, len(self.runs.completed_runs))
-        self.assertEqual(1, len(self.runs.toanalyse_runs))
+        self.assertEqual(1, len(self.runs.runs_to_analyse))
         self.assertEqual(0, len(self.runs.analysed_runs))
 
     def test_execute(self):
-        run = self.runs.toanalyse_runs[0]
+        run = self.runs.runs_to_analyse[0]
         pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
@@ -746,7 +746,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
             self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
 
     def test_register_completion(self):
-        run = self.runs.toanalyse_runs[0]
+        run = self.runs.runs_to_analyse[0]
         pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
@@ -757,7 +757,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         self.assertTrue(os.path.isfile(pipelines.all_completed))
 
     def test_execute_only_fastq(self):
-        run = self.runs.toanalyse_runs[0]
+        run = self.runs.runs_to_analyse[0]
         pipelines = Pipelines(run=run, pipeline_step='fastq')
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
@@ -780,7 +780,7 @@ class SyncTests(unittest.TestCase):
         
     def tearDown(self):
         import shutil
-        for run in self.runs.completed_runs:
+        for run in self.runs.analysed_runs:
             pipeline_folder = os.path.join(run.run_folder, 'sync')
             if os.path.exists(pipeline_folder):
                 shutil.rmtree(pipeline_folder)

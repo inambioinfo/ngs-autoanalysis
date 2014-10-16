@@ -12,10 +12,10 @@ Scripts currently in used:
 - autoanalysis.py [done]
 - manageruns.py [new script taking care of creating status, cleaning processing and lustre space]
 
-- updaterunstatus.py [to be retired]
-- sync.py [to be retired]
-- deleterun.py [to be retired]
-- cleanlustre.py [to be retired]
+- updaterunstatus.py [to be merged into manageruns.py]
+- cleanprocessing.py [to be merged into manageruns.py]
+- cleanlustre.py [to be merged into manageruns.py]
+- sync.py [to be removed]
 
 
 PROCESSING SERVERS (sol01/2/5):
