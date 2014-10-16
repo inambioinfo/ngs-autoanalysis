@@ -148,7 +148,9 @@ def main():
         runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder, False)
 
         ### update run status ...........................................................
+        log.info('********************************************************************************')
         log.info('*** UPDATE RUN STATUS **********************************************************')
+        log.info('********************************************************************************')
         for run in runs.all_runs:
             try:
                 # add SequencingComplete.txt or SequencingFail.txt by retrieving info from lims on run
@@ -162,7 +164,9 @@ def main():
                 continue
 
         ### print run reports ...........................................................
+        log.info('********************************************************************************')
         log.info('*** RUN REPORTS ****************************************************************')
+        log.info('********************************************************************************')
         for run in runs.runs_to_analyse:
             log.info('TO ANALYSE  %s' % run.run_folder)
         for run in runs.unknown_runs:
@@ -177,7 +181,9 @@ def main():
         log.info(' PUBLISHED RUNS: %s' % len(runs.published_runs))
 
         ### manage runs .................................................................
+        log.info('********************************************************************************')
         log.info('*** MANAGE PUBLISHED RUNS ******************************************************')
+        log.info('********************************************************************************')
         # move published runs in lustre into options.trashdir and in processing into options.processeddir
         for run in runs.published_runs:
             try:
@@ -195,7 +201,9 @@ def main():
                 log.exception("Unexpected error")
                 log.exception(e)
                 continue
+        log.info('********************************************************************************')
         log.info('*** MANAGE FAILED RUNS *********************************************************')
+        log.info('********************************************************************************')
         # move failed runs in processing into options.processeddir
         for run in runs.failed_runs:
             try:
@@ -211,9 +219,9 @@ def main():
                 continue
 
         ### delete runs .................................................................
-        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        log.info('~~~ CLEANING PROCESSED RUNS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        log.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        log.info('********************************************************************************')
+        log.info('*** CLEAN PROCESSED RUNS *******************************************************')
+        log.info('********************************************************************************')
         # delete all runs in options.trashdir older than 3 days
         trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
         for run_folder in trash_run_folders:
@@ -221,7 +229,7 @@ def main():
                 if (present - os.path.getmtime(run_folder)) > convert_day(3):
                     cmd = ['rm', '-rf', run_folder]
                     utils.run_bg_process(cmd, options.dry_run)
-                    log.info('~~~ run folder %s deleted' % run_folder)
+                    log.info('*** run folder %s deleted' % run_folder)
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)
@@ -229,7 +237,7 @@ def main():
         # clean all runs in options.processeddir
         processed_run_folders = glob.glob("%s/??????_*_*_*" % options.processeddir)
         for run_folder in processed_run_folders:
-            log.info('~~~ run folder %s' % run_folder)
+            log.info('*** run folder %s' % run_folder)
             try:
                 # calculate age of run folder
                 if os.path.exists(os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)):
@@ -244,7 +252,7 @@ def main():
                     log.info('All images/intensities/thumbnails deleted')
                     cmd = ['rm', '-rf', run_folder]
                     utils.run_bg_process(cmd, options.dry_run)
-                    log.info('~~~ run folder %s deleted' % run_folder)
+                    log.info('*** run folder %s deleted' % run_folder)
                 else:
                     # deleting images
                     if is_completed(run.run_folder, 'delete_images'):
