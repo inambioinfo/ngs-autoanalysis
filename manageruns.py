@@ -243,10 +243,10 @@ def main():
             try:
                 # calculate age of run folder
                 if os.path.exists(os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)):
-                    runfolder_age = present - os.path.getmtime(os.path.join(run_folder, 'Data'))
+                    runfolder_age = present - os.path.getmtime(os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED))
                     log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
                 else:
-                    runfolder_age = present - os.path.getmtime(run.sequencing_failed)
+                    runfolder_age = present - os.path.getmtime(os.path.join(run_folder, auto_data.SEQUENCING_FAILED))
                     log.info('[IMG:%s|INT:%s|PIC:%s] run failed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
 
                 # check deleting file has been done already
