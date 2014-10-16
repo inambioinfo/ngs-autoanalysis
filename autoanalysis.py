@@ -56,11 +56,11 @@ def main():
     log = logger.get_custom_logger(options.logfile, options.nologemail)
                   
     try:
-        # loop over all runs that have a Sequencing.completed file in options.basedir
+        # loop over all runs that have a Sequencing.completed file in options.processingdir
         runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
-        for run in runs.completed_runs:
+        for run in runs.runs_to_analyse:
             try:
                 log.info(run.get_header())
 
@@ -89,7 +89,7 @@ def main():
 
                 # add flow-cell into the publishing queue
                 glslims.publish_flowcell(run, are_files_attached)
-                
+
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)

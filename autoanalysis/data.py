@@ -97,7 +97,6 @@ class RunFolder(Folder):
         self.external_completed = os.path.join(self.run_folder, EXTERNAL_COMPLETED)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
         self.ignore_me = os.path.join(self.run_folder, IGNORE_ME)
-        self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
 
         # only create run folders when sequencing is complete
         self.staging_run_folder = self.create_runfolder(self.staging_dir)
@@ -107,7 +106,7 @@ class RunFolder(Folder):
         return RunFolder.RUN_HEADER % {'run_folder': self.run_folder_name}
 
     def create_runfolder(self, dir):
-        if self.is_sequencing_completed() and dir:
+        if self.is_ready_for_processing() and dir:
             if self.do_create_dir:
                 return utils.locate_run_folder(self.run_folder_name, dir)
             else:
@@ -116,8 +115,13 @@ class RunFolder(Folder):
     def update_sequencing_status(self, is_sequencing_complete, dry_run=True):
         if os.path.exists(self.rta_completed) and is_sequencing_complete:
             self.touch(self.sequencing_completed, dry_run)
+            self.log.info('sequencing completed')
         else:
-            self.log.info('sequencing underway or sequencing failed')
+            if is_sequencing_complete == False:
+                self.touch(self.sequencing_failed, dry_run)
+                self.log.info('sequencing failed')
+            else:
+                self.log.info('sequencing underway or with unknown status')
 
     def is_sequencing_status_present(self):
         # check if SequencingComplete.txt or SequencingFail.txt is present
@@ -129,7 +133,15 @@ class RunFolder(Folder):
             return True
         return False
 
-    def is_sequencing_completed(self):
+    def is_sequencing_completed_present(self):
+        # check if SequencingComplete.txt is present
+        return os.path.exists(self.sequencing_completed)
+
+    def is_sequencing_failed_present(self):
+        # check if SequencingFail.txt is present
+        return os.path.exists(self.sequencing_failed)
+
+    def is_ready_for_processing(self):
         # check SequencingComplete.txt is present and ignore.me is not present
         if os.path.exists(self.run_folder):
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.ignore_me):
@@ -138,11 +150,12 @@ class RunFolder(Folder):
             else:
                 if not os.path.exists(self.sequencing_completed):
                     self.log.debug('%s does not exists' % self.sequencing_completed)
-                    return False
                 if os.path.exists(self.ignore_me):
                     self.log.debug('%s is present' % self.ignore_me)
-                    return False
         return False
+
+    def is_to_be_ignored(self):
+        return os.path.exists(self.ignore_me)
 
     def is_analysis_completed_present(self):
         # check if AnalysisComplete.txt is present
@@ -206,12 +219,14 @@ class RunFolderList(object):
         self.one_run_folder = one_run_folder
 
         self.run_folders = self.get_folders(self.processing_dir)
-        self.all_runs, self.completed_runs, self.toanalyse_runs, self.analysed_runs, self.synced_runs, self.published_runs = self.populate_runs()
+        self.all_runs, self.completed_runs, self.failed_runs, self.runs_to_analyse, self.analysed_runs, self.synced_runs, self.published_runs, self.unknown_runs = self.populate_runs()
 
     def populate_runs(self):
         all_runs = []
         completed_runs = []
-        toanalyse_runs = []
+        failed_runs = []
+        unknown_runs = []
+        runs_to_analyse = []
         analysed_runs = []
         synced_runs = []
         published_runs = []
@@ -219,17 +234,21 @@ class RunFolderList(object):
             self.log.debug(run_folder)
             run = RunFolder(run_folder, self.staging_dir, self.lustre_dir, do_create_dir=self.do_create_dir)
             all_runs.append(run)
-            if run.is_sequencing_completed():
+            if run.is_sequencing_completed_present():
                 completed_runs.append(run)
-                if not run.is_analysis_completed_present():
-                    toanalyse_runs.append(run)
+                if not run.is_publishing_assigned_present() and not run.is_to_be_ignored():
+                    runs_to_analyse.append(run)
+            if run.is_sequencing_failed_present():
+                failed_runs.append(run)
+            if not run.is_sequencing_completed_present() and not run.is_sequencing_failed_present():
+                unknown_runs.append(run)
             if run.is_analysis_completed_present():
                 analysed_runs.append(run)
-            if run.is_analysis_completed_present() and run.is_sync_completed_present():
+            if run.is_sync_completed_present():
                 synced_runs.append(run)
-            if run.is_analysis_completed_present() and run.is_publishing_assigned_present():
+            if run.is_publishing_assigned_present():
                 published_runs.append(run)
-        return all_runs, completed_runs, toanalyse_runs, analysed_runs, synced_runs, published_runs
+        return all_runs, completed_runs, failed_runs, runs_to_analyse, analysed_runs, synced_runs, published_runs, unknown_runs
 
     def get_destination_runfolders(self):
         return self.get_folders(self.staging_dir)
@@ -281,7 +300,7 @@ class RunFolderTests(unittest.TestCase):
 
     def test_completed_run(self):
         self.assertTrue(self.run.is_sequencing_status_present())
-        self.assertTrue(self.run.is_sequencing_completed())
+        self.assertTrue(self.run.is_ready_for_processing())
 
     def test_destination_runfolders(self):
         folder = glob.glob("%s/%s" % (self.destdir, '130417_HWI-ST230_1122_C1YH9ACXX'))
@@ -316,10 +335,10 @@ class RunFolderListTests(unittest.TestCase):
         self.assertEqual(len(self.runs.run_folders), len(self.runs.all_runs))
         
     def test_completed_runs(self):
-        self.assertEqual(3, len(self.runs.completed_runs))
+        self.assertEqual(4, len(self.runs.completed_runs))
 
-    def test_toanalyse_runs(self):
-        self.assertEqual(1, len(self.runs.toanalyse_runs))
+    def test_to_analyse_runs(self):
+        self.assertEqual(2, len(self.runs.runs_to_analyse))
 
     def test_analysed_runs(self):
         self.assertEqual(2, len(self.runs.analysed_runs))
