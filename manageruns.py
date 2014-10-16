@@ -153,7 +153,7 @@ def main():
             try:
                 # add SequencingComplete.txt or SequencingFail.txt by retrieving info from lims on run
                 if not run.is_sequencing_status_present():
-                    log.info(run.get_header())
+                    log.info('checking run status for %s' % run.run_folder_name)
                     is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
                     run.update_sequencing_status(is_sequencing_complete, options.dry_run)
             except Exception, e:
@@ -181,17 +181,16 @@ def main():
         # move published runs in lustre into options.trashdir and in processing into options.processeddir
         for run in runs.published_runs:
             try:
-                log.info(run.get_header())
                 if os.path.exists(run.ignore_me):
                     log.info('%s is present' % run.ignore_me)
                 else:
                     cmd = ['mv', run.run_folder, options.processeddir]
                     utils.run_bg_process(cmd, options.dry_run)
-                    log.info('*** run moved to %s' % options.processeddir)
+                    log.info('*** run %s moved to %s' % (run.run_folder_name, options.processeddir))
                     if os.path.exists(run.lustre_run_folder):
                         cmd = ['mv', run.lustre_run_folder, options.trashdir]
                         utils.run_bg_process(cmd, options.dry_run)
-                        log.info('*** run on lustre moved to %s' % options.trashdir)
+                        log.info('*** run %s on lustre moved to %s' % (run.run_folder_name, options.trashdir))
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)
@@ -200,13 +199,12 @@ def main():
         # move failed runs in processing into options.processeddir
         for run in runs.failed_runs:
             try:
-                log.info(run.get_header())
                 if os.path.exists(run.ignore_me):
                     log.info('%s is present' % run.ignore_me)
                 else:
                     cmd = ['mv', run.run_folder, options.faileddir]
                     utils.run_bg_process(cmd, options.dry_run)
-                    log.info('*** failed run moved to %s' % options.processeddir)
+                    log.info('*** failed run %s moved to %s' % (run.run_folder_name, options.processeddir))
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)
