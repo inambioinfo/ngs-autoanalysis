@@ -69,12 +69,12 @@ class GlsLims:
         self.log.info('... create analysis processes ..................................................')
         run = self.glsutil.get_latest_complete_run_process_by_flowcell_id(flowcell_id)
         if run is not None:
-            fastq = self.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
-            if fastq is None:
+            lanfq = self.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
+            if lanfq is None:
                 self.glsutil.create_fastq_lane_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['lanfq'], flowcell_id))
-            demux = self.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
-            if demux is None:
+            samfq = self.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
+            if samfq is None:
                 self.glsutil.create_fastq_sample_pipeline_process(flowcell_id)
                 self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['samfq'], flowcell_id))
             align = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
