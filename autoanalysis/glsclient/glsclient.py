@@ -437,7 +437,8 @@ class GlsUtil(object):
         for input_artifact_uri in input_uri_set:
             artifact = self.api.load_by_uri('artifact', input_artifact_uri)
             self.log.debug(artifact.qc_flag)
-            if artifact.qc_flag == 'PASSED':
+            if not artifact.qc_flag == 'FAILED':
+                # if lane status is either PASSED or UNKNOWN - files need to be attached
                 location = artifact.location.value_
                 self.log.debug(location)
                 self.db.execute(glssql.UNASSIGNED_FASTQ1_ON_PROCESS_BY_UDF_QUERY % (_run_id, location))
