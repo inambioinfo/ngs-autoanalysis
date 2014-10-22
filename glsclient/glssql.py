@@ -253,7 +253,7 @@ AND artifact_sample_map.processid=sample.processid
 AND sample.projectid=project.projectid
 AND project.researcherid=researcher.researcherid
 AND researcher.labid=lab.labid
-AND artifactstate.qcflag = 1 -- passed qc
+AND NOT artifactstate.qcflag = 2 -- not a failed lane (either passed or unknown)
 AND ludf2.udfvalue = 'False' -- non external
 AND (judf1.udfvalue = 'True' OR ludf1.udfvalue = 'True') -- project supported by core OR auto alignment set for this lab
 """
