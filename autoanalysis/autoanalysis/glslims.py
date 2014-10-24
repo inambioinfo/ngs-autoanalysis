@@ -131,7 +131,7 @@ class GlsLimsTests(unittest.TestCase):
         self.PUBLISHING_ASSIGNED = data.PUBLISHING_ASSIGNED
         self.are_fastq_files_attached = True
 
-        self.glslims = GlsLims('limsdev')
+        self.glslims = GlsLims(use_dev_lims=True)
 
     def tearDown(self):
         import shutil
@@ -179,6 +179,11 @@ class GlsLimsTests(unittest.TestCase):
     def test_is_alignment_active(self):
         self.assertTrue(self.glslims.is_alignment_active('140815_D00408_0163_C4EYLANXX'))
         self.assertFalse(self.glslims.is_alignment_active('140813_M01712_0104_000000000-A9YBB'))
+
+    def test_is_sequencing_run_complete(self):
+        self.assertTrue(self.glslims.is_sequencing_run_complete('141022_D00491_0113_C5LTUANXX'))
+        self.assertTrue(self.glslims.is_sequencing_run_complete('141022_M01686_0146_000000000-AAYM1'))
+
 
 
 if __name__ == '__main__':
