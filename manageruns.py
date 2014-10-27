@@ -227,6 +227,7 @@ def main():
         # delete all runs in options.trashdir older than 3 days
         trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
         for run_folder in trash_run_folders:
+            log.info('*** run folder %s' % run_folder)
             try:
                 if (present - os.path.getmtime(run_folder)) > convert_day(3):
                     cmd = ['rm', '-rf', run_folder]
