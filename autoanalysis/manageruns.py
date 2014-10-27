@@ -229,7 +229,9 @@ def main():
         for run_folder in trash_run_folders:
             log.info('*** run folder %s' % run_folder)
             try:
-                if (present - os.path.getmtime(run_folder)) > convert_day(3):
+                runfolder_age = present - os.path.getmtime(run_folder)
+                log.info('[LUSTRE:3] run completed %s ago' % datetime.timedelta(seconds=runfolder_age))
+                if runfolder_age > convert_day(3):
                     cmd = ['rm', '-rf', run_folder]
                     utils.run_bg_process(cmd, options.dry_run)
                     log.info('*** run folder %s deleted' % run_folder)
