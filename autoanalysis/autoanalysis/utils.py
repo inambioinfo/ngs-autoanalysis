@@ -11,7 +11,6 @@ Created by Anne Pajon on 2012-10-26.
 ################################################################################
 # IMPORTS
 ################################################################################
-import sys
 import os
 import glob
 import logging
@@ -53,6 +52,7 @@ ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'se
 
 '''
 
+
 ################################################################################
 # METHODS
 ################################################################################
@@ -65,7 +65,8 @@ def create_script(script_path, command):
         log.info('%s created' % script_path)
     else:
         log.debug('%s already exists' % script_path)
-    
+
+
 def run_process(cmd, dry_run=True):
     if not dry_run:
         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -80,6 +81,7 @@ def run_process(cmd, dry_run=True):
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
+
 def run_bg_process(cmd, dry_run=True, logfilename=None):
     if not dry_run:
         if logfilename:
@@ -90,6 +92,7 @@ def run_bg_process(cmd, dry_run=True, logfilename=None):
         log.info("command '%s' executed" % " ".join(cmd))
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
+
 
 def touch(fname, dry_run=False, times=None):
     try:
@@ -102,6 +105,7 @@ def touch(fname, dry_run=False, times=None):
         log.exception('cannot touch %s' % fname)
         raise
 
+
 def output_job_success(output_files):
     try:
         for output_file in output_files:
@@ -113,11 +117,23 @@ def output_job_success(output_files):
                         break
                     if 'Successfully completed' in line:
                         return True
-    except IOError:
-        log.exception('')
+    except IOError, e:
+        log.exception(e)
         raise
     else:
         return False
+
+
+def log_with_error(log_file):
+    try:
+        with open(log_file) as f:
+            for line in f:
+                if 'error' in line.lower():
+                    return True
+    except IOError, e:
+        log.exception(e)
+    return False
+
 
 def locate_run_folder(run_folder_name, path, create=True):
     run_folders = glob.glob("%s/%s" % (path, run_folder_name))
@@ -136,7 +152,8 @@ def locate_run_folder(run_folder_name, path, create=True):
         else:
             log.info('no run folder %s found in %s' % (run_folder_name, path))
     return None
-    
+
+
 def create_directory(directory):
     try:
         os.makedirs(directory)
@@ -147,6 +164,7 @@ def create_directory(directory):
         else:
             log.exception('cannot create directory %s' % directory)
             raise
+
 
 def create_symlink(filename, linkname):
     try:
@@ -162,6 +180,7 @@ def create_symlink(filename, linkname):
         log.exception('unexpected error when creating symlink')
         raise
 
+
 def get_smallest_volume(archive_glob):
     try:
         volumes = glob.glob(archive_glob)
@@ -170,7 +189,7 @@ def get_smallest_volume(archive_glob):
                 volume_sizes = {}
                 for volume in volumes:
                     device, size, used, available, percent, mountpoint = run_process(['df', '%s' % volume], False).split("\n")[1].split()
-                    volume_sizes[volume]=used
+                    volume_sizes[volume] = used
                 min_volume = min(volume_sizes, key=lambda x: volume_sizes.get(x))
                 return min_volume
             except ValueError:
@@ -185,10 +204,11 @@ def get_smallest_volume(archive_glob):
         log.exception('cannot get smallest volume from %s' % archive_glob)
         raise
 
+
 ################################################################################
 # UNIT TESTS
 ################################################################################
-class utilsTests(unittest.TestCase):
+class UtilsTests(unittest.TestCase):
     def setUp(self):
         pass
 

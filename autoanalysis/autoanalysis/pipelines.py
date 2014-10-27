@@ -215,7 +215,14 @@ class PipelineDefinition(object):
                             self.log.error("[***FAIL***] %s pipeline in %s has failed." % (self.pipeline_name, self.run.run_folder))
                             self.log.error("please investigate %s." % job_output)
                     else:
-                        self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
+                        if os.path.exists(self.env['log']):
+                            if utils.log_with_error(self.env['log']):
+                                self.log.error("[***FAIL***] %s pipeline in %s has errors." % (self.pipeline_name, self.run.run_folder))
+                                self.log.error("please investigate %s." % self.env['log'])
+                            else:
+                                self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
+                        else:
+                            self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
                     self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
