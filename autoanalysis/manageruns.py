@@ -250,36 +250,36 @@ def main():
                     log.info('[IMG:%s|INT:%s|PIC:%s] run failed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
 
                 # check deleting file has been done already
-                if is_completed(run.run_folder, 'delete_images') and is_completed(run.run_folder, 'delete_intensities') and is_completed(run.run_folder, 'delete_thumbnails'):
+                if is_completed(run_folder, 'delete_images') and is_completed(run_folder, 'delete_intensities') and is_completed(run_folder, 'delete_thumbnails'):
                     log.info('All images/intensities/thumbnails deleted')
                     cmd = ['rm', '-rf', run_folder]
                     utils.run_bg_process(cmd, options.dry_run)
                     log.info('*** run folder %s deleted' % run_folder)
                 else:
                     # deleting images
-                    if is_completed(run.run_folder, 'delete_images'):
+                    if is_completed(run_folder, 'delete_images'):
                         log.info('All images deleted')
                     else:
                         if runfolder_age > delete_images_older_than:
-                            delete_images_cmd = "find %s -name *.tif -delete" % run.run_folder
-                            setup_clean(run.run_folder, 'delete_images', delete_images_cmd)
-                            clean(run.run_folder, 'delete_images', options.dry_run)
+                            delete_images_cmd = "find %s -name *.tif -delete" % run_folder
+                            setup_clean(run_folder, 'delete_images', delete_images_cmd)
+                            clean(run_folder, 'delete_images', options.dry_run)
                     # deleting intensities
-                    if is_completed(run.run_folder, 'delete_intensities'):
+                    if is_completed(run_folder, 'delete_intensities'):
                         log.info('All intensities deleted')
                     else:
                         if runfolder_age > delete_intensities_older_than:
-                            delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.bcl -or -name *.stats \) -delete" % run.run_folder
-                            setup_clean(run.run_folder, 'delete_intensities', delete_intensities_cmd)
-                            clean(run.run_folder, 'delete_intensities', options.dry_run)
+                            delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.bcl -or -name *.stats \) -delete" % run_folder
+                            setup_clean(run_folder, 'delete_intensities', delete_intensities_cmd)
+                            clean(run_folder, 'delete_intensities', options.dry_run)
                     # deleting thumbnails
-                    if is_completed(run.run_folder, 'delete_thumbnails'):
+                    if is_completed(run_folder, 'delete_thumbnails'):
                         log.info('All thumbnails deleted')
                     else:
                         if runfolder_age > delete_thumbnails_older_than:
-                            delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run.run_folder
-                            setup_clean(run.run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
-                            clean(run.run_folder, 'delete_thumbnails', options.dry_run)
+                            delete_thumbnails_cmd = "find %s/Thumbnail_Images/ -name *.jpg -delete" % run_folder
+                            setup_clean(run_folder, 'delete_thumbnails', delete_thumbnails_cmd)
+                            clean(run_folder, 'delete_thumbnails', options.dry_run)
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)
