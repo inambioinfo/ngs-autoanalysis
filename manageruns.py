@@ -212,7 +212,7 @@ def main():
                 if os.path.exists(run.ignore_me):
                     log.info('%s is present' % run.ignore_me)
                 else:
-                    cmd = ['mv', run.run_folder, options.faileddir]
+                    cmd = ['mv', run.run_folder, options.processeddir]
                     utils.run_bg_process(cmd, options.dry_run)
                     log.info('*** failed run %s moved to %s' % (run.run_folder_name, options.processeddir))
             except Exception, e:
