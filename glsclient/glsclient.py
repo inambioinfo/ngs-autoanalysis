@@ -275,27 +275,45 @@ class GlsUtil(object):
         results = self.db.fetchall()
         if results:
             # run process at the end of cycle - sequencing COMPLETE
-            if int(results[0]['currentcycle']) == int(results[0]['totalcycle']):
-                self.log.debug('Run ID: %s - finished - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
-                return True
+            if results[0]['currentcycle'] and results[0]['totalcycle']:
+                if int(results[0]['currentcycle']) == int(results[0]['totalcycle']):
+                    self.log.debug('Run ID: %s - finished - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
+                    return True
+                else:
+                    # run process not at the end of cycle but completed in clarity
+                    if results[0]['workstatus'] == 'COMPLETE':
+                        # check if all lanes qc failed = 2
+                        all_lanes_failed = True
+                        all_lanes_passed = True
+                        for lane in results:
+                            if not lane['qcflag'] == 2:
+                                all_lanes_failed = False
+                            if not lane['qcflag'] == 1:
+                                all_lanes_passed = False
+                        # all lanes failed - sequencing FAILED
+                        if all_lanes_failed:
+                            self.log.debug('Run ID: %s - failed - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
+                            return False
+                        elif all_lanes_passed:
+                            self.log.debug('Run ID: %s - all lanes passed; sequencing underway - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
+                            return None
+                        else:
+                            self.log.debug('Run ID: %s - some lanes failed but not all - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
+                            return None
+                    else:
+                        self.log.debug('Run ID: %s - still open in clarity - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
+                        return None
             else:
-                # run process not at the end of cycle but completed in clarity
+                # run process without cycle information
                 if results[0]['workstatus'] == 'COMPLETE':
                     # check if all lanes qc failed = 2
                     all_lanes_failed = True
-                    all_lanes_passed = True
                     for lane in results:
                         if not lane['qcflag'] == 2:
                             all_lanes_failed = False
-                        if not lane['qcflag'] == 1:
-                            all_lanes_passed = False
-                    # all lanes failed - sequencing FAILED
                     if all_lanes_failed:
                         self.log.debug('Run ID: %s - failed - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
                         return False
-                    elif all_lanes_passed:
-                        self.log.debug('Run ID: %s - all lanes passed; sequencing underway - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
-                        return None
                     else:
                         self.log.debug('Run ID: %s - some lanes failed but not all - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
                         return None
