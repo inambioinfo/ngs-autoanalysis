@@ -34,8 +34,8 @@ PIPELINES_SETUP_OPTIONS = {
     "alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq"}
 
 # Pipeline run command to run pipeline
-PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s --clean %(run_meta)s"
-PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME = "%(bin_run)s --mode=%(mode)s --clean --ignore-walltime %(run_meta)s"
+PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s %(run_meta)s"
+PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME = "%(bin_run)s --mode=%(mode)s --ignore-walltime %(run_meta)s"
 
 # Software pipeline path
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
