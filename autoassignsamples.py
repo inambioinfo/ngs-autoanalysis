@@ -32,6 +32,7 @@ WORKFLOW_MAPPING = {
 'MiSeq Express': 'SLX: Sequencing for MiSeq Express v1',
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
+'NextSeq Direct': 'SLX: NextSeq Direct v1',
 
 # New LPP submission form v16
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v3',
