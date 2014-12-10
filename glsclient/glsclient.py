@@ -810,6 +810,16 @@ class GlsUtilTest(unittest.TestCase):
         process = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
         self.log.debug(process)
         self.assertIsNotNone(process)
+        flowcell_id = 'XXXXXXXXX'
+        process = self.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
+        self.log.debug(process)
+        self.assertIsNone(process)
+        process = self.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
+        self.log.debug(process)
+        self.assertIsNone(process)
+        process = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
+        self.log.debug(process)
+        self.assertIsNone(process)
 
     def test_get_lane_fastq_files(self):
         run_id = '140618_D00408_0148_C4W0MACXX'
