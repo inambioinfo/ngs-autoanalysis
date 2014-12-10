@@ -70,7 +70,7 @@ anne.pajon@cruk.cam.ac.uk | +44 (0)1223 769 631
     msg['Cc'] = me
     
     #s = smtplib.SMTP('uk-lif-lexb02.crwin.crnet.org')
-    s = smtplib.SMTP('localhost')
+    s = smtplib.SMTP('smtp.cruk.cam.ac.uk')
     s.sendmail(me, [me, you], msg.as_string())
     s.quit()
 
