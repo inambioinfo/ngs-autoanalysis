@@ -51,7 +51,8 @@ WORKFLOW_MAPPING = {
 
 }
 
-def send_email(txt_msg):
+
+def send_email(subject, txt_msg):
     msg = MIMEText("""
 Samples assigned to MiSeq Express workflow:
 
@@ -63,7 +64,7 @@ anne.pajon@cruk.cam.ac.uk | +44 (0)1223 769 631
     
     me = 'anne.pajon@cruk.cam.ac.uk'
     you = 'genomics@cruk.cam.ac.uk'
-    msg['Subject'] = 'Automatic MiSeq Express Notification'
+    msg['Subject'] = 'Automatic %s Notification' % subject
     msg['From'] = me
     msg['To'] = you
     msg['Cc'] = me
@@ -106,10 +107,13 @@ def main():
         
         count = 0
         count_miseqexpress = 0
+        count_nextseqdirect = 0
         report_assignedsamples = ''
         report_unassignedsamples = ''
         # MiSeq Express report to include: SLXID | username | workflow | entype | seqtype
         report_miseqexpresssamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
+        # NextSeq Direct report to include: SLXID | username | workflow | entype | seqtype
+        report_nextseqdirectsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         for row in results:
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,seqinfo,submissiondate,email
             try:                
@@ -128,7 +132,7 @@ def main():
                 # assign samples to workflow
                 if row['workflow'] in WORKFLOW_MAPPING.keys():
                     details = "[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], WORKFLOW_MAPPING[row['workflow']])
-                    miseqexpress_details = "%s\t| %s\t| %s\t| %s\t| %s" % (row['slxid'], row['projectname'], row['researcher'], row['readlength'], row['seqtype'])
+                    detailed_info_for_report = "%s\t| %s\t| %s\t| %s\t| %s" % (row['slxid'], row['projectname'], row['researcher'], row['readlength'], row['seqtype'])
                     report_assignedsamples += details + "\n"
                     log.info(details)
                     if options.update:
@@ -139,9 +143,13 @@ def main():
                         glsutil.route_each_artifact_to_workflow([artifact.uri], WORKFLOW_MAPPING[row['workflow']])
                         count += 1
                         if row['workflow'] == 'MiSeq Express':
-                            log.debug(miseqexpress_details)
-                            report_miseqexpresssamples += miseqexpress_details + "\n"
+                            log.debug(detailed_info_for_report)
+                            report_miseqexpresssamples += detailed_info_for_report + "\n"
                             count_miseqexpress += 1
+                        if row['workflow'] == 'NextSeq Direct':
+                            log.debug(detailed_info_for_report)
+                            report_nextseqdirectsamples += detailed_info_for_report + "\n"
+                            count_nextseqdirect += 1
                 else:
                     details = "[%s,%s,%s,%s,%s] not assigned" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'])
                     report_unassignedsamples += details + "\n"
@@ -151,16 +159,27 @@ def main():
                 continue
 
         # email sent to genomics for MiSeq Express
-        report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow\n" % (count_miseqexpress) + report_miseqexpresssamples
+        report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow\n" % count_miseqexpress + report_miseqexpresssamples
         if options.email and count_miseqexpress > 0:
-            send_email(report_miseqexpresssamples)
+            send_email('MiSeq Express', report_miseqexpresssamples)
         log.debug('MISEQ EXPRESS REPORT')
         log.debug(report_miseqexpresssamples)
         log.info("%s samples assigned to workflows over %s" % (count, len(results)))
-        log.info("%s samples assigned to MiSeq Express workflow" % (count_miseqexpress))
+        log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)
         if not options.update:
             log.info('use --update to perform the operation in the lims')
             
+        # email sent to genomics for NextSeq Direct
+        report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow\n" % count_nextseqdirect + report_nextseqdirectsamples
+        if options.email and count_nextseqdirect > 0:
+            send_email('NextSeq Direct', report_nextseqdirectsamples)
+        log.debug('NEXTSEQ DIRECT REPORT')
+        log.debug(report_nextseqdirectsamples)
+        log.info("%s samples assigned to workflows over %s" % (count, len(results)))
+        log.info("%s samples assigned to NextSeq Direct workflow" % count_nextseqdirect)
+        if not options.update:
+            log.info('use --update to perform the operation in the lims')
+
         print report_assignedsamples
         print report_unassignedsamples
 
@@ -169,4 +188,4 @@ def main():
         raise
     
 if __name__ == "__main__":
-	main()
+    main()
