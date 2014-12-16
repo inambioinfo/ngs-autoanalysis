@@ -54,11 +54,9 @@ WORKFLOW_MAPPING = {
 
 def send_email(subject, txt_msg):
     msg = MIMEText("""
-Samples assigned to MiSeq Express workflow:
-
 %s
 --
-Anne Pajon, CRI Bioinformatics Core
+Anne Pajon, CRUK-CI Bioinformatics Core
 anne.pajon@cruk.cam.ac.uk | +44 (0)1223 769 631
 """ % txt_msg)
     
@@ -159,7 +157,7 @@ def main():
                 continue
 
         # email sent to genomics for MiSeq Express
-        report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow\n" % count_miseqexpress + report_miseqexpresssamples
+        report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow:\n\n" % count_miseqexpress + report_miseqexpresssamples
         if options.email and count_miseqexpress > 0:
             send_email('MiSeq Express', report_miseqexpresssamples)
         log.debug('MISEQ EXPRESS REPORT')
@@ -170,7 +168,7 @@ def main():
             log.info('use --update to perform the operation in the lims')
             
         # email sent to genomics for NextSeq Direct
-        report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow\n" % count_nextseqdirect + report_nextseqdirectsamples
+        report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
         if options.email and count_nextseqdirect > 0:
             send_email('NextSeq Direct', report_nextseqdirectsamples)
         log.debug('NEXTSEQ DIRECT REPORT')
