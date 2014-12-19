@@ -7,9 +7,6 @@ Created by Anne Pajon on 2013-05-14.
 
 """
 
-import sys
-import os
-import logging
 import argparse
 # email modules
 import smtplib
@@ -34,20 +31,13 @@ WORKFLOW_MAPPING = {
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 'NextSeq Direct': 'SLX: NextSeq Direct v1',
 
-# New LPP submission form v16
-'Truseq stranded mRNA': 'LPS: TruSeq RNA v3',
-'Nextera': 'LPS: Nextera v2',
-'Access Array': 'LPS: Access Array v3',
-'ChIP Seq': 'LPS: TruSeq ChIP v3',
-'Nextera Rapid Exome': 'LPS: Rapid Exome',
-'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
-
-# Old LPP submission - to be deleted later
-'Truseq DNA with MiSeq': 'LPS: TruSeq DNA v3',
-'Truseq RNA with MiSeq': 'LPS: TruSeq RNA v3',
-'Truseq ChIPseq with MiSeq': 'LPS: TruSeq ChIP v3',
-'Nextera with MiSeq': 'LPS: Nextera v2',
-'Access Array with MiSeq': 'LPS: Access Array v3',
+# New LPP submission form v17
+'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
+'Nextera': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
+'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
+'ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
+'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
+# 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
 
 }
 
@@ -67,7 +57,6 @@ anne.pajon@cruk.cam.ac.uk | +44 (0)1223 769 631
     msg['To'] = you
     msg['Cc'] = me
     
-    #s = smtplib.SMTP('uk-lif-lexb02.crwin.crnet.org')
     s = smtplib.SMTP('smtp.cruk.cam.ac.uk')
     s.sendmail(me, [me, you], msg.as_string())
     s.quit()
@@ -106,12 +95,15 @@ def main():
         count = 0
         count_miseqexpress = 0
         count_nextseqdirect = 0
+        count_unknownworkflow = 0
         report_assignedsamples = ''
         report_unassignedsamples = ''
         # MiSeq Express report to include: SLXID | username | workflow | entype | seqtype
         report_miseqexpresssamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         # NextSeq Direct report to include: SLXID | username | workflow | entype | seqtype
         report_nextseqdirectsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
+        # Unassigned samples report to include: SLXID | username | workflow | entype | seqtype
+        report_unknownworkflowsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         for row in results:
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,seqinfo,submissiondate,email
             try:                
@@ -126,6 +118,7 @@ def main():
                         updated_sample = glsutil.api.update(sample)
                         log.info('Date set to %s on sample %s' % (updated_sample.date_received, updated_sample.name))
                         log.debug(updated_sample.toxml('utf-8'))
+
 
                 # assign samples to workflow
                 if row['workflow'] in WORKFLOW_MAPPING.keys():
@@ -150,8 +143,11 @@ def main():
                             count_nextseqdirect += 1
                 else:
                     details = "[%s,%s,%s,%s,%s] not assigned" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'])
+                    detailed_info_for_report = "%s\t| %s\t| %s\t| %s\t| %s\t| %s" % (row['slxid'], row['projectname'], row['researcher'], row['readlength'], row['seqtype'], row['workflow'])
                     report_unassignedsamples += details + "\n"
                     log.warn(details)
+                    report_unknownworkflowsamples += detailed_info_for_report + "\n"
+                    count_unknownworkflow += 1
             except:
                 log.exception("Unexpected error")
                 continue
@@ -162,10 +158,6 @@ def main():
             send_email('MiSeq Express', report_miseqexpresssamples)
         log.debug('MISEQ EXPRESS REPORT')
         log.debug(report_miseqexpresssamples)
-        log.info("%s samples assigned to workflows over %s" % (count, len(results)))
-        log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)
-        if not options.update:
-            log.info('use --update to perform the operation in the lims')
             
         # email sent to genomics for NextSeq Direct
         report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
@@ -173,8 +165,19 @@ def main():
             send_email('NextSeq Direct', report_nextseqdirectsamples)
         log.debug('NEXTSEQ DIRECT REPORT')
         log.debug(report_nextseqdirectsamples)
+
+        # email sent to genomics for unknown workflow
+        report_unknownworkflowsamples = "%s samples unassigned to workflow:\n\n" % count_unknownworkflow + report_unknownworkflowsamples
+        if options.email and count_unknownworkflow > 0:
+            send_email('Unknown Workflow', report_unknownworkflowsamples)
+        log.debug('UNKNOWN WORKFLOW REPORT')
+        log.debug(report_unknownworkflowsamples)
+
         log.info("%s samples assigned to workflows over %s" % (count, len(results)))
+        log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)
         log.info("%s samples assigned to NextSeq Direct workflow" % count_nextseqdirect)
+        log.info("%s samples unassigned to any workflow" % count_unknownworkflow)
+
         if not options.update:
             log.info('use --update to perform the operation in the lims')
 
