@@ -1,7 +1,7 @@
 # ./routing.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:b9ea9adfd9a15d9a0b8998bd9820ee0f8ccf1db4
-# Generated 2014-10-02 18:41:08.831652 by PyXB version 1.2.3
+# Generated 2015-01-06 15:57:40.182356 by PyXB version 1.2.3
 # Namespace http://genologics.com/ri/routing
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:4a029cca-4a5b-11e4-a093-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.3'
@@ -80,20 +80,20 @@ class routing_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'routing')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 3, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 3, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element assign uses Python identifier assign
-    __assign = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'assign'), 'assign', '__httpgenologics_comrirouting_routing__assign', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6), )
+    __assign = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'assign'), 'assign', '__httpgenologics_comrirouting_routing__assign', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6), )
 
     
     assign = property(__assign.value, __assign.set, None, u'\n            A group of new Artifact to Workflow/Stage assignments\n          ')
 
     
     # Element unassign uses Python identifier unassign
-    __unassign = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'unassign'), 'unassign', '__httpgenologics_comrirouting_routing__unassign', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6), )
+    __unassign = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'unassign'), 'unassign', '__httpgenologics_comrirouting_routing__unassign', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6), )
 
     
     unassign = property(__unassign.value, __unassign.set, None, u'\n            A group of Artifacts to unassign from Workflows/Stages\n          ')
@@ -115,13 +115,13 @@ class extArtifactAssignments (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'extArtifactAssignments')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 26, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 26, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element artifact uses Python identifier artifact
-    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comrirouting_extArtifactAssignments_artifact', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6), )
+    __artifact = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'artifact'), 'artifact', '__httpgenologics_comrirouting_extArtifactAssignments_artifact', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6), )
 
     
     artifact = property(__artifact.value, __artifact.set, None, u'\n            A collection of artifacts to assign/unassign. Only the uri element is needed for each artifact.\n          ')
@@ -129,16 +129,16 @@ class extArtifactAssignments (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute workflow-uri uses Python identifier workflow_uri
     __workflow_uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'workflow-uri'), 'workflow_uri', '__httpgenologics_comrirouting_extArtifactAssignments_workflow_uri', pyxb.binding.datatypes.anyURI)
-    __workflow_uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 36, 4)
-    __workflow_uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 36, 4)
+    __workflow_uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 36, 4)
+    __workflow_uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 36, 4)
     
     workflow_uri = property(__workflow_uri.value, __workflow_uri.set, None, u'\n          The workflow to use for (un)assigning the samples. Is not needed if stage URI is set. If stageURI is not\nspecified, the default stage in the workflow will be used for assignment.\n        ')
 
     
     # Attribute stage-uri uses Python identifier stage_uri
     __stage_uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'stage-uri'), 'stage_uri', '__httpgenologics_comrirouting_extArtifactAssignments_stage_uri', pyxb.binding.datatypes.anyURI)
-    __stage_uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 44, 4)
-    __stage_uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 44, 4)
+    __stage_uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 44, 4)
+    __stage_uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 44, 4)
     
     stage_uri = property(__stage_uri.value, __stage_uri.set, None, u'\n          The stage to assign the samples to. The stage is tied to a workflow, so workflowURI is not needed if this\nattribute is set.\n        ')
 
@@ -159,15 +159,15 @@ class artifact (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'artifact')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 53, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 53, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrirouting_artifact_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 54, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 54, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 54, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 54, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Artifact.\n        ')
 
@@ -180,14 +180,14 @@ class artifact (pyxb.binding.basis.complexTypeDefinition):
 Namespace.addCategoryObject('typeBinding', u'artifact', artifact)
 
 
-routing = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'routing'), routing_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 2, 2))
+routing = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'routing'), routing_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 2, 2))
 Namespace.addCategoryObject('elementBinding', routing.name().localName(), routing)
 
 
 
-routing_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'assign'), extArtifactAssignments, scope=routing_, documentation=u'\n            A group of new Artifact to Workflow/Stage assignments\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6)))
+routing_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'assign'), extArtifactAssignments, scope=routing_, documentation=u'\n            A group of new Artifact to Workflow/Stage assignments\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6)))
 
-routing_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'unassign'), extArtifactAssignments, scope=routing_, documentation=u'\n            A group of Artifacts to unassign from Workflows/Stages\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6)))
+routing_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'unassign'), extArtifactAssignments, scope=routing_, documentation=u'\n            A group of Artifacts to unassign from Workflows/Stages\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -196,19 +196,19 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(routing_._UseForTag(pyxb.namespace.ExpandedName(None, u'assign')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6))
+    symbol = pyxb.binding.content.ElementUse(routing_._UseForTag(pyxb.namespace.ExpandedName(None, u'assign')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 10, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(routing_._UseForTag(pyxb.namespace.ExpandedName(None, u'unassign')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6))
+    symbol = pyxb.binding.content.ElementUse(routing_._UseForTag(pyxb.namespace.ExpandedName(None, u'unassign')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 17, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
@@ -227,7 +227,7 @@ routing_._Automaton = _BuildAutomaton()
 
 
 
-extArtifactAssignments._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact, scope=extArtifactAssignments, documentation=u'\n            A collection of artifacts to assign/unassign. Only the uri element is needed for each artifact.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6)))
+extArtifactAssignments._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'artifact'), artifact, scope=extArtifactAssignments, documentation=u'\n            A collection of artifacts to assign/unassign. Only the uri element is needed for each artifact.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -236,12 +236,12 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(extArtifactAssignments._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6))
+    symbol = pyxb.binding.content.ElementUse(extArtifactAssignments._UseForTag(pyxb.namespace.ExpandedName(None, u'artifact')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/routing.xsd', 28, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []

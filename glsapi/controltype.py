@@ -1,7 +1,7 @@
 # ./controltype.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:86e663922ca00fa10b60fbec59dcbe0245dfefcc
-# Generated 2014-10-02 18:41:08.799209 by PyXB version 1.2.3
+# Generated 2015-01-06 15:57:40.180371 by PyXB version 1.2.3
 # Namespace http://genologics.com/ri/controltype
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:4a029cca-4a5b-11e4-a093-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.3'
@@ -80,41 +80,48 @@ class control_type_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'control-type')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 4, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 4, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element supplier uses Python identifier supplier
-    __supplier = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'supplier'), 'supplier', '__httpgenologics_comricontroltype_control_type__supplier', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6), )
+    __supplier = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'supplier'), 'supplier', '__httpgenologics_comricontroltype_control_type__supplier', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6), )
 
     
     supplier = property(__supplier.value, __supplier.set, None, u'\n            The supplier of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element catalogue-number uses Python identifier catalogue_number
-    __catalogue_number = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'catalogue-number'), 'catalogue_number', '__httpgenologics_comricontroltype_control_type__catalogue_number', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6), )
+    __catalogue_number = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'catalogue-number'), 'catalogue_number', '__httpgenologics_comricontroltype_control_type__catalogue_number', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6), )
 
     
     catalogue_number = property(__catalogue_number.value, __catalogue_number.set, None, u'\n            The catalogue number of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element website uses Python identifier website
-    __website = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'website'), 'website', '__httpgenologics_comricontroltype_control_type__website', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6), )
+    __website = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'website'), 'website', '__httpgenologics_comricontroltype_control_type__website', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6), )
 
     
     website = property(__website.value, __website.set, None, u'\n            The website of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
+    # Element concentration uses Python identifier concentration
+    __concentration = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'concentration'), 'concentration', '__httpgenologics_comricontroltype_control_type__concentration', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6), )
+
+    
+    concentration = property(__concentration.value, __concentration.set, None, u'\n            The concentration of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
+
+    
     # Element archived uses Python identifier archived
-    __archived = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'archived'), 'archived', '__httpgenologics_comricontroltype_control_type__archived', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6), )
+    __archived = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'archived'), 'archived', '__httpgenologics_comricontroltype_control_type__archived', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6), )
 
     
     archived = property(__archived.value, __archived.set, None, u'\n            The archived flag specifies whether a ControlType is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element single-step uses Python identifier single_step
-    __single_step = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'single-step'), 'single_step', '__httpgenologics_comricontroltype_control_type__single_step', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6), )
+    __single_step = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'single-step'), 'single_step', '__httpgenologics_comricontroltype_control_type__single_step', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 71, 6), )
 
     
     single_step = property(__single_step.value, __single_step.set, None, u'\n            The single step flag specifies whether a control sample can only be used in a single protocol step.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
@@ -122,16 +129,16 @@ class control_type_ (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comricontroltype_control_type__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 72, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 72, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 84, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 84, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the ControlType.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: Yes\n        ')
 
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comricontroltype_control_type__name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 84, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 84, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 96, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 96, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the ControlType.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
 
@@ -139,6 +146,7 @@ class control_type_ (pyxb.binding.basis.complexTypeDefinition):
         __supplier.name() : __supplier,
         __catalogue_number.name() : __catalogue_number,
         __website.name() : __website,
+        __concentration.name() : __concentration,
         __archived.name() : __archived,
         __single_step.name() : __single_step
     })
@@ -158,13 +166,13 @@ class control_types_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'control-types')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 97, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 109, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element control-type uses Python identifier control_type
-    __control_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'control-type'), 'control_type', '__httpgenologics_comricontroltype_control_types__control_type', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 104, 6), )
+    __control_type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'control-type'), 'control_type', '__httpgenologics_comricontroltype_control_types__control_type', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 116, 6), )
 
     
     control_type = property(__control_type.value, __control_type.set, None, u'\n            The list of ControlTypes.\n<br/>Always returns with GET: Yes\n          ')
@@ -172,8 +180,8 @@ class control_types_ (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comricontroltype_control_types__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 113, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 113, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 125, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 125, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the ControlTypes.\n<br/>Always returns with GET: Yes\n        ')
 
@@ -195,23 +203,23 @@ class control_type_link (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'control-type-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 122, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 134, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comricontroltype_control_type_link_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 128, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 128, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 140, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 140, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the ControlType.\n<br/>Always returns with GET: Yes\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comricontroltype_control_type_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 136, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 136, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 148, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 148, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the ControlType.\n<br/>Always returns with GET: Yes\n        ')
 
@@ -225,23 +233,25 @@ class control_type_link (pyxb.binding.basis.complexTypeDefinition):
 Namespace.addCategoryObject('typeBinding', u'control-type-link', control_type_link)
 
 
-control_type = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'control-type'), control_type_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 2, 2))
+control_type = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'control-type'), control_type_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 2, 2))
 Namespace.addCategoryObject('elementBinding', control_type.name().localName(), control_type)
 
-control_types = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'control-types'), control_types_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 3, 2))
+control_types = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'control-types'), control_types_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 3, 2))
 Namespace.addCategoryObject('elementBinding', control_types.name().localName(), control_types)
 
 
 
-control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'supplier'), pyxb.binding.datatypes.string, scope=control_type_, documentation=u'\n            The supplier of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6)))
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'supplier'), pyxb.binding.datatypes.string, scope=control_type_, documentation=u'\n            The supplier of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6)))
 
-control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'catalogue-number'), pyxb.binding.datatypes.string, scope=control_type_, documentation=u'\n            The catalogue number of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6)))
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'catalogue-number'), pyxb.binding.datatypes.string, scope=control_type_, documentation=u'\n            The catalogue number of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6)))
 
-control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'website'), pyxb.binding.datatypes.anyURI, scope=control_type_, documentation=u'\n            The website of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6)))
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'website'), pyxb.binding.datatypes.anyURI, scope=control_type_, documentation=u'\n            The website of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6)))
 
-control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'archived'), pyxb.binding.datatypes.boolean, scope=control_type_, documentation=u'\n            The archived flag specifies whether a ControlType is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6)))
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'concentration'), pyxb.binding.datatypes.string, scope=control_type_, documentation=u'\n            The concentration of the ControlType.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6)))
 
-control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'single-step'), pyxb.binding.datatypes.boolean, scope=control_type_, documentation=u'\n            The single step flag specifies whether a control sample can only be used in a single protocol step.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6)))
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'archived'), pyxb.binding.datatypes.boolean, scope=control_type_, documentation=u'\n            The archived flag specifies whether a ControlType is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6)))
+
+control_type_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'single-step'), pyxb.binding.datatypes.boolean, scope=control_type_, documentation=u'\n            The single step flag specifies whether a control sample can only be used in a single protocol step.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 71, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -250,42 +260,49 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6))
+    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6))
+    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6))
     counters.add(cc_4)
+    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 71, 6))
+    counters.add(cc_5)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'supplier')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'supplier')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 11, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'catalogue-number')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'catalogue-number')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 23, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'website')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'website')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 35, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'archived')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'concentration')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 47, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'single-step')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'archived')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 59, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
+    final_update = set()
+    final_update.add(fac.UpdateInstruction(cc_5, False))
+    symbol = pyxb.binding.content.ElementUse(control_type_._UseForTag(pyxb.namespace.ExpandedName(None, u'single-step')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 71, 6))
+    st_5 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
+    states.append(st_5)
     transitions = []
     transitions.append(fac.Transition(st_0, [
         fac.UpdateInstruction(cc_0, True) ]))
@@ -297,6 +314,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_0, False) ]))
     transitions.append(fac.Transition(st_4, [
         fac.UpdateInstruction(cc_0, False) ]))
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_0, False) ]))
     st_0._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_1, [
@@ -307,6 +326,8 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_1, False) ]))
     transitions.append(fac.Transition(st_4, [
         fac.UpdateInstruction(cc_1, False) ]))
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_1, False) ]))
     st_1._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_2, [
@@ -315,24 +336,34 @@ def _BuildAutomaton ():
         fac.UpdateInstruction(cc_2, False) ]))
     transitions.append(fac.Transition(st_4, [
         fac.UpdateInstruction(cc_2, False) ]))
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_2, False) ]))
     st_2._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_3, [
         fac.UpdateInstruction(cc_3, True) ]))
     transitions.append(fac.Transition(st_4, [
         fac.UpdateInstruction(cc_3, False) ]))
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_3, False) ]))
     st_3._set_transitionSet(transitions)
     transitions = []
     transitions.append(fac.Transition(st_4, [
         fac.UpdateInstruction(cc_4, True) ]))
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_4, False) ]))
     st_4._set_transitionSet(transitions)
+    transitions = []
+    transitions.append(fac.Transition(st_5, [
+        fac.UpdateInstruction(cc_5, True) ]))
+    st_5._set_transitionSet(transitions)
     return fac.Automaton(states, counters, True, containing_state=None)
 control_type_._Automaton = _BuildAutomaton()
 
 
 
 
-control_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'control-type'), control_type_link, scope=control_types_, documentation=u'\n            The list of ControlTypes.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 104, 6)))
+control_types_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'control-type'), control_type_link, scope=control_types_, documentation=u'\n            The list of ControlTypes.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 116, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -341,12 +372,12 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 104, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 116, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(control_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'control-type')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 104, 6))
+    symbol = pyxb.binding.content.ElementUse(control_types_._UseForTag(pyxb.namespace.ExpandedName(None, u'control-type')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/controltype.xsd', 116, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
