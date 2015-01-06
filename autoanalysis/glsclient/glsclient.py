@@ -864,7 +864,7 @@ class GlsUtilTest(unittest.TestCase):
 
     def test_get_all_external_ftp_dirs(self):
         results = self.glsutil.get_all_external_ftp_dirs()
-        self.assertEqual(44, len(results))
+        self.assertEqual(45, len(results))
         self.assertEqual('lmb_debono', results[4]['ftpdir'])
         self.assertEqual('gurdon_institute', results[30]['ftpdir'])
         self.assertEqual('True', results[30]['nonpfdata'])

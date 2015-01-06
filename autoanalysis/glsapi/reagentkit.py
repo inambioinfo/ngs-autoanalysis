@@ -1,7 +1,7 @@
 # ./reagentkit.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:2ecc61377ad6d91182978e52ecdc44f92150122d
-# Generated 2014-10-02 18:41:08.831959 by PyXB version 1.2.3
+# Generated 2015-01-06 15:57:40.186975 by PyXB version 1.2.3
 # Namespace http://genologics.com/ri/reagentkit
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:4a029cca-4a5b-11e4-a093-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.3'
@@ -81,41 +81,41 @@ class reagent_kit_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'reagent-kit')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 5, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 5, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comrireagentkit_reagent_kit__name', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comrireagentkit_reagent_kit__name', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6), )
 
     
     name = property(__name.value, __name.set, None, u'\n            The name of the Reagent Kit.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
 
     
     # Element supplier uses Python identifier supplier
-    __supplier = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'supplier'), 'supplier', '__httpgenologics_comrireagentkit_reagent_kit__supplier', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6), )
+    __supplier = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'supplier'), 'supplier', '__httpgenologics_comrireagentkit_reagent_kit__supplier', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6), )
 
     
     supplier = property(__supplier.value, __supplier.set, None, u'\n            The supplier of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element catalogue-number uses Python identifier catalogue_number
-    __catalogue_number = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'catalogue-number'), 'catalogue_number', '__httpgenologics_comrireagentkit_reagent_kit__catalogue_number', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6), )
+    __catalogue_number = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'catalogue-number'), 'catalogue_number', '__httpgenologics_comrireagentkit_reagent_kit__catalogue_number', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6), )
 
     
     catalogue_number = property(__catalogue_number.value, __catalogue_number.set, None, u'\n            The catalogue number of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element website uses Python identifier website
-    __website = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'website'), 'website', '__httpgenologics_comrireagentkit_reagent_kit__website', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6), )
+    __website = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'website'), 'website', '__httpgenologics_comrireagentkit_reagent_kit__website', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6), )
 
     
     website = property(__website.value, __website.set, None, u'\n            The website of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element archived uses Python identifier archived
-    __archived = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'archived'), 'archived', '__httpgenologics_comrireagentkit_reagent_kit__archived', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6), )
+    __archived = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'archived'), 'archived', '__httpgenologics_comrireagentkit_reagent_kit__archived', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6), )
 
     
     archived = property(__archived.value, __archived.set, None, u'\n            The archived flag specifies if a Reagent Kit is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
@@ -123,8 +123,8 @@ class reagent_kit_ (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrireagentkit_reagent_kit__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 73, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 73, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 73, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 73, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Reagent Kit.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: Yes\n        ')
 
@@ -150,43 +150,43 @@ class reagent_kits_ (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'reagent-kits')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 86, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 86, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element reagent-kit uses Python identifier reagent_kit
-    __reagent_kit = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'reagent-kit'), 'reagent_kit', '__httpgenologics_comrireagentkit_reagent_kits__reagent_kit', True, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6), )
+    __reagent_kit = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'reagent-kit'), 'reagent_kit', '__httpgenologics_comrireagentkit_reagent_kits__reagent_kit', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6), )
 
     
     reagent_kit = property(__reagent_kit.value, __reagent_kit.set, None, u'\n            The list of Reagent Kits.\n<br/>Always returns with GET: Yes\n          ')
 
     
-    # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrireagentkit_reagent_kits__next_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6), )
-
-    
-    next_page = property(__next_page.value, __next_page.set, None, u'\n            The next page element, contains a link to the next page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ')
-
-    
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrireagentkit_reagent_kits__previous_page', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrireagentkit_reagent_kits__previous_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6), )
 
     
     previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            The previous page element, contains a link to the previous page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ')
 
     
+    # Element next-page uses Python identifier next_page
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrireagentkit_reagent_kits__next_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6), )
+
+    
+    next_page = property(__next_page.value, __next_page.set, None, u'\n            The next page element, contains a link to the next page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ')
+
+    
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrireagentkit_reagent_kits__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 118, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 118, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 118, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 118, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Reagent Kits.\n<br/>Always returns with GET: Yes\n        ')
 
     _ElementMap.update({
         __reagent_kit.name() : __reagent_kit,
-        __next_page.name() : __next_page,
-        __previous_page.name() : __previous_page
+        __previous_page.name() : __previous_page,
+        __next_page.name() : __next_page
     })
     _AttributeMap.update({
         __uri.name() : __uri
@@ -204,23 +204,23 @@ the detailed representation of a reagent kit.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'reagent-kit-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 127, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 127, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comrireagentkit_reagent_kit_link_name', pyxb.binding.datatypes.string)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 134, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 134, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 134, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 134, 4)
     
     name = property(__name.value, __name.set, None, u'\n          The name of the Reagent Kit.\n<br/>Always returns with GET: Yes\n        ')
 
     
     # Attribute uri uses Python identifier uri
     __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrireagentkit_reagent_kit_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 142, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 142, 4)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 142, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 142, 4)
     
     uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Reagent Kit.\n<br/>Always returns with GET: Yes\n        ')
 
@@ -234,23 +234,23 @@ the detailed representation of a reagent kit.
 Namespace.addCategoryObject('typeBinding', u'reagent-kit-link', reagent_kit_link)
 
 
-reagent_kit = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'reagent-kit'), reagent_kit_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 3, 2))
+reagent_kit = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'reagent-kit'), reagent_kit_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 3, 2))
 Namespace.addCategoryObject('elementBinding', reagent_kit.name().localName(), reagent_kit)
 
-reagent_kits = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'reagent-kits'), reagent_kits_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 4, 2))
+reagent_kits = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'reagent-kits'), reagent_kits_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 4, 2))
 Namespace.addCategoryObject('elementBinding', reagent_kits.name().localName(), reagent_kits)
 
 
 
-reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The name of the Reagent Kit.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6)))
+reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The name of the Reagent Kit.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6)))
 
-reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'supplier'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The supplier of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6)))
+reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'supplier'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The supplier of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6)))
 
-reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'catalogue-number'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The catalogue number of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6)))
+reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'catalogue-number'), pyxb.binding.datatypes.string, scope=reagent_kit_, documentation=u'\n            The catalogue number of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6)))
 
-reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'website'), pyxb.binding.datatypes.anyURI, scope=reagent_kit_, documentation=u'\n            The website of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6)))
+reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'website'), pyxb.binding.datatypes.anyURI, scope=reagent_kit_, documentation=u'\n            The website of the Reagent Kit.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6)))
 
-reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'archived'), pyxb.binding.datatypes.boolean, scope=reagent_kit_, documentation=u'\n            The archived flag specifies if a Reagent Kit is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6)))
+reagent_kit_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'archived'), pyxb.binding.datatypes.boolean, scope=reagent_kit_, documentation=u'\n            The archived flag specifies if a Reagent Kit is archived.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -259,40 +259,40 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6))
+    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6))
+    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6))
     counters.add(cc_4)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 12, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'supplier')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'supplier')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 24, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'catalogue-number')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'catalogue-number')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 36, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'website')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'website')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 48, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'archived')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kit_._UseForTag(pyxb.namespace.ExpandedName(None, u'archived')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 60, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     transitions = []
@@ -341,11 +341,11 @@ reagent_kit_._Automaton = _BuildAutomaton()
 
 
 
-reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'reagent-kit'), reagent_kit_link, scope=reagent_kits_, documentation=u'\n            The list of Reagent Kits.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6)))
+reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'reagent-kit'), reagent_kit_link, scope=reagent_kits_, documentation=u'\n            The list of Reagent Kits.\n<br/>Always returns with GET: Yes\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6)))
 
-reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=reagent_kits_, documentation=u'\n            The next page element, contains a link to the next page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6)))
+reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=reagent_kits_, documentation=u'\n            The previous page element, contains a link to the previous page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6)))
 
-reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=reagent_kits_, documentation=u'\n            The previous page element, contains a link to the previous page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6)))
+reagent_kits_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=reagent_kits_, documentation=u'\n            The next page element, contains a link to the next page of reagent lots, if required.\n<br/>Always returns with GET: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -354,26 +354,26 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6))
+    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'reagent-kit')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'reagent-kit')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 93, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 101, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6))
+    symbol = pyxb.binding.content.ElementUse(reagent_kits_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/reagentkit.xsd', 109, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []

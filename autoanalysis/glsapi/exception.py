@@ -1,7 +1,7 @@
 # ./exception.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:1e7571504d82bdef8a1168b00aca66147c3c0bba
-# Generated 2014-10-02 18:41:08.822448 by PyXB version 1.2.3
+# Generated 2015-01-06 15:57:40.180663 by PyXB version 1.2.3
 # Namespace http://genologics.com/ri/exception
 
 import pyxb
@@ -13,7 +13,7 @@ import pyxb.utils.domutils
 import sys
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:4a029cca-4a5b-11e4-a093-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.3'
@@ -88,20 +88,20 @@ suggested-actions element with details on how to correct the problem.
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'exception')
-    _XSDLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 3, 2)
+    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 3, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element message uses Python identifier message
-    __message = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'message'), 'message', '__httpgenologics_comriexception_exception__message', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6), )
+    __message = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'message'), 'message', '__httpgenologics_comriexception_exception__message', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6), )
 
     
     message = property(__message.value, __message.set, None, u'\n            A textual summary of the exception.\n          ')
 
     
     # Element suggested-actions uses Python identifier suggested_actions
-    __suggested_actions = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'suggested-actions'), 'suggested_actions', '__httpgenologics_comriexception_exception__suggested_actions', False, pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6), )
+    __suggested_actions = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'suggested-actions'), 'suggested_actions', '__httpgenologics_comriexception_exception__suggested_actions', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6), )
 
     
     suggested_actions = property(__suggested_actions.value, __suggested_actions.set, None, u'\n            Suggested actions for how to correct the cause of the exception.\n          ')
@@ -109,16 +109,16 @@ suggested-actions element with details on how to correct the problem.
     
     # Attribute category uses Python identifier category
     __category = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'category'), 'category', '__httpgenologics_comriexception_exception__category', pyxb.binding.datatypes.string)
-    __category._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 33, 4)
-    __category._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 33, 4)
+    __category._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 33, 4)
+    __category._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 33, 4)
     
     category = property(__category.value, __category.set, None, u'\n          The category of the exception.\n        ')
 
     
     # Attribute code uses Python identifier code
     __code = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'code'), 'code', '__httpgenologics_comriexception_exception__code', pyxb.binding.datatypes.string)
-    __code._DeclarationLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 40, 4)
-    __code._UseLocation = pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 40, 4)
+    __code._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 40, 4)
+    __code._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 40, 4)
     
     code = property(__code.value, __code.set, None, u'\n          The HTTP response code of the exception.\n        ')
 
@@ -133,14 +133,14 @@ suggested-actions element with details on how to correct the problem.
 Namespace.addCategoryObject('typeBinding', u'exception', exception_)
 
 
-exception = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'exception'), exception_, location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 2, 2))
+exception = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'exception'), exception_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 2, 2))
 Namespace.addCategoryObject('elementBinding', exception.name().localName(), exception)
 
 
 
-exception_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'message'), pyxb.binding.datatypes.string, scope=exception_, documentation=u'\n            A textual summary of the exception.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6)))
+exception_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'message'), pyxb.binding.datatypes.string, scope=exception_, documentation=u'\n            A textual summary of the exception.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6)))
 
-exception_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'suggested-actions'), pyxb.binding.datatypes.string, scope=exception_, documentation=u'\n            Suggested actions for how to correct the cause of the exception.\n          ', location=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6)))
+exception_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'suggested-actions'), pyxb.binding.datatypes.string, scope=exception_, documentation=u'\n            Suggested actions for how to correct the cause of the exception.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -149,19 +149,19 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6))
+    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6))
+    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(exception_._UseForTag(pyxb.namespace.ExpandedName(None, u'message')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6))
+    symbol = pyxb.binding.content.ElementUse(exception_._UseForTag(pyxb.namespace.ExpandedName(None, u'message')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 18, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(exception_._UseForTag(pyxb.namespace.ExpandedName(None, u'suggested-actions')), pyxb.utils.utility.Location('http://lims.cri.camres.org:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6))
+    symbol = pyxb.binding.content.ElementUse(exception_._UseForTag(pyxb.namespace.ExpandedName(None, u'suggested-actions')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/exception.xsd', 25, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
