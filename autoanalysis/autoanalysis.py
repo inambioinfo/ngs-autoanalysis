@@ -50,6 +50,8 @@ def main():
     parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
     parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
 
+    parser.add_argument("--noalignment", dest="noalignment", action="store_true", default=False, help="turn off alignment pipeline completely")
+
     options = parser.parse_args()
 
     # logging configuration
@@ -69,7 +71,10 @@ def main():
                 # get external data when lane and sample fastq files are attached in lims
                 external_data = glslims.find_external_data(run.run_folder_name)
                 # is alignment active for this run?
-                is_alignment_active = glslims.is_alignment_active(run.run_folder_name)
+                if options.noalignment:
+                    is_alignment_active = False
+                else:
+                    is_alignment_active = glslims.is_alignment_active(run.run_folder_name)
 
                 # setup and run pipelines
                 pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev, is_alignment_active)
