@@ -133,7 +133,8 @@ def main():
 
     # setting up directories
     utils.create_directory(options.processeddir)
-    utils.create_directory(options.trashdir)
+    if os.path.exists(options.lustredir):
+        utils.create_directory(options.trashdir)
 
     # setting-up time
     present = time.time()
