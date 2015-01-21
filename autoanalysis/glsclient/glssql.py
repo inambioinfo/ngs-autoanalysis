@@ -85,6 +85,35 @@ AND artifact.name like '%s %% Read 1 FASTQ'
 AND resultfile.glsfileid IS NULL
 """
 
+PUBLISHED_RUNS_WITHOUT_FASTQ_ATTACHED = """
+WITH publishing as (
+	SELECT artifact.luid as artifactluid, process.daterun as daterun
+	FROM processiotracker, process, processtype, artifact
+	WHERE processiotracker.processid=process.processid
+	AND process.typeid=processtype.typeid
+	AND processtype.displayname='Publishing'
+	AND processiotracker.inputartifactid=artifact.artifactid
+)
+
+SELECT process_udf_view.udfvalue as run_id
+FROM process, publishing, processtype, process_udf_view, processiotracker, outputmapping, artifact, artifact as inputartifact, resultfile
+LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid)
+WHERE process.typeid = processtype.typeid
+AND processtype.displayname = 'FASTQ Sample Pipeline'
+AND process.processid = process_udf_view.processid
+AND process_udf_view.udfname = 'Run ID'
+AND process.processid=processiotracker.processid
+AND outputmapping.trackerid=processiotracker.trackerid
+AND outputmapping.outputartifactid=artifact.artifactid
+AND artifact.artifactid=resultfile.artifactid
+AND processiotracker.inputartifactid=inputartifact.artifactid
+AND inputartifact.luid=publishing.artifactluid
+AND artifact.name like '%% Read 1 FASTQ'
+AND resultfile.glsfileid IS NULL
+GROUP BY process_udf_view.udfvalue, process.daterun
+ORDER BY process.daterun DESC
+"""
+
 FILES_QUERY = """
 SELECT artifact.artifactid, lab.labid, project.name as projectname, '/' || glsfile.contenturi as runfolder
 FROM process, processtype, process_udf_view, processiotracker, outputmapping, artifact, 
