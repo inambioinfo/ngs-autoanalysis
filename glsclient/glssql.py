@@ -147,8 +147,9 @@ FROM lab
 LEFT OUTER JOIN entity_udf_view as ludf1 on (ludf1.attachtoid=lab.labid and ludf1.udfname='External')
 LEFT OUTER JOIN entity_udf_view as ludf2 on (ludf2.attachtoid=lab.labid and ludf2.udfname='FTP Directory')
 LEFT OUTER JOIN entity_udf_view as ludf3 on (ludf3.attachtoid=lab.labid and ludf3.udfname='Non PF Data')
-WHERE 
-ludf1.udfvalue='True' 
+LEFT OUTER JOIN entity_udf_view as ludf4 on (ludf4.attachtoid=lab.labid and ludf4.udfname='Internal - Send to FTP')
+WHERE
+(ludf1.udfvalue='True' OR ludf4.udfvalue='True')
 AND ludf2.udfvalue IS NOT NULL
 """
 
