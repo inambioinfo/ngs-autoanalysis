@@ -840,9 +840,13 @@ class GlsUtilTest(unittest.TestCase):
         self.assertTrue(self.glsutil.is_external_data(run_id))
         run_id = '140617_M01686_0117_000000000-A9YVK'
         self.assertFalse(self.glsutil.is_external_data(run_id))
+
+    def test_get_latest_complete_run_process_by_run_id(self):
+        run_id = '150112_D00408_0193_C67HDANXX'
+        self.assertIsNotNone(self.glsutil.get_latest_complete_run_process_by_run_id(run_id))
         
     def test_is_sample_fastq_files_attached(self):
-        run_id = '140618_D00408_0148_C4W0MACXX'
+        run_id = '150112_D00408_0193_C67HDANXX'
         self.assertTrue(self.glsutil.are_sample_fastq_files_attached(run_id))
         
     def test_is_sequencing_completed(self):

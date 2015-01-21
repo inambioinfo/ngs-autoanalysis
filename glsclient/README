@@ -54,7 +54,7 @@ cd ..
 ### Before testing you need a 'unittest' user and a 'Python Unit Tests' project 
 python -m unittest --verbose glsclient.glsclient
 # or to only test one method
-python -m unittest --verbose glsclient.glsclient.GlsClientApiTest.test_search_fastq_resultfiles
+python -m unittest --verbose glsclient.glsclient.GlsUtilTest.test_is_sample_fastq_files_attached
 
 ### REST API Documentation
 http://developer.genologics.com
