@@ -32,6 +32,8 @@ def main():
     # get the options
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
+
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--dev-lims", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False,  help="File to print logging information")
@@ -50,10 +52,14 @@ def main():
 
     glsutil.db.execute(glssql.PUBLISHED_RUNS_WITHOUT_FASTQ_ATTACHED)
     results = glsutil.db.fetchall()
-    
+
     if results:
         for r in results:
-            log.error("Published run id %s without attached files onto 'FASTQ Sample Pipeline' process" % r['run_id'])
+            run_folder = r['run_id']
+            if os.path.exists(os.path.join(options.stagingdir, run_folder)):
+                log.error("Published run %s on staging area %s without sample FASTQ files" % (run_folder, options.stagingdir))
+            else:
+                log.warning("Published run %s not on staging area %s without sample FASTQ files" % (run_folder, options.stagingdir))
 
     glsutil.close_db_connection()
 

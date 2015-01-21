@@ -99,7 +99,7 @@ SELECT process_udf_view.udfvalue as run_id
 FROM process, publishing, processtype, process_udf_view, processiotracker, outputmapping, artifact, artifact as inputartifact, resultfile
 LEFT OUTER JOIN glsfile on (resultfile.glsfileid=glsfile.fileid)
 WHERE process.typeid = processtype.typeid
-AND processtype.displayname = 'FASTQ Sample Pipeline'
+AND processtype.displayname in ('FASTQ Sample Pipeline', 'Demultiplexing Pipeline')
 AND process.processid = process_udf_view.processid
 AND process_udf_view.udfname = 'Run ID'
 AND process.processid=processiotracker.processid
@@ -110,8 +110,8 @@ AND processiotracker.inputartifactid=inputartifact.artifactid
 AND inputartifact.luid=publishing.artifactluid
 AND artifact.name like '%% Read 1 FASTQ'
 AND resultfile.glsfileid IS NULL
-GROUP BY process_udf_view.udfvalue, process.daterun
-ORDER BY process.daterun DESC
+GROUP BY process_udf_view.udfvalue
+ORDER BY process_udf_view.udfvalue DESC
 """
 
 FILES_QUERY = """

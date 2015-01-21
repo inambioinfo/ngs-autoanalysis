@@ -11,7 +11,7 @@ Created by Anne Pajon on 2012-10-26.
 import logging
 import logging.config
 
-HOST = 'localhost'
+HOST = 'smtp.cruk.cam.ac.uk'
 FROM = 'anne.pajon@cruk.cam.ac.uk'
 TO = 'anne.pajon@cruk.cam.ac.uk'
 SUBJECT = 'New Error From AUTOANALYSIS'
@@ -74,6 +74,7 @@ LOGGING = {
     }
 } 
 
+
 def get_custom_logger(logfile=None, noemail=False):
     if logfile:
         LOGGING['handlers']['info_file']['filename'] = logfile
@@ -84,5 +85,3 @@ def get_custom_logger(logfile=None, noemail=False):
     logging.config.dictConfig(LOGGING)
     return logging.getLogger('autoanalysis')
 
-
-    
