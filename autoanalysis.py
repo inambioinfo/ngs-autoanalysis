@@ -20,6 +20,8 @@ Usage:
 # IMPORTS
 ################################################################################
 import argparse
+import os
+import sys
 
 # import custom modules
 import autoanalysis.log as logger
@@ -56,7 +58,16 @@ def main():
 
     # logging configuration
     log = logger.get_custom_logger(options.logfile, options.nologemail)
-                  
+
+    # check if python script is already running
+    pid = str(os.getpid())
+    pidfile = "/tmp/autoanalysis_daemon.pid"
+    if os.path.isfile(pidfile):
+        log.info("%s already exists, exiting" % pidfile)
+        sys.exit()
+    else:
+        file(pidfile, 'w').write(pid)
+
     try:
         # loop over all runs that have a Sequencing.completed file in options.processingdir
         runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder)
@@ -102,6 +113,8 @@ def main():
     except:
         log.exception("Unexpected error")
         raise
+    finally:
+        os.unlink(pidfile)
     
 if __name__ == "__main__":
     main()
