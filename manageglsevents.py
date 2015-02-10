@@ -58,8 +58,11 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
     log.info('Synchronising run folder...')
     rsync_files_cmd = ["rsync", "-av", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=RunParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
     utils.run_process(rsync_files_cmd, dry_run)
-    rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)] 
-    utils.run_process(rsync_bin_cmd, dry_run)
+    rsync_bin_cmd = ["rsync", "-av", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
+    if os.path.exists(os.path.join(run_folder, 'InterOp')):
+        utils.run_process(rsync_bin_cmd, dry_run)
+    else:
+        log.warning('%s/InterOp no such directory' % run_folder)
     rsync_ga_cmd = ["rsync", "-avr", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
     utils.run_process(rsync_ga_cmd, dry_run)
     
