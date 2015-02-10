@@ -263,11 +263,15 @@ pudf1.udfvalue as runid,
 artifactstate.qcflag,
 ludf2.udfvalue as externallab,
 judf1.udfvalue as coresupported,
-ludf1.udfvalue as alignment
+ludf1.udfvalue as alignment,
+judf2.udfvalue as projectalignment,
+pudf2.udfvalue as workflow
 FROM process
-LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Run ID'),
+LEFT OUTER JOIN process_udf_view as pudf1 on (pudf1.processid=process.processid AND pudf1.udfname = 'Run ID')
+LEFT OUTER JOIN process_udf_view as pudf2 on (pudf2.processid=process.processid AND pudf2.udfname = 'Workflow'),
 processtype, processiotracker, artifact, artifactstate, artifact_sample_map, sample, project
-LEFT OUTER JOIN entity_udf_view as judf1 on (judf1.attachtoid=project.projectid and judf1.udfname='Core Supported'),
+LEFT OUTER JOIN entity_udf_view as judf1 on (judf1.attachtoid=project.projectid and judf1.udfname='Core Supported')
+LEFT OUTER JOIN entity_udf_view as judf2 on (judf2.attachtoid=project.projectid and judf2.udfname='Auto Alignment'),
 researcher, lab
 LEFT OUTER JOIN entity_udf_view as ludf1 on (ludf1.attachtoid=lab.labid and ludf1.udfname='Auto Alignment')
 LEFT OUTER JOIN entity_udf_view as ludf2 on (ludf2.attachtoid=lab.labid and ludf2.udfname='External')
@@ -283,7 +287,8 @@ AND artifact_sample_map.processid=sample.processid
 AND sample.projectid=project.projectid
 AND project.researcherid=researcher.researcherid
 AND researcher.labid=lab.labid
+AND (pudf2.udfvalue is Null OR NOT pudf2.udfvalue = 'LibraryQC') -- not a Library QC
 AND NOT artifactstate.qcflag = 2 -- not a failed lane (either passed or unknown)
-AND ludf2.udfvalue = 'False' -- non external
-AND (judf1.udfvalue = 'True' OR ludf1.udfvalue = 'True') -- project supported by core OR auto alignment set for this lab
+AND ludf2.udfvalue = 'False' -- not an external lab
+AND (judf1.udfvalue = 'True' OR judf2.udfvalue = 'true' OR ludf1.udfvalue = 'True') -- project supported by core OR auto alignment set for this project OR for this lab
 """
