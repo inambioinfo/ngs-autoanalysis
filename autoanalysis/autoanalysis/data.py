@@ -97,6 +97,7 @@ class RunFolder(Folder):
         self.external_completed = os.path.join(self.run_folder, EXTERNAL_COMPLETED)
         self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
         self.ignore_me = os.path.join(self.run_folder, IGNORE_ME)
+        self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
 
         # only create run folders when sequencing is complete
         self.staging_run_folder = self.create_runfolder(self.staging_dir)

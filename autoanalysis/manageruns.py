@@ -192,6 +192,8 @@ def main():
             try:
                 if os.path.exists(run.ignore_me):
                     log.info('%s is present' % run.ignore_me)
+                elif os.path.exists(run.dont_delete):
+                    log.info('%s is present' % run.dont_delete)
                 else:
                     cmd = ['mv', run.run_folder, options.processeddir]
                     utils.run_bg_process(cmd, options.dry_run)
