@@ -228,7 +228,9 @@ def main():
         log.info('*** CLEAN PROCESSED RUNS *******************************************************')
         log.info('********************************************************************************')
         # delete all runs in options.trashdir older than 3 days
-        trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
+        trash_run_folders = []
+        if os.path.exists(options.lustredir):
+            trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
         for run_folder in trash_run_folders:
             log.info('*** run folder %s' % run_folder)
             if os.path.exists(os.path.join(run_folder, auto_data.IGNORE_ME)):
