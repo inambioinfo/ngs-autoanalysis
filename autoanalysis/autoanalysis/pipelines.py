@@ -579,7 +579,7 @@ class External(object):
                     if not os.path.exists(self.pipeline_definition.env['failed']):
                         self.log.info('external data is currently being synchronised')
                     else:
-                        self.log.info('[***FAIL***] rsync for external data onto ftp server has failed')
+                        self.log.error('[***FAIL***] rsync for external data onto ftp server has failed')
                 else:
                     self.log.info('external data has been synchronised')
         else:
