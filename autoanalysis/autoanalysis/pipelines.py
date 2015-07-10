@@ -259,7 +259,7 @@ class Pipelines(object):
         self.dry_run = dry_run
         self.use_limsdev = use_limsdev
         self.is_alignment_active = is_alignment_active
-        self.local_model = local_mode
+        self.local_mode = local_mode
 
         self.pipelines = Pipelines.PIPELINES
         if self.pipeline_step:
