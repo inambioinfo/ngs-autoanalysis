@@ -53,6 +53,7 @@ def main():
     parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
 
     parser.add_argument("--noalignment", dest="noalignment", action="store_true", default=False, help="turn off alignment pipeline completely")
+    parser.add_argument("--local", dest="local", action="store_true", default=False, help="run all pipelines locally, overwriting default mode")
 
     options = parser.parse_args()
 
@@ -88,7 +89,7 @@ def main():
                     is_alignment_active = glslims.is_alignment_active(run.run_folder_name)
 
                 # setup and run pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev, is_alignment_active)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev, is_alignment_active, options.local)
                 if not options.donot_run_pipelines:
                     pipelines.execute()
 

@@ -248,7 +248,9 @@ class Pipelines(object):
         "alignment": "lsf"
     }
 
-    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True):
+    PID_FILE = "/tmp/autoanalysis_alignment_daemon.pid"
+
+    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
         self.log = logging.getLogger(__name__) 
         self.run = run
         self.pipeline_step = pipeline_step
@@ -257,6 +259,7 @@ class Pipelines(object):
         self.dry_run = dry_run
         self.use_limsdev = use_limsdev
         self.is_alignment_active = is_alignment_active
+        self.local_model = local_mode
 
         self.pipelines = Pipelines.PIPELINES
         if self.pipeline_step:
@@ -274,7 +277,11 @@ class Pipelines(object):
             for pipeline_name in self.pipelines.keys():
                 if pipeline_name == 'alignment':
                     if self.is_alignment_active:
-                        self._execute_steps(pipeline_name)
+                        # special case for running alignment pipeline locally - just one pipeline at a time
+                        if self.local_mode and not os.path.isfile(Pipelines.PID_FILE):
+                            pid = str(os.getpid())
+                            file(Pipelines.PID_FILE, 'w').write(pid)
+                            self._execute_steps(pipeline_name)
                 else:
                     self._execute_steps(pipeline_name)
             self.register_completion()
@@ -301,6 +308,8 @@ class Pipelines(object):
         if self.are_pipelines_completed(self.pipeline_definitions):
             if not self.pipeline_step and not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
+                if self.local_mode and os.path.isfile(Pipelines.PID_FILE):
+                    os.unlink(Pipelines.PID_FILE)
             self.log.info('*** ANALYSIS COMPLETED *********************************************************')
         else:
             # remove AnalysisComplete.txt when analysis not completed and file exists
