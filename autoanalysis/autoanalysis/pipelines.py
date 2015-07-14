@@ -509,9 +509,14 @@ class External(object):
     def create_symlinks(self):
         """ Create symlink to external fastq data into external folder
         - files to symlink per lane:
-            SLX-7957.C3BW4ACXX.s_8.contents.csv
-            SLX-7957.C3BW4ACXX.s_8.r_1.lostreads.fq.gz
-            SLX-7957.C3BW4ACXX.s_8.lostreads.md5sums.txt
+            SLX-9888.000000000-AEUH0.s_1.r_1.lostreads.fq.gz
+            SLX-9888.000000000-AEUH0.s_1.r_2.lostreads.fq.gz
+            SLX-9888.000000000-AEUH0.s_1.lostreads.md5sums.txt
+            SLX-9888.000000000-AEUH0.s_1.contents.csv
+            SLX-9888.000000000-AEUH0.s_1.mga.html
+            SLX-9888.000000000-AEUH0.s_1.r_1.fastqc.html
+            SLX-9888.000000000-AEUH0.s_1.r_2.fastqc.html
+            SLX-9888.000000000-AEUH0.s_1.barcodesummary.txt
         - files to symlink per sample:
             SLX-7957.A002.C3BW4ACXX.s_8.r_1.fq.gz
             SLX-7957.A002.C3BW4ACXX.s_8.md5sums.txt
