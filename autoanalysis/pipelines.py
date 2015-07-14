@@ -282,6 +282,8 @@ class Pipelines(object):
                             pid = str(os.getpid())
                             file(Pipelines.PID_FILE, 'w').write(pid)
                             self._execute_steps(pipeline_name)
+                        else:
+                            self._execute_steps(pipeline_name)
                 else:
                     self._execute_steps(pipeline_name)
             self.register_completion()
