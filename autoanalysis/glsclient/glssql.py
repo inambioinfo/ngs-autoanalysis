@@ -290,5 +290,5 @@ AND researcher.labid=lab.labid
 AND (pudf2.udfvalue is Null OR NOT pudf2.udfvalue = 'LibraryQC') -- not a Library QC
 AND NOT artifactstate.qcflag = 2 -- not a failed lane (either passed or unknown)
 AND ludf2.udfvalue = 'False' -- not an external lab
-AND (judf1.udfvalue = 'True' OR judf2.udfvalue = 'true' OR ludf1.udfvalue = 'True') -- project supported by core OR auto alignment set for this project OR for this lab
+AND (judf1.udfvalue = 'True' OR judf2.udfvalue = 'true' OR (judf2.udfvalue is Null AND ludf1.udfvalue = 'True')) -- project supported by core OR auto alignment set for this project OR for this lab
 """
