@@ -57,6 +57,8 @@ CREATE_METAFILE_FILENAME = "create-metafile"
 RUN_META_FILENAME = "run-meta.xml"
 RUN_PIPELINE_FILENAME = "run-pipeline"
 
+ALIGNMENT_DAEMON_PID = "/tmp/autoanalysis_alignment_daemon.pid"
+
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################        
@@ -70,13 +72,13 @@ class PipelineDefinition(object):
         self.cluster_host = cluster_host
         self.use_limsdev = use_limsdev
         self.mode = mode
-        if pipeline_name == 'alignment':
+        if self.pipeline_name == 'alignment':
             self.pipeline_setup_options = PIPELINES_SETUP_OPTIONS[pipeline_name] % (socket.gethostname(), str(self.run.run_folder)[1:])
         else:
             self.pipeline_setup_options = PIPELINES_SETUP_OPTIONS.get(pipeline_name, '')
 
         # create pipeline directory
-        if cluster_host and mode == 'lsf':
+        if self.cluster_host and mode == 'lsf':
             self.pipeline_directory = os.path.join(self.run.lustre_run_folder, self.pipeline_name)
             utils.create_directory(self.pipeline_directory)
         else:
@@ -195,7 +197,12 @@ class PipelineDefinition(object):
                 if not os.path.exists(self.pipeline_ended):
                     if _dependencies_satisfied:
                         if self.env['mode'] == 'local':
-                            utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
+                            if self.pipeline_name == 'alignment' and not os.path.isfile(ALIGNMENT_DAEMON_PID):
+                                pid = str(os.getpid())
+                                file(ALIGNMENT_DAEMON_PID, 'w').write(pid)
+                                utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
+                            else:
+                                utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
                         else:
                             utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
@@ -225,6 +232,8 @@ class PipelineDefinition(object):
                             self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
+                    if self.local_mode and self.pipeline_name == 'alignment' and os.path.isfile(ALIGNMENT_DAEMON_PID):
+                        os.unlink(ALIGNMENT_DAEMON_PID)
                     self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
         else:
             self.log.warn("%s is missing" % self.env['run_meta'])
@@ -247,8 +256,6 @@ class Pipelines(object):
         "primaryqc": "local",
         "alignment": "lsf"
     }
-
-    PID_FILE = "/tmp/autoanalysis_alignment_daemon.pid"
 
     def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
         self.log = logging.getLogger(__name__) 
@@ -278,9 +285,7 @@ class Pipelines(object):
                 if pipeline_name == 'alignment':
                     if self.is_alignment_active:
                         # special case for running alignment pipeline locally - just one pipeline at a time
-                        if self.local_mode and not os.path.isfile(Pipelines.PID_FILE):
-                            pid = str(os.getpid())
-                            file(Pipelines.PID_FILE, 'w').write(pid)
+                        if self.local_mode:
                             self._execute_steps(pipeline_name)
                         else:
                             self._execute_steps(pipeline_name)
@@ -310,8 +315,6 @@ class Pipelines(object):
         if self.are_pipelines_completed(self.pipeline_definitions):
             if not self.pipeline_step and not os.path.exists(self.all_completed):
                 utils.touch(self.all_completed)
-                if self.local_mode and os.path.isfile(Pipelines.PID_FILE):
-                    os.unlink(Pipelines.PID_FILE)
             self.log.info('*** ANALYSIS COMPLETED *********************************************************')
         else:
             # remove AnalysisComplete.txt when analysis not completed and file exists
