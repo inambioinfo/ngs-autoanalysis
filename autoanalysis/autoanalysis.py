@@ -69,6 +69,11 @@ def main():
     else:
         file(pidfile, 'w').write(pid)
 
+    # unset these variables if all pipelines should run locally
+    if options.local:
+        options.lustredir = None
+        options.cluster = None
+
     try:
         # loop over all runs that have a Sequencing.completed file in options.processingdir
         runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder)
