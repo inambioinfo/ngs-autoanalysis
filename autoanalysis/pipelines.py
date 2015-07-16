@@ -232,7 +232,7 @@ class PipelineDefinition(object):
                             self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
-                    if self.local_mode and self.pipeline_name == 'alignment' and os.path.isfile(ALIGNMENT_DAEMON_PID):
+                    if self.env['mode'] == 'local' and self.pipeline_name == 'alignment' and os.path.isfile(ALIGNMENT_DAEMON_PID):
                         os.unlink(ALIGNMENT_DAEMON_PID)
                     self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
         else:
