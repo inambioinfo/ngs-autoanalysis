@@ -13,7 +13,8 @@ import logging.config
 
 HOST = 'smtp.cruk.cam.ac.uk'
 FROM = 'anne.pajon@cruk.cam.ac.uk'
-TO = 'anne.pajon@cruk.cam.ac.uk'
+TO_ANNE = 'anne.pajon@cruk.cam.ac.uk'
+TO_RICH = 'Richard.Bowers@cruk.cam.ac.uk'
 SUBJECT = 'New Error From AUTOANALYSIS'
 
 # logging definition
@@ -55,7 +56,7 @@ LOGGING = {
             'class': 'logging.handlers.SMTPHandler',
             'mailhost': HOST,
             'fromaddr': FROM,
-            'toaddrs': [TO],
+            'toaddrs': [TO_ANNE, TO_RICH],
             'subject': SUBJECT,
             'formatter': 'verbose',
         },
