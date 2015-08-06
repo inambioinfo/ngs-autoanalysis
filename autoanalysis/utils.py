@@ -128,7 +128,7 @@ def log_with_error(log_file):
     try:
         with open(log_file) as f:
             for line in f:
-                if 'error' in line.lower():
+                if 'Exception' in line:
                     return True
     except IOError, e:
         log.exception(e)
