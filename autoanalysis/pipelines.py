@@ -26,7 +26,7 @@ import utils
 ################################################################################
 
 # Pipeline setup command to generate metadata file
-PIPELINE_SETUP_COMMAND = "%(bin_meta)s --basedir=%(basedir)s --notifications %(options)s %(flowcell_id)s %(run_meta)s"
+PIPELINE_SETUP_COMMAND = "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --notifications %(options)s %(flowcell_id)s %(run_meta)s"
 
 PIPELINES_SETUP_OPTIONS = {
     "fastq": "",
