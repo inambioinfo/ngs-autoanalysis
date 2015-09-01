@@ -56,7 +56,7 @@ LOGGING = {
             'class': 'logging.handlers.SMTPHandler',
             'mailhost': HOST,
             'fromaddr': FROM,
-            'toaddrs': [TO_ANNE, TO_RICH],
+            'toaddrs': [TO_ANNE],
             'subject': SUBJECT,
             'formatter': 'verbose',
         },
