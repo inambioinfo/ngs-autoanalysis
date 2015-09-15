@@ -287,7 +287,7 @@ def main():
                             log.info('All intensities deleted')
                         else:
                             if runfolder_age > delete_intensities_older_than:
-                                delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.bcl -or -name *.stats \) -delete" % run_folder
+                                delete_intensities_cmd = "find %s/Data/Intensities/ \( -name *_pos.txt -or -name *.cif -or -name *.filter -or -name *.control -or -name *.bcl -or -name *.bcl.gz -or -name *.stats \) -delete" % run_folder
                                 setup_clean(run_folder, 'delete_intensities', delete_intensities_cmd)
                                 clean(run_folder, 'delete_intensities', options.dry_run)
                         # deleting thumbnails
