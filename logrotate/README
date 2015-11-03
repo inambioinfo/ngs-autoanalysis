@@ -1,4 +1,11 @@
 This is a configuration file for logrotate to rotate the logs
-from autoanalysis. Copy the configuration file into the
-/etc/logrotate.d directory on each sol server.
+from autoanalysis. Since we don't have root access on the sol
+servers, this cannot be placed in /etc/logrotate.d to run
+automatically. Instead, add a task to cron as "solexa" with
+the following:
+
+### Log rotation of auto analysis logs.
+0 0 * * * /usr/sbin/logrotate -s /processing/Logs/.logrotate.status /home/mib-cri/svn_checkouts/autoanalysis_v1.6/logrotate/logrotate.conf > /dev/null 2>&1
+
+This needs to be done on all machines.
 
