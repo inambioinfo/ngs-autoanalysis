@@ -5,7 +5,9 @@ automatically. Instead, add a task to cron as "solexa" with
 the following:
 
 ### Log rotation of auto analysis logs.
-0 0 * * * /usr/sbin/logrotate -s /processing/Logs/.logrotate.status /home/mib-cri/svn_checkouts/autoanalysis_v1.6/logrotate/logrotate.conf > /dev/null 2>&1
+59 23 * * * /usr/sbin/logrotate -s /processing/Logs/.logrotate.status /home/mib-cri/svn_checkouts/autoanalysis_v1.6/logrotate/logrotate.conf > /dev/null 2>&1
 
 This needs to be done on all machines.
 
+The rotation needs to happen before the autoanalysis script
+wakes up every 20 minutes.
