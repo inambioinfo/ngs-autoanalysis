@@ -1,0 +1,9 @@
+# Copy this file into /etc/logrotate.d on the sol servers.
+
+/processing/Logs {
+	weekly
+	rotate 4
+	nocompress
+	missingok
+	nocreate
+}
