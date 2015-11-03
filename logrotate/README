@@ -1,0 +1,4 @@
+This is a configuration file for logrotate to rotate the logs
+from autoanalysis. Copy the configuration file into the
+/etc/logrotate.d directory on each sol server.
+
