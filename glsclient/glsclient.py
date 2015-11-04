@@ -152,7 +152,7 @@ class GlsClientApi(object):
         resource = self.resources[_resource_name]['uri']
         uri = REST_URI_TEMPLATE % {'hostname': self.hostname, 'api_version': API_VERSION, 'resource': resource, 'luid': ''}
         self.log.debug(self.pretty_xml(_object.toxml('utf-8')))
-        response = self.session.post(uri, _object.toxml('utf-8'))
+        response = self.session.post(uri, _object.toxml('utf-8'), timeout=300)
         return self._create_from_doc(_resource_name, response)
         
     def delete(self, _object):
