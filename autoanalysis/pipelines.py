@@ -371,6 +371,7 @@ rm %(lock)s
     "--exclude=Data/Intensities/L00?",
     "--exclude=Data/Intensities/BaseCalls/L00?",
     "--exclude=Data/RTALogs",
+    "--exclude=RTALogs",
     "--exclude=Logs",
     "--exclude=Thumbnail_Images",  # thumbnail images
     "--exclude=Images",  # *.tif images from MiSeq
