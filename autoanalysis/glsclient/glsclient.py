@@ -152,7 +152,7 @@ class GlsClientApi(object):
         resource = self.resources[_resource_name]['uri']
         uri = REST_URI_TEMPLATE % {'hostname': self.hostname, 'api_version': API_VERSION, 'resource': resource, 'luid': ''}
         self.log.debug(self.pretty_xml(_object.toxml('utf-8')))
-        response = self.session.post(uri, _object.toxml('utf-8'), timeout=300)
+        response = self.session.post(uri, _object.toxml('utf-8'), timeout=900)
         return self._create_from_doc(_resource_name, response)
         
     def delete(self, _object):
@@ -788,7 +788,7 @@ class GlsUtilTest(unittest.TestCase):
         self.assertIsNotNone(process)
 
     def test_create_fastq_lane_pipeline_process(self):
-        flowcell_id = 'C3JGEACXX'
+        flowcell_id = 'C81FEANXX'  # 151012_D00408_0300_C81FEANXX
         process = self.glsutil.create_fastq_lane_pipeline_process(flowcell_id)
         self.log.debug(process)
         self.assertIsNotNone(process)
