@@ -453,6 +453,10 @@ class GlsUtil(object):
         # build a unique set of input artifacts
         input_uri_set = self.get_unique_input_post_process_uri_from_process(run_process)
         for input_artifact_uri in input_uri_set:
+            # removing artifact state from uri in order to get very latest qc_flag and not the one set at the
+            # end of the sequencing process
+            if '?' in input_artifact_uri:
+                input_artifact_uri = input_artifact_uri.split('?')[0]
             artifact = self.api.load_by_uri('artifact', input_artifact_uri)
             self.log.debug(artifact.qc_flag)
             if not artifact.qc_flag == 'FAILED':
