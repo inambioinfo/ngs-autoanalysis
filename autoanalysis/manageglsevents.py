@@ -35,7 +35,7 @@ optional arguments:
   --logfile LOGFILE     File to print logging information
 
 ----------
-gls_events needs to be created at the destination prior to run the script
+gls_events_xxxx needs to be created at the destination prior to run the script
 ----------
 """
 
@@ -51,6 +51,7 @@ EVENT_HEADER = """
 ================================================================================"""
 THREE_DAYS = 3
 
+TECHNOLOGIES = [ '4000', 'hiseq', 'miseq', 'nextseq' ]
 
 def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
     run_folder_name = os.path.basename(run_folder)
@@ -134,6 +135,27 @@ def main():
                 log.info('%s is present - run ignored' % ignore_me)
 
     ### Copy event files to lims server
+    for technology in TECHNOLOGIES:
+        from_events = "%s/gls_events_%s/" % from_path, technology
+        to_events_archive = "%s/archive/" % from_events
+        to_events_new_lims = "%s/gls_events_%s/" % to_path_for_rsync, technology
+        if os.path.exists(from_events):
+            event_files = glob.glob("%s/event-*.txt" % from_events)
+            log.info('List of events file to sync: %s' % event_files)
+            # create archive folder if it does not exist
+            if not os.path.exists(to_events_archive):
+                os.makedirs(to_events_archive)
+            for event_file in event_files:
+                log.info(EVENT_HEADER % event_file)
+                # copy event files to lims server
+                scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
+                utils.run_process(scp_cmd, options.dry_run)
+                # move event files into archive
+                mv_cmd = ["mv", event_file, to_events_archive]
+                utils.run_process(mv_cmd, options.dry_run)
+
+    ## Old style, from "gls_events" folder only. This block can go once we've
+    ## moved everything into the technology specific directories.
     from_events = "%s/gls_events/" % from_path
     to_events_archive = "%s/archive/" % from_events
     to_events_new_lims = "%s/gls_events/" % to_path_for_rsync
