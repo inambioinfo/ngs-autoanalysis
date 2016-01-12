@@ -5,44 +5,44 @@
 
 ### For generating the xml binding classes:
 ### http://pyxb.sourceforge.net/
-# based on REST API v2r20 - Introduced in Clarity LIMS 3.3.1.9
+# based on REST API v2r22 - Introduced in Clarity LIMS Version 4.0.9.46
 
 cd glsapi/
 rm *
 
-pyxbgen --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location artifact.xsd --module artifact \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location artifactgroup.xsd --module artifactgroup \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location configuration.xsd --module configuration \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location container.xsd --module container \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location containertype.xsd --module containertype \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location controltype.xsd --module controltype \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location exception.xsd --module exception \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location file.xsd --module file \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location instrument.xsd --module instrument \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location lab.xsd --module lab \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location permission.xsd --module permission \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location process.xsd --module process \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location processexecution.xsd --module processexecution \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location processtemplate.xsd --module processtemplate \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location processtype.xsd --module processtype \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location project.xsd --module project \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location property.xsd --module property \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location protcnf.xsd --module protcnf \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location protstepcnf.xsd --module protstepcnf \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location queue.xsd --module queue \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentkit.xsd --module reagentkit \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagentlot.xsd --module reagentlot \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location reagenttype.xsd --module reagenttype \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location researcher.xsd --module researcher \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location ri.xsd --module ri \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location role.xsd --module role \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location routing.xsd --module routing \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location sample.xsd --module sample \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location stage.xsd --module stage \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location step.xsd --module step \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location userdefined.xsd --module userdefined \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location ver.xsd --module ver \
-        --schema-root=http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ --schema-location wkfcnf.xsd --module wkfcnf
+pyxbgen --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location artifact.xsd --module artifact \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location artifactgroup.xsd --module artifactgroup \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location configuration.xsd --module configuration \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location container.xsd --module container \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location containertype.xsd --module containertype \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location controltype.xsd --module controltype \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location exception.xsd --module exception \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location file.xsd --module file \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location instrument.xsd --module instrument \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location lab.xsd --module lab \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location permission.xsd --module permission \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location process.xsd --module process \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location processexecution.xsd --module processexecution \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location processtemplate.xsd --module processtemplate \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location processtype.xsd --module processtype \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location project.xsd --module project \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location property.xsd --module property \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location protcnf.xsd --module protcnf \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location protstepcnf.xsd --module protstepcnf \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location queue.xsd --module queue \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location reagentkit.xsd --module reagentkit \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location reagentlot.xsd --module reagentlot \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location reagenttype.xsd --module reagenttype \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location researcher.xsd --module researcher \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location ri.xsd --module ri \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location role.xsd --module role \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location routing.xsd --module routing \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location sample.xsd --module sample \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location stage.xsd --module stage \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location step.xsd --module step \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location userdefined.xsd --module userdefined \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location ver.xsd --module ver \
+        --schema-root=https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ --schema-location wkfcnf.xsd --module wkfcnf
 
 touch __init__.py
 cd ..

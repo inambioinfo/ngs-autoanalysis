@@ -1,9 +1,10 @@
 # ./file.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:c5f66b6fac21a828f4419f18a908eb5e18a05151
-# Generated 2015-01-06 15:57:40.180949 by PyXB version 1.2.3
+# Generated 2016-01-12 17:07:14.291336 by PyXB version 1.2.4 using Python 2.7.11.final.0
 # Namespace http://genologics.com/ri/file [xmlns:file]
 
+from __future__ import unicode_literals
 import pyxb
 import pyxb.binding
 import pyxb.binding.saxer
@@ -11,22 +12,23 @@ import io
 import pyxb.utils.utility
 import pyxb.utils.domutils
 import sys
+import pyxb.utils.six as _six
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:ec2c6a75-b94e-11e5-ac8d-a0999b0d9515')
 
 # Version of PyXB used to generate the bindings
-_PyXBVersion = '1.2.3'
+_PyXBVersion = '1.2.4'
 # Generated bindings are not compatible across PyXB versions
 if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import pyxb.binding.datatypes
 
 # NOTE: All namespace declarations are reserved within the binding
-Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/file', create_if_missing=True)
+Namespace = pyxb.namespace.NamespaceForURI('http://genologics.com/ri/file', create_if_missing=True)
 Namespace.configureCategories(['typeBinding', 'elementBinding'])
 
 def CreateFromDocument (xml_text, default_namespace=None, location_base=None):
@@ -50,13 +52,13 @@ def CreateFromDocument (xml_text, default_namespace=None, location_base=None):
 
     if pyxb.XMLStyle_saxer != pyxb._XMLStyle:
         dom = pyxb.utils.domutils.StringToDOM(xml_text)
-        return CreateFromDOM(dom.documentElement)
+        return CreateFromDOM(dom.documentElement, default_namespace=default_namespace)
     if default_namespace is None:
         default_namespace = Namespace.fallbackNamespace()
     saxer = pyxb.binding.saxer.make_parser(fallback_namespace=default_namespace, location_base=location_base)
     handler = saxer.getContentHandler()
     xmld = xml_text
-    if isinstance(xmld, unicode):
+    if isinstance(xmld, _six.text_type):
         xmld = xmld.encode(pyxb._InputEncoding)
     saxer.parse(io.BytesIO(xmld))
     instance = handler.rootObject()
@@ -80,14 +82,14 @@ class details_ (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'details')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 6, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'details')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 6, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comrifile_details__file', True, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'file'), 'file', '__httpgenologics_comrifile_details__file', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6), )
 
     
     file = property(__file.value, __file.set, None, None)
@@ -98,7 +100,7 @@ class details_ (pyxb.binding.basis.complexTypeDefinition):
     _AttributeMap.update({
         
     })
-Namespace.addCategoryObject('typeBinding', u'details', details_)
+Namespace.addCategoryObject('typeBinding', 'details', details_)
 
 
 # Complex type {http://genologics.com/ri/file}file with content type ELEMENT_ONLY
@@ -109,54 +111,54 @@ class file_ (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'file')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 16, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'file')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 16, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element attached-to uses Python identifier attached_to
-    __attached_to = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'attached-to'), 'attached_to', '__httpgenologics_comrifile_file__attached_to', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6), )
+    __attached_to = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'attached-to'), 'attached_to', '__httpgenologics_comrifile_file__attached_to', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6), )
 
     
-    attached_to = property(__attached_to.value, __attached_to.set, None, u'\n            This element contains a URI that identifies and links to further information about the resource that\nthe file is attached to, such as a project, sample, process, or file-based artifact.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, a file must always be attached to an entity, or capturedfile record.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes, a file must always be attached to an entity, or capturedfile record.\n          ')
+    attached_to = property(__attached_to.value, __attached_to.set, None, '\n            This element contains a URI that identifies and links to further information about the resource that\nthe file is attached to, such as a project, sample, process, or file-based artifact.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, a file must always be attached to an entity, or capturedfile record.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes, a file must always be attached to an entity, or capturedfile record.\n          ')
 
     
     # Element content-location uses Python identifier content_location
-    __content_location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'content-location'), 'content_location', '__httpgenologics_comrifile_file__content_location', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6), )
+    __content_location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'content-location'), 'content_location', '__httpgenologics_comrifile_file__content_location', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6), )
 
     
-    content_location = property(__content_location.value, __content_location.set, None, u'\n            This element contains a URI that identifies and links to the network location of the file,\nwhich can be used to retrieve the file and process its contents.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file uri\ninformation from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ')
+    content_location = property(__content_location.value, __content_location.set, None, '\n            This element contains a URI that identifies and links to the network location of the file,\nwhich can be used to retrieve the file and process its contents.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file uri\ninformation from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ')
 
     
     # Element original-location uses Python identifier original_location
-    __original_location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'original-location'), 'original_location', '__httpgenologics_comrifile_file__original_location', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6), )
+    __original_location = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'original-location'), 'original_location', '__httpgenologics_comrifile_file__original_location', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6), )
 
     
-    original_location = property(__original_location.value, __original_location.set, None, u'\n            This element provides the original name and location of the file before it was imported into the system.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file location from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ')
+    original_location = property(__original_location.value, __original_location.set, None, '\n            This element provides the original name and location of the file before it was imported into the system.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file location from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ')
 
     
     # Element is-published uses Python identifier is_published
-    __is_published = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'is-published'), 'is_published', '__httpgenologics_comrifile_file__is_published', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6), )
+    __is_published = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'is-published'), 'is_published', '__httpgenologics_comrifile_file__is_published', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6), )
 
     
-    is_published = property(__is_published.value, __is_published.set, None, u"\n            This element specifies whether the file is displayed in LabLink.\nTo publish a file to LabLink, use 'true'.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided or empty, value is set to false.\n          ")
+    is_published = property(__is_published.value, __is_published.set, None, "\n            This element specifies whether the file is displayed in LabLink.\nTo publish a file to LabLink, use 'true'.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided or empty, value is set to false.\n          ")
 
     
     # Attribute limsid uses Python identifier limsid
-    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comrifile_file__limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 76, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 76, 4)
+    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'limsid'), 'limsid', '__httpgenologics_comrifile_file__limsid', pyxb.binding.datatypes.string)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 76, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 76, 4)
     
-    limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMS ID of the file.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    limsid = property(__limsid.value, __limsid.set, None, '\n          The LIMS ID of the file.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrifile_file__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 88, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 88, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comrifile_file__uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 88, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 88, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          A URI that identifies the file.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          A URI that identifies the file.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     _ElementMap.update({
         __attached_to.name() : __attached_to,
@@ -168,7 +170,7 @@ class file_ (pyxb.binding.basis.complexTypeDefinition):
         __limsid.name() : __limsid,
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'file', file_)
+Namespace.addCategoryObject('typeBinding', 'file', file_)
 
 
 # Complex type {http://genologics.com/ri/file}file-link with content type EMPTY
@@ -181,26 +183,26 @@ identify and link to further information about the file.
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'file-link')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 101, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'file-link')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 101, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comrifile_file_link_uri', pyxb.binding.datatypes.string)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 109, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 109, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comrifile_file_link_uri', pyxb.binding.datatypes.string)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 109, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 109, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          A URI that identifies and links to further information about the file.\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          A URI that identifies and links to further information about the file.\n        ')
 
     
     # Attribute limsid uses Python identifier limsid
-    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comrifile_file_link_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 116, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 116, 4)
+    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'limsid'), 'limsid', '__httpgenologics_comrifile_file_link_limsid', pyxb.binding.datatypes.string)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 116, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 116, 4)
     
-    limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMSID of the file.\n        ')
+    limsid = property(__limsid.value, __limsid.set, None, '\n          The LIMSID of the file.\n        ')
 
     _ElementMap.update({
         
@@ -209,7 +211,7 @@ identify and link to further information about the file.
         __uri.name() : __uri,
         __limsid.name() : __limsid
     })
-Namespace.addCategoryObject('typeBinding', u'file-link', file_link)
+Namespace.addCategoryObject('typeBinding', 'file-link', file_link)
 
 
 # Complex type {http://genologics.com/ri/file}files with content type ELEMENT_ONLY
@@ -224,31 +226,31 @@ of links in the overall results.
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'files')
-    _XSDLocation = pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 124, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'files')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 124, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'file'), 'file', '__httpgenologics_comrifile_files__file', True, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'file'), 'file', '__httpgenologics_comrifile_files__file', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6), )
 
     
-    file = property(__file.value, __file.set, None, u'\n            File provides a URI linking to the detailed representation of a file.\n          ')
+    file = property(__file.value, __file.set, None, '\n            File provides a URI linking to the detailed representation of a file.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comrifile_files__previous_page', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'previous-page'), 'previous_page', '__httpgenologics_comrifile_files__previous_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6), )
 
     
-    previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of files,\nthe previous-page element provides a URI that links to the previous page of files.\n          ')
+    previous_page = property(__previous_page.value, __previous_page.set, None, '\n            When working with large lists of files,\nthe previous-page element provides a URI that links to the previous page of files.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comrifile_files__next_page', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'next-page'), 'next_page', '__httpgenologics_comrifile_files__next_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6), )
 
     
-    next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of files,\nthe next-page element provides a URI that links to the next page of files.\n          ')
+    next_page = property(__next_page.value, __next_page.set, None, '\n            When working with large lists of files,\nthe next-page element provides a URI that links to the next page of files.\n          ')
 
     _ElementMap.update({
         __file.name() : __file,
@@ -258,21 +260,21 @@ of links in the overall results.
     _AttributeMap.update({
         
     })
-Namespace.addCategoryObject('typeBinding', u'files', files_)
+Namespace.addCategoryObject('typeBinding', 'files', files_)
 
 
-details = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'details'), details_, location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2))
+details = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'details'), details_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 3, 2))
 Namespace.addCategoryObject('elementBinding', details.name().localName(), details)
 
-file = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'file'), file_, location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2))
+file = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'file'), file_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2))
 Namespace.addCategoryObject('elementBinding', file.name().localName(), file)
 
-files = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'files'), files_, location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 5, 2))
+files = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'files'), files_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 5, 2))
 Namespace.addCategoryObject('elementBinding', files.name().localName(), files)
 
 
 
-details_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), file_, scope=details_, location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6)))
+details_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'file'), file_, scope=details_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -281,12 +283,12 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(details_._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6))
+    symbol = pyxb.binding.content.ElementUse(details_._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 13, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -299,13 +301,13 @@ details_._Automaton = _BuildAutomaton()
 
 
 
-file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'attached-to'), pyxb.binding.datatypes.anyURI, scope=file_, documentation=u'\n            This element contains a URI that identifies and links to further information about the resource that\nthe file is attached to, such as a project, sample, process, or file-based artifact.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, a file must always be attached to an entity, or capturedfile record.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes, a file must always be attached to an entity, or capturedfile record.\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6)))
+file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'attached-to'), pyxb.binding.datatypes.anyURI, scope=file_, documentation='\n            This element contains a URI that identifies and links to further information about the resource that\nthe file is attached to, such as a project, sample, process, or file-based artifact.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes, a file must always be attached to an entity, or capturedfile record.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes, a file must always be attached to an entity, or capturedfile record.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6)))
 
-file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'content-location'), pyxb.binding.datatypes.anyURI, scope=file_, documentation=u'\n            This element contains a URI that identifies and links to the network location of the file,\nwhich can be used to retrieve the file and process its contents.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file uri\ninformation from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6)))
+file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'content-location'), pyxb.binding.datatypes.anyURI, scope=file_, documentation='\n            This element contains a URI that identifies and links to the network location of the file,\nwhich can be used to retrieve the file and process its contents.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file uri\ninformation from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6)))
 
-file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'original-location'), pyxb.binding.datatypes.string, scope=file_, documentation=u'\n            This element provides the original name and location of the file before it was imported into the system.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file location from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6)))
+file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'original-location'), pyxb.binding.datatypes.string, scope=file_, documentation='\n            This element provides the original name and location of the file before it was imported into the system.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes, must be valid location for system to read inbound file location from.\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6)))
 
-file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'is-published'), pyxb.binding.datatypes.boolean, scope=file_, documentation=u"\n            This element specifies whether the file is displayed in LabLink.\nTo publish a file to LabLink, use 'true'.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided or empty, value is set to false.\n          ", location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6)))
+file_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'is-published'), pyxb.binding.datatypes.boolean, scope=file_, documentation="\n            This element specifies whether the file is displayed in LabLink.\nTo publish a file to LabLink, use 'true'.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, but if not provided or empty, value is set to false.\n          ", location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -314,33 +316,33 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6))
+    cc_2 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6))
+    cc_3 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6))
     counters.add(cc_3)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, u'attached-to')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6))
+    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, 'attached-to')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 23, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, u'content-location')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6))
+    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, 'content-location')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 36, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, u'original-location')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6))
+    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, 'original-location')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 50, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, u'is-published')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6))
+    symbol = pyxb.binding.content.ElementUse(file_._UseForTag(pyxb.namespace.ExpandedName(None, 'is-published')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 62, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     transitions = []
@@ -377,11 +379,11 @@ file_._Automaton = _BuildAutomaton_()
 
 
 
-files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'file'), file_link, scope=files_, documentation=u'\n            File provides a URI linking to the detailed representation of a file.\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6)))
+files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'file'), file_link, scope=files_, documentation='\n            File provides a URI linking to the detailed representation of a file.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6)))
 
-files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=files_, documentation=u'\n            When working with large lists of files,\nthe previous-page element provides a URI that links to the previous page of files.\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6)))
+files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'previous-page'), _ImportedBinding_ri.page, scope=files_, documentation='\n            When working with large lists of files,\nthe previous-page element provides a URI that links to the previous page of files.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6)))
 
-files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=files_, documentation=u'\n            When working with large lists of files,\nthe next-page element provides a URI that links to the next page of files.\n          ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6)))
+files_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'next-page'), _ImportedBinding_ri.page, scope=files_, documentation='\n            When working with large lists of files,\nthe next-page element provides a URI that links to the next page of files.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -390,26 +392,26 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6))
+    cc_2 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, u'file')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6))
+    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 135, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6))
+    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, 'previous-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 142, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6))
+    symbol = pyxb.binding.content.ElementUse(files_._UseForTag(pyxb.namespace.ExpandedName(None, 'next-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 150, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []

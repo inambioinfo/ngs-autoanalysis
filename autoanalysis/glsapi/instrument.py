@@ -1,9 +1,10 @@
 # ./instrument.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:2a1af69429c871dcb85ffcdfdd472409663a930d
-# Generated 2015-01-06 15:57:40.185547 by PyXB version 1.2.3
+# Generated 2016-01-12 17:07:14.292859 by PyXB version 1.2.4 using Python 2.7.11.final.0
 # Namespace http://genologics.com/ri/instrument
 
+from __future__ import unicode_literals
 import pyxb
 import pyxb.binding
 import pyxb.binding.saxer
@@ -11,22 +12,23 @@ import io
 import pyxb.utils.utility
 import pyxb.utils.domutils
 import sys
+import pyxb.utils.six as _six
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:ec2c6a75-b94e-11e5-ac8d-a0999b0d9515')
 
 # Version of PyXB used to generate the bindings
-_PyXBVersion = '1.2.3'
+_PyXBVersion = '1.2.4'
 # Generated bindings are not compatible across PyXB versions
 if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
-import pyxb.binding.datatypes
 import ri as _ImportedBinding_ri
+import pyxb.binding.datatypes
 
 # NOTE: All namespace declarations are reserved within the binding
-Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/instrument', create_if_missing=True)
+Namespace = pyxb.namespace.NamespaceForURI('http://genologics.com/ri/instrument', create_if_missing=True)
 Namespace.configureCategories(['typeBinding', 'elementBinding'])
 
 def CreateFromDocument (xml_text, default_namespace=None, location_base=None):
@@ -50,13 +52,13 @@ def CreateFromDocument (xml_text, default_namespace=None, location_base=None):
 
     if pyxb.XMLStyle_saxer != pyxb._XMLStyle:
         dom = pyxb.utils.domutils.StringToDOM(xml_text)
-        return CreateFromDOM(dom.documentElement)
+        return CreateFromDOM(dom.documentElement, default_namespace=default_namespace)
     if default_namespace is None:
         default_namespace = Namespace.fallbackNamespace()
     saxer = pyxb.binding.saxer.make_parser(fallback_namespace=default_namespace, location_base=location_base)
     handler = saxer.getContentHandler()
     xmld = xml_text
-    if isinstance(xmld, unicode):
+    if isinstance(xmld, _six.text_type):
         xmld = xmld.encode(pyxb._InputEncoding)
     saxer.parse(io.BytesIO(xmld))
     instance = handler.rootObject()
@@ -80,32 +82,32 @@ class instrument_ (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'instrument')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 5, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'instrument')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 5, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriinstrument_instrument__name', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__httpgenologics_comriinstrument_instrument__name', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6), )
 
     
-    name = property(__name.value, __name.set, None, u'\n            The name of the Instrument.\n          ')
+    name = property(__name.value, __name.set, None, '\n            The name of the Instrument.\n          ')
 
     
     # Element type uses Python identifier type
-    __type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'type'), 'type', '__httpgenologics_comriinstrument_instrument__type', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6), )
+    __type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'type'), 'type', '__httpgenologics_comriinstrument_instrument__type', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6), )
 
     
-    type = property(__type.value, __type.set, None, u'\n            The type of the Instrument.\n          ')
+    type = property(__type.value, __type.set, None, '\n            The type of the Instrument.\n          ')
 
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriinstrument_instrument__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 27, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 27, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comriinstrument_instrument__uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 27, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 27, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Instrument.\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          The URI of the Instrument.\n        ')
 
     _ElementMap.update({
         __name.name() : __name,
@@ -114,7 +116,7 @@ class instrument_ (pyxb.binding.basis.complexTypeDefinition):
     _AttributeMap.update({
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'instrument', instrument_)
+Namespace.addCategoryObject('typeBinding', 'instrument', instrument_)
 
 
 # Complex type {http://genologics.com/ri/instrument}instruments with content type ELEMENT_ONLY
@@ -129,31 +131,31 @@ of links in the overall results.
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'instruments')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 35, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'instruments')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 35, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element instrument uses Python identifier instrument
-    __instrument = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'instrument'), 'instrument', '__httpgenologics_comriinstrument_instruments__instrument', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6), )
+    __instrument = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'instrument'), 'instrument', '__httpgenologics_comriinstrument_instruments__instrument', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6), )
 
     
-    instrument = property(__instrument.value, __instrument.set, None, u'\n            Instrument provides a URI linking to the detailed representation of a instrument.\n          ')
+    instrument = property(__instrument.value, __instrument.set, None, '\n            Instrument provides a URI linking to the detailed representation of a instrument.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriinstrument_instruments__previous_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'previous-page'), 'previous_page', '__httpgenologics_comriinstrument_instruments__previous_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6), )
 
     
-    previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of instruments,\nthe previous-page element provides a URI that links to the previous page of instruments.\n          ')
+    previous_page = property(__previous_page.value, __previous_page.set, None, '\n            When working with large lists of instruments,\nthe previous-page element provides a URI that links to the previous page of instruments.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriinstrument_instruments__next_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'next-page'), 'next_page', '__httpgenologics_comriinstrument_instruments__next_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6), )
 
     
-    next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of instruments,\nthe next-page element provides a URI that links to the next page of instruments.\n          ')
+    next_page = property(__next_page.value, __next_page.set, None, '\n            When working with large lists of instruments,\nthe next-page element provides a URI that links to the next page of instruments.\n          ')
 
     _ElementMap.update({
         __instrument.name() : __instrument,
@@ -163,7 +165,7 @@ of links in the overall results.
     _AttributeMap.update({
         
     })
-Namespace.addCategoryObject('typeBinding', u'instruments', instruments_)
+Namespace.addCategoryObject('typeBinding', 'instruments', instruments_)
 
 
 # Complex type {http://genologics.com/ri/instrument}instrument-link with content type ELEMENT_ONLY
@@ -174,25 +176,25 @@ class instrument_link (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'instrument-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 71, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'instrument-link')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 71, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriinstrument_instrument_link_name', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__httpgenologics_comriinstrument_instrument_link_name', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6), )
 
     
-    name = property(__name.value, __name.set, None, u'\n            The name of the Instrument.\n          ')
+    name = property(__name.value, __name.set, None, '\n            The name of the Instrument.\n          ')
 
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriinstrument_instrument_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 86, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 86, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comriinstrument_instrument_link_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 86, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 86, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Instrument.\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          The URI of the Instrument.\n        ')
 
     _ElementMap.update({
         __name.name() : __name
@@ -200,20 +202,20 @@ class instrument_link (pyxb.binding.basis.complexTypeDefinition):
     _AttributeMap.update({
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'instrument-link', instrument_link)
+Namespace.addCategoryObject('typeBinding', 'instrument-link', instrument_link)
 
 
-instrument = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'instrument'), instrument_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 3, 2))
+instrument = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'instrument'), instrument_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 3, 2))
 Namespace.addCategoryObject('elementBinding', instrument.name().localName(), instrument)
 
-instruments = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'instruments'), instruments_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 4, 2))
+instruments = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'instruments'), instruments_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 4, 2))
 Namespace.addCategoryObject('elementBinding', instruments.name().localName(), instruments)
 
 
 
-instrument_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=instrument_, documentation=u'\n            The name of the Instrument.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6)))
+instrument_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'name'), pyxb.binding.datatypes.string, scope=instrument_, documentation='\n            The name of the Instrument.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6)))
 
-instrument_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'type'), pyxb.binding.datatypes.string, scope=instrument_, documentation=u'\n            The type of the Instrument.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6)))
+instrument_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'type'), pyxb.binding.datatypes.string, scope=instrument_, documentation='\n            The type of the Instrument.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -222,19 +224,19 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(instrument_._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6))
+    symbol = pyxb.binding.content.ElementUse(instrument_._UseForTag(pyxb.namespace.ExpandedName(None, 'name')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 12, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(instrument_._UseForTag(pyxb.namespace.ExpandedName(None, u'type')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6))
+    symbol = pyxb.binding.content.ElementUse(instrument_._UseForTag(pyxb.namespace.ExpandedName(None, 'type')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 19, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
@@ -253,11 +255,11 @@ instrument_._Automaton = _BuildAutomaton()
 
 
 
-instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'instrument'), instrument_link, scope=instruments_, documentation=u'\n            Instrument provides a URI linking to the detailed representation of a instrument.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6)))
+instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'instrument'), instrument_link, scope=instruments_, documentation='\n            Instrument provides a URI linking to the detailed representation of a instrument.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6)))
 
-instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=instruments_, documentation=u'\n            When working with large lists of instruments,\nthe previous-page element provides a URI that links to the previous page of instruments.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6)))
+instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'previous-page'), _ImportedBinding_ri.page, scope=instruments_, documentation='\n            When working with large lists of instruments,\nthe previous-page element provides a URI that links to the previous page of instruments.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6)))
 
-instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=instruments_, documentation=u'\n            When working with large lists of instruments,\nthe next-page element provides a URI that links to the next page of instruments.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6)))
+instruments_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'next-page'), _ImportedBinding_ri.page, scope=instruments_, documentation='\n            When working with large lists of instruments,\nthe next-page element provides a URI that links to the next page of instruments.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -266,26 +268,26 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6))
+    cc_2 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, u'instrument')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6))
+    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, 'instrument')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 46, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6))
+    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, 'previous-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 53, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6))
+    symbol = pyxb.binding.content.ElementUse(instruments_._UseForTag(pyxb.namespace.ExpandedName(None, 'next-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 61, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -312,7 +314,7 @@ instruments_._Automaton = _BuildAutomaton_()
 
 
 
-instrument_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=instrument_link, documentation=u'\n            The name of the Instrument.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6)))
+instrument_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'name'), pyxb.binding.datatypes.string, scope=instrument_link, documentation='\n            The name of the Instrument.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -321,12 +323,12 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(instrument_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6))
+    symbol = pyxb.binding.content.ElementUse(instrument_link._UseForTag(pyxb.namespace.ExpandedName(None, 'name')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/instrument.xsd', 78, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
