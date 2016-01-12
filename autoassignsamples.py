@@ -22,6 +22,7 @@ import glsclient.glssql as glssql
 WORKFLOW_MAPPING = {
 'HiSeq': 'SLX: Sequencing for HiSeq v1',
 'HiSeq 2000':'SLX: Sequencing for HiSeq 2000 v1',
+'HiSeq 4000':'SLX: Sequencing for HiSeq 4000 v1',
 'HiSeq 2-lane': 'SLX: Sequencing for HiSeq Rapid Run v1',
 'HiSeq Express': 'SLX: Sequencing for HiSeq Express v1',
 'Resubmit for HiSeq': 'SLX: Resubmit for HiSeq v1',

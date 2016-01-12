@@ -1,9 +1,10 @@
 # ./project.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:05d18cd4162daf503adc481b4ebccd22986053ca
-# Generated 2015-01-06 15:57:40.181239 by PyXB version 1.2.3
+# Generated 2016-01-12 17:07:14.293470 by PyXB version 1.2.4 using Python 2.7.11.final.0
 # Namespace http://genologics.com/ri/project
 
+from __future__ import unicode_literals
 import pyxb
 import pyxb.binding
 import pyxb.binding.saxer
@@ -11,24 +12,25 @@ import io
 import pyxb.utils.utility
 import pyxb.utils.domutils
 import sys
+import pyxb.utils.six as _six
 
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:bc8d4bb3-95bc-11e4-bcfd-70cd60a9fcda')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:ec2c6a75-b94e-11e5-ac8d-a0999b0d9515')
 
 # Version of PyXB used to generate the bindings
-_PyXBVersion = '1.2.3'
+_PyXBVersion = '1.2.4'
 # Generated bindings are not compatible across PyXB versions
 if pyxb.__version__ != _PyXBVersion:
     raise pyxb.PyXBVersionError(_PyXBVersion)
 
 # Import bindings for namespaces imported into schema
+import ri as _ImportedBinding_ri
+import pyxb.binding.datatypes
 import userdefined as _ImportedBinding_userdefined
 import file as _ImportedBinding_file
-import pyxb.binding.datatypes
-import ri as _ImportedBinding_ri
 
 # NOTE: All namespace declarations are reserved within the binding
-Namespace = pyxb.namespace.NamespaceForURI(u'http://genologics.com/ri/project', create_if_missing=True)
+Namespace = pyxb.namespace.NamespaceForURI('http://genologics.com/ri/project', create_if_missing=True)
 Namespace.configureCategories(['typeBinding', 'elementBinding'])
 _Namespace_ri = _ImportedBinding_ri.Namespace
 _Namespace_ri.configureCategories(['typeBinding', 'elementBinding'])
@@ -58,13 +60,13 @@ def CreateFromDocument (xml_text, default_namespace=None, location_base=None):
 
     if pyxb.XMLStyle_saxer != pyxb._XMLStyle:
         dom = pyxb.utils.domutils.StringToDOM(xml_text)
-        return CreateFromDOM(dom.documentElement)
+        return CreateFromDOM(dom.documentElement, default_namespace=default_namespace)
     if default_namespace is None:
         default_namespace = Namespace.fallbackNamespace()
     saxer = pyxb.binding.saxer.make_parser(fallback_namespace=default_namespace, location_base=location_base)
     handler = saxer.getContentHandler()
     xmld = xml_text
-    if isinstance(xmld, unicode):
+    if isinstance(xmld, _six.text_type):
         xmld = xmld.encode(pyxb._InputEncoding)
     saxer.parse(io.BytesIO(xmld))
     instance = handler.rootObject()
@@ -88,89 +90,89 @@ class project_ (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'project')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 7, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'project')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 7, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element {http://genologics.com/ri}externalid uses Python identifier externalid
-    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), 'externalid', '__httpgenologics_comriproject_project__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2), )
+    __externalid = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_ri, 'externalid'), 'externalid', '__httpgenologics_comriproject_project__httpgenologics_comriexternalid', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2), )
 
     
-    externalid = property(__externalid.value, __externalid.set, None, u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ')
+    externalid = property(__externalid.value, __externalid.set, None, '\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ')
 
     
     # Element {http://genologics.com/ri/file}file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), 'file', '__httpgenologics_comriproject_project__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_file, 'file'), 'file', '__httpgenologics_comriproject_project__httpgenologics_comrifilefile', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2), )
 
     
     file = property(__file.value, __file.set, None, None)
 
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriproject_project__name', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__httpgenologics_comriproject_project__name', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6), )
 
     
-    name = property(__name.value, __name.set, None, u'\n            The name of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
+    name = property(__name.value, __name.set, None, '\n            The name of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
 
     
     # Element open-date uses Python identifier open_date
-    __open_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'open-date'), 'open_date', '__httpgenologics_comriproject_project__open_date', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6), )
+    __open_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'open-date'), 'open_date', '__httpgenologics_comriproject_project__open_date', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6), )
 
     
-    open_date = property(__open_date.value, __open_date.set, None, u'\n            The open date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless a close date is also provided.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless a close date is also provided.\n          ')
+    open_date = property(__open_date.value, __open_date.set, None, '\n            The open date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless a close date is also provided.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless a close date is also provided.\n          ')
 
     
     # Element close-date uses Python identifier close_date
-    __close_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'close-date'), 'close_date', '__httpgenologics_comriproject_project__close_date', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6), )
+    __close_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'close-date'), 'close_date', '__httpgenologics_comriproject_project__close_date', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6), )
 
     
-    close_date = property(__close_date.value, __close_date.set, None, u'\n            The close date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
+    close_date = property(__close_date.value, __close_date.set, None, '\n            The close date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element invoice-date uses Python identifier invoice_date
-    __invoice_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'invoice-date'), 'invoice_date', '__httpgenologics_comriproject_project__invoice_date', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6), )
+    __invoice_date = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'invoice-date'), 'invoice_date', '__httpgenologics_comriproject_project__invoice_date', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6), )
 
     
-    invoice_date = property(__invoice_date.value, __invoice_date.set, None, u'\n            The invoice date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
+    invoice_date = property(__invoice_date.value, __invoice_date.set, None, '\n            The invoice date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ')
 
     
     # Element researcher uses Python identifier researcher
-    __researcher = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'researcher'), 'researcher', '__httpgenologics_comriproject_project__researcher', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6), )
+    __researcher = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'researcher'), 'researcher', '__httpgenologics_comriproject_project__researcher', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6), )
 
     
-    researcher = property(__researcher.value, __researcher.set, None, u'\n            Researcher provides a URI linking to the detailed representation of the Researcher for the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
+    researcher = property(__researcher.value, __researcher.set, None, '\n            Researcher provides a URI linking to the detailed representation of the Researcher for the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ')
 
     
     # Element {http://genologics.com/ri/userdefined}field uses Python identifier field
-    __field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_udf, u'field'), 'field', '__httpgenologics_comriproject_project__httpgenologics_comriuserdefinedfield', True, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/userdefined.xsd', 58, 2), )
+    __field = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_udf, 'field'), 'field', '__httpgenologics_comriproject_project__httpgenologics_comriuserdefinedfield', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/userdefined.xsd', 58, 2), )
 
     
-    field = property(__field.value, __field.set, None, u'\n        A User-Defined Field that is associated with the researcher.\nThis element is repeated for each UDF associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDF has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDF has been configured as required. If a current UDF is not provided, existing values are deleted.\n      ')
+    field = property(__field.value, __field.set, None, '\n        A User-Defined Field that is associated with the researcher.\nThis element is repeated for each UDF associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDF has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDF has been configured as required. If a current UDF is not provided, existing values are deleted.\n      ')
 
     
     # Element {http://genologics.com/ri/userdefined}type uses Python identifier type
-    __type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_udf, u'type'), 'type', '__httpgenologics_comriproject_project__httpgenologics_comriuserdefinedtype', False, pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/userdefined.xsd', 71, 2), )
+    __type = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(_Namespace_udf, 'type'), 'type', '__httpgenologics_comriproject_project__httpgenologics_comriuserdefinedtype', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/userdefined.xsd', 71, 2), )
 
     
-    type = property(__type.value, __type.set, None, u'\n        The User-Defined Type that is associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDT has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDT has been configured as required. If a current UDT is not provided, existing values are deleted.\n      ')
+    type = property(__type.value, __type.set, None, '\n        The User-Defined Type that is associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDT has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDT has been configured as required. If a current UDT is not provided, existing values are deleted.\n      ')
 
     
     # Attribute limsid uses Python identifier limsid
-    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriproject_project__limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 123, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 123, 4)
+    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'limsid'), 'limsid', '__httpgenologics_comriproject_project__limsid', pyxb.binding.datatypes.string)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 123, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 123, 4)
     
-    limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMS ID of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    limsid = property(__limsid.value, __limsid.set, None, '\n          The LIMS ID of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriproject_project__uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 135, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 135, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comriproject_project__uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 135, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 135, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          The URI of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: No\n<br/>Required for POST: No\n<br/>Updatable with PUT: No\n<br/>Required for PUT: No\n        ')
 
     _ElementMap.update({
         __externalid.name() : __externalid,
@@ -187,7 +189,7 @@ class project_ (pyxb.binding.basis.complexTypeDefinition):
         __limsid.name() : __limsid,
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'project', project_)
+Namespace.addCategoryObject('typeBinding', 'project', project_)
 
 
 # Complex type {http://genologics.com/ri/project}researcher with content type EMPTY
@@ -198,18 +200,18 @@ class researcher (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'researcher')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 148, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'researcher')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 148, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriproject_researcher_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 154, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 154, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comriproject_researcher_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 154, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 154, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the Researcher.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          The URI of the Researcher.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n        ')
 
     _ElementMap.update({
         
@@ -217,7 +219,7 @@ class researcher (pyxb.binding.basis.complexTypeDefinition):
     _AttributeMap.update({
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'researcher', researcher)
+Namespace.addCategoryObject('typeBinding', 'researcher', researcher)
 
 
 # Complex type {http://genologics.com/ri/project}projects with content type ELEMENT_ONLY
@@ -232,31 +234,31 @@ of links in the overall results.
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'projects')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 167, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'projects')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 167, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element project uses Python identifier project
-    __project = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'project'), 'project', '__httpgenologics_comriproject_projects__project', True, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6), )
+    __project = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'project'), 'project', '__httpgenologics_comriproject_projects__project', True, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6), )
 
     
-    project = property(__project.value, __project.set, None, u'\n            Project provides a URI linking to the detailed representation of a project.\n          ')
+    project = property(__project.value, __project.set, None, '\n            Project provides a URI linking to the detailed representation of a project.\n          ')
 
     
     # Element previous-page uses Python identifier previous_page
-    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'previous-page'), 'previous_page', '__httpgenologics_comriproject_projects__previous_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6), )
+    __previous_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'previous-page'), 'previous_page', '__httpgenologics_comriproject_projects__previous_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6), )
 
     
-    previous_page = property(__previous_page.value, __previous_page.set, None, u'\n            When working with large lists of projects,\nthe previous-page element provides a URI that links to the previous page of projects.\n          ')
+    previous_page = property(__previous_page.value, __previous_page.set, None, '\n            When working with large lists of projects,\nthe previous-page element provides a URI that links to the previous page of projects.\n          ')
 
     
     # Element next-page uses Python identifier next_page
-    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'next-page'), 'next_page', '__httpgenologics_comriproject_projects__next_page', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6), )
+    __next_page = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'next-page'), 'next_page', '__httpgenologics_comriproject_projects__next_page', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6), )
 
     
-    next_page = property(__next_page.value, __next_page.set, None, u'\n            When working with large lists of projects,\nthe next-page element provides a URI that links to the next page of projects.\n          ')
+    next_page = property(__next_page.value, __next_page.set, None, '\n            When working with large lists of projects,\nthe next-page element provides a URI that links to the next page of projects.\n          ')
 
     _ElementMap.update({
         __project.name() : __project,
@@ -266,7 +268,7 @@ of links in the overall results.
     _AttributeMap.update({
         
     })
-Namespace.addCategoryObject('typeBinding', u'projects', projects_)
+Namespace.addCategoryObject('typeBinding', 'projects', projects_)
 
 
 # Complex type {http://genologics.com/ri/project}project-link with content type ELEMENT_ONLY
@@ -277,33 +279,33 @@ class project_link (pyxb.binding.basis.complexTypeDefinition):
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, u'project-link')
-    _XSDLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 203, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'project-link')
+    _XSDLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 203, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element name uses Python identifier name
-    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, u'name'), 'name', '__httpgenologics_comriproject_project_link_name', False, pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6), )
+    __name = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__httpgenologics_comriproject_project_link_name', False, pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6), )
 
     
-    name = property(__name.value, __name.set, None, u'\n            The name of the project.\n          ')
+    name = property(__name.value, __name.set, None, '\n            The name of the project.\n          ')
 
     
     # Attribute limsid uses Python identifier limsid
-    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'limsid'), 'limsid', '__httpgenologics_comriproject_project_link_limsid', pyxb.binding.datatypes.string)
-    __limsid._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 218, 4)
-    __limsid._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 218, 4)
+    __limsid = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'limsid'), 'limsid', '__httpgenologics_comriproject_project_link_limsid', pyxb.binding.datatypes.string)
+    __limsid._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 218, 4)
+    __limsid._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 218, 4)
     
-    limsid = property(__limsid.value, __limsid.set, None, u'\n          The LIMSID of the project.\n        ')
+    limsid = property(__limsid.value, __limsid.set, None, '\n          The LIMSID of the project.\n        ')
 
     
     # Attribute uri uses Python identifier uri
-    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, u'uri'), 'uri', '__httpgenologics_comriproject_project_link_uri', pyxb.binding.datatypes.anyURI)
-    __uri._DeclarationLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 225, 4)
-    __uri._UseLocation = pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 225, 4)
+    __uri = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'uri'), 'uri', '__httpgenologics_comriproject_project_link_uri', pyxb.binding.datatypes.anyURI)
+    __uri._DeclarationLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 225, 4)
+    __uri._UseLocation = pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 225, 4)
     
-    uri = property(__uri.value, __uri.set, None, u'\n          The URI of the project.\n        ')
+    uri = property(__uri.value, __uri.set, None, '\n          The URI of the project.\n        ')
 
     _ElementMap.update({
         __name.name() : __name
@@ -312,34 +314,34 @@ class project_link (pyxb.binding.basis.complexTypeDefinition):
         __limsid.name() : __limsid,
         __uri.name() : __uri
     })
-Namespace.addCategoryObject('typeBinding', u'project-link', project_link)
+Namespace.addCategoryObject('typeBinding', 'project-link', project_link)
 
 
-project = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'project'), project_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 5, 2))
+project = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'project'), project_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 5, 2))
 Namespace.addCategoryObject('elementBinding', project.name().localName(), project)
 
-projects = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, u'projects'), projects_, location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 6, 2))
+projects = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'projects'), projects_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 6, 2))
 Namespace.addCategoryObject('elementBinding', projects.name().localName(), projects)
 
 
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid'), _ImportedBinding_ri.externalid_, scope=project_, documentation=u'\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_ri, 'externalid'), _ImportedBinding_ri.externalid_, scope=project_, documentation='\n        An identifier that allows an external system to retrieve information about the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n      ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/ri.xsd', 230, 2)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, u'file'), _ImportedBinding_file.file_, scope=project_, location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_file, 'file'), _ImportedBinding_file.file_, scope=project_, location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/file.xsd', 4, 2)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=project_, documentation=u'\n            The name of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'name'), pyxb.binding.datatypes.string, scope=project_, documentation='\n            The name of the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'open-date'), pyxb.binding.datatypes.string, scope=project_, documentation=u'\n            The open date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless a close date is also provided.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless a close date is also provided.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'open-date'), pyxb.binding.datatypes.string, scope=project_, documentation='\n            The open date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless a close date is also provided.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless a close date is also provided.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'close-date'), pyxb.binding.datatypes.string, scope=project_, documentation=u'\n            The close date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'close-date'), pyxb.binding.datatypes.string, scope=project_, documentation='\n            The close date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'invoice-date'), pyxb.binding.datatypes.string, scope=project_, documentation=u'\n            The invoice date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'invoice-date'), pyxb.binding.datatypes.string, scope=project_, documentation='\n            The invoice date of the Project.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'researcher'), researcher, scope=project_, documentation=u'\n            Researcher provides a URI linking to the detailed representation of the Researcher for the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'researcher'), researcher, scope=project_, documentation='\n            Researcher provides a URI linking to the detailed representation of the Researcher for the Project.\n<br/>Always returns with GET: Yes\n<br/>Creatable with POST: Yes\n<br/>Required for POST: Yes\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: Yes\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_udf, u'field'), _ImportedBinding_userdefined.field_, scope=project_, documentation=u'\n        A User-Defined Field that is associated with the researcher.\nThis element is repeated for each UDF associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDF has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDF has been configured as required. If a current UDF is not provided, existing values are deleted.\n      ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/userdefined.xsd', 58, 2)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_udf, 'field'), _ImportedBinding_userdefined.field_, scope=project_, documentation='\n        A User-Defined Field that is associated with the researcher.\nThis element is repeated for each UDF associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDF has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDF has been configured as required. If a current UDF is not provided, existing values are deleted.\n      ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/userdefined.xsd', 58, 2)))
 
-project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_udf, u'type'), _ImportedBinding_userdefined.type_, scope=project_, documentation=u'\n        The User-Defined Type that is associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDT has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDT has been configured as required. If a current UDT is not provided, existing values are deleted.\n      ', location=pyxb.utils.utility.Location(u'http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/userdefined.xsd', 71, 2)))
+project_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(_Namespace_udf, 'type'), _ImportedBinding_userdefined.type_, scope=project_, documentation='\n        The User-Defined Type that is associated with the researcher.\n<br/>Always returns with GET: No\n<br/>Creatable with POST: Yes\n<br/>Required for POST: No, unless the UDT has been configured as required.\n<br/>Updatable with PUT: Yes\n<br/>Required for PUT: No, unless the UDT has been configured as required. If a current UDT is not provided, existing values are deleted.\n      ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/userdefined.xsd', 71, 2)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -348,68 +350,68 @@ def _BuildAutomaton ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6))
+    cc_2 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6))
+    cc_3 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6))
+    cc_4 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6))
     counters.add(cc_4)
-    cc_5 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 74, 6))
+    cc_5 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 74, 6))
     counters.add(cc_5)
-    cc_6 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 86, 6))
+    cc_6 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 86, 6))
     counters.add(cc_6)
-    cc_7 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 98, 6))
+    cc_7 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 98, 6))
     counters.add(cc_7)
-    cc_8 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 110, 6))
+    cc_8 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 110, 6))
     counters.add(cc_8)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, 'name')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 14, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, u'open-date')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, 'open-date')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 26, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, u'close-date')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, 'close-date')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 38, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, u'invoice-date')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, 'invoice-date')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 50, 6))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, u'researcher')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(None, 'researcher')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 62, 6))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_5, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, u'type')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 74, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, 'type')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 74, 6))
     st_5 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_5)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_6, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, u'field')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 86, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_udf, 'field')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 86, 6))
     st_6 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_6)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_7, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_ri, u'externalid')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 98, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_ri, 'externalid')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 98, 6))
     st_7 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_7)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_8, False))
-    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_file, u'file')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 110, 6))
+    symbol = pyxb.binding.content.ElementUse(project_._UseForTag(pyxb.namespace.ExpandedName(_Namespace_file, 'file')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 110, 6))
     st_8 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_8)
     transitions = []
@@ -526,11 +528,11 @@ project_._Automaton = _BuildAutomaton()
 
 
 
-projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'project'), project_link, scope=projects_, documentation=u'\n            Project provides a URI linking to the detailed representation of a project.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6)))
+projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'project'), project_link, scope=projects_, documentation='\n            Project provides a URI linking to the detailed representation of a project.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6)))
 
-projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'previous-page'), _ImportedBinding_ri.page, scope=projects_, documentation=u'\n            When working with large lists of projects,\nthe previous-page element provides a URI that links to the previous page of projects.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6)))
+projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'previous-page'), _ImportedBinding_ri.page, scope=projects_, documentation='\n            When working with large lists of projects,\nthe previous-page element provides a URI that links to the previous page of projects.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6)))
 
-projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'next-page'), _ImportedBinding_ri.page, scope=projects_, documentation=u'\n            When working with large lists of projects,\nthe next-page element provides a URI that links to the next page of projects.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6)))
+projects_._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'next-page'), _ImportedBinding_ri.page, scope=projects_, documentation='\n            When working with large lists of projects,\nthe next-page element provides a URI that links to the next page of projects.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -539,26 +541,26 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=None, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6))
+    cc_1 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6))
+    cc_2 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6))
     counters.add(cc_2)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, u'project')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6))
+    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, 'project')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 178, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, u'previous-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6))
+    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, 'previous-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 185, 6))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, u'next-page')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6))
+    symbol = pyxb.binding.content.ElementUse(projects_._UseForTag(pyxb.namespace.ExpandedName(None, 'next-page')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 193, 6))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -585,7 +587,7 @@ projects_._Automaton = _BuildAutomaton_()
 
 
 
-project_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, u'name'), pyxb.binding.datatypes.string, scope=project_link, documentation=u'\n            The name of the project.\n          ', location=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6)))
+project_link._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'name'), pyxb.binding.datatypes.string, scope=project_link, documentation='\n            The name of the project.\n          ', location=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -594,12 +596,12 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0L, max=1, metadata=pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(project_link._UseForTag(pyxb.namespace.ExpandedName(None, u'name')), pyxb.utils.utility.Location('http://genomicsequencing.cruk.cam.ac.uk:8080/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6))
+    symbol = pyxb.binding.content.ElementUse(project_link._UseForTag(pyxb.namespace.ExpandedName(None, 'name')), pyxb.utils.utility.Location('https://genomicsequencing.cruk.cam.ac.uk/glsstatic/lablink/downloads/xsd/project.xsd', 210, 6))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
