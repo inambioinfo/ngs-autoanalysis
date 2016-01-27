@@ -36,7 +36,7 @@ WORKFLOW_MAPPING = {
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
 'Nextera': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
 'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
-'ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
+'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
 'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
 # 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
 
