@@ -20,12 +20,13 @@ import glsclient.glsclient as glsclient
 import glsclient.glssql as glssql
 
 WORKFLOW_MAPPING = {
-'HiSeq': 'SLX: Sequencing for HiSeq v1',
-'HiSeq 2000':'SLX: Sequencing for HiSeq 2000 v1',
-'HiSeq 4000':'SLX: Sequencing for HiSeq 4000 v1',
+'HiSeq 2500': 'SLX: Sequencing for HiSeq v1',
+'HiSeq 2000': 'SLX: Sequencing for HiSeq 2000 v1',
+'HiSeq 4000': 'SLX: Sequencing for HiSeq 4000 v1',
 'HiSeq 2-lane': 'SLX: Sequencing for HiSeq Rapid Run v1',
 'HiSeq Express': 'SLX: Sequencing for HiSeq Express v1',
-'Resubmit for HiSeq': 'SLX: Resubmit for HiSeq v1',
+'Resubmit for HiSeq 2500': 'SLX: Resubmit for HiSeq v1',
+'Resubmit for HiSeq 4000': 'SLX: Resubmit for HiSeq v1',
 'MiSeq': 'SLX: Sequencing for MiSeq v1',
 'MiSeq Express': 'SLX: Sequencing for MiSeq Express v1',
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
@@ -34,7 +35,7 @@ WORKFLOW_MAPPING = {
 
 # New LPP submission form v17
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
-'Nextera': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
+'Nextera DNA/XT': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
 'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
 'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
 'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
