@@ -126,8 +126,10 @@ def main():
         sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
         if os.path.exists(sequencing_completed):
             run_age = present - os.path.getmtime(sequencing_completed)
+            log.info('%s is %s old' % (sequencing_completed, run_age))
         elif os.path.exists(sequencing_failed):
             run_age = present - os.path.getmtime(sequencing_failed)
+            log.info('%s is %s old' % (sequencing_failed, run_age))
         else:
             log.warning('No run status found')
             run_age = None
