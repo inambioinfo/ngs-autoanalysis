@@ -121,6 +121,7 @@ def main():
     ### Delete run folders on LiMS when runs are in 'ProcessedRuns' and older than x days
     processed_run_folders = glob.glob(RUNFOLDER_GLOB % processed_runs_path)
     for run_folder in processed_run_folders:
+        log.info(RUN_HEADER % {'run_folder': run_folder})
         sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
         sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
         if os.path.exists(sequencing_completed):
