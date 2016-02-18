@@ -122,6 +122,7 @@ def main():
     processed_run_folders = glob.glob(RUNFOLDER_GLOB % processed_runs_path)
     for run_folder in processed_run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
+        run_folder_name = os.path.basename(run_folder)
         sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
         sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
         if os.path.exists(sequencing_completed):
