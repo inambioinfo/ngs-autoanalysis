@@ -615,11 +615,11 @@ class External(object):
         for ftpdir in ftpdirs:
             src = os.path.join(self.pipeline_definition.env['archive_pipedir'], ftpdir)
             if self.ftp_server:
-                dest = "%s:%s/tmp/%s/" % (self.ftp_server, self.ftp_path, ftpdir)
+                dest = "/mnt/comp-ftpdmz001/private/%s/" % (ftpdir)  # when ftp server is set
             else:
-                dest = "%s/tmp/%s/" % (self.ftp_path, ftpdir)
+                dest = "%s/mnt/comp-ftpdmz001/private/%s/" % (self.ftp_path, ftpdir)  # for testing
             rsync_log = "%s/rsync_%s.log.newftp" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
-            cmd = "rsync -rL --size-only --copy-links --temp-dir='/tmp/rsync_to_newftp' %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=/tmp/ %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
         self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
         utils.create_script(self.pipeline_definition.run_script_path + '.newftp', ftp_rsync_command % self.pipeline_definition.env)
@@ -932,6 +932,8 @@ class ExternalTests(unittest.TestCase):
             shutil.rmtree(run.lustre_run_folder)
         for folder in os.listdir(os.path.join(self.ftpdir, 'tmp')):
             shutil.rmtree(os.path.join(self.ftpdir, 'tmp', folder))
+        for folder in os.listdir(os.path.join(self.ftpdir, 'mnt', 'comp-ftpdmz001', 'private')):
+            shutil.rmtree(os.path.join(self.ftpdir, 'mnt', 'comp-ftpdmz001', 'private', folder))
 
     def test_execute_non_external(self):
         external_data = {}
