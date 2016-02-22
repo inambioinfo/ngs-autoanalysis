@@ -498,8 +498,10 @@ class External(object):
                 self.create_symlinks()
                 # create rsync-pipeline script
                 self.create_ftp_rsync_script()
+                self.create_new_ftp_rsync_script()
                 # run rsync-pipeline script
                 self.run_ftp_rsync_script()
+                self.run_new_ftp_rsync_script()
                 # register completion
                 self.register_completion()
             else:
@@ -584,6 +586,45 @@ class External(object):
         self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
         utils.create_script(self.pipeline_definition.run_script_path, ftp_rsync_command % self.pipeline_definition.env)
 
+
+    def create_new_ftp_rsync_script(self):
+        """Create rsync script for external data to new ftp server comp-ftpdmz001
+        """
+        self.log.info('... create NEW external sync pipeline script ...................................')
+        ftp_rsync_command = '''
+        touch %(started)s.newftp
+        touch %(lock)s.newftp
+
+        if ( %(rsync_cmd)s )
+        then
+           touch %(ended)s.newftp
+        else
+            touch %(failed)s.newftp
+        fi
+
+        # rsync -av %(pipedir)s/ %(archive_pipedir)s/
+
+        rm %(lock)s.newftp
+        '''
+
+        rsync_cmd = ""
+        # set of institutes
+        ftpdirs = set()
+        for file_id in list(self.external_data.viewkeys()):
+            ftpdirs.add(self.external_data[file_id]['ftpdir'])
+        for ftpdir in ftpdirs:
+            src = os.path.join(self.pipeline_definition.env['archive_pipedir'], ftpdir)
+            if self.ftp_server:
+                dest = "%s:%s/tmp/%s/" % (self.ftp_server, self.ftp_path, ftpdir)
+            else:
+                dest = "%s/tmp/%s/" % (self.ftp_path, ftpdir)
+            rsync_log = "%s/rsync_%s.log.newftp" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
+            cmd = "rsync -rL --size-only --copy-links --temp-dir='/tmp/rsync_to_newftp' %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            rsync_cmd += cmd
+        self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
+        utils.create_script(self.pipeline_definition.run_script_path + '.newftp', ftp_rsync_command % self.pipeline_definition.env)
+
+
     def run_ftp_rsync_script(self):
         """Run rsync script for external data
         """
@@ -604,6 +645,27 @@ class External(object):
                     self.log.info('external data has been synchronised')
         else:
             self.log.warn('%s is missing' % self.pipeline_definition.run_script_path)
+
+    def run_new_ftp_rsync_script(self):
+        """Run rsync script for external data to new ftp server comp-ftpdmz001
+        """
+        self.log.info('... run NEW external sync pipeline script ......................................')
+        if os.path.exists(self.pipeline_definition.run_script_path):
+            if not os.path.exists(self.pipeline_definition.env['started'] + '.newftp'):
+                if not os.path.exists(self.pipeline_definition.env['lock'] + '.newftp'):
+                    utils.run_bg_process(['sh', '%s' % self.pipeline_definition.run_script_path + '.newftp'], self.dry_run)
+                else:
+                    self.log.info('%s presents - another rsync process is running' % self.pipeline_definition.env['lock'] + '.newftp')
+            else:
+                if not os.path.exists(self.pipeline_definition.env['ended'] + '.newftp'):
+                    if not os.path.exists(self.pipeline_definition.env['failed'] + '.newftp'):
+                        self.log.info('external data is currently being synchronised onto NEW server')
+                    else:
+                        self.log.error('[***FAIL***] rsync for external data onto NEW ftp server has failed')
+                else:
+                    self.log.info('external data has been synchronised onto NEW server')
+        else:
+            self.log.warn('%s is missing' % self.pipeline_definition.run_script_path + '.newftp')
 
     def register_completion(self):
         """ Create ExternalComplete.txt when external data has been successfully synced
