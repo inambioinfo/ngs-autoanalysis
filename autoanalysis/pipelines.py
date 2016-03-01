@@ -550,7 +550,7 @@ class External(object):
     def create_ftp_rsync_script(self):
         """Create rsync script for external data to new ftp server comp-ftpdmz001
         """
-        self.log.info('... create NEW external sync pipeline script ...................................')
+        self.log.info('... create external sync pipeline script .......................................')
         ftp_rsync_command = '''
         touch %(started)s
         touch %(lock)s
@@ -576,7 +576,11 @@ class External(object):
             src = os.path.join(self.pipeline_definition.env['archive_pipedir'], ftpdir)
             dest = "%s/private/%s/" % (self.ftp_path, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
-            cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=/tmp/ %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            if self.ftp_server:
+                cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=/processing/.rsync_tmp/ %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            else:
+                # to allow testing without tmp directory
+                cmd = "rsync --verbose --recursive --copy-links --size-only %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
         self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
         utils.create_script(self.pipeline_definition.run_script_path, ftp_rsync_command % self.pipeline_definition.env)
@@ -584,7 +588,7 @@ class External(object):
     def run_ftp_rsync_script(self):
         """Run rsync script for external data to new ftp server comp-ftpdmz001
         """
-        self.log.info('... run NEW external sync pipeline script ......................................')
+        self.log.info('... run external sync pipeline script ..........................................')
         if os.path.exists(self.pipeline_definition.run_script_path):
             if not os.path.exists(self.pipeline_definition.env['started']):
                 if not os.path.exists(self.pipeline_definition.env['lock']):
