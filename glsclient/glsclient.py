@@ -276,7 +276,7 @@ class GlsUtil(object):
         if results:
             # run process at the end of cycle - sequencing COMPLETE
             if results[0]['currentcycle'] and results[0]['totalcycle']:
-                if int(results[0]['currentcycle']) == int(results[0]['totalcycle']):
+                if int(results[0]['currentcycle']) == int(results[0]['totalcycle']) and not int(results[0]['totalcycle']) == 0:
                     self.log.debug('Run ID: %s - finished - status: cycle %s of %s' % (_run_id, results[0]['currentcycle'], results[0]['totalcycle']))
                     return True
                 else:
@@ -786,7 +786,7 @@ class GlsUtilTest(unittest.TestCase):
         self.assertIsNotNone(process)
 
     def test_create_fastq_sample_pipeline_process(self):
-        flowcell_id = 'C3JGEACXX'
+        flowcell_id = 'HCYNYBBXX'
         process = self.glsutil.create_fastq_sample_pipeline_process(flowcell_id)
         self.log.debug(process)
         self.assertIsNotNone(process)
@@ -865,6 +865,11 @@ class GlsUtilTest(unittest.TestCase):
         self.log.info(is_sequencing_completed)
         self.assertEqual(True, is_sequencing_completed)
         run_id = '131105_HWI-ST230_0674_D2GAVACXX'
+        is_sequencing_completed = self.glsutil.is_sequencing_completed(run_id)
+        self.log.info(run_id)
+        self.log.info(is_sequencing_completed)
+        self.assertEqual(None, is_sequencing_completed)
+        run_id = '160622_NS500222_0185_H3WY3BGXY'
         is_sequencing_completed = self.glsutil.is_sequencing_completed(run_id)
         self.log.info(run_id)
         self.log.info(is_sequencing_completed)
