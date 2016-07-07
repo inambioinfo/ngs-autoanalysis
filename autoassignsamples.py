@@ -35,7 +35,7 @@ WORKFLOW_MAPPING = {
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 #'NextSeq Direct': 'SLX: NextSeq Direct v1',
 'NextSeq Direct Mid Output': 'SLX: NextSeq Direct Mid Output v1',
-'NextSeq Direct High Output' 'SLX: NextSeq Direct High Output v1',
+'NextSeq Direct High Output': 'SLX: NextSeq Direct High Output v1',
 
 # New LPP submission form v17
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
