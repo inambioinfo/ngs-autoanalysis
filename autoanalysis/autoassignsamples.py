@@ -45,6 +45,8 @@ WORKFLOW_MAPPING = {
 'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
 # 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
 
+# New 10X work flows
+'10X Chromium Single Cell': 'LPS: 10X Single Cell'
 }
 
 
