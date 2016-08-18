@@ -145,7 +145,7 @@ def main():
                             log.debug(detailed_info_for_report)
                             report_miseqexpresssamples += detailed_info_for_report + "\n"
                             count_miseqexpress += 1
-                        if row['workflow'] == 'NextSeq Direct':
+                        if row['workflow'].startswith('NextSeq Direct'):
                             log.debug(detailed_info_for_report)
                             report_nextseqdirectsamples += detailed_info_for_report + "\n"
                             count_nextseqdirect += 1
