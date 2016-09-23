@@ -41,8 +41,8 @@ PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME = "%(bin_run)s --mode=%(mode)s --ignore
 SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
 
 # ftp server
-FTP_SERVER = "solexadmin@uk-cri-ldmz01"
-FTP_PATH = "/dmz01/solexa/external"
+FTP_SERVER = "comp-ftpdmz001"
+FTP_PATH = "/mnt/comp-ftpdmz001/"
 
 # Default filenames
 SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
@@ -484,7 +484,7 @@ class External(object):
     def execute(self):
         """synchronise external data to ftp server
         create external directory with symlink to fastq files
-        synchronise external data to tmp on solexadmin@uk-cri-ldmz01:/dmz01/solexa/external/tmp/${ftp_group_dir}/
+        synchronise external data to private folders on comp-ftpdmz001 for each research groups ${ftp_group_dir}/
         """
         if self.run.is_ready_for_processing() and self.run.is_analysis_completed_present() and self.run.is_sync_completed_present() and self.are_files_attached:
             if self.external_data:
@@ -548,25 +548,25 @@ class External(object):
                 continue
 
     def create_ftp_rsync_script(self):
-        """Create rsync script for external data
+        """Create rsync script for external data to new ftp server comp-ftpdmz001
         """
         self.log.info('... create external sync pipeline script .......................................')
         ftp_rsync_command = '''
         touch %(started)s
         touch %(lock)s
 
-        if ( %(rsync_cmd)s ) 
+        if ( %(rsync_cmd)s )
         then
            touch %(ended)s
         else
-            touch %(failed)s
+           touch %(failed)s
         fi
-        
+
         rsync -av %(pipedir)s/ %(archive_pipedir)s/
-        
+
         rm %(lock)s
         '''
-        
+
         rsync_cmd = ""
         # set of institutes
         ftpdirs = set()
@@ -574,18 +574,19 @@ class External(object):
             ftpdirs.add(self.external_data[file_id]['ftpdir'])
         for ftpdir in ftpdirs:
             src = os.path.join(self.pipeline_definition.env['archive_pipedir'], ftpdir)
-            if self.ftp_server:
-                dest = "%s:%s/tmp/%s/" % (self.ftp_server, self.ftp_path, ftpdir)
-            else:
-                dest = "%s/tmp/%s/" % (self.ftp_path, ftpdir)
+            dest = "%s/private/%s/" % (self.ftp_path, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
-            cmd = "rsync -rv --copy-links %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            if self.ftp_server:
+                cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=/processing/.rsync_tmp/ %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+            else:
+                # to allow testing without tmp directory
+                cmd = "rsync --verbose --recursive --copy-links --size-only %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
         self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
         utils.create_script(self.pipeline_definition.run_script_path, ftp_rsync_command % self.pipeline_definition.env)
 
     def run_ftp_rsync_script(self):
-        """Run rsync script for external data
+        """Run rsync script for external data to new ftp server comp-ftpdmz001
         """
         self.log.info('... run external sync pipeline script ..........................................')
         if os.path.exists(self.pipeline_definition.run_script_path):
@@ -597,11 +598,11 @@ class External(object):
             else:
                 if not os.path.exists(self.pipeline_definition.env['ended']):
                     if not os.path.exists(self.pipeline_definition.env['failed']):
-                        self.log.info('external data is currently being synchronised')
+                        self.log.info('external data is currently being synchronised onto server %s' % self.ftp_server)
                     else:
-                        self.log.error('[***FAIL***] rsync for external data onto ftp server has failed')
+                        self.log.error('[***FAIL***] rsync for external data onto ftp server %s has failed' % self.ftp_server)
                 else:
-                    self.log.info('external data has been synchronised')
+                    self.log.info('external data has been synchronised onto server %s' % self.ftp_server)
         else:
             self.log.warn('%s is missing' % self.pipeline_definition.run_script_path)
 
@@ -870,6 +871,8 @@ class ExternalTests(unittest.TestCase):
             shutil.rmtree(run.lustre_run_folder)
         for folder in os.listdir(os.path.join(self.ftpdir, 'tmp')):
             shutil.rmtree(os.path.join(self.ftpdir, 'tmp', folder))
+        for folder in os.listdir(os.path.join(self.ftpdir, 'private')):
+            shutil.rmtree(os.path.join(self.ftpdir, 'private', folder))
 
     def test_execute_non_external(self):
         external_data = {}

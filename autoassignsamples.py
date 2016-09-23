@@ -33,7 +33,9 @@ WORKFLOW_MAPPING = {
 'MiSeq Express': 'SLX: Sequencing for MiSeq Express v1',
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
-'NextSeq Direct': 'SLX: NextSeq Direct v1',
+#'NextSeq Direct': 'SLX: NextSeq Direct v1',
+'NextSeq Direct Mid Output': 'SLX: NextSeq Direct Mid Output v1',
+'NextSeq Direct High Output': 'SLX: NextSeq Direct High Output v1',
 
 # New LPP submission form v17
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
@@ -43,6 +45,9 @@ WORKFLOW_MAPPING = {
 'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
 # 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
 
+# New 10X work flows
+'10X Chromium Single Cell': 'LPS: 10X Single Cell v1',
+'10X Chromium Genome': 'LPS: 10X Phased Genome v1'
 }
 
 
@@ -141,7 +146,7 @@ def main():
                             log.debug(detailed_info_for_report)
                             report_miseqexpresssamples += detailed_info_for_report + "\n"
                             count_miseqexpress += 1
-                        if row['workflow'] == 'NextSeq Direct':
+                        if row['workflow'].startswith('NextSeq Direct'):
                             log.debug(detailed_info_for_report)
                             report_nextseqdirectsamples += detailed_info_for_report + "\n"
                             count_nextseqdirect += 1

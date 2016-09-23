@@ -105,34 +105,42 @@ def main():
     for run_folder in run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
-        sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
         ignore_me = os.path.join(run_folder, auto_data.IGNORE_ME)
 
         if run_folder_name == options.run_folder:
             sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
         else:
             if not os.path.exists(ignore_me):
-                if os.path.exists(sequencing_completed):
-                    run_age = present - os.path.getmtime(sequencing_completed)
-                elif os.path.exists(sequencing_failed):
-                    run_age = present - os.path.getmtime(sequencing_failed)
-                else:
-                    log.warning('No run status found')
-                    run_age = None
-
-                if run_age:
-                    ### Delete run folder on lims server if older than x days usually 3
-                    if run_age > delete_time:
-                        log.info('Deleting run folder older than 3 days...')
-                        # ssh username@domain.com 'rm /some/where/some_file.war'
-                        delete_runfolder_cmd = ['ssh', LIMS_SERVER, 'rm -rf %s/%s' % (to_path, run_folder_name)]
-                        log.info(delete_runfolder_cmd)
-                        utils.run_process(delete_runfolder_cmd, options.dry_run)
-                else:
-                    sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
+                sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
             else:
                 log.info('%s is present - run ignored' % ignore_me)
+
+    # location of processed run folders on sequencing server
+    processed_runs_path = "/processing/ProcessedRuns/"
+
+    ### Delete run folders on LiMS when runs are in 'ProcessedRuns' and older than x days
+    processed_run_folders = glob.glob(RUNFOLDER_GLOB % processed_runs_path)
+    for run_folder in processed_run_folders:
+        log.info(RUN_HEADER % {'run_folder': run_folder})
+        run_folder_name = os.path.basename(run_folder)
+        sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
+        sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
+        if os.path.exists(sequencing_completed):
+            run_age = present - os.path.getmtime(sequencing_completed)
+            log.info('%s is %s old' % (sequencing_completed, run_age))
+        elif os.path.exists(sequencing_failed):
+            run_age = present - os.path.getmtime(sequencing_failed)
+            log.info('%s is %s old' % (sequencing_failed, run_age))
+        else:
+            log.warning('No run status found')
+            run_age = None
+        if run_age:
+            if run_age > delete_time:
+                log.info('Deleting run folder older than 3 days...')
+                # ssh username@domain.com 'rm /some/where/some_file.war'
+                delete_runfolder_cmd = ['ssh', LIMS_SERVER, 'rm -rf %s/%s' % (to_path, run_folder_name)]
+                log.info(delete_runfolder_cmd)
+                utils.run_process(delete_runfolder_cmd, options.dry_run)
 
     ### Copy event files to lims server
     for technology in TECHNOLOGIES:
