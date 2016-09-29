@@ -39,6 +39,7 @@ WORKFLOW_MAPPING = {
 
 # New LPP submission form v17
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
+'TruSeq Rapid Exome': 'LPS: TruSeq Rapid Exome v1',
 'Nextera DNA/XT': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
 'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
 'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
@@ -58,14 +59,14 @@ def send_email(subject, txt_msg):
 Anne Pajon, CRUK-CI Bioinformatics Core
 anne.pajon@cruk.cam.ac.uk | +44 (0)1223 769 631
 """ % txt_msg)
-    
+
     me = 'anne.pajon@cruk.cam.ac.uk'
     you = 'genomics@cruk.cam.ac.uk'
     msg['Subject'] = 'Automatic %s Notification' % subject
     msg['From'] = me
     msg['To'] = you
     msg['Cc'] = me
-    
+
     s = smtplib.SMTP('smtp.cruk.cam.ac.uk')
     s.sendmail(me, [me, you], msg.as_string())
     s.quit()
@@ -100,7 +101,7 @@ def main():
         glsutil = glsclient.GlsUtil(server=lims_server)
         glsutil.db.execute(glssql.UNASSIGNED_SAMPLES_QUERY)
         results = glsutil.db.fetchall()
-        
+
         count = 0
         count_miseqexpress = 0
         count_nextseqdirect = 0
@@ -115,7 +116,7 @@ def main():
         report_unknownworkflowsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         for row in results:
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,seqinfo,submissiondate,email
-            try:                
+            try:
                 # update sample date received if empty
                 if row['submissiondate'] is None or row['submissiondate'] == '':
                     log.info('No date received on sample %s' % row['samplename'])
@@ -167,7 +168,7 @@ def main():
             send_email('MiSeq Express', report_miseqexpresssamples)
         log.debug('MISEQ EXPRESS REPORT')
         log.debug(report_miseqexpresssamples)
-            
+
         # email sent to genomics for NextSeq Direct
         report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
         if options.email and count_nextseqdirect > 0:
@@ -196,6 +197,6 @@ def main():
     except:
         log.exception("Unexpected error")
         raise
-    
+
 if __name__ == "__main__":
     main()
