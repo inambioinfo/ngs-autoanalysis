@@ -31,7 +31,7 @@ PIPELINE_SETUP_COMMAND = "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --n
 PIPELINES_SETUP_OPTIONS = {
     "fastq": "",
     "primaryqc": "--create-sample-sheet --phix",
-    "alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq"}
+    "alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq --reference-data-dir=/lustre/reference_data/mib-cri/reference_genomes"}
 
 # Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s %(run_meta)s"
