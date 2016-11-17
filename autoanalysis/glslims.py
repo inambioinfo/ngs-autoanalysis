@@ -36,21 +36,21 @@ LIMS_SERVERS = {
 
 
 class GlsLims:
-    
+
     def __init__(self, use_dev_lims=True):
         self.log = logging.getLogger(__name__)
         if use_dev_lims:
-            self.lims_server = LIMS_SERVERS['dev']
+            self.lims_server = glsclient.TEST_SERVER
         else:
-            self.lims_server = LIMS_SERVERS['pro']
+            self.lims_server = glsclient.SERVER
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
-        
+
     def is_sequencing_run_complete(self, run_id):
         # return True if sequencing process at the end of cycle; False if all lanes qc failed; None otherwise
         self.log.info('... check sequencing status ....................................................')
         return self.glsutil.is_sequencing_completed(run_id)
-        
+
     def are_fastq_files_attached(self, run_id):
         # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
         self.log.info('... check sample fastq files ...................................................')
@@ -118,7 +118,7 @@ class GlsLims:
 
 
 class GlsLimsTests(unittest.TestCase):
-    
+
     def setUp(self):
         import data
         import log as logger
@@ -153,14 +153,14 @@ class GlsLimsTests(unittest.TestCase):
         self.assertIsNotNone(process)
         process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
         self.assertIsNotNone(process)
-        
+
     def test_publish_flowcell(self):
         for run in self.runs.synced_runs:
             self.log.info(run.flowcell_id)
             self.glslims.publish_flowcell(run, self.are_fastq_files_attached)
             self.assertTrue(os.path.isfile(run.publishing_assigned))
             self.assertTrue(os.path.isfile(os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)))
-        
+
     def test_no_publish_flowcell(self):
         for run in self.runs.synced_runs:
             self.log.info(run.flowcell_id)
