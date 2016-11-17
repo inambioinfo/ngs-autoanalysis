@@ -212,7 +212,7 @@ class RunFolderList(object):
     ONERUNFOLDER_GLOB = "%s/%s"
 
     def __init__(self, processing_dir, staging_dir, lustre_dir=None, one_run_folder=None, do_create_dir=True):
-        self.log = logging.getLogger(__name__) 
+        self.log = logging.getLogger(__name__)
         self.do_create_dir = do_create_dir
         self.processing_dir = processing_dir
         self.staging_dir = staging_dir
@@ -311,7 +311,7 @@ class RunFolderTests(unittest.TestCase):
 
 
 class RunFolderListTests(unittest.TestCase):
-    
+
     def setUp(self):
         import log as logger
         self.log = logger.get_custom_logger()
@@ -320,7 +320,7 @@ class RunFolderListTests(unittest.TestCase):
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
         self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
         self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir, lustre_dir=self.lustredir)
-        
+
     def tearDown(self):
         import shutil
         for folder in self.runs.get_destination_runfolders():
@@ -332,9 +332,9 @@ class RunFolderListTests(unittest.TestCase):
         self.assertEqual(self.basedir, self.runs.processing_dir)
         self.assertEqual(self.destdir, self.runs.staging_dir)
         self.assertEqual(self.lustredir, self.runs.lustre_dir)
-        self.assertEqual(5, len(self.runs.run_folders))
+        self.assertEqual(4, len(self.runs.run_folders))
         self.assertEqual(len(self.runs.run_folders), len(self.runs.all_runs))
-        
+
     def test_completed_runs(self):
         self.assertEqual(4, len(self.runs.completed_runs))
 
@@ -346,7 +346,7 @@ class RunFolderListTests(unittest.TestCase):
 
     def test_published_runs(self):
         self.assertEqual(1, len(self.runs.published_runs))
-        
+
     def test_destination_run_folders(self):
         self.assertEqual(3, len(self.runs.get_destination_runfolders()))
         self.assertEqual(3, len(self.runs.get_lustre_runfolders()))
@@ -373,7 +373,7 @@ class OneRunFolderTests(unittest.TestCase):
 
     def test_completed_runs(self):
         self.assertEqual(1, len(self.runs.completed_runs))
-        
+
     def test_destination_runfolders(self):
         self.assertEqual(1, len(self.runs.get_destination_runfolders()))
 
