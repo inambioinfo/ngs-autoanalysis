@@ -95,7 +95,7 @@ def main():
     try:
         # connect to lims
         lims_server = glsclient.SERVER
-        if options.use_limsdev:
+        if options.limsdev:
             lims_server = glsclient.TEST_SERVER
         glsutil = glsclient.GlsUtil(server=lims_server)
         glsutil.db.execute(glssql.UNASSIGNED_SAMPLES_QUERY)
