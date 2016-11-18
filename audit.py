@@ -45,9 +45,9 @@ def main():
     log = logger.get_custom_logger(options.logfile, options.nologemail)
 
     # connect to lims
-    lims_server = 'lims'
+    lims_server = glsclient.SERVER
     if options.use_limsdev:
-        lims_server = 'limsdev'
+        lims_server = glsclient.TEST_SERVER
     glsutil = glsclient.GlsUtil(server=lims_server)
 
     glsutil.db.execute(glssql.PUBLISHED_RUNS_WITHOUT_FASTQ_ATTACHED)
@@ -66,4 +66,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

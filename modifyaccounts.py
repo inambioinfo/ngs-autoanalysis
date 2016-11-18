@@ -34,9 +34,9 @@ def main():
     try:
         # connect to lims
         if options.limsprod:
-            lims_server = 'lims'
+            lims_server = glsclient.SERVER
         else:
-            lims_server = 'limsdev'
+            lims_server = glsclient.TEST_SERVER
         log.info('Connected to ' + lims_server)
         glsutil = glsclient.GlsUtil(server=lims_server)
 
@@ -78,4 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
