@@ -58,3 +58,19 @@ python -m unittest --verbose autoanalysis.glslims
 ```
 
 ## Usage
+
+Current crontab usage
+
+```bash
+### auto assign samples (only on sol-srv001)
+0 07,12,14,16 * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoassignsamples.py --logfile=/processing/Logs/autoassignsamples.log --update --updatesamples --email > /dev/null 2>&1
+
+### manage gls events
+*/5 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageglsevents.py --logfile=/processing/Logs/manageglsevents.log > /dev/null 2>&1
+
+### manage runs
+*/15 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageruns.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --processeddir=/processing/ProcessedRuns/ --trashdir=/lustre/mib-cri/solexa/TrashRuns/ --logfile=/processing/Logs/manageruns.log > /dev/null 2>&1
+
+### auto analysis
+*/20 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoanalysis.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/mib-cri/software/core-pipelines-v2/ --cluster=uk-cri-lcst01 --logfile=/processing/Logs/autoanalysis.log > /dev/null 2>&1 
+```
