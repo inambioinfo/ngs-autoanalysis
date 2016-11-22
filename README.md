@@ -22,6 +22,8 @@ Tools currently in used on four production servers : sol-srv001/2/3/4 with /lust
 
 ## Dependencies
 
+- Python Clarity Client API v0.4.2: https://github.com/crukci-bioinformatics/claritypy-client/releases/tag/v0.4.2
+
 ```bash
 virtualenv venv
 source venv/bin/activate
@@ -43,6 +45,7 @@ TEST_SERVER=limsdev.cruk.cam.ac.uk
 USERNAME=your_api_user
 PASSWORD=your_api_password
 DB_NAME=clarityDB
+FILES_DB_NAME=clarityfiles
 DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
 [logging]
@@ -72,5 +75,5 @@ Current crontab usage
 */15 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageruns.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --processeddir=/processing/ProcessedRuns/ --trashdir=/lustre/mib-cri/solexa/TrashRuns/ --logfile=/processing/Logs/manageruns.log > /dev/null 2>&1
 
 ### auto analysis
-*/20 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoanalysis.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/mib-cri/software/core-pipelines-v2/ --cluster=uk-cri-lcst01 --logfile=/processing/Logs/autoanalysis.log > /dev/null 2>&1 
+*/20 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoanalysis.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/mib-cri/software/core-pipelines-v2/ --cluster=uk-cri-lcst01 --logfile=/processing/Logs/autoanalysis.log > /dev/null 2>&1
 ```

@@ -15,34 +15,23 @@ import os
 import inspect
 import logging
 import unittest
-# autoanalysis modules
+# import genologics client library
+import glsclient.glsclient as glsclient
+# import utils module
 import utils
 
 # Append root project to PYTHONPATH
 ROOT_PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 sys.path.append(ROOT_PROJECT)
 
-# import genologics client
-import glsclient.glsclient as glsclient
-
-################################################################################
-# CONSTANTS
-################################################################################
-# genologics lims servers
-LIMS_SERVERS = {
-    "dev": "limsdev",
-    "pro": "lims"
-}
-
 
 class GlsLims:
 
     def __init__(self, use_dev_lims=True):
         self.log = logging.getLogger(__name__)
+        self.lims_server = glsclient.SERVER
         if use_dev_lims:
             self.lims_server = glsclient.TEST_SERVER
-        else:
-            self.lims_server = glsclient.SERVER
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
 
@@ -52,7 +41,7 @@ class GlsLims:
         return self.glsutil.is_sequencing_completed(run_id)
 
     def are_fastq_files_attached(self, run_id):
-        # return True if all Read 1 FASTQ files from FASTQ Sample Pipeline process are presents; False otherwise
+        # return True if all Read 1 FASTQ files are presents; False otherwise
         self.log.info('... check sample fastq files ...................................................')
         return self.glsutil.are_sample_fastq_files_attached(run_id)
 
@@ -61,40 +50,31 @@ class GlsLims:
         self.log.info('... check alignment status .....................................................')
         return self.glsutil.is_alignment_active(run_id)
 
-    def create_analysis_processes(self, flowcell_id, is_alignment_active):
-        """ Create analysis processes in lims only if sequencing run process exists
-        and lane & sample fastq & alignment do not exist - just one single analysis processes per flow-cell
-        do only create alignment process when ii is active
+    def create_auto_pipeline_reports_process(self, run_id):
+        """ Create auto analysis process in lims only if sequencing run process exists
+        and only if it does not exist yet - Only one single auto analysis process per flow-cell
         """
-        self.log.info('... create analysis processes ..................................................')
-        run = self.glsutil.get_latest_complete_run_process_by_flowcell_id(flowcell_id)
-        if run is not None:
-            lanfq = self.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
-            if lanfq is None:
-                self.glsutil.create_fastq_lane_pipeline_process(flowcell_id)
-                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['lanfq'], flowcell_id))
-            samfq = self.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
-            if samfq is None:
-                self.glsutil.create_fastq_sample_pipeline_process(flowcell_id)
-                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['samfq'], flowcell_id))
-            align = self.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
-            if align is None and is_alignment_active:
-                self.glsutil.create_alignment_pipeline_process(flowcell_id)
-                self.log.info("'%s' process created for flow-cell id %s" % (glsclient.ANALYSIS_PROCESS_NAMES['align'], flowcell_id))
+        self.log.info('... create auto-analysis process ...............................................')
+        run = self.glsutil.get_completed_run_process_by_run_id(run_id)
+        if run:
+            auto_analysis_process = self.glsutil.get_process_by_run_id('reports', run_id)
+            if not auto_analysis_process:
+                self.glsutil.create_reports_process(run_id)
+                self.log.info("'%s' process created for run id %s" % (glsclient.PROCESS_NAMES['reports'], run_id))
 
     def publish_flowcell(self, run, are_files_attached):
         """ Assign flow-cell to publishing queue, if no publishing process found
-        and lane & sample fastq & alignment processes exist - just one single publishing process per flow-cell
+        and auto analysis process exists - just one single publishing process per flow-cell
         """
         self.log.info('... publish flow-cell ..........................................................')
         if are_files_attached and run.is_analysis_completed_present() and run.is_external_completed_present() and not run.is_publishing_assigned_present():
             try:
-                self.glsutil.assign_flowcell_to_publishing_workflow(run.flowcell_id)
+                self.glsutil.assign_flowcell_to_publishing_workflow(run.run_folder_name)
                 run.touch_publishing_assign()
                 run.copy_publishing_assign_to_staging()
                 self.log.info('*** PUBLISHING ASSIGNED ********************************************************')
             except Exception, e:
-                self.log.error("[***FAIL***] publish flow-cell %s has failed." % run.flowcell_id)
+                self.log.error("[***FAIL***] publish flow-cell %s has failed for run %s." % (run.flowcell_id, run.run_folder_name))
                 self.log.exception(e)
                 raise
         else:
@@ -104,12 +84,11 @@ class GlsLims:
         self.log.info('... find external data files ...................................................')
         data = {}
         labftpdirs = self.glsutil.get_all_external_ftp_dirs()
-        files = self.glsutil.get_sample_fastq_files(run_id)
+        files = self.glsutil.get_fastq_files(run_id)
         if files:
-            files.extend(self.glsutil.get_lane_fastq_files(run_id))
-            for f in files:
+            for i, f in enumerate(files):
                 if f['labid'] in labftpdirs.keys():
-                    data[f['artifactid']] = {'runfolder': f['runfolder'], 'ftpdir': labftpdirs[f['labid']]['ftpdir'], 'project': f['projectname'], 'nonpfdata': labftpdirs[f['labid']]['nonpfdata']}
+                    data[i] = {'runfolder': f['runfolder'], 'ftpdir': labftpdirs[f['labid']]['ftpdir'], 'project': f['projectname'], 'nonpfdata': labftpdirs[f['labid']]['nonpfdata']}
         if data:
             self.log.info('External data found')
         else:
@@ -144,14 +123,10 @@ class GlsLimsTests(unittest.TestCase):
                 os.remove(staging_completed)
             shutil.rmtree(run.lustre_run_folder)
 
-    def test_create_analysis_processes(self):
-        flowcell_id = 'H9VT6ADXX' # 140729_D00408_0159_H9VT6ADXX
-        self.glslims.create_analysis_processes(flowcell_id, True)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('lanfq', flowcell_id)
-        self.assertIsNotNone(process)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('samfq', flowcell_id)
-        self.assertIsNotNone(process)
-        process = self.glslims.glsutil.get_single_analysis_process_by_flowcell_id('align', flowcell_id)
+    def test_create_auto_pipeline_reports_process(self):
+        run_id = '140815_D00408_0163_C4EYLANXX'
+        self.glslims.create_auto_pipeline_reports_process(run_id)
+        process = self.glslims.glsutil.get_process_by_run_id('reports', run_id)
         self.assertIsNotNone(process)
 
     def test_publish_flowcell(self):
@@ -169,10 +144,12 @@ class GlsLimsTests(unittest.TestCase):
             self.assertFalse(os.path.isfile(os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)))
 
     def test_find_external_data(self):
-        are_fastq_files_attached = self.glslims.are_fastq_files_attached('140813_M01712_0104_000000000-A9YBB')
+        # run with external data; fastq files will be removed when archived
+        # please test with a run in /staging/ area
+        are_fastq_files_attached = self.glslims.are_fastq_files_attached('161024_K00254_0069_HFVNFBBXX')
         self.log.info(are_fastq_files_attached)
-        #self.assertTrue(are_fastq_files_attached)  # no file attached in lims
-        data = self.glslims.find_external_data('140813_M01712_0104_000000000-A9YBB')
+        self.assertTrue(are_fastq_files_attached)
+        data = self.glslims.find_external_data('161024_K00254_0069_HFVNFBBXX')
         self.log.info(data)
         self.assertIsNotNone(data)
 
