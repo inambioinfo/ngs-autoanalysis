@@ -9,7 +9,7 @@ Created by Anne Pajon on 2012-10-05.
 
 --------------------------------------------------------------------------------
 
-Analysis server script that automatically runs the different steps of the sequencing 
+Analysis server script that automatically runs the different steps of the sequencing
 pipeline and rsync them to the archive.
 
 Usage:
@@ -85,7 +85,7 @@ def main():
 
                 # are all sample fastq files attached in lims for this run?
                 are_files_attached = glslims.are_fastq_files_attached(run.run_folder_name)
-                # get external data when lane and sample fastq files are attached in lims
+                # get external data when lane and sample fastq files are recorded in ClarityFiles DB
                 external_data = glslims.find_external_data(run.run_folder_name)
                 # is alignment active for this run?
                 if options.noalignment:
@@ -98,8 +98,8 @@ def main():
                 if not options.donot_run_pipelines:
                     pipelines.execute()
 
-                # create analysis processes in lims
-                glslims.create_analysis_processes(run.flowcell_id, is_alignment_active)
+                # create auto analysis process in lims
+                glslims.create_auto_pipeline_reports_process(run.run_folder_name)
 
                 # synchronise data to staging area
                 sync = auto_pipelines.Sync(run, options.dry_run)
@@ -121,10 +121,6 @@ def main():
         raise
     finally:
         os.unlink(pidfile)
-    
+
 if __name__ == "__main__":
     main()
-
-
-        
-
