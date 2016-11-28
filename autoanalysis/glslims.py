@@ -161,6 +161,9 @@ class GlsLimsTests(unittest.TestCase):
         self.assertTrue(self.glslims.is_sequencing_run_complete('141022_D00491_0113_C5LTUANXX'))
         self.assertTrue(self.glslims.is_sequencing_run_complete('141022_M01686_0146_000000000-AAYM1'))
 
+    def test_are_fastq_files_attached(self):
+        self.assertTrue(self.glslims.are_fastq_files_attached('161123_M01712_0338_000000000-AWR96'))
+
 
 
 if __name__ == '__main__':
