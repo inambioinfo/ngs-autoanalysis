@@ -512,18 +512,18 @@ class External(object):
 
     def create_symlinks(self):
         """ Create symlink to external fastq data into external folder
-        - files to symlink per lane:
-            SLX-9888.000000000-AEUH0.s_1.r_1.lostreads.fq.gz
-            SLX-9888.000000000-AEUH0.s_1.r_2.lostreads.fq.gz
-            SLX-9888.000000000-AEUH0.s_1.lostreads.md5sums.txt
-            SLX-9888.000000000-AEUH0.s_1.contents.csv
-            SLX-9888.000000000-AEUH0.s_1.mga.html
-            SLX-9888.000000000-AEUH0.s_1.r_1.fastqc.html
-            SLX-9888.000000000-AEUH0.s_1.r_2.fastqc.html
-            SLX-9888.000000000-AEUH0.s_1.barcodesummary.txt
-        - files to symlink per sample:
-            SLX-7957.A002.C3BW4ACXX.s_8.r_1.fq.gz
-            SLX-7957.A002.C3BW4ACXX.s_8.md5sums.txt
+        - files to symlink:
+            fastq/SLX-12650.HGYGKBBXX.s_8.barcodesummary.txt
+            fastq/SLX-12650.HGYGKBBXX.s_8.contents.csv
+            fastq/SLX-12650.HGYGKBBXX.s_8.lostreads.md5sums.txt
+            fastq/SLX-12650.HGYGKBBXX.s_8.r_1.lostreads.fq.gz
+            fastq/SLX-12650.HGYGKBBXX.s_8.r_2.lostreads.fq.gz
+            fastq/SLX-12650.NEBNext08.HGYGKBBXX.s_8.md5sums.txt
+            fastq/SLX-12650.NEBNext08.HGYGKBBXX.s_8.r_1.fq.gz
+            fastq/SLX-12650.NEBNext08.HGYGKBBXX.s_8.r_2.fq.gz
+            fastqc/SLX-12650.HGYGKBBXX.s_8.r_1.fastqc.html
+            fastqc/SLX-12650.HGYGKBBXX.s_8.r_2.fastqc.html
+            mga/SLX-12650.HGYGKBBXX.s_8.mga.html
         - if non PF data requested
             SLX-7957.C3BW4ACXX.s_8.r_1.failed.fq.gz
             SLX-7957.C3BW4ACXX.s_8.failed.md5sums.txt
@@ -533,17 +533,29 @@ class External(object):
             # create ftpdir in external directory in run folder
             runfolder_ext_ftpdir = os.path.join(self.pipeline_definition.pipeline_directory, self.external_data[file_id]['ftpdir'])
             utils.create_directory(runfolder_ext_ftpdir)
-            filename = self.external_data[file_id]['runfolder'].replace('/runs/', '/staging/')
+            filename = self.external_data[file_id]['runfolder'].replace('/runs/', os.path.dirname(self.run.staging_dir) + '/')
             try:
-                # create symlink
-                linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename))
-                utils.create_symlink(filename, linkname)
-                # symlink non PF data
-                if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
-                    for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
-                        filename_failed = filename.replace('.contents.csv', file_extension)
-                        linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                        utils.create_symlink(filename_failed, linkname_failed)
+                # get all files associated to *.contents.csv file from run folder on disk
+                # /staging/161130_K00252_0085_HGYGKBBXX/fastq/SLX-12650.HGYGKBBXX.s_8.contents.csv
+                if filename.endswith('.contents.csv'):
+                    bname = os.path.basename(filename)
+                    folder = os.path.dirname(os.path.dirname(filename))
+                    slx = bname.split('.')[0]
+                    fc = bname.split('.')[2]
+                    files_in_folder = glob.glob('%s/fastq/%s*%s*' % (folder, slx, fc))
+                    files_in_folder.extend(glob.glob('%s/fastqc/%s*%s*' % (folder, slx, fc)))
+                    files_in_folder.extend(glob.glob('%s/mga/%s*%s*' % (folder, slx, fc)))
+                    self.log.debug(files_in_folder)
+                    for f in files_in_folder:
+                        # create symlinks
+                        linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(f))
+                        utils.create_symlink(f, linkname)
+                    # symlink non PF data
+                    if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
+                        for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
+                            filename_failed = filename.replace('.contents.csv', file_extension)
+                            linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                            utils.create_symlink(filename_failed, linkname_failed)
             except:
                 continue
 
@@ -883,31 +895,19 @@ class ExternalTests(unittest.TestCase):
             external.execute()
             self.assertTrue(os.path.isfile(external.external_completed))
 
-    # def test_execute_external(self):
-    #     external_data = {
-    #         2169090L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_1.fq.gz'},
-    #         2169091L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.r_2.fq.gz'},
-    #         2169092L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D505.000000000-A9YBB.s_1.md5sums.txt'},
-    #
-    #         2169093L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_1.fq.gz'},
-    #         2169086L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.r_2.fq.gz'},
-    #         2169087L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D506.000000000-A9YBB.s_1.md5sums.txt'},
-    #
-    #         2169088L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_1.fq.gz'},
-    #         2169089L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.r_2.fq.gz'},
-    #         2169113L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '140813_M01712_0104_000000000-A9YBB/fastq/SLX-8917.D704_D507.000000000-A9YBB.s_1.md5sums.txt'},
-    #      }
-    #     for file_id in list(external_data.viewkeys()):
-    #         external_data[file_id]['runfolder'] = os.path.join(self.archivedir, external_data[file_id]['runfolder'])
-    #     self.log.info(external_data)
-    #     import time
-    #     for run in self.runs.synced_runs:
-    #         external = External(run, self.are_fastq_files_attached, external_data, False, None, self.ftpdir)
-    #         external.execute()
-    #         time.sleep(10)  # wait for rsync to synchronise files
-    #         external.register_completion()
-    #         self.assertTrue(os.path.isfile(external.external_completed))
-
+    def test_execute_external(self):
+        external_data = {
+            2169090L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/runs/161130_K00252_0085_HGYGKBBXX/fastq/SLX-12650.HGYGKBBXX.s_8.contents.csv'},
+            2169091L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/runs/161130_K00252_0085_HGYGKBBXX/fastq/SLX-12650.NEBNext08.HGYGKBBXX.s_8.r_1.fq.gz'},
+            2169092L: {'project': '#216', 'ftpdir': 'hutch_vanharanta', 'nonpfdata': 'False', 'runfolder': '/runs/161130_K00252_0085_HGYGKBBXX/fastq/SLX-12650.NEBNext08.HGYGKBBXX.s_8.r_2.fq.gz'},
+        }
+        import time
+        for run in self.runs.synced_runs:
+            external = External(run, True, external_data, False, None, self.ftpdir)
+            external.execute()
+            time.sleep(10)  # wait for rsync to synchronise files
+            external.register_completion()
+            self.assertTrue(os.path.isfile(external.external_completed))
 
 if __name__ == '__main__':
     unittest.main()
