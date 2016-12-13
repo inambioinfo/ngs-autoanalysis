@@ -34,8 +34,9 @@ WORKFLOW_MAPPING = {
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 #'NextSeq Direct': 'SLX: NextSeq Direct v1',
-#'NextSeq Direct Mid Output': 'SLX: NextSeq Direct Mid Output v1',
-#'NextSeq Direct High Output': 'SLX: NextSeq Direct High Output v1',
+# Mapping old UDF values to new NextSeq workflows
+'NextSeq Direct Mid Output': 'SLX: NextSeq Express Mid Output v1',
+'NextSeq Direct High Output': 'SLX: NextSeq Express High Output v1',
 # New NextSeq workflows
 'NextSeq Mid Output': 'SLX: NextSeq Mid Output v1',
 'NextSeq High Output': 'SLX: NextSeq High Output v1',
