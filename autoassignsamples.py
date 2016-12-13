@@ -34,8 +34,9 @@ WORKFLOW_MAPPING = {
 'GAIIx': 'SLX: Sequencing for GAIIx v1',
 'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
 #'NextSeq Direct': 'SLX: NextSeq Direct v1',
-#'NextSeq Direct Mid Output': 'SLX: NextSeq Direct Mid Output v1',
-#'NextSeq Direct High Output': 'SLX: NextSeq Direct High Output v1',
+# Mapping old UDF values to new NextSeq workflows
+'NextSeq Direct Mid Output': 'SLX: NextSeq Express Mid Output v1',
+'NextSeq Direct High Output': 'SLX: NextSeq Express High Output v1',
 # New NextSeq workflows
 'NextSeq Mid Output': 'SLX: NextSeq Mid Output v1',
 'NextSeq High Output': 'SLX: NextSeq High Output v1',
@@ -151,7 +152,7 @@ def main():
                             log.debug(detailed_info_for_report)
                             report_miseqexpresssamples += detailed_info_for_report + "\n"
                             count_miseqexpress += 1
-                        if row['workflow'].startswith('NextSeq Direct'):
+                        if row['workflow'].startswith('NextSeq Direct') or row['workflow'].startswith('NextSeq Express'):
                             log.debug(detailed_info_for_report)
                             report_nextseqdirectsamples += detailed_info_for_report + "\n"
                             count_nextseqdirect += 1
@@ -174,10 +175,10 @@ def main():
         log.debug(report_miseqexpresssamples)
 
         # email sent to genomics for NextSeq Direct
-        report_nextseqdirectsamples = "%s samples assigned to NextSeq Direct workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
+        report_nextseqdirectsamples = "%s samples assigned to NextSeq Express workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
         if options.email and count_nextseqdirect > 0:
-            send_email('NextSeq Direct', report_nextseqdirectsamples)
-        log.debug('NEXTSEQ DIRECT REPORT')
+            send_email('NextSeq Express', report_nextseqdirectsamples)
+        log.debug('NEXTSEQ EXPRESS REPORT')
         log.debug(report_nextseqdirectsamples)
 
         # email sent to genomics for unknown workflow
