@@ -21,50 +21,16 @@ import socket
 import data
 import utils
 
-################################################################################
-# CONSTANTS
-################################################################################
+# constants and configurations
+from config import cfg
 
-# Pipeline setup command to generate metadata file
-PIPELINE_SETUP_COMMAND = "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --notifications %(options)s %(flowcell_id)s %(run_meta)s"
-
-PIPELINES_SETUP_OPTIONS = {
-    "fastq": "",
-    "primaryqc": "--create-sample-sheet --phix",
-    "alignment": "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq --reference-data-dir=/lustre/reference_data/mib-cri/reference_genomes"}
-
-# Pipeline run command to run pipeline
-PIPELINE_RUN_COMMAND = "%(bin_run)s --mode=%(mode)s %(run_meta)s"
-PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME = "%(bin_run)s --mode=%(mode)s --ignore-walltime %(run_meta)s"
-
-# Software pipeline path
-SOFT_PIPELINE_PATH = "/home/mib-cri/software/pipelines"
-
-# ftp server
-FTP_SERVER = "comp-ftpdmz001"
-FTP_PATH = "/mnt/comp-ftpdmz001/"
-
-# Default filenames
-SETUP_SCRIPT_FILENAME = "setup-pipeline.sh"
-RUN_SCRIPT_FILENAME = "run-pipeline.sh"
-PIPELINE_STARTED_FILENAME = "pipeline.started"
-PIPELINE_ENDED_FILENAME = "pipeline.ended"
-PIPELINE_FAILED_FILENAME = "pipeline.failed"
-PIPELINE_LOG_FILENAME = "pipeline.log"
-PIPELINE_LOCK_FILENAME = "rsync.lock"
-
-CREATE_METAFILE_FILENAME = "create-metafile"
-RUN_META_FILENAME = "run-meta.xml"
-RUN_PIPELINE_FILENAME = "run-pipeline"
-
-ALIGNMENT_DAEMON_PID = "/tmp/autoanalysis_alignment_daemon.pid"
 
 ################################################################################
 # CLASS PipelineDefinition
 ################################################################################
 class PipelineDefinition(object):
 
-    def __init__(self, run, pipeline_name, software_path=SOFT_PIPELINE_PATH, cluster_host=None, use_limsdev=True, mode='local'):
+    def __init__(self, run, pipeline_name, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, use_limsdev=True, mode='local'):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = pipeline_name
@@ -73,9 +39,9 @@ class PipelineDefinition(object):
         self.use_limsdev = use_limsdev
         self.mode = mode
         if self.pipeline_name == 'alignment':
-            self.pipeline_setup_options = PIPELINES_SETUP_OPTIONS[pipeline_name] % (socket.gethostname(), str(self.run.run_folder)[1:])
+            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'][pipeline_name] % (socket.gethostname(), str(self.run.run_folder)[1:])
         else:
-            self.pipeline_setup_options = PIPELINES_SETUP_OPTIONS.get(pipeline_name, '')
+            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'].get(pipeline_name, '')
 
         # create pipeline directory
         if self.cluster_host and mode == 'lsf':
@@ -110,19 +76,19 @@ class PipelineDefinition(object):
         and create an env dictionary containing variables for generating shell scripts from their templates
         """
         # set paths to pipeline files
-        self.setup_script_path = os.path.join(self.pipeline_directory, SETUP_SCRIPT_FILENAME)
-        self.run_script_path = os.path.join(self.pipeline_directory, RUN_SCRIPT_FILENAME)
-        self.pipeline_started = os.path.join(self.pipeline_directory, PIPELINE_STARTED_FILENAME)
-        self.pipeline_ended = os.path.join(self.pipeline_directory, PIPELINE_ENDED_FILENAME)
-        self.pipeline_failed = os.path.join(self.pipeline_directory, PIPELINE_FAILED_FILENAME)
-        self.pipeline_lock = os.path.join(os.path.dirname(self.pipeline_directory), PIPELINE_LOCK_FILENAME)
-        self.pipeline_log = os.path.join(self.pipeline_directory, PIPELINE_LOG_FILENAME)
+        self.setup_script_path = os.path.join(self.pipeline_directory, cfg['SETUP_SCRIPT_FILENAME'])
+        self.run_script_path = os.path.join(self.pipeline_directory, cfg['RUN_SCRIPT_FILENAME'])
+        self.pipeline_started = os.path.join(self.pipeline_directory, cfg['PIPELINE_STARTED_FILENAME'])
+        self.pipeline_ended = os.path.join(self.pipeline_directory, cfg['PIPELINE_ENDED_FILENAME'])
+        self.pipeline_failed = os.path.join(self.pipeline_directory, cfg['PIPELINE_FAILED_FILENAME'])
+        self.pipeline_lock = os.path.join(os.path.dirname(self.pipeline_directory), cfg['PIPELINE_LOCK_FILENAME'])
+        self.pipeline_log = os.path.join(self.pipeline_directory, cfg['PIPELINE_LOG_FILENAME'])
         # environment variables for setting up and running each pipeline
-        self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, CREATE_METAFILE_FILENAME)
-        self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, RUN_PIPELINE_FILENAME)
+        self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['CREATE_METAFILE_FILENAME'])
+        self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['RUN_PIPELINE_FILENAME'])
         self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
 
-        if self.pipeline_name in PIPELINES_SETUP_OPTIONS.keys():
+        if self.pipeline_name in cfg['PIPELINES_SETUP_OPTIONS'].keys():
             if self.use_limsdev:
                 self.env['options'] = "%s --dev" % self.pipeline_setup_options
             else:
@@ -133,7 +99,7 @@ class PipelineDefinition(object):
             else:
                 self.env['options'] = ''
         self.env['flowcell_id'] = self.run.flowcell_id
-        self.env['run_meta'] = os.path.join(self.pipeline_directory, RUN_META_FILENAME)
+        self.env['run_meta'] = os.path.join(self.pipeline_directory, cfg['RUN_META_FILENAME'])
         if self.cluster_host and self.mode == 'lsf':
             self.env['mode'] = 'lsf'
         else:
@@ -143,7 +109,7 @@ class PipelineDefinition(object):
         self.env['cluster'] = self.cluster_host
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
-        self.env['cmd'] = PIPELINE_RUN_COMMAND % self.env
+        self.env['cmd'] = cfg['PIPELINE_RUN_COMMAND'] % self.env
         self.env['pipedir'] = self.pipeline_directory
         self.env['archive_pipedir'] = self.archive_pipeline_directory
         self.env['started'] = self.pipeline_started
@@ -156,7 +122,7 @@ class PipelineDefinition(object):
         self.log.info('... create setup pipeline script ...............................................')
         try:
             if not os.path.exists(self.setup_script_path):
-                utils.create_script(self.setup_script_path, PIPELINE_SETUP_COMMAND % self.env)
+                utils.create_script(self.setup_script_path, cfg['PIPELINE_SETUP_COMMAND'] % self.env)
             else:
                 self.log.debug('%s already exists' % self.setup_script_path)
         except:
@@ -197,9 +163,9 @@ class PipelineDefinition(object):
                 if not os.path.exists(self.pipeline_ended):
                     if _dependencies_satisfied:
                         if self.env['mode'] == 'local':
-                            if self.pipeline_name == 'alignment' and not os.path.isfile(ALIGNMENT_DAEMON_PID):
+                            if self.pipeline_name == 'alignment' and not os.path.isfile(cfg['ALIGNMENT_DAEMON_PID']):
                                 pid = str(os.getpid())
-                                file(ALIGNMENT_DAEMON_PID, 'w').write(pid)
+                                file(cfg['ALIGNMENT_DAEMON_PID'], 'w').write(pid)
                                 utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
                             else:
                                 utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
@@ -208,7 +174,7 @@ class PipelineDefinition(object):
                     else:
                         self.log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
                 else:
-                    self.log.warn("%s presents with no %s" % (self.pipeline_ended, PIPELINE_STARTED_FILENAME))
+                    self.log.warn("%s presents with no %s" % (self.pipeline_ended, cfg['PIPELINE_STARTED_FILENAME']))
             # pipeline started
             else:
                 # pipeline not finished
@@ -232,8 +198,8 @@ class PipelineDefinition(object):
                             self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
-                    if self.env['mode'] == 'local' and self.pipeline_name == 'alignment' and os.path.isfile(ALIGNMENT_DAEMON_PID):
-                        os.unlink(ALIGNMENT_DAEMON_PID)
+                    if self.env['mode'] == 'local' and self.pipeline_name == 'alignment' and os.path.isfile(cfg['ALIGNMENT_DAEMON_PID']):
+                        os.unlink(cfg['ALIGNMENT_DAEMON_PID'])
                     self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
         else:
             self.log.warn("%s is missing" % self.env['run_meta'])
@@ -257,7 +223,7 @@ class Pipelines(object):
         "alignment": "lsf"
     }
 
-    def __init__(self, run, pipeline_step=None, software_path=SOFT_PIPELINE_PATH, cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
+    def __init__(self, run, pipeline_step=None, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_step = pipeline_step
@@ -380,7 +346,7 @@ rm %(lock)s
     "--exclude=JobOutputs",
     "--exclude=BCLtoFASTQ",
     "--exclude=primaryqc",
-    "--exclude=%s" % PIPELINE_LOCK_FILENAME
+    "--exclude=%s" % cfg['PIPELINE_LOCK_FILENAME']
     ]
 
     def __init__(self, run, dry_run=True):
@@ -397,7 +363,7 @@ rm %(lock)s
         self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(self.RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.pipeline_definition.pipeline_log)
 
         self.sync_completed = self.run.sync_completed
-        self.staging_sync_completed = os.path.join(self.run.staging_run_folder, data.SYNC_COMPLETED)
+        self.staging_sync_completed = os.path.join(self.run.staging_run_folder, cfg['SYNC_COMPLETED'])
 
     def execute(self):
         """execute synchronisation of run folder into staging by creating a shell script and running it
@@ -451,13 +417,13 @@ rm %(lock)s
         """ Create SyncComplete.txt when data has been successfully synced to staging
         """
         if os.path.exists(self.pipeline_definition.pipeline_ended) and os.path.exists(self.pipeline_definition.pipeline_started):
-            self.run.touch_event(data.SYNC_COMPLETED)
-            self.run.copy_event_to_staging(data.SYNC_COMPLETED)
+            self.run.touch_event(cfg['SYNC_COMPLETED'])
+            self.run.copy_event_to_staging(cfg['SYNC_COMPLETED'])
             self.log.info('*** SYNC COMPLETED *************************************************************')
         else:
             # remove SyncComplete.txt when pipeline not completed and file exists
-            self.run.remove_event(data.SYNC_COMPLETED)
-            self.run.remove_event_from_staging(data.SYNC_COMPLETED)
+            self.run.remove_event(cfg['SYNC_COMPLETED'])
+            self.run.remove_event_from_staging(cfg['SYNC_COMPLETED'])
 
 
 ################################################################################
@@ -468,7 +434,7 @@ class External(object):
     # External pipeline name
     EXTERNAL_PIPELINE = 'external'
 
-    def __init__(self, run, are_files_attached, external_data, dry_run=True, ftp_server=FTP_SERVER, ftp_path=FTP_PATH):
+    def __init__(self, run, are_files_attached, external_data, dry_run=True, ftp_server=cfg['FTP_SERVER'], ftp_path=cfg['FTP_PATH']):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.are_files_attached = are_files_attached
@@ -479,7 +445,7 @@ class External(object):
         self.pipeline_name = self.EXTERNAL_PIPELINE
         self.pipeline_definition = None
         self.external_completed = self.run.external_completed
-        self.staging_external_completed = os.path.join(self.run.staging_run_folder, data.EXTERNAL_COMPLETED)
+        self.staging_external_completed = os.path.join(self.run.staging_run_folder, cfg['EXTERNAL_COMPLETED'])
 
     def execute(self):
         """synchronise external data to ftp server
@@ -622,13 +588,13 @@ class External(object):
         """ Create ExternalComplete.txt when external data has been successfully synced
         """
         if os.path.exists(self.pipeline_definition.pipeline_ended) and os.path.exists(self.pipeline_definition.pipeline_started):
-            self.run.touch_event(data.EXTERNAL_COMPLETED)
-            self.run.copy_event_to_staging(data.EXTERNAL_COMPLETED)
+            self.run.touch_event(cfg['EXTERNAL_COMPLETED'])
+            self.run.copy_event_to_staging(cfg['EXTERNAL_COMPLETED'])
             self.log.info('*** EXTERNAL COMPLETED *********************************************************')
         else:
             # remove ExternalComplete.txt when pipeline not completed and file exists
-            self.run.remove_event(data.EXTERNAL_COMPLETED)
-            self.run.remove_event_from_staging(data.EXTERNAL_COMPLETED)
+            self.run.remove_event(cfg['EXTERNAL_COMPLETED'])
+            self.run.remove_event_from_staging(cfg['EXTERNAL_COMPLETED'])
 
 
 ################################################################################
@@ -824,7 +790,7 @@ class SyncTests(unittest.TestCase):
             pipeline_folder = os.path.join(run.run_folder, 'sync')
             if os.path.exists(pipeline_folder):
                 shutil.rmtree(pipeline_folder)
-            completed = os.path.join(run.run_folder, data.SYNC_COMPLETED)
+            completed = os.path.join(run.run_folder, cfg['SYNC_COMPLETED'])
             if os.path.exists(completed):
                 os.remove(completed)
             shutil.rmtree(run.staging_run_folder)
@@ -840,13 +806,13 @@ class SyncTests(unittest.TestCase):
             pipeline_folder = os.path.join(run.run_folder, sync.pipeline_name)
             dest_pipeline_folder = os.path.join(run.staging_run_folder, sync.pipeline_name)
             self.assertTrue(os.path.exists(pipeline_folder))
-            self.assertTrue(os.path.exists(os.path.join(pipeline_folder, RUN_SCRIPT_FILENAME)))
-            self.assertTrue(os.path.isfile(os.path.join(pipeline_folder, PIPELINE_STARTED_FILENAME)))
-            self.assertTrue(os.path.isfile(os.path.join(pipeline_folder, PIPELINE_ENDED_FILENAME)))
+            self.assertTrue(os.path.exists(os.path.join(pipeline_folder, cfg['RUN_SCRIPT_FILENAME'])))
+            self.assertTrue(os.path.isfile(os.path.join(pipeline_folder, cfg['PIPELINE_STARTED_FILENAME'])))
+            self.assertTrue(os.path.isfile(os.path.join(pipeline_folder, cfg['PIPELINE_ENDED_FILENAME'])))
             self.assertTrue(os.path.exists(dest_pipeline_folder))
-            self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, PIPELINE_STARTED_FILENAME)))
-            self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, PIPELINE_ENDED_FILENAME)))
-            self.assertTrue(os.path.isfile(os.path.join(run.staging_run_folder, data.SEQUENCING_COMPLETED)))
+            self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, cfg['PIPELINE_STARTED_FILENAME'])))
+            self.assertTrue(os.path.isfile(os.path.join(dest_pipeline_folder, cfg['PIPELINE_ENDED_FILENAME'])))
+            self.assertTrue(os.path.isfile(os.path.join(run.staging_run_folder, cfg['SEQUENCING_COMPLETED'])))
             sync.register_completion()
             self.assertTrue(os.path.isfile(sync.sync_completed))
             self.assertTrue(os.path.isfile(sync.staging_sync_completed))
@@ -874,10 +840,10 @@ class ExternalTests(unittest.TestCase):
             staging_pipeline_folder = os.path.join(run.staging_run_folder, 'external')
             if os.path.exists(staging_pipeline_folder):
                 shutil.rmtree(staging_pipeline_folder)
-            completed = os.path.join(run.run_folder, data.EXTERNAL_COMPLETED)
+            completed = os.path.join(run.run_folder, cfg['EXTERNAL_COMPLETED'])
             if os.path.exists(completed):
                 os.remove(completed)
-            staging_completed = os.path.join(run.staging_run_folder, data.EXTERNAL_COMPLETED)
+            staging_completed = os.path.join(run.staging_run_folder, cfg['EXTERNAL_COMPLETED'])
             if os.path.exists(staging_completed):
                 os.remove(staging_completed)
             shutil.rmtree(run.lustre_run_folder)

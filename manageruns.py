@@ -25,6 +25,9 @@ import autoanalysis.data as auto_data
 import autoanalysis.glslims as auto_glslims
 import autoanalysis.utils as utils
 
+# constants and configurations
+from autoanalysis.config import cfg
+
 
 CLEAN_FOLDERNAME = 'clean'
 
@@ -233,10 +236,10 @@ def main():
             trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
         for run_folder in trash_run_folders:
             log.info('*** run folder %s' % run_folder)
-            if os.path.exists(os.path.join(run_folder, auto_data.IGNORE_ME)):
-                log.info('%s is present' % auto_data.IGNORE_ME)
-            elif os.path.exists(os.path.join(run_folder, auto_data.DONT_DELETE)):
-                log.info('%s is present' % auto_data.DONT_DELETE)
+            if os.path.exists(os.path.join(run_folder, cfg['IGNORE_ME'])):
+                log.info('%s is present' % cfg['IGNORE_ME'])
+            elif os.path.exists(os.path.join(run_folder, cfg['DONT_DELETE'])):
+                log.info('%s is present' % cfg['DONT_DELETE'])
             else:
                 try:
                     runfolder_age = present - os.path.getmtime(run_folder)
@@ -253,18 +256,18 @@ def main():
         processed_run_folders = glob.glob("%s/??????_*_*_*" % options.processeddir)
         for run_folder in processed_run_folders:
             log.info('*** run folder %s' % run_folder)
-            if os.path.exists(os.path.join(run_folder, auto_data.IGNORE_ME)):
-                log.info('%s is present' % auto_data.IGNORE_ME)
-            elif os.path.exists(os.path.join(run_folder, auto_data.DONT_DELETE)):
-                log.info('%s is present' % auto_data.DONT_DELETE)
+            if os.path.exists(os.path.join(run_folder, cfg['IGNORE_ME'])):
+                log.info('%s is present' % cfg['IGNORE_ME'])
+            elif os.path.exists(os.path.join(run_folder, cfg['DONT_DELETE'])):
+                log.info('%s is present' % cfg['DONT_DELETE'])
             else:
                 try:
                     # calculate age of run folder
-                    if os.path.exists(os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)):
-                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED))
+                    if os.path.exists(os.path.join(run_folder, cfg['SEQUENCING_COMPLETED'])):
+                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, cfg['SEQUENCING_COMPLETED']))
                         log.info('[IMG:%s|INT:%s|PIC:%s] run completed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
                     else:
-                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, auto_data.SEQUENCING_FAILED))
+                        runfolder_age = present - os.path.getmtime(os.path.join(run_folder, cfg['SEQUENCING_FAILED']))
                         log.info('[IMG:%s|INT:%s|PIC:%s] run failed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
 
                     # check deleting file has been done already
@@ -309,4 +312,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

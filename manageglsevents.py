@@ -20,6 +20,10 @@ import autoanalysis.log as logger
 import autoanalysis.utils as utils
 import autoanalysis.data as auto_data
 
+# constants and configurations
+from autoanalysis.config import cfg
+
+
 """
 usage: manageglsevents.py [-h] [--days DAYS] [--runfolder RUN_FOLDER]
                           [--dry-run] [--logfile LOGFILE]
@@ -66,7 +70,7 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
         log.warning('%s/InterOp no such directory' % run_folder)
     rsync_ga_cmd = ["rsync", "-avrm", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
     utils.run_process(rsync_ga_cmd, dry_run)
-    
+
 
 ################################################################################
 # MAIN
@@ -80,7 +84,7 @@ def main():
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
     options = parser.parse_args()
-    
+
     # time files stay on lims server
     delete_time = 60 * 60 * 24 * options.days
 
@@ -105,7 +109,7 @@ def main():
     for run_folder in run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        ignore_me = os.path.join(run_folder, auto_data.IGNORE_ME)
+        ignore_me = os.path.join(run_folder, cfg['IGNORE_ME'])
 
         if run_folder_name == options.run_folder:
             sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
@@ -123,8 +127,8 @@ def main():
     for run_folder in processed_run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
-        sequencing_failed = os.path.join(run_folder, auto_data.SEQUENCING_FAILED)
+        sequencing_completed = os.path.join(run_folder, cfg['SEQUENCING_COMPLETED'])
+        sequencing_failed = os.path.join(run_folder, cfg['SEQUENCING_FAILED'])
         if os.path.exists(sequencing_completed):
             run_age = present - os.path.getmtime(sequencing_completed)
             log.info('%s is %s old' % (sequencing_completed, run_age))
@@ -164,4 +168,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -1,0 +1,65 @@
+################################################################################
+### log
+################################################################################
+HOST: smtp.cruk.cam.ac.uk
+SEND_FROM: anne.pajon@cruk.cam.ac.uk
+SEND_TO:
+  - Anne.Pajon@cruk.cam.ac.uk
+  #- Richard.Bowers@cruk.cam.ac.uk
+SUBJECT: New Error From AUTOANALYSIS
+
+################################################################################
+### pipelines
+################################################################################
+# Pipeline setup command to generate metadata file
+PIPELINE_SETUP_COMMAND: "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --notifications %(options)s %(flowcell_id)s %(run_meta)s"
+
+PIPELINES_SETUP_OPTIONS:
+    fastq: ""
+    primaryqc: "--create-sample-sheet --phix"
+    alignment: "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq --reference-data-dir=/lustre/reference_data/mib-cri/reference_genomes"
+
+# Pipeline run command to run pipeline
+PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(run_meta)s"
+PIPELINE_RUN_COMMAND_WITH_IGNOREWALLTIME: "%(bin_run)s --mode=%(mode)s --ignore-walltime %(run_meta)s"
+
+# Software pipeline path
+SOFT_PIPELINE_PATH: "/home/mib-cri/software/pipelines"
+
+# Cluster specific configurations
+LSF_QUEUE: solexa
+MEM_VALUE: 2048
+
+# ftp server
+FTP_SERVER: comp-ftpdmz001
+FTP_PATH: /mnt/comp-ftpdmz001/
+
+# Default filenames
+SETUP_SCRIPT_FILENAME: setup-pipeline.sh
+RUN_SCRIPT_FILENAME: run-pipeline.sh
+PIPELINE_STARTED_FILENAME: pipeline.started
+PIPELINE_ENDED_FILENAME: pipeline.ended
+PIPELINE_FAILED_FILENAME: pipeline.failed
+PIPELINE_LOG_FILENAME: pipeline.log
+PIPELINE_LOCK_FILENAME: rsync.lock
+
+CREATE_METAFILE_FILENAME: create-metafile
+RUN_META_FILENAME: run-meta.xml
+RUN_PIPELINE_FILENAME: run-pipeline
+
+ALIGNMENT_DAEMON_PID: "/tmp/autoanalysis_alignment_daemon.pid"
+
+################################################################################
+### data
+################################################################################
+RTA_COMPLETED: RTAComplete.txt
+SEQUENCING_COMPLETED: SequencingComplete.txt
+SEQUENCING_FAILED: SequencingFail.txt
+
+IGNORE_ME: ignore.me
+DONT_DELETE: dont.delete
+
+ANALYSIS_COMPLETED: AnalysisComplete.txt
+EXTERNAL_COMPLETED: ExternalComplete.txt
+SYNC_COMPLETED: SyncComplete.txt
+PUBLISHING_ASSIGNED: PublishingAssign.txt

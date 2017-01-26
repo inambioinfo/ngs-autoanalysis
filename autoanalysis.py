@@ -30,6 +30,9 @@ import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims
 
+# constants and configurations
+from autoanalysis.config import cfg
+
 
 ################################################################################
 # MAIN
@@ -42,7 +45,7 @@ def main():
     parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", default=None)
 
     parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
-    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % utils.CLUSTER_HOST)
+    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % cfg['CLUSTER_HOST'])
 
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.Pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.Pipelines.PIPELINES.viewkeys()))

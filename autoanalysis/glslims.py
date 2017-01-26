@@ -101,13 +101,14 @@ class GlsLimsTests(unittest.TestCase):
     def setUp(self):
         import data
         import log as logger
+        from autoanalysis.config import cfg
         self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing4publishing/')
         self.archivedir = os.path.join(self.current_path, '../testdata/staging4publishing/')
         self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
         self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
-        self.PUBLISHING_ASSIGNED = data.PUBLISHING_ASSIGNED
+        self.PUBLISHING_ASSIGNED = cfg['PUBLISHING_ASSIGNED']
         self.are_fastq_files_attached = True
 
         self.glslims = GlsLims(use_dev_lims=True)

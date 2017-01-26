@@ -30,30 +30,34 @@ import autoanalysis.utils as utils
 import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 
+# constants and configurations
+from autoanalysis.config import cfg
+
+
 ################################################################################
 # CONSTANTS
 ################################################################################
 # Instrument names with their run completed dependencies
 INSTRUMENTS = {
     'HWI-ST230' : ['RTAComplete.txt'],
-    'M01686' : ['RTAComplete.txt'], 
-    'M01642' : ['RTAComplete.txt'], 
-    'M01712' : ['RTAComplete.txt'], 
+    'M01686' : ['RTAComplete.txt'],
+    'M01642' : ['RTAComplete.txt'],
+    'M01712' : ['RTAComplete.txt'],
     'HWI-EAS350' : ['Basecalling_Netcopy_complete.txt'],
     'HWI-EAS202' : ['Basecalling_Netcopy_complete.txt']
 }
 
 def create_sequencing_completed(run_folder, dry_run):
-    sequencing_completed = os.path.join(run_folder, auto_data.SEQUENCING_COMPLETED)
+    sequencing_completed = os.path.join(run_folder, cfg['SEQUENCING_COMPLETED'])
     if is_sequencing_completed(run_folder):
         if not os.path.exists(sequencing_completed):
             utils.touch(sequencing_completed, dry_run)
-            log.info("%s created" % auto_data.SEQUENCING_COMPLETED)
+            log.info("%s created" % cfg['SEQUENCING_COMPLETED'])
         else:
             log.info("Sequencing COMPLETED")
     else:
         log.info("Sequencing STARTED")
-            
+
 def is_sequencing_completed(run_folder):
     instrument_match = False
     files_found = True
@@ -64,7 +68,7 @@ def is_sequencing_completed(run_folder):
                     files_found = False
             instrument_match = True
     return instrument_match and files_found
-    
+
 ################################################################################
 # MAIN
 ################################################################################
@@ -90,7 +94,7 @@ def main(argv=None):
         # loop over all run folders in options.basedir
         for run_folder in runs.run_folders:
             try:
-                # create Sequencing.completed 
+                # create Sequencing.completed
                 log.info(auto_data.RUN_HEADER % {'run_folder': run_folder})
                 create_sequencing_completed(run_folder, options.dry_run)
             except:
@@ -102,5 +106,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
 	sys.exit(main())
-
-

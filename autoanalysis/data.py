@@ -20,21 +20,8 @@ import unittest
 # autoanalysis modules
 import utils
 
-################################################################################
-# CONSTANTS
-################################################################################
-
-RTA_COMPLETED = 'RTAComplete.txt'
-SEQUENCING_COMPLETED = 'SequencingComplete.txt'
-SEQUENCING_FAILED = 'SequencingFail.txt'
-
-IGNORE_ME = 'ignore.me'
-DONT_DELETE = 'dont.delete'
-
-ANALYSIS_COMPLETED = "AnalysisComplete.txt"
-EXTERNAL_COMPLETED = 'ExternalComplete.txt'
-SYNC_COMPLETED = 'SyncComplete.txt'
-PUBLISHING_ASSIGNED = 'PublishingAssign.txt'
+# constants and configurations
+from config import cfg
 
 
 class Folder(object):
@@ -89,15 +76,15 @@ class RunFolder(Folder):
         self.lustre_dir = lustre_dir
 
         # event files
-        self.rta_completed = os.path.join(self.run_folder, RTA_COMPLETED)
-        self.sequencing_completed = os.path.join(self.run_folder, SEQUENCING_COMPLETED)
-        self.sequencing_failed = os.path.join(self.run_folder, SEQUENCING_FAILED)
-        self.analysis_completed = os.path.join(self.run_folder, ANALYSIS_COMPLETED)
-        self.sync_completed = os.path.join(self.run_folder, SYNC_COMPLETED)
-        self.external_completed = os.path.join(self.run_folder, EXTERNAL_COMPLETED)
-        self.publishing_assigned = os.path.join(self.run_folder, PUBLISHING_ASSIGNED)
-        self.ignore_me = os.path.join(self.run_folder, IGNORE_ME)
-        self.dont_delete = os.path.join(self.run_folder, DONT_DELETE)
+        self.rta_completed = os.path.join(self.run_folder, cfg['RTA_COMPLETED'])
+        self.sequencing_completed = os.path.join(self.run_folder, cfg['SEQUENCING_COMPLETED'])
+        self.sequencing_failed = os.path.join(self.run_folder, cfg['SEQUENCING_FAILED'])
+        self.analysis_completed = os.path.join(self.run_folder, cfg['ANALYSIS_COMPLETED'])
+        self.sync_completed = os.path.join(self.run_folder, cfg['SYNC_COMPLETED'])
+        self.external_completed = os.path.join(self.run_folder, cfg['EXTERNAL_COMPLETED'])
+        self.publishing_assigned = os.path.join(self.run_folder, cfg['PUBLISHING_ASSIGNED'])
+        self.ignore_me = os.path.join(self.run_folder, cfg['IGNORE_ME'])
+        self.dont_delete = os.path.join(self.run_folder, cfg['DONT_DELETE'])
 
         # only create run folders when sequencing is complete
         self.staging_run_folder = self.create_runfolder(self.staging_dir)
@@ -181,7 +168,7 @@ class RunFolder(Folder):
             utils.touch(event_file)
 
     def copy_publishing_assign_to_staging(self):
-        self.copy_event_to_staging(PUBLISHING_ASSIGNED)
+        self.copy_event_to_staging(cfg['PUBLISHING_ASSIGNED'])
 
     def touch_event(self, event_filename):
         # touch event file in run folder
@@ -190,7 +177,7 @@ class RunFolder(Folder):
             utils.touch(event_file)
 
     def touch_publishing_assign(self):
-        self.touch_event(PUBLISHING_ASSIGNED)
+        self.touch_event(cfg['PUBLISHING_ASSIGNED'])
 
     def remove_event(self, event_filename):
         event_file = os.path.join(self.run_folder, event_filename)

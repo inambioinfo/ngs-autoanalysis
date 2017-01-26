@@ -14,7 +14,7 @@ Created by Anne Pajon on 2012-10-26.
 import os
 import glob
 import logging
-import subprocess 
+import subprocess
 import unittest
 
 # logging definition
@@ -23,8 +23,6 @@ log = logging.getLogger(__name__)
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Cluster host
-CLUSTER_HOST = "uk-cri-lcst01"
 
 # Template for shell script
 SCRIPT_TEMPLATE = '''
@@ -57,7 +55,7 @@ ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'se
 # METHODS
 ################################################################################
 def create_script(script_path, command):
-    if not os.path.exists(script_path):    
+    if not os.path.exists(script_path):
         script_file = open(script_path, 'w')
         script_file.write(SCRIPT_TEMPLATE % {'cmd': command})
         script_file.close()

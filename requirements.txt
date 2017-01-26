@@ -5,3 +5,6 @@
 
 # requests security package extra
 requests[security]
+
+# config
+pyyaml
