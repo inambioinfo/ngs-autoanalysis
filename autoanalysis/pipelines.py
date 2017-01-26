@@ -44,7 +44,7 @@ class PipelineDefinition(object):
             self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'].get(pipeline_name, '')
 
         # create pipeline directory
-        if self.cluster_host and mode == 'lsf':
+        if self.cluster_host:
             self.pipeline_directory = os.path.join(self.run.lustre_run_folder, self.pipeline_name)
             utils.create_directory(self.pipeline_directory)
         else:
@@ -78,6 +78,7 @@ class PipelineDefinition(object):
         # set paths to pipeline files
         self.setup_script_path = os.path.join(self.pipeline_directory, cfg['SETUP_SCRIPT_FILENAME'])
         self.run_script_path = os.path.join(self.pipeline_directory, cfg['RUN_SCRIPT_FILENAME'])
+        self.job_script_path = os.path.join(self.pipeline_directory, cfg['JOB_SCRIPT_FILENAME'])
         self.pipeline_started = os.path.join(self.pipeline_directory, cfg['PIPELINE_STARTED_FILENAME'])
         self.pipeline_ended = os.path.join(self.pipeline_directory, cfg['PIPELINE_ENDED_FILENAME'])
         self.pipeline_failed = os.path.join(self.pipeline_directory, cfg['PIPELINE_FAILED_FILENAME'])
@@ -100,15 +101,16 @@ class PipelineDefinition(object):
                 self.env['options'] = ''
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = os.path.join(self.pipeline_directory, cfg['RUN_META_FILENAME'])
-        if self.cluster_host and self.mode == 'lsf':
-            self.env['mode'] = 'lsf'
+        if self.cluster_host:
+            self.env['mode'] = self.mode
         else:
             self.env['mode'] = 'local'
-        self.env['lsf_queue'] = 'solexa'
-        self.env['mem_value'] = '2048'
+        self.env['lsf_queue'] = cfg['LSF_QUEUE']
+        self.env['mem_value'] = cfg['MEM_VALUE']
         self.env['cluster'] = self.cluster_host
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
+        self.env['job_script'] = self.job_script_path
         self.env['cmd'] = cfg['PIPELINE_RUN_COMMAND'] % self.env
         self.env['pipedir'] = self.pipeline_directory
         self.env['archive_pipedir'] = self.archive_pipeline_directory
@@ -148,6 +150,9 @@ class PipelineDefinition(object):
         try:
             if self.env['mode'] == 'lsf':
                 utils.create_script(self.run_script_path, utils.LSF_CMD_TEMPLATE % self.env)
+            elif self.env['mode'] == 'slurm':
+                utils.create_script(self.job_script_path, utils.SLURM_JOB_CMD_TEMPLATE % self.env, utils.SLURM_SCRIPT_TEMPLATE)
+                utils.create_script(self.run_script_path, utils.SLURM_CMD_TEMPLATE % self.env)
             else:
                 utils.create_script(self.run_script_path, utils.LOCAL_CMD_TEMPLATE % self.env)
         except:
@@ -220,7 +225,7 @@ class Pipelines(object):
     PIPELINES_DEFAULT_MODE = {
         "fastq": "local",
         "primaryqc": "local",
-        "alignment": "lsf"
+        "alignment": "slurm" #"alignment": "lsf"
     }
 
     def __init__(self, run, pipeline_step=None, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
@@ -642,6 +647,117 @@ class PipelineDefinitionTests(unittest.TestCase):
 
     def test_create_run_script_cluster(self):
         self.assertEqual('test_lsf', self.pipeline_definition_cluster.pipeline_name)
+        self.pipeline_definition_cluster.create_run_pipeline_script()
+        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.run_script_path))
+
+
+class PipelinesTests(unittest.TestCase):
+
+    def setUp(self):
+        import log as logger
+        self.log = logger.get_custom_logger()
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/processing/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/staging/')
+        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
+
+    def tearDown(self):
+        import shutil
+        for run in self.runs.runs_to_analyse:
+            shutil.rmtree(run.staging_run_folder)
+            shutil.rmtree(run.lustre_run_folder)
+            for pipeline_name in Pipelines.PIPELINES.keys():
+                pipeline_folder = os.path.join(run.run_folder, pipeline_name)
+                if os.path.exists(pipeline_folder):
+                    shutil.rmtree(pipeline_folder)
+            if run.run_folder_name == '130417_HWI-ST230_1122_C1YH9ACXX' and os.path.exists(run.analysis_completed):
+                os.remove(run.analysis_completed)
+
+    def test_execute(self):
+        for run in self.runs.runs_to_analyse:
+            pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
+            pipelines.execute()
+            for pipeline_name in pipelines.pipeline_definitions.keys():
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
+
+    def test_execute_without_alignment(self):
+        for run in self.runs.runs_to_analyse:
+            pipelines = Pipelines(run=run, cluster_host='uk-cri-test', is_alignment_active=False)
+            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
+            pipelines.execute()
+            self.assertFalse(os.path.exists(os.path.join(run.run_folder, 'alignment')))
+            for pipeline_name in pipelines.pipeline_definitions.keys():
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
+
+    def test_register_completion(self):
+        for run in self.runs.runs_to_analyse:
+            pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
+            pipelines.execute()
+            for pipeline_name in pipelines.pipeline_definitions.keys():
+                utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_started)
+                utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_ended)
+            pipelines.register_completion()
+            self.assertTrue(os.path.isfile(pipelines.all_completed))
+
+    def test_execute_only_fastq(self):
+        for run in self.runs.runs_to_analyse:
+            pipelines = Pipelines(run=run, pipeline_step='fastq')
+            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
+            pipelines.execute()
+            for pipeline_name in pipelines.pipeline_definitions.keys():
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
+                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
+
+class PipelineDefinitionSlurmTests(unittest.TestCase):
+
+    def setUp(self):
+        import log as logger
+        self.log = logger.get_custom_logger()
+        self.current_path = os.path.abspath(os.path.dirname(__file__))
+        self.basedir = os.path.join(self.current_path, '../testdata/processing/')
+        self.archivedir = os.path.join(self.current_path, '../testdata/staging/')
+        self.lustredir = os.path.join(self.current_path, '../testdata/scratcha/')
+        self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
+        self.run = self.runs.runs_to_analyse[0]
+        self.log.debug('Testing logging')
+        self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test_local')
+        self.pipeline_definition.print_header()
+        self.pipeline_definition_cluster = PipelineDefinition(run=self.run, pipeline_name='alignment', cluster_host='clust1-headnode', use_limsdev=False, mode='slurm')
+        self.pipeline_definition_cluster.print_header()
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.pipeline_definition.pipeline_directory)
+        for run in self.runs.runs_to_analyse:
+            shutil.rmtree(run.staging_run_folder)
+            shutil.rmtree(run.lustre_run_folder)
+
+    def test_create_setup_script(self):
+        self.assertEqual('test_local', self.pipeline_definition.pipeline_name)
+        self.pipeline_definition.create_setup_pipeline_script()
+        self.assertTrue(os.path.exists(self.pipeline_definition.pipeline_directory))
+        self.assertTrue(os.path.exists(self.pipeline_definition.setup_script_path))
+
+    def test_create_run_script(self):
+        self.pipeline_definition.create_run_pipeline_script()
+        self.assertTrue(os.path.exists(self.pipeline_definition.run_script_path))
+
+    def test_create_setup_script_cluster(self):
+        self.assertEqual('alignment', self.pipeline_definition_cluster.pipeline_name)
+        self.pipeline_definition_cluster.create_setup_pipeline_script()
+        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.pipeline_directory))
+        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.setup_script_path))
+
+    def test_create_run_script_cluster(self):
+        self.assertEqual('alignment', self.pipeline_definition_cluster.pipeline_name)
         self.pipeline_definition_cluster.create_run_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition_cluster.run_script_path))
 

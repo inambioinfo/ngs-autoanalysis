@@ -25,39 +25,54 @@ log = logging.getLogger(__name__)
 ################################################################################
 
 # Template for shell script
-SCRIPT_TEMPLATE = '''
-#!/bin/bash
-#
-# Autoanalysis generated shell script for running command(s) locally
-#
-
+SCRIPT_TEMPLATE = '''#!/bin/bash
+# autoanalysis generated shell script
 set -v
 
 %(cmd)s
-
 '''
+
+SLURM_SCRIPT_TEMPLATE = '%(cmd)s'
 
 # Template for local command
 LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s > %(log)s 2>&1;"
 
 # Template for lsf command
-LSF_CMD_TEMPLATE = '''
-export MEM_VALUE=%(mem_value)s
+LSF_CMD_TEMPLATE = '''export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
 
 ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -oo %(log)s -q %(lsf_queue)s %(cmd)s"
-
 '''
+
+# Template for slurm command
+SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
+#SBATCH --mem %(mem_value)s
+#SBATCH -J %(job_name)s
+#SBATCH -o %(log)s
+#SBATCH --nodes 1
+#SBATCH --mincpus 1
+#SBATCH --open-mode truncate
+
+# autoanalysis generated shell script
+export MEM_VALUE=%(mem_value)s
+export MEM_LIMIT=$[${MEM_VALUE}*1024]
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
+
+touch %(started)s;
+%(cmd)s
+'''
+
+SLURM_CMD_TEMPLATE = 'ssh %(cluster)s "sbatch %(job_script)s"'
 
 
 ################################################################################
 # METHODS
 ################################################################################
-def create_script(script_path, command):
+def create_script(script_path, command, template=SCRIPT_TEMPLATE):
     if not os.path.exists(script_path):
         script_file = open(script_path, 'w')
-        script_file.write(SCRIPT_TEMPLATE % {'cmd': command})
+        script_file.write(template % {'cmd': command})
         script_file.close()
         os.chmod(script_path, 0755)
         log.info('%s created' % script_path)
