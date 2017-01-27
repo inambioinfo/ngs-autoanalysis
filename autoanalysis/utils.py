@@ -57,13 +57,14 @@ SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
 # autoanalysis generated shell script
 export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
-export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-128]M -Xms$[${MEM_VALUE}-128]M"
 
-touch %(started)s;
 %(cmd)s
 '''
 
-SLURM_CMD_TEMPLATE = 'ssh %(cluster)s "sbatch %(job_script)s"'
+SLURM_CMD_TEMPLATE = '''ssh %(cluster)s "touch %(started)s"
+ssh %(cluster)s "sbatch %(job_script)s"
+'''
 
 
 ################################################################################
