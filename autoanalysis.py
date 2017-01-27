@@ -44,11 +44,11 @@ def main():
     parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
     parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", default=None)
 
-    parser.add_argument("--softdir", dest="softdir", action="store", default=auto_pipelines.SOFT_PIPELINE_PATH, help="software base directory where pipelines are installed - default set to %s" % auto_pipelines.SOFT_PIPELINE_PATH)
+    parser.add_argument("--softdir", dest="softdir", action="store", default=cfg['SOFT_PIPELINE_PATH'], help="software base directory where pipelines are installed - default set to %s" % cfg['SOFT_PIPELINE_PATH'])
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % cfg['CLUSTER_HOST'])
 
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
-    parser.add_argument("--step", dest="step", action="store", choices=list(auto_pipelines.Pipelines.PIPELINES.viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.Pipelines.PIPELINES.viewkeys()))
+    parser.add_argument("--step", dest="step", action="store", choices=list(cfg['PIPELINES_SETUP_OPTIONS'].viewkeys()), help="pipeline step to choose from %s" % list(auto_pipelines.Pipelines.PIPELINES.viewkeys()))
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
