@@ -28,6 +28,7 @@ PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(run_meta)s"
 SOFT_PIPELINE_PATH: "/home/mib-cri/software/pipelines"
 
 # Cluster specific configurations
+CLUSTER_HOST: uk-cri-lcst01
 LSF_QUEUE: solexa
 MEM_VALUE: 4096 #2048
 
