@@ -53,7 +53,7 @@ WORKFLOW_MAPPING = {
 # 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
 
 # New 10X work flows
-'10X Chromium Single Cell': 'LPS: 10X Single Cell v1',
+'10X Chromium Single Cell': 'LPS: 10X Single Cell v2',
 '10X Chromium Genome': 'LPS: 10X Phased Genome v1'
 }
 
