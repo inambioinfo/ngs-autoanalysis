@@ -17,8 +17,6 @@ PIPELINES_ORDER:
   - "alignment"
 
 PIPELINES_DEPENDENCIES:
-  fastq:
-    -
   primaryqc:
     - "fastq"
   alignment:
