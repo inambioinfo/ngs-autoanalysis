@@ -11,6 +11,20 @@ SUBJECT: New Error From AUTOANALYSIS
 ################################################################################
 ### pipelines
 ################################################################################
+PIPELINES_ORDER:
+  - "fastq"
+  - "primaryqc"
+  - "alignment"
+
+PIPELINES_DEPENDENCIES:
+  fastq:
+    - ""
+  primaryqc:
+    - "fastq"
+  alignment:
+    - "fastq"
+
+
 PIPELINES_DEFAULT_MODE:
   fastq: "local"
   primaryqc: "local"

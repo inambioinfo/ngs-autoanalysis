@@ -230,13 +230,6 @@ class PipelineDefinition(object):
 ################################################################################
 class Pipelines(object):
 
-    # Pipeline definitions and dependencies
-    PIPELINES = OrderedDict([
-        ("fastq", []),
-        ("primaryqc", ["fastq"]),
-        ("alignment", ["fastq"])
-    ])
-
     def __init__(self, run, pipeline_step=None, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
         self.log = logging.getLogger(__name__)
         self.run = run
@@ -248,7 +241,7 @@ class Pipelines(object):
         self.is_alignment_active = is_alignment_active
         self.local_mode = local_mode
 
-        self.pipelines = Pipelines.PIPELINES
+        self.pipelines = cfg['PIPELINES_DEPENDENCIES']
         if self.pipeline_step:
             self.pipelines = {self.pipeline_step: ""}
 
@@ -262,7 +255,7 @@ class Pipelines(object):
         """
         if self.run.is_ready_for_processing():
             #for pipeline_name in self.pipelines.keys():
-            for pipeline_name in ['fastq', 'primaryqc', 'alignment']:
+            for pipeline_name in cfg['PIPELINES_ORDER']:
                 if pipeline_name == 'alignment':
                     if self.is_alignment_active:
                         # special case for running alignment pipeline locally - just one pipeline at a time
@@ -307,7 +300,7 @@ class Pipelines(object):
         """For a given pipeline, checks that all dependent pipelines have finished
         Both pipeline.started and pipeline.ended need to be present
         """
-        pipeline_dependencies = Pipelines.PIPELINES[pipeline_name]
+        pipeline_dependencies = cfg['PIPELINES_DEPENDENCIES'][pipeline_name]
         self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
         for dep_pipeline_name in pipeline_dependencies:
             # pipeline not finished or started
@@ -680,7 +673,7 @@ class PipelinesTests(unittest.TestCase):
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.cluster_run_folder)
-            for pipeline_name in Pipelines.PIPELINES.keys():
+            for pipeline_name in cfg['PIPELINES_ORDER']:
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
                     shutil.rmtree(pipeline_folder)
@@ -785,7 +778,7 @@ class PipelinesSlurmTests(unittest.TestCase):
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             #shutil.rmtree(run.cluster_run_folder)
-            for pipeline_name in Pipelines.PIPELINES.keys():
+            for pipeline_name in cfg['PIPELINES_ORDER']:
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
                     shutil.rmtree(pipeline_folder)
@@ -860,7 +853,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
             shutil.rmtree(run.cluster_run_folder)
-            for pipeline_name in Pipelines.PIPELINES.keys():
+            for pipeline_name in cfg['PIPELINES_ORDER']:
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
                     shutil.rmtree(pipeline_folder)
