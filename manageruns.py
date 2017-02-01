@@ -112,12 +112,12 @@ def clean(run_folder, clean_task, dry_run=True):
 def main():
     # get the options
     parser = argparse.ArgumentParser()
-    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
+    parser.add_argument("--clusterdir", dest="clusterdir", action="store", help="cluster base directory e.g. '/lustre/mib-cri/solexa/Runs'", required=True)
     parser.add_argument("--processingdir", dest="processingdir", action="store", help="processing base directories e.g. '/processing'", required=True)
     parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
 
     parser.add_argument("--processeddir", dest="processeddir", action="store", default=os.path.join('processing', 'ProcessedRuns'), help="processed runs directory on processing", required=True)
-    parser.add_argument("--trashdir", dest="trashdir", action="store", default=os.path.join('lustre', 'mib-cri', 'solexa', 'TrashRuns'), help="trash runs directory on lustre", required=True)
+    parser.add_argument("--trashdir", dest="trashdir", action="store", default=os.path.join('lustre', 'mib-cri', 'solexa', 'TrashRuns'), help="trash runs directory on cluster", required=True)
 
     parser.add_argument("--thumbnails", dest="thumbnails", action="store", help="number of days to keep thumbnails - default set to 90", default=90, type=int)
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
@@ -136,7 +136,7 @@ def main():
 
     # setting up directories
     utils.create_directory(options.processeddir)
-    if os.path.exists(options.lustredir):
+    if os.path.exists(options.clusterdir):
         utils.create_directory(options.trashdir)
 
     # setting-up time
@@ -149,7 +149,7 @@ def main():
         # lims connection
         glslims = auto_glslims.GlsLims(options.use_dev_lims)
         # loop over all runs in options.processingdir
-        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder, False)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.clusterdir, options.run_folder, False)
 
         ### print run reports ...........................................................
         log.info('********************************************************************************')
@@ -190,7 +190,7 @@ def main():
         log.info('********************************************************************************')
         log.info('*** MANAGE PUBLISHED RUNS ******************************************************')
         log.info('********************************************************************************')
-        # move published runs in lustre into options.trashdir and in processing into options.processeddir
+        # move published runs in cluster into options.trashdir and in processing into options.processeddir
         for run in runs.published_runs:
             try:
                 if os.path.exists(run.ignore_me):
@@ -201,10 +201,10 @@ def main():
                     cmd = ['mv', run.run_folder, options.processeddir]
                     utils.run_bg_process(cmd, options.dry_run)
                     log.info('*** run %s moved to %s' % (run.run_folder_name, options.processeddir))
-                    if os.path.exists(run.lustre_run_folder):
-                        cmd = ['mv', run.lustre_run_folder, options.trashdir]
+                    if os.path.exists(run.cluster_run_folder):
+                        cmd = ['mv', run.cluster_run_folder, options.trashdir]
                         utils.run_bg_process(cmd, options.dry_run)
-                        log.info('*** run %s on lustre moved to %s' % (run.run_folder_name, options.trashdir))
+                        log.info('*** run %s on cluster moved to %s' % (run.run_folder_name, options.trashdir))
             except Exception, e:
                 log.exception("Unexpected error")
                 log.exception(e)
@@ -232,7 +232,7 @@ def main():
         log.info('********************************************************************************')
         # delete all runs in options.trashdir older than 3 days
         trash_run_folders = []
-        if os.path.exists(options.lustredir):
+        if os.path.exists(options.clusterdir):
             trash_run_folders = glob.glob("%s/??????_*_*_*" % options.trashdir)
         for run_folder in trash_run_folders:
             log.info('*** run folder %s' % run_folder)

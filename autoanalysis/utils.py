@@ -59,11 +59,16 @@ export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-128]M -Xms$[${MEM_VALUE}-128]M"
 
-%(cmd)s
+%(cluster_cmd)s
 '''
 
-SLURM_CMD_TEMPLATE = '''ssh %(cluster)s "touch %(started)s"
-ssh %(cluster)s "sbatch %(job_script)s"
+SLURM_CMD_TEMPLATE = '''ssh %(cluster)s "mkdir -p %(cluster_work_dir)s"
+scp %(run_meta)s %(cluster)s:%(cluster_work_dir)s/.
+scp %(job_script)s %(cluster)s:%(cluster_work_dir)s/.
+touch %(started)s
+scp %(started)s %(cluster)s:%(cluster_work_dir)s/.
+
+ssh %(cluster)s "sbatch %(cluster_job_script)s"
 '''
 
 

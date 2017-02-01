@@ -26,7 +26,7 @@ PROCESSING SERVERS (sol01/2/5):
 */15 * * * * /home/mib-cri/cronwrapper_new.sh /home/mib-cri/bin/python /home/mib-cri/bin/auto-updaterunstatus.py --basedir=/solexa0[1-3]/data/Runs/ --logfile=/lustre/mib-cri/solexa/Logs/updaterunstatus_sol02.log >/dev/null 2>&1
 
 ### run folder synchronisation to lustre
-*/30 * * * * /home/mib-cri/cronwrapper_new.sh /home/mib-cri/bin/python /home/mib-cri/bin/auto-sync.py --basedir=/solexa0[1-3]/data/Runs/ --lustredir=/lustre/mib-cri/solexa/Runs/ --logfile=/lustre/mib-cri/solexa/Logs/sync_sol02.log >/dev/null 2>&1
+*/30 * * * * /home/mib-cri/cronwrapper_new.sh /home/mib-cri/bin/python /home/mib-cri/bin/auto-sync.py --basedir=/solexa0[1-3]/data/Runs/ --clusterdir=/lustre/mib-cri/solexa/Runs/ --logfile=/lustre/mib-cri/solexa/Logs/sync_sol02.log >/dev/null 2>&1
 
 ### cleaning up old runs
 00 01 * * * /home/mib-cri/cronwrapper_new.sh /home/mib-cri/bin/python /home/mib-cri/bin/auto-deleterun.py --basedir=/solexa0[1-3]/data/Runs --logfile=/lustre/mib-cri/solexa/Logs/deleterun_sol02.log >/dev/null 2>&1
@@ -63,7 +63,7 @@ written by Richard Bowers.
 python setrunstatus.py --basedir=/solexa0[1-3]/data/Runs --debug
 
 - sync.py - to copy data to lustre
-/home/mib-cri/bin/python /home/mib-cri/bin/sync.py --basedir=/solexa0[1-3]/data/Runs --lustredir=/lustre/mib-cri/solexa/Runs --logfile=/lustre/mib-cri/solexa/Runs/sync_sol02.log --debug
+/home/mib-cri/bin/python /home/mib-cri/bin/sync.py --basedir=/solexa0[1-3]/data/Runs --clusterdir=/lustre/mib-cri/solexa/Runs --logfile=/lustre/mib-cri/solexa/Runs/sync_sol02.log --debug
 
 - deleterun.py - to delete old runs and move them to OldRuns
 /home/mib-cri/bin/python /home/mib-cri/bin/deleterun.py --basedir=/solexa0[1-3]/data/Runs/ --logfile=/lustre/mib-cri/solexa/Runs/deleterun_sol02.log --debug

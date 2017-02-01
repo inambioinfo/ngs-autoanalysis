@@ -14,7 +14,7 @@ The list of runs is obtained from the file system; and their status are checked 
 This tool replaces the old Perl `solexa_autoanalysis.pl` written by Kevin Howe and modified/maintained by Ben Davis
 because all steps of the sequencing pipeline have been standardized and are now using the workflow engine written by Richard Bowers.
 
-Tools currently in used on four production servers : sol-srv001/2/3/4 with /lustre/ mounted for running alignment pipeline:
+Tools currently in used on four production servers : sol-srv001/2/3/4 with new cluster `uk-cri-lcst01` for running alignment pipeline:
 - `autoassignsamples.py`: automatically assign samples to workflow after submission
 - `manageglsevents.py`: run events synchronization for Clarity LiMS
 - `manageruns.py`: update run status in run folder by adding `Sequencing.failed` or `Sequencing.completed`
@@ -62,7 +62,7 @@ python -m unittest --verbose autoanalysis.glslims
 
 ## Usage
 
-Current crontab usage
+v1.8 crontab usage using old cluster (LSF)
 
 ```bash
 ### auto assign samples (only on sol-srv001)
@@ -72,10 +72,10 @@ Current crontab usage
 */5 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageglsevents.py --logfile=/processing/Logs/manageglsevents.log > /dev/null 2>&1
 
 ### manage runs
-*/15 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageruns.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --processeddir=/processing/ProcessedRuns/ --trashdir=/lustre/mib-cri/solexa/TrashRuns/ --logfile=/processing/Logs/manageruns.log > /dev/null 2>&1
+*/15 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/manageruns.py --clusterdir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --processeddir=/processing/ProcessedRuns/ --trashdir=/lustre/mib-cri/solexa/TrashRuns/ --logfile=/processing/Logs/manageruns.log > /dev/null 2>&1
 
 ### auto analysis
-*/20 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoanalysis.py --lustredir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/mib-cri/software/core-pipelines-v2/ --cluster=uk-cri-lcst01 --logfile=/processing/Logs/autoanalysis.log > /dev/null 2>&1
+*/20 * * * * source /home/mib-cri/software/ngs-autoanalysis/branch-1.8/venv/bin/activate; python /home/mib-cri/software/ngs-autoanalysis/branch-1.8/autoanalysis.py --clusterdir=/lustre/mib-cri/solexa/Runs/ --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/mib-cri/software/core-pipelines-v2/ --cluster=uk-cri-lcst01 --logfile=/processing/Logs/autoanalysis.log > /dev/null 2>&1
 ```
 
 ## Updates

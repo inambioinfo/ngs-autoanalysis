@@ -105,9 +105,9 @@ class GlsLimsTests(unittest.TestCase):
         self.log = logger.get_custom_logger()
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing4publishing/')
-        self.archivedir = os.path.join(self.current_path, '../testdata/staging4publishing/')
-        self.lustredir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.archivedir, self.lustredir)
+        self.stagingdir = os.path.join(self.current_path, '../testdata/staging4publishing/')
+        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
         self.PUBLISHING_ASSIGNED = cfg['PUBLISHING_ASSIGNED']
         self.are_fastq_files_attached = True
 
@@ -122,7 +122,7 @@ class GlsLimsTests(unittest.TestCase):
             staging_completed = os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)
             if os.path.exists(staging_completed):
                 os.remove(staging_completed)
-            shutil.rmtree(run.lustre_run_folder)
+            shutil.rmtree(run.cluster_run_folder)
 
     def test_create_auto_pipeline_reports_process(self):
         run_id = '140815_D00408_0163_C4EYLANXX'

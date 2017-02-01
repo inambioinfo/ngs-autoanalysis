@@ -10,10 +10,8 @@ Created by Anne Pajon on 2012-10-05.
 --------------------------------------------------------------------------------
 
 Analysis server script that automatically runs the different steps of the sequencing
-pipeline and rsync them to the archive.
+pipeline and rsync them to the staging area.
 
-Usage:
-> python autoanalysis.py --basedir=/lustre/mib-cri/solexa/Runs/ --archivedir=/solexa0[1-6]/data/Runs --cluster=uk-cri-lcst01 --debug
 """
 
 ################################################################################
@@ -42,7 +40,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processingdir", dest="processingdir", action="store", help="processing base directories e.g. '/processing'", required=True)
     parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
-    parser.add_argument("--lustredir", dest="lustredir", action="store", help="lustre base directory e.g. '/lustre/mib-cri/solexa/Runs'", default=None)
+    parser.add_argument("--clusterdir", dest="clusterdir", action="store", help="cluster base directory e.g. '/lustre/mib-cri/solexa/Runs'", default=None)
 
     parser.add_argument("--softdir", dest="softdir", action="store", default=cfg['SOFT_PIPELINE_PATH'], help="software base directory where pipelines are installed - default set to %s" % cfg['SOFT_PIPELINE_PATH'])
     parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % cfg['CLUSTER_HOST'])
@@ -74,12 +72,12 @@ def main():
 
     # unset these variables if all pipelines should run locally
     if options.local:
-        options.lustredir = None
+        options.clusterdir = None
         options.cluster = None
 
     try:
         # loop over all runs that have a Sequencing.completed file in options.processingdir
-        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.lustredir, options.run_folder)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.clusterdir, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.runs_to_analyse:
