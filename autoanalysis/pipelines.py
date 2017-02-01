@@ -301,11 +301,12 @@ class Pipelines(object):
         Both pipeline.started and pipeline.ended need to be present
         """
         pipeline_dependencies = cfg['PIPELINES_DEPENDENCIES'][pipeline_name]
-        self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
-        for dep_pipeline_name in pipeline_dependencies:
-            # pipeline not finished or started
-            if not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_ended) or not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_started):
-                return False
+        if pipeline_dependencies:
+            self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
+            for dep_pipeline_name in pipeline_dependencies:
+                # pipeline not finished or started
+                if not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_ended) or not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_started):
+                    return False
         return True
 
     def are_pipelines_completed(self, list_pipelines):
