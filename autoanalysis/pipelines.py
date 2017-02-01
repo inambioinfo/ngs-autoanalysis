@@ -261,7 +261,8 @@ class Pipelines(object):
         each of these three steps: setup_pipeline, run_pipeline, and rsync_pipeline
         """
         if self.run.is_ready_for_processing():
-            for pipeline_name in list(self.pipelines.keys()):
+            #for pipeline_name in self.pipelines.keys():
+            for pipeline_name in ['fastq', 'primaryqc', 'alignment']:
                 if pipeline_name == 'alignment':
                     if self.is_alignment_active:
                         # special case for running alignment pipeline locally - just one pipeline at a time
