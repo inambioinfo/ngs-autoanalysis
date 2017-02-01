@@ -301,7 +301,7 @@ class Pipelines(object):
         Both pipeline.started and pipeline.ended need to be present
         """
         pipeline_dependencies = cfg['PIPELINES_DEPENDENCIES'][pipeline_name]
-        if pipeline_dependencies:
+        if pipeline_dependencies is not None:
             self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
             for dep_pipeline_name in pipeline_dependencies:
                 # pipeline not finished or started
