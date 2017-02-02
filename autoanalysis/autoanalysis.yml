@@ -22,7 +22,6 @@ PIPELINES_DEPENDENCIES:
   alignment:
     - "fastq"
 
-
 PIPELINES_DEFAULT_MODE:
   fastq: "local"
   primaryqc: "local"
@@ -44,10 +43,10 @@ CLUSTER_PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(cluster_run_meta)s"
 #PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s --ignore-walltime %(run_meta)s"
 
 # Software pipeline path
-SOFT_PIPELINE_PATH: "/home/mib-cri/software/pipelines"
+SOFT_PIPELINE_PATH: "/home/solexa/sequencingpipelines"
 
 # Cluster specific configurations
-CLUSTER_HOST: uk-cri-lcst01
+CLUSTER_HOST: clust1-headnode
 LSF_QUEUE: solexa
 MEM_VALUE: 4096 #2048
 

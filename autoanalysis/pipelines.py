@@ -92,7 +92,10 @@ class PipelineDefinition(object):
         # environment variables for setting up and running each pipeline
         self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['CREATE_METAFILE_FILENAME'])
         self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['RUN_PIPELINE_FILENAME'])
-        self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
+        if self.mode == 'slurm':
+            self.env['basedir'] = os.path.dirname(os.path.dirname(self.cluster_pipeline_directory))
+        else:
+            self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
 
         if self.pipeline_name in cfg['PIPELINES_SETUP_OPTIONS'].keys():
             if self.use_limsdev:
