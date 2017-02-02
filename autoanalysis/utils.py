@@ -47,12 +47,14 @@ ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'se
 
 # Template for slurm command
 SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
-#SBATCH --mem %(mem_value)s
+#SBATCH --no-requeue
+#SBATCH -p general
 #SBATCH -J %(job_name)s
-#SBATCH -o %(log)s
-#SBATCH --nodes 1
+#SBATCH --mem %(mem_value)s
 #SBATCH --mincpus 1
 #SBATCH --open-mode truncate
+#SBATCH -o %(cluster_work_dir)s/pipeline.%%j.out
+#SBATCH -e %(cluster_work_dir)s/pipeline.%%j.err
 
 # autoanalysis generated shell script
 export MEM_VALUE=%(mem_value)s
