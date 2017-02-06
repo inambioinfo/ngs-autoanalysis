@@ -119,6 +119,7 @@ def main():
     parser.add_argument("--processeddir", dest="processeddir", action="store", default=os.path.join('processing', 'ProcessedRuns'), help="processed runs directory on processing", required=True)
     parser.add_argument("--trashdir", dest="trashdir", action="store", default=os.path.join('lustre', 'mib-cri', 'solexa', 'TrashRuns'), help="trash runs directory on cluster", required=True)
 
+    parser.add_argument("--folders", dest="folders", action="store", help="number of days to keep run folders - default set to 100", default=100, type=int)
     parser.add_argument("--thumbnails", dest="thumbnails", action="store", help="number of days to keep thumbnails - default set to 90", default=90, type=int)
     parser.add_argument("--intensities", dest="intensities", action="store", help="number of days to keep intensities - default set to 21", default=21, type=int)
     parser.add_argument("--images", dest="images", action="store", help="number of days to keep images - default set to 14", default=14, type=int)
@@ -144,6 +145,7 @@ def main():
     delete_thumbnails_older_than = convert_day(options.thumbnails)
     delete_images_older_than = convert_day(options.images)
     delete_intensities_older_than = convert_day(options.intensities)
+    deleted_folders_older_than = convert_day(options.folders)
 
     try:
         # lims connection
@@ -256,9 +258,7 @@ def main():
         processed_run_folders = glob.glob("%s/??????_*_*_*" % options.processeddir)
         for run_folder in processed_run_folders:
             log.info('*** run folder %s' % run_folder)
-            if os.path.exists(os.path.join(run_folder, cfg['IGNORE_ME'])):
-                log.info('%s is present' % cfg['IGNORE_ME'])
-            elif os.path.exists(os.path.join(run_folder, cfg['DONT_DELETE'])):
+            if os.path.exists(os.path.join(run_folder, cfg['DONT_DELETE'])):
                 log.info('%s is present' % cfg['DONT_DELETE'])
             else:
                 try:
@@ -270,9 +270,10 @@ def main():
                         runfolder_age = present - os.path.getmtime(os.path.join(run_folder, cfg['SEQUENCING_FAILED']))
                         log.info('[IMG:%s|INT:%s|PIC:%s] run failed %s ago' % (options.images, options.intensities, options.thumbnails, datetime.timedelta(seconds=runfolder_age)))
 
-                    # check deleting file has been done already
-                    if is_completed(run_folder, 'delete_images') and is_completed(run_folder, 'delete_intensities') and is_completed(run_folder, 'delete_thumbnails'):
-                        log.info('All images/intensities/thumbnails deleted')
+                    # delete entire run folder if older than options.folders default to 100 days
+                    # no matter what except if dont.delete is present
+                    if runfolder_age > deleted_folders_older_than:
+                        log.info('!!! run older than %s' % options.folders)
                         cmd = ['rm', '-rf', run_folder]
                         utils.run_bg_process(cmd, options.dry_run)
                         log.info('*** run folder %s deleted' % run_folder)
