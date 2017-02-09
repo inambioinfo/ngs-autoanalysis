@@ -35,7 +35,7 @@ PIPELINES_SETUP_OPTIONS:
   fastq: ""
   primaryqc: "--create-sample-sheet --phix"
   #alignment: "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq --reference-data-dir=/lustre/reference_data/mib-cri/reference_genomes"
-  alignment: "--sync --fastq-source-url=soltrans@%s::%s/fastq"
+  alignment: "--sync --fastq-source-url=soltrans@%s::%s/fastq --sync-target-url=soltrans@%s::%s"
 
 # Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(run_meta)s"

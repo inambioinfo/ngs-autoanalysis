@@ -39,7 +39,7 @@ class PipelineDefinition(object):
         self.use_limsdev = use_limsdev
         self.mode = mode
         if self.pipeline_name == 'alignment':
-            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'][pipeline_name] % (socket.gethostname(), str(self.run.staging_run_folder)[1:])
+            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'][pipeline_name] % (socket.gethostname(), str(self.run.run_folder)[1:], socket.gethostname(), str(self.run.staging_dir)[1:])
         else:
             self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'].get(pipeline_name, '')
 
