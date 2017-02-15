@@ -11,11 +11,9 @@ Created by Anne Pajon on 2012-10-26.
 import logging
 import logging.config
 
-HOST = 'smtp.cruk.cam.ac.uk'
-FROM = 'anne.pajon@cruk.cam.ac.uk'
-TO_ANNE = 'anne.pajon@cruk.cam.ac.uk'
-TO_RICH = 'Richard.Bowers@cruk.cam.ac.uk'
-SUBJECT = 'New Error From AUTOANALYSIS'
+# constants and configurations
+from config import cfg
+
 
 # logging definition
 LOGGING = {
@@ -54,10 +52,10 @@ LOGGING = {
         'email': {
             'level': 'ERROR',
             'class': 'logging.handlers.SMTPHandler',
-            'mailhost': HOST,
-            'fromaddr': FROM,
-            'toaddrs': [TO_ANNE],
-            'subject': SUBJECT,
+            'mailhost': cfg['HOST'],
+            'fromaddr': cfg['SEND_FROM'],
+            'toaddrs': cfg['SEND_TO'],
+            'subject': cfg['SUBJECT'],
             'formatter': 'verbose',
         },
     },
@@ -73,7 +71,7 @@ LOGGING = {
             'level': 'INFO',
         },
     }
-} 
+}
 
 
 def get_custom_logger(logfile=None, noemail=False):
@@ -85,4 +83,3 @@ def get_custom_logger(logfile=None, noemail=False):
         LOGGING['loggers']['glsclient']['handlers'].append('email')
     logging.config.dictConfig(LOGGING)
     return logging.getLogger('autoanalysis')
-

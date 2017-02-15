@@ -14,7 +14,7 @@ Created by Anne Pajon on 2012-10-26.
 import os
 import glob
 import logging
-import subprocess 
+import subprocess
 import unittest
 
 # logging definition
@@ -23,43 +23,63 @@ log = logging.getLogger(__name__)
 ################################################################################
 # CONSTANTS
 ################################################################################
-# Cluster host
-CLUSTER_HOST = "uk-cri-lcst01"
 
 # Template for shell script
-SCRIPT_TEMPLATE = '''
-#!/bin/bash
-#
-# Autoanalysis generated shell script for running command(s) locally
-#
-
+SCRIPT_TEMPLATE = '''#!/bin/bash
+# autoanalysis generated shell script
 set -v
 
 %(cmd)s
-
 '''
+
+SLURM_SCRIPT_TEMPLATE = '%(cmd)s'
 
 # Template for local command
 LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s > %(log)s 2>&1;"
 
 # Template for lsf command
-LSF_CMD_TEMPLATE = '''
-export MEM_VALUE=%(mem_value)s
+LSF_CMD_TEMPLATE = '''export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
 export JAVA_OPTS="-Xmx$[${MEM_VALUE}-512]M -Xms$[${MEM_VALUE}-512]M"
 
 ssh %(cluster)s "cd %(work_dir)s; touch %(started)s; bsub -M ${MEM_LIMIT} -R 'select[mem>=${MEM_VALUE}] rusage[mem=${MEM_VALUE}]' -J %(job_name)s -oo %(log)s -q %(lsf_queue)s %(cmd)s"
+'''
 
+# Template for slurm command
+SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
+#SBATCH --no-requeue
+#SBATCH -p general
+#SBATCH -J %(job_name)s
+#SBATCH --mem %(mem_value)s
+#SBATCH --mincpus 1
+#SBATCH --open-mode truncate
+#SBATCH -o %(cluster_work_dir)s/pipeline.%%j.out
+
+# autoanalysis generated shell script
+export MEM_VALUE=%(mem_value)s
+export MEM_LIMIT=$[${MEM_VALUE}*1024]
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-128]M -Xms$[${MEM_VALUE}-128]M"
+
+%(cluster_cmd)s
+'''
+
+SLURM_CMD_TEMPLATE = '''ssh %(cluster)s "mkdir -p %(cluster_work_dir)s"
+scp %(run_meta)s %(cluster)s:%(cluster_work_dir)s/.
+scp %(job_script)s %(cluster)s:%(cluster_work_dir)s/.
+touch %(started)s
+scp %(started)s %(cluster)s:%(cluster_work_dir)s/.
+
+ssh %(cluster)s "sbatch %(cluster_job_script)s"
 '''
 
 
 ################################################################################
 # METHODS
 ################################################################################
-def create_script(script_path, command):
-    if not os.path.exists(script_path):    
+def create_script(script_path, command, template=SCRIPT_TEMPLATE):
+    if not os.path.exists(script_path):
         script_file = open(script_path, 'w')
-        script_file.write(SCRIPT_TEMPLATE % {'cmd': command})
+        script_file.write(template % {'cmd': command})
         script_file.close()
         os.chmod(script_path, 0755)
         log.info('%s created' % script_path)
