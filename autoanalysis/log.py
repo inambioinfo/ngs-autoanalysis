@@ -10,6 +10,7 @@ Created by Anne Pajon on 2012-10-26.
 
 import logging
 import logging.config
+import socket
 
 # constants and configurations
 from config import cfg
@@ -21,7 +22,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s %(name)-24s %(levelname)-8s: %(message)s'
+            'format': socket.gethostname() + ' %(asctime)s %(name)-24s %(levelname)-8s: %(message)s'
         },
         'simple': {
             'format': '%(name)-24s %(levelname)-8s: %(message)s'

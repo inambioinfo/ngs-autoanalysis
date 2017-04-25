@@ -45,7 +45,7 @@ WORKFLOW_MAPPING = {
 
 # New LPP submission form v17
 'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
-'TruSeq Rapid Exome': 'LPS: TruSeq Rapid Exome v1',
+'TruSeq Rapid Exome': 'LPS: TruSeq Rapid Exome v2',
 'Nextera DNA/XT': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
 'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
 'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
