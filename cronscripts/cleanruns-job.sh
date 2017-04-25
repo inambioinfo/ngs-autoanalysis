@@ -7,4 +7,4 @@
 #SBATCH --open-mode truncate
 #SBATCH -o /mnt/scratcha/bioinformatics/solexa/Runs/clean_scratch_space/run-cleanruns.%j.out
 
-/home/solexa/ngs-autoanalysis/branch-2.0/run-cleanruns.sh
+/mnt/scratcha/bioinformatics/solexa/Runs/clean_scratch_space/cleanruns.sh
