@@ -77,8 +77,8 @@ RTA_COMPLETED: RTAComplete.txt
 SEQUENCING_COMPLETED: SequencingComplete.txt
 SEQUENCING_FAILED: SequencingFail.txt
 
-IGNORE_ME: ignore.me
-DONT_DELETE: dont.delete
+IGNORE_ME: ignoreme.txt
+DONT_DELETE: keepme.txt
 
 ANALYSIS_COMPLETED: AnalysisComplete.txt
 EXTERNAL_COMPLETED: ExternalComplete.txt
