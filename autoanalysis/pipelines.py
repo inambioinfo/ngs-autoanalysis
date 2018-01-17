@@ -513,27 +513,25 @@ class External(object):
             utils.create_directory(runfolder_ext_ftpdir)
             filename = self.external_data[file_id]['runfolder'].replace('/runs/', os.path.dirname(self.run.staging_dir) + '/')
             try:
-                # get all files associated to *.contents.csv file from run folder on disk
-                # /staging/161130_K00252_0085_HGYGKBBXX/fastq/SLX-12650.HGYGKBBXX.s_8.contents.csv
-                if filename.endswith('.contents.csv'):
-                    bname = os.path.basename(filename)
-                    folder = os.path.dirname(os.path.dirname(filename))
-                    slx = bname.split('.')[0]
-                    fc = bname.split('.')[2]
-                    files_in_folder = glob.glob('%s/fastq/%s*%s*' % (folder, slx, fc))
-                    files_in_folder.extend(glob.glob('%s/fastqc/%s*%s*' % (folder, slx, fc)))
-                    files_in_folder.extend(glob.glob('%s/mga/%s*%s*' % (folder, slx, fc)))
-                    self.log.debug(files_in_folder)
-                    for f in files_in_folder:
-                        # create symlinks
-                        linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(f))
-                        utils.create_symlink(f, linkname)
-                    # symlink non PF data
-                    if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
-                        for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
-                            filename_failed = filename.replace('.contents.csv', file_extension)
-                            linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
-                            utils.create_symlink(filename_failed, linkname_failed)
+                # get all files associated to this SLXID for this flow-cell ID
+                bname = os.path.basename(filename)
+                folder = os.path.dirname(os.path.dirname(filename))
+                slx = bname.split('.')[0]
+                fc = bname.split('.')[2]
+                files_in_folder = glob.glob('%s/fastq/%s*%s*' % (folder, slx, fc))
+                files_in_folder.extend(glob.glob('%s/fastqc/%s*%s*' % (folder, slx, fc)))
+                files_in_folder.extend(glob.glob('%s/mga/%s*%s*' % (folder, slx, fc)))
+                self.log.debug(files_in_folder)
+                for f in files_in_folder:
+                    # create symlinks
+                    linkname = os.path.join(runfolder_ext_ftpdir, os.path.basename(f))
+                    utils.create_symlink(f, linkname)
+                # symlink non PF data
+                if self.external_data[file_id]['nonpfdata'] == 'True' and filename.endswith('.contents.csv'):
+                    for file_extension in ['.r_1.failed.fq.gz', '.r_2.failed.fq.gz', '.failed.md5sums.txt']:
+                        filename_failed = filename.replace('.contents.csv', file_extension)
+                        linkname_failed = os.path.join(runfolder_ext_ftpdir, os.path.basename(filename_failed))
+                        utils.create_symlink(filename_failed, linkname_failed)
             except:
                 continue
 
