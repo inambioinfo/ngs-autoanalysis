@@ -52,14 +52,14 @@ def main():
             reader = csv.DictReader(f, delimiter='\t')
             for line in reader:
                 mappings.append(line)
-        log.debug(mappings)
+        log.info(mappings)
 
         # connect to lims
         if options.limsprod:
             lims_server = glsclient.SERVER
         else:
             lims_server = glsclient.TEST_SERVER
-        log.debug('Connected to ' + lims_server)
+        log.info('Connected to ' + lims_server)
         glsutil = glsclient.GlsUtil(server=lims_server)
 
         # count number of samples to modify

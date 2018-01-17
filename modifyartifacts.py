@@ -87,7 +87,7 @@ def main():
             lims_server = glsclient.SERVER
         else:
             lims_server = glsclient.TEST_SERVER
-        log.debug('Connected to ' + lims_server)
+        log.info('Connected to ' + lims_server)
         glsutil = glsclient.GlsUtil(server=lims_server)
 
         # count number of artifacts to modify

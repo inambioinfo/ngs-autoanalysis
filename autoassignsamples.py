@@ -171,22 +171,22 @@ def main():
         report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow:\n\n" % count_miseqexpress + report_miseqexpresssamples
         if options.email and count_miseqexpress > 0:
             send_email('MiSeq Express', report_miseqexpresssamples)
-        log.debug('MISEQ EXPRESS REPORT')
-        log.debug(report_miseqexpresssamples)
+        log.info('MISEQ EXPRESS REPORT')
+        log.info(report_miseqexpresssamples)
 
         # email sent to genomics for NextSeq Direct
         report_nextseqdirectsamples = "%s samples assigned to NextSeq Express workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
         if options.email and count_nextseqdirect > 0:
             send_email('NextSeq Express', report_nextseqdirectsamples)
-        log.debug('NEXTSEQ EXPRESS REPORT')
-        log.debug(report_nextseqdirectsamples)
+        log.info('NEXTSEQ EXPRESS REPORT')
+        log.info(report_nextseqdirectsamples)
 
         # email sent to genomics for unknown workflow
         report_unknownworkflowsamples = "%s samples unassigned to workflow:\n\n" % count_unknownworkflow + report_unknownworkflowsamples
         if options.email and count_unknownworkflow > 0:
             send_email('Unknown Workflow', report_unknownworkflowsamples)
-        log.debug('UNKNOWN WORKFLOW REPORT')
-        log.debug(report_unknownworkflowsamples)
+        log.info('UNKNOWN WORKFLOW REPORT')
+        log.info(report_unknownworkflowsamples)
 
         log.info("%s samples assigned to workflows over %s" % (count, len(results)))
         log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)
