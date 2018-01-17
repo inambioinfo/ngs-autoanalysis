@@ -64,7 +64,7 @@ LOGGING = {
         'autoanalysis': {
             'handlers': ['console', 'info_file', 'error_file'],
             'propagate': True,
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'glsclient': {
             'handlers': ['console', 'info_file', 'error_file'],

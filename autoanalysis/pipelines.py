@@ -139,7 +139,7 @@ class PipelineDefinition(object):
             if not os.path.exists(self.setup_script_path):
                 utils.create_script(self.setup_script_path, cfg['PIPELINE_SETUP_COMMAND'] % self.env)
             else:
-                self.log.debug('%s already exists' % self.setup_script_path)
+                self.log.info('%s already exists' % self.setup_script_path)
         except:
             self.log.exception('unexpected error when creating setup pipeline script')
             raise
@@ -153,7 +153,7 @@ class PipelineDefinition(object):
                 else:
                     self.log.info('%s pipeline dependencies not satisfied' % self.pipeline_name)
             else:
-                self.log.debug('%s already exists' % self.env['run_meta'])
+                self.log.info('%s already exists' % self.env['run_meta'])
         except:
             self.log.exception('unexpected error when running setup pipeline script')
             raise
@@ -305,7 +305,7 @@ class Pipelines(object):
         """
         if pipeline_name in cfg['PIPELINES_DEPENDENCIES']:
             pipeline_dependencies = cfg['PIPELINES_DEPENDENCIES'][pipeline_name]
-            self.log.debug('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
+            self.log.info('%s pipeline dependencies: [%s]' % (pipeline_name, ",".join(pipeline_dependencies)))
             for dep_pipeline_name in pipeline_dependencies:
                 # pipeline not finished or started
                 if not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_ended) or not os.path.exists(self.pipeline_definitions[dep_pipeline_name].pipeline_started):
@@ -394,7 +394,7 @@ rm %(lock)s
             if not os.path.exists(self.pipeline_definition.run_script_path):
                 utils.create_script(self.pipeline_definition.run_script_path, self.RUNFOLDER_RSYNC_COMMAND % self.env)
             else:
-                self.log.debug('%s already exists' % self.pipeline_definition.run_script_path)
+                self.log.info('%s already exists' % self.pipeline_definition.run_script_path)
         except:
             self.log.exception('unexpected error when creating rsync run script')
             raise
@@ -410,7 +410,7 @@ rm %(lock)s
                         utils.touch(self.pipeline_definition.pipeline_lock, _dry_run)
                         utils.run_bg_process(['sh', '%s' % self.pipeline_definition.run_script_path], _dry_run)
                     else:
-                        self.log.debug("nothing to sync yet - analysis not completed")
+                        self.log.info("nothing to sync yet - analysis not completed")
                 else:
                     self.log.info('%s presents - another sync process is running' % self.pipeline_definition.pipeline_lock)
             else:
