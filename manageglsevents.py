@@ -18,7 +18,6 @@ import socket
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
-import autoanalysis.data as auto_data
 
 # constants and configurations
 from autoanalysis.config import cfg
@@ -55,11 +54,12 @@ EVENT_HEADER = """
 ================================================================================"""
 THREE_DAYS = 3
 
-TECHNOLOGIES = [ '4000', 'hiseq', 'miseq', 'nextseq' ]
+TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq']
+
 
 def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
     run_folder_name = os.path.basename(run_folder)
-    ### Sync runfolder to lims server
+    # Sync runfolder to lims server
     log.info('Synchronising run folder...')
     rsync_files_cmd = ["rsync", "-avm", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=RunParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
     utils.run_process(rsync_files_cmd, dry_run)
@@ -104,25 +104,29 @@ def main():
     to_path = "/runs/%s/" % server
     to_path_for_rsync = "%s:%s" % (LIMS_SERVER, to_path)
 
-    ### Manage run folders
+    # Manage run folders
     run_folders = glob.glob(RUNFOLDER_GLOB % from_path)
     for run_folder in run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
         ignore_me = os.path.join(run_folder, cfg['IGNORE_ME'])
-
-        if run_folder_name == options.run_folder:
-            sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
-        else:
-            if not os.path.exists(ignore_me):
+        try:
+            if run_folder_name == options.run_folder:
                 sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
             else:
-                log.info('%s is present - run ignored' % ignore_me)
+                if not os.path.exists(ignore_me):
+                    sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
+                else:
+                    log.info('%s is present - run ignored' % ignore_me)
+        except Exception, e:
+            log.exception("Unexpected error")
+            log.exception(e)
+            continue
 
     # location of processed run folders on sequencing server
     processed_runs_path = "/processing/ProcessedRuns/"
 
-    ### Delete run folders on LiMS when runs are in 'ProcessedRuns' and older than x days
+    # Delete run folders on LiMS when runs are in 'ProcessedRuns' and older than x days
     processed_run_folders = glob.glob(RUNFOLDER_GLOB % processed_runs_path)
     for run_folder in processed_run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
@@ -144,9 +148,14 @@ def main():
                 # ssh username@domain.com 'rm /some/where/some_file.war'
                 delete_runfolder_cmd = ['ssh', LIMS_SERVER, 'rm -rf %s/%s' % (to_path, run_folder_name)]
                 log.info(delete_runfolder_cmd)
-                utils.run_process(delete_runfolder_cmd, options.dry_run)
+                try:
+                    utils.run_process(delete_runfolder_cmd, options.dry_run)
+                except Exception, e:
+                    log.exception("Unexpected error")
+                    log.exception(e)
+                    continue
 
-    ### Copy event files to lims server
+    # Copy event files to lims server
     for technology in TECHNOLOGIES:
         from_events = "%s/gls_events_%s/" % (from_path, technology)
         to_events_archive = "%s/archive/" % from_events
@@ -159,12 +168,17 @@ def main():
                 os.makedirs(to_events_archive)
             for event_file in event_files:
                 log.info(EVENT_HEADER % event_file)
-                # copy event files to lims server
-                scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
-                utils.run_process(scp_cmd, options.dry_run)
-                # move event files into archive
-                mv_cmd = ["mv", event_file, to_events_archive]
-                utils.run_process(mv_cmd, options.dry_run)
+                try:
+                    # copy event files to lims server
+                    scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
+                    utils.run_process(scp_cmd, options.dry_run)
+                    # move event files into archive
+                    mv_cmd = ["mv", event_file, to_events_archive]
+                    utils.run_process(mv_cmd, options.dry_run)
+                except Exception, e:
+                    log.exception("Unexpected error")
+                    log.exception(e)
+                    continue
 
 if __name__ == '__main__':
     main()
