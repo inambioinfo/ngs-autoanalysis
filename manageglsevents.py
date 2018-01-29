@@ -15,6 +15,8 @@ import argparse
 import time
 import socket
 
+from subprocess import CalledProcessError
+
 # import custom modules
 import autoanalysis.log as logger
 import autoanalysis.utils as utils
@@ -169,16 +171,27 @@ def main():
             for event_file in event_files:
                 log.info(EVENT_HEADER % event_file)
                 try:
-                    # copy event files to lims server
-                    scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
-                    utils.run_process(scp_cmd, options.dry_run)
-                    # move event files into archive
-                    mv_cmd = ["mv", event_file, to_events_archive]
-                    utils.run_process(mv_cmd, options.dry_run)
+                    attempt = 2
+                    while attempt > 0:
+                        try:
+                            # copy event file to lims server
+                            scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
+                            utils.run_process(scp_cmd, options.dry_run)
+                            # move event file into archive
+                            mv_cmd = ["mv", event_file, to_events_archive]
+                            utils.run_process(mv_cmd, options.dry_run)
+                            # If the copy has worked, all done here.
+                            break
+                        except CalledProcessError, e:
+                            if --attempt <= 0:
+                                # No retries. Allow the error out.
+                                raise e
+                            # Otherwise, log a warning, pause, then try again.
+                            log.warn("scp command failed, but can retry: %s" % e.cmd.strip())
+                            time.sleep(0.5)
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
-                    continue
 
 if __name__ == '__main__':
     main()
