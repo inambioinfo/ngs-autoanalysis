@@ -170,7 +170,7 @@ def main():
             event_files = glob.glob("%s/event-*.txt" % from_events)
             log.info('List of events file to sync: %s' % event_files)
             # create archive folder if it does not exist
-            if not os.path.exists(to_events_archive):
+            if len(event_files) > 0 and not os.path.exists(to_events_archive):
                 os.makedirs(to_events_archive)
             for event_file in event_files:
                 log.info(EVENT_HEADER % event_file)
