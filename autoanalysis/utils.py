@@ -97,8 +97,7 @@ def run_process(cmd, dry_run=True):
             log.debug(out)
             return out
         else:
-            log.error(out)
-            raise subprocess.CalledProcessError(retcode, out)
+            raise subprocess.CalledProcessError(retcode, cmd, out)
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 

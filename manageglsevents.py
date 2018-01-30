@@ -14,7 +14,9 @@ import glob
 import argparse
 import time
 import socket
+import shutil
 
+from datetime import date
 from subprocess import CalledProcessError
 
 # import custom modules
@@ -157,10 +159,12 @@ def main():
                     log.exception(e)
                     continue
 
+    today = date.today() 
+
     # Copy event files to lims server
     for technology in TECHNOLOGIES:
         from_events = "%s/gls_events_%s/" % (from_path, technology)
-        to_events_archive = "%s/archive/" % from_events
+        to_events_archive = "%s/archive/%04d/%02d/%02d/" % (from_events, today.year, today.month, today.day)
         to_events_new_lims = "%s/gls_events_%s/" % (to_path_for_rsync, technology)
         if os.path.exists(from_events):
             event_files = glob.glob("%s/event-*.txt" % from_events)
@@ -171,23 +175,26 @@ def main():
             for event_file in event_files:
                 log.info(EVENT_HEADER % event_file)
                 try:
-                    attempt = 2
+                    attempt = 4
                     while attempt > 0:
                         try:
                             # copy event file to lims server
                             scp_cmd = ["scp", "-r", "-p", event_file, to_events_new_lims]
                             utils.run_process(scp_cmd, options.dry_run)
                             # move event file into archive
-                            mv_cmd = ["mv", event_file, to_events_archive]
-                            utils.run_process(mv_cmd, options.dry_run)
-                            # If the copy has worked, all done here.
+                            shutil.move(event_file, "%s%s" % (to_events_archive, os.path.basename(event_file)))
+                            # If the copy has worked, all done here. Stop the loop.
                             break
                         except CalledProcessError, e:
-                            if --attempt <= 0:
-                                # No retries. Allow the error out.
+                            attempt -= 1
+                            if attempt <= 0:
+                                # No retries left. Allow the error out.
                                 raise e
                             # Otherwise, log a warning, pause, then try again.
-                            log.warn("scp command failed, but can retry: %s" % e.cmd.strip())
+                            if e.output == None:
+                                log.warn("scp command failed, but can retry.")
+                            else:
+                                log.warn("scp command failed, but can retry: %s" % e.output.strip())
                             time.sleep(0.5)
                 except Exception, e:
                     log.exception("Unexpected error")
