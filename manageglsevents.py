@@ -75,6 +75,12 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
     rsync_ga_cmd = ["rsync", "-avrm", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
     utils.run_process(rsync_ga_cmd, dry_run)
 
+def log_calledprocesserror(log, what, cpe):
+    message = ["%s failed with exit code %d:" % (what, cpe.returncode), " ".join(cpe.cmd)]
+    if cpe.output:
+        message.append(cpe.output.strip())
+    log.exception("\n".join(message))
+
 
 ################################################################################
 # MAIN
@@ -123,10 +129,7 @@ def main():
                 else:
                     log.info('%s is present - run ignored' % ignore_me)
         except CalledProcessError, e:
-            log.exception("rsync command failed with exit code %d:" % e.returncode)
-            log.exception(" ".join(e.cmd))
-            if e.output:
-                log.exception(e.output.strip())
+            log_calledprocesserror(log, "rsync command", e)
         except Exception, e:
             log.exception("Unexpected error")
             log.exception(e)
@@ -160,10 +163,7 @@ def main():
                 try:
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
                 except CalledProcessError, e:
-                    log.exception("Remote run folder clean up failed with exit code %d:" % e.returncode)
-                    log.exception(" ".join(e.cmd))
-                    if e.output:
-                        log.exception(e.output.strip())
+                    log_calledprocesserror(log, "Remote run folder clean up", e)
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
@@ -207,10 +207,7 @@ def main():
                                 log.warn("scp command failed, but can retry: %s" % e.output.strip())
                             time.sleep(0.5)
                 except CalledProcessError, e:
-                    log.exception("scp command failed with exit code %d:" % e.returncode)
-                    log.exception(" ".join(e.cmd))
-                    if e.output:
-                        log.exception(e.output.strip())
+                    log_calledprocesserror(log, "scp command", e)
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
