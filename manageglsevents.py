@@ -122,6 +122,11 @@ def main():
                     sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
                 else:
                     log.info('%s is present - run ignored' % ignore_me)
+        except CalledProcessError, e:
+            log.exception("rsync command failed with exit code %d:" % e.returncode)
+            log.exception(" ".join(e.cmd))
+            if e.output:
+                log.exception(e.output.strip())
         except Exception, e:
             log.exception("Unexpected error")
             log.exception(e)
@@ -154,6 +159,11 @@ def main():
                 log.info(delete_runfolder_cmd)
                 try:
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
+                except CalledProcessError, e:
+                    log.exception("Remote run folder clean up failed with exit code %d:" % e.returncode)
+                    log.exception(" ".join(e.cmd))
+                    if e.output:
+                        log.exception(e.output.strip())
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
