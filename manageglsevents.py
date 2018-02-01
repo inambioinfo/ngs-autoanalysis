@@ -191,11 +191,16 @@ def main():
                                 # No retries left. Allow the error out.
                                 raise e
                             # Otherwise, log a warning, pause, then try again.
-                            if e.output == None:
+                            if e.output:
                                 log.warn("scp command failed, but can retry.")
                             else:
                                 log.warn("scp command failed, but can retry: %s" % e.output.strip())
                             time.sleep(0.5)
+                except CalledProcessError, e:
+                    log.exception("scp command failed with exit code %d:" % e.returncode)
+                    log.exception(" ".join(e.cmd))
+                    if e.output:
+                        log.exception(e.output.strip())
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
