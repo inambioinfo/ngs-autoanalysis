@@ -15,6 +15,7 @@ import argparse
 import time
 import socket
 import shutil
+import errno
 
 from datetime import date
 from subprocess import CalledProcessError
@@ -216,6 +217,11 @@ def main():
                             else:
                                 log.warn("scp command failed, but can retry: %s" % e.output.strip())
                             time.sleep(0.5)
+                        except IOError, e:
+                            # Error number 2 is "file not found". Can happen if things clean up while this
+                            # script is iterating. So ignore errors with that error number.
+                            if e.errno != errno.ENOENT:
+                                raise e
                 except CalledProcessError, e:
                     log_calledprocesserror(log, "scp command", e)
                 except Exception, e:
