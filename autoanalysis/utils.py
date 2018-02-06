@@ -58,7 +58,7 @@ SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
 # autoanalysis generated shell script
 export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
-export JAVA_OPTS="-Xmx$[${MEM_VALUE}-128]M -Xms$[${MEM_VALUE}-128]M"
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-256]M -Xms$[${MEM_VALUE}-256]M"
 
 %(cluster_cmd)s
 '''

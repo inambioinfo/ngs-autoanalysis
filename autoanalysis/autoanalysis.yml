@@ -48,7 +48,7 @@ SOFT_PIPELINE_PATH: "/home/solexa/sequencingpipelines"
 # Cluster specific configurations
 CLUSTER_HOST: clust1-headnode
 LSF_QUEUE: solexa
-MEM_VALUE: 4096 #2048
+MEM_VALUE: 6144
 
 # ftp server
 FTP_SERVER: comp-ftpdmz001
