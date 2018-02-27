@@ -100,7 +100,6 @@ def main():
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", dest="days", action="store", default=THREE_DAYS, help="Number of days files stays on lims servers before being deleted, default is %s" % THREE_DAYS)
-    parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -130,15 +129,8 @@ def main():
     for run_folder in run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        ignore_me = os.path.join(run_folder, cfg['IGNORE_ME'])
         try:
-            if run_folder_name == options.run_folder:
-                sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
-            else:
-                if not os.path.exists(ignore_me):
-                    sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
-                else:
-                    log.info('%s is present - run ignored' % ignore_me)
+            sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
         except CalledProcessError, e:
             log_calledprocesserror(log, "rsync command", e)
         except Exception, e:
@@ -180,7 +172,7 @@ def main():
                     log.exception(e)
                     continue
 
-    today = date.today() 
+    today = date.today()
 
     # Copy event files to lims server
     for technology in TECHNOLOGIES:
