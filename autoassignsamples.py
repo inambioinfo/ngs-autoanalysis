@@ -20,41 +20,43 @@ import glsclient.glsclient as glsclient
 import glsclient.glssql as glssql
 
 WORKFLOW_MAPPING = {
-'HiSeq': 'SLX: Sequencing for HiSeq v1',
-'HiSeq 2500': 'SLX: Sequencing for HiSeq v1',
-'HiSeq 2000': 'SLX: Sequencing for HiSeq 2000 v1',
-'HiSeq 4000': 'SLX: Sequencing for HiSeq 4000 v1',
-'HiSeq 2-lane': 'SLX: Sequencing for HiSeq Rapid Run v1',
-'HiSeq Express': 'SLX: Sequencing for HiSeq Express v1',
-#'Resubmit for HiSeq': 'SLX: Resubmit for HiSeq v1',
-#'Resubmit for HiSeq 2500': 'SLX: Resubmit for HiSeq v1',
-#'Resubmit for HiSeq 4000': 'SLX: Resubmit for HiSeq v1',
-'MiSeq': 'SLX: Sequencing for MiSeq v1',
-'MiSeq Express': 'SLX: Sequencing for MiSeq Express v1',
-'GAIIx': 'SLX: Sequencing for GAIIx v1',
-'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
-#'NextSeq Direct': 'SLX: NextSeq Direct v1',
-# Mapping old UDF values to new NextSeq workflows
-'NextSeq Direct Mid Output': 'SLX: NextSeq Express Mid Output v1',
-'NextSeq Direct High Output': 'SLX: NextSeq Express High Output v1',
-# New NextSeq workflows
-'NextSeq Mid Output': 'SLX: NextSeq Mid Output v1',
-'NextSeq High Output': 'SLX: NextSeq High Output v1',
-'NextSeq Express Mid Output': 'SLX: NextSeq Express Mid Output v1',
-'NextSeq Express High Output': 'SLX: NextSeq Express High Output v1',
+    'HiSeq': 'SLX: Sequencing for HiSeq v1',
+    'HiSeq 2500': 'SLX: Sequencing for HiSeq v1',
+    'HiSeq 2000': 'SLX: Sequencing for HiSeq 2000 v1',
+    'HiSeq 4000': 'SLX: Sequencing for HiSeq 4000 v1',
+    'HiSeq 2-lane': 'SLX: Sequencing for HiSeq Rapid Run v1',
+    'HiSeq Express': 'SLX: Sequencing for HiSeq Express v1',
 
-# New LPP submission form v17
-'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
-'TruSeq Rapid Exome': 'LPS: TruSeq Rapid Exome v2',
-'Nextera DNA/XT': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
-'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
-'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
-'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
-# 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
+    'MiSeq': 'SLX: Sequencing for MiSeq v1',
+    'MiSeq Express': 'SLX: Sequencing for MiSeq Express v1',
+    'Resubmit for MiSeq': 'SLX: Resubmit for MiSeq v1',
+    # New MiSeq Nano workflows
+    'MiSeq Nano': 'SLX: Sequencing for MiSeq Nano v1',
+    'MiSeq Express Nano': 'SLX: Sequencing for MiSeq Express Nano v1',
 
-# New 10X work flows
-'10X Chromium Single Cell': 'LPS: 10X Single Cell v2',
-'10X Chromium Genome': 'LPS: 10X Phased Genome v1'
+    'GAIIx': 'SLX: Sequencing for GAIIx v1',
+
+    # Mapping old UDF values to new NextSeq workflows
+    'NextSeq Direct Mid Output': 'SLX: NextSeq Express Mid Output v1',
+    'NextSeq Direct High Output': 'SLX: NextSeq Express High Output v1',
+    # New NextSeq workflows
+    'NextSeq Mid Output': 'SLX: NextSeq Mid Output v1',
+    'NextSeq High Output': 'SLX: NextSeq High Output v1',
+    'NextSeq Express Mid Output': 'SLX: NextSeq Express Mid Output v1',
+    'NextSeq Express High Output': 'SLX: NextSeq Express High Output v1',
+
+    # New LPP submission form v17
+    'Truseq stranded mRNA': 'LPS: TruSeq RNA v4',  # was 'LPS: TruSeq RNA v3',
+    'TruSeq Rapid Exome': 'LPS: TruSeq Rapid Exome v2',
+    'Nextera DNA/XT': 'LPS: Nextera v3',  # was 'LPS: Nextera v2',
+    'Access Array': 'LPS: Access Array v4',  # was 'LPS: Access Array v3',
+    'ThruPLEX ChIP Seq': 'LPS: Thruplex ChIP',  # was 'LPS: TruSeq ChIP v3',
+    'Nextera Rapid Exome': 'LPS: Nextera Rapid Capture',  # was 'LPS: Rapid Exome',
+    # 'Other - please contact genomics': 'LPS: Generic Library Prep with MiSeq',
+
+    # New 10X work flows
+    '10X Chromium Single Cell': 'LPS: 10X Single Cell v2',
+    '10X Chromium Genome': 'LPS: 10X Phased Genome v1'
 }
 
 
@@ -171,22 +173,22 @@ def main():
         report_miseqexpresssamples = "%s samples assigned to MiSeq Express workflow:\n\n" % count_miseqexpress + report_miseqexpresssamples
         if options.email and count_miseqexpress > 0:
             send_email('MiSeq Express', report_miseqexpresssamples)
-        log.debug('MISEQ EXPRESS REPORT')
-        log.debug(report_miseqexpresssamples)
+        log.info('MISEQ EXPRESS REPORT')
+        log.info(report_miseqexpresssamples)
 
         # email sent to genomics for NextSeq Direct
         report_nextseqdirectsamples = "%s samples assigned to NextSeq Express workflow:\n\n" % count_nextseqdirect + report_nextseqdirectsamples
         if options.email and count_nextseqdirect > 0:
             send_email('NextSeq Express', report_nextseqdirectsamples)
-        log.debug('NEXTSEQ EXPRESS REPORT')
-        log.debug(report_nextseqdirectsamples)
+        log.info('NEXTSEQ EXPRESS REPORT')
+        log.info(report_nextseqdirectsamples)
 
         # email sent to genomics for unknown workflow
         report_unknownworkflowsamples = "%s samples unassigned to workflow:\n\n" % count_unknownworkflow + report_unknownworkflowsamples
         if options.email and count_unknownworkflow > 0:
             send_email('Unknown Workflow', report_unknownworkflowsamples)
-        log.debug('UNKNOWN WORKFLOW REPORT')
-        log.debug(report_unknownworkflowsamples)
+        log.info('UNKNOWN WORKFLOW REPORT')
+        log.info(report_unknownworkflowsamples)
 
         log.info("%s samples assigned to workflows over %s" % (count, len(results)))
         log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)

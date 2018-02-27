@@ -61,7 +61,7 @@ def setup_clean(run_folder, clean_task, find_cmd):
         os.makedirs(clean_directory)
         log.info('%s created' % clean_directory)
     else:
-        log.debug('%s already exists' % clean_directory)
+        log.info('%s already exists' % clean_directory)
 
     # create clean script
     if not os.path.exists(clean_script_path):
@@ -77,7 +77,7 @@ fi
         """ % {'started': clean_started, 'find': find_cmd, 'log': clean_log, 'ended': clean_ended, 'fail': clean_fail}
         utils.create_script(clean_script_path, command)
     else:
-        log.debug('%s already exists' % clean_script_path)
+        log.info('%s already exists' % clean_script_path)
 
 
 def clean(run_folder, clean_task, dry_run=True):

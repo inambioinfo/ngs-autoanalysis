@@ -102,11 +102,11 @@ class RunFolder(Folder):
                 return os.path.join(dir, self.run_folder_name)
 
     def update_sequencing_status(self, is_sequencing_complete, dry_run=True):
-        if os.path.exists(self.rta_completed) and is_sequencing_complete:
+        if os.path.exists(self.rta_completed) and is_sequencing_complete is True:
             self.touch(self.sequencing_completed, dry_run)
             self.log.info('sequencing completed')
         else:
-            if is_sequencing_complete == False:
+            if is_sequencing_complete is False:
                 self.touch(self.sequencing_failed, dry_run)
                 self.log.info('sequencing failed')
             else:

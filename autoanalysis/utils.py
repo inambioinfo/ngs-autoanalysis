@@ -58,7 +58,7 @@ SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
 # autoanalysis generated shell script
 export MEM_VALUE=%(mem_value)s
 export MEM_LIMIT=$[${MEM_VALUE}*1024]
-export JAVA_OPTS="-Xmx$[${MEM_VALUE}-128]M -Xms$[${MEM_VALUE}-128]M"
+export JAVA_OPTS="-Xmx$[${MEM_VALUE}-256]M -Xms$[${MEM_VALUE}-256]M"
 
 %(cluster_cmd)s
 '''
@@ -84,7 +84,7 @@ def create_script(script_path, command, template=SCRIPT_TEMPLATE):
         os.chmod(script_path, 0755)
         log.info('%s created' % script_path)
     else:
-        log.debug('%s already exists' % script_path)
+        log.info('%s already exists' % script_path)
 
 
 def run_process(cmd, dry_run=True):
@@ -95,9 +95,9 @@ def run_process(cmd, dry_run=True):
         log.info("command '%s' executed" % " ".join(cmd))
         if retcode == 0:
             log.debug(out)
+            return out
         else:
-            log.error(out)
-        return out
+            raise subprocess.CalledProcessError(retcode, cmd, out)
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
@@ -159,7 +159,7 @@ def locate_run_folder(run_folder_name, path, create=True):
     run_folders = glob.glob("%s/%s" % (path, run_folder_name))
     if run_folders:
         if len(run_folders) == 1:
-            log.debug("run folder %s already exists" % run_folders)
+            log.info("run folder %s already exists" % run_folders)
             return run_folders[0]
         else:
             log.error("more than one run folders %s found in %s" % (run_folder_name, run_folders))
@@ -167,7 +167,7 @@ def locate_run_folder(run_folder_name, path, create=True):
         if create:
                 run_folder = os.path.join(path, run_folder_name)
                 os.makedirs(run_folder)
-                log.debug("run folder %s created" % run_folder)
+                log.info("run folder %s created" % run_folder)
                 return run_folder
         else:
             log.info('no run folder %s found in %s' % (run_folder_name, path))
@@ -180,7 +180,7 @@ def create_directory(directory):
         log.info('%s created' % directory)
     except OSError:
         if os.path.exists(directory):
-            log.debug('%s already exists' % directory)
+            log.info('%s already exists' % directory)
         else:
             log.exception('cannot create directory %s' % directory)
             raise
@@ -191,7 +191,7 @@ def create_symlink(filename, linkname):
         if not os.path.lexists(linkname):
             if os.path.isfile(filename):
                 os.symlink(filename, linkname)
-                log.debug("%s symlink created" % linkname)
+                log.info("%s symlink created" % linkname)
             else:
                 log.warning("%s is not a file or does not exist" % filename)
         else:
