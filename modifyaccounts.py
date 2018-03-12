@@ -46,8 +46,7 @@ def main():
         # get all accounts
         all_accounts = glsutil.api.list('lab')
 
-        #field_name = 'Email Address for Billing Notifications'
-        field_name = 'Approvers'
+        field_name = 'Email Address for Billing Notifications'
 
         for account in all_accounts.lab:
             lab = glsutil.api.load_by_uri('lab', account.uri)
@@ -61,8 +60,7 @@ def main():
                             field_value = field.value()
                             log.info(field_value)
                     if options.update:
-                        #field_new_value = 'ac288@mrc-cu.cam.ac.uk'
-                        field_new_value = 'Anasuya Chattopadhyay <ac288@mrc-cu.cam.ac.uk>'
+                        field_new_value = 'ac288@mrc-cu.cam.ac.uk, apjm5@mrc-cu.cam.ac.uk'
                         new_field = glsapi.userdefined.field(field_new_value)
                         new_field.name = field_name
                         lab.field.append(new_field)
