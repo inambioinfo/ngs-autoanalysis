@@ -202,19 +202,18 @@ def main():
                             break
                         except CalledProcessError, e:
                             if not os.path.exists(event_file):
-                                # File no longer exists to be copied. Quietly move on to the next.
                                 log.info("Event file %s no longer exists." % os.path.basename(event_file))
-                                break
-                            attempt -= 1
-                            if attempt <= 0:
-                                # No retries left. Allow the error out.
-                                raise e
-                            # Otherwise, log a warning, pause, then try again.
-                            if e.output:
-                                log.warn("scp command failed, but can retry.")
                             else:
-                                log.warn("scp command failed, but can retry: %s" % e.output.strip())
-                            time.sleep(0.5)
+                                attempt -= 1
+                                if attempt <= 0:
+                                    # No retries left. Allow the error out.
+                                    raise e
+                                # Otherwise, log a warning, pause, then try again.
+                                if e.output:
+                                    log.warn("scp command failed, but can retry.")
+                                else:
+                                    log.warn("scp command failed, but can retry: %s" % e.output.strip())
+                                time.sleep(0.5)
                         except IOError, e:
                             # Error number 2 is "file not found". Can happen if things clean up while this
                             # script is iterating. So ignore errors with that error number.
