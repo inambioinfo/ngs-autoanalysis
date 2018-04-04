@@ -168,7 +168,9 @@ def main():
                 try:
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
                 except CalledProcessError, e:
-                    log_calledprocesserror(log, "Remote run folder clean up", e)
+                    if e.errno != 255:
+                        # Error code 255 mostly happens when the run folder does not exist on the server. 
+                        log_calledprocesserror(log, "Remote run folder clean up", e)
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
