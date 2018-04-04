@@ -77,11 +77,13 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
         rsync_ga_cmd = ["rsync", "-avrm", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
         utils.run_process(rsync_ga_cmd, dry_run)
     except CalledProcessError, e:
-        if e.returncode == 24:
-            # This return code means "Partial transfer due to vanished source files"
+        if e.returncode in [23, 24]:
+            # These return codes mean "Partial transfer due to error" and
+            # "Partial transfer due to vanished source files" respectively.
             # See https://lxadm.com/Rsync_exit_codes
             # We get these errors if things are cleaned or moved while one of the rsync
-            # commands above is taking place, and is harmless.
+            # commands above is taking place, and is harmless. If necessary any missing
+            # files will be transferred next time.
             log.warn("rsync had run files removed underneath it during copy to Clarity server:\n%s" % e.output.strip())
         else:
             raise e
@@ -199,6 +201,10 @@ def main():
                             # If the copy has worked, all done here. Stop the loop.
                             break
                         except CalledProcessError, e:
+                            if not os.path.exists(event_file):
+                                # File no longer exists to be copied. Quietly move on to the next.
+                                log.info("Event file %s no longer exists." % os.path.basename(event_file))
+                                break
                             attempt -= 1
                             if attempt <= 0:
                                 # No retries left. Allow the error out.
