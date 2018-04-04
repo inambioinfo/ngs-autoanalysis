@@ -205,6 +205,7 @@ def main():
                         except CalledProcessError, e:
                             if not os.path.exists(event_file):
                                 log.info("Event file %s no longer exists." % os.path.basename(event_file))
+                                attempt = 0
                             else:
                                 attempt -= 1
                                 if attempt <= 0:
