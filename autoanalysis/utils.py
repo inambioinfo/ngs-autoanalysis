@@ -53,7 +53,7 @@ SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
 #SBATCH --mem %(mem_value)s
 #SBATCH --mincpus 1
 #SBATCH --open-mode truncate
-#SBATCH -o %(cluster_work_dir)s/pipeline.%%j.out
+#SBATCH -o %(cluster_work_dir)s/pipeline.log
 
 # autoanalysis generated shell script
 export MEM_VALUE=%(mem_value)s
