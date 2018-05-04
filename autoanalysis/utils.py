@@ -50,6 +50,7 @@ SLURM_JOB_CMD_TEMPLATE = '''#!/bin/sh
 #SBATCH --no-requeue
 #SBATCH -p general
 #SBATCH -J %(job_name)s
+#SBATCH --time 24:00:00
 #SBATCH --mem %(mem_value)s
 #SBATCH --mincpus 1
 #SBATCH --open-mode truncate
