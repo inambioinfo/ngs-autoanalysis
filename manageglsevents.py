@@ -59,7 +59,7 @@ EVENT_HEADER = """
 ================================================================================"""
 THREE_DAYS = 3
 
-TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq']
+TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq', 'novaseq']
 
 
 def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
