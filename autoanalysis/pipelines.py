@@ -30,29 +30,18 @@ from config import cfg
 ################################################################################
 class PipelineDefinition(object):
 
-    def __init__(self, run, pipeline_name, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, use_limsdev=True, mode='local'):
+    def __init__(self, run, pipeline_name, software_path=cfg['SOFT_PIPELINE_PATH'], use_limsdev=True, mode='local'):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_name = pipeline_name
         self.software_path = software_path
-        self.cluster_host = cluster_host
         self.use_limsdev = use_limsdev
         self.mode = mode
-        if self.pipeline_name == 'alignment':
-            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'][pipeline_name] % (socket.gethostname(), str(self.run.run_folder)[1:], str(os.path.join(self.run.staging_run_folder, self.pipeline_name))[1:])
-        else:
-            self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'].get(pipeline_name, '')
+        self.pipeline_setup_options = cfg['PIPELINES_SETUP_OPTIONS'].get(pipeline_name, '')
 
         # create pipeline directory
-        if self.cluster_host and self.mode == 'lsf':
-            self.pipeline_directory = os.path.join(self.run.cluster_run_folder, self.pipeline_name)
-            utils.create_directory(self.pipeline_directory)
-        else:
-            self.pipeline_directory = os.path.join(self.run.run_folder, self.pipeline_name)
-            utils.create_directory(self.pipeline_directory)
-
-        # set path to pipeline directory on cluster
-        self.cluster_pipeline_directory = os.path.join(self.run.cluster_run_folder, self.pipeline_name)
+        self.pipeline_directory = os.path.join(self.run.run_folder, self.pipeline_name)
+        utils.create_directory(self.pipeline_directory)
 
         # set path to pipeline directory in staging area
         self.staging_pipeline_directory = os.path.join(self.run.staging_run_folder, self.pipeline_name)
@@ -92,10 +81,7 @@ class PipelineDefinition(object):
         # environment variables for setting up and running each pipeline
         self.env['bin_meta'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['CREATE_METAFILE_FILENAME'])
         self.env['bin_run'] = '%s/%s/bin/%s' % (self.software_path, self.pipeline_name, cfg['RUN_PIPELINE_FILENAME'])
-        if self.mode == 'slurm':
-            self.env['basedir'] = os.path.dirname(os.path.dirname(self.cluster_pipeline_directory))
-        else:
-            self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
+        self.env['basedir'] = os.path.dirname(os.path.dirname(self.pipeline_directory))
 
         if self.pipeline_name in cfg['PIPELINES_SETUP_OPTIONS'].keys():
             if self.use_limsdev:
@@ -109,19 +95,11 @@ class PipelineDefinition(object):
                 self.env['options'] = ''
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = self.pipeline_run_meta
-        self.env['cluster_run_meta'] = os.path.join(self.cluster_pipeline_directory, cfg['RUN_META_FILENAME'])
-        if self.cluster_host:
-            self.env['mode'] = self.mode
-        else:
-            self.env['mode'] = 'local'
-        self.env['lsf_queue'] = cfg['LSF_QUEUE']
+        self.env['mode'] = 'local'
         self.env['mem_value'] = cfg['MEM_VALUE']
-        self.env['cluster'] = self.cluster_host
-        self.env['cluster_work_dir'] = self.cluster_pipeline_directory
         self.env['work_dir'] = self.pipeline_directory
         self.env['job_name'] = "%s_%s_pipeline" % (self.run.flowcell_id, self.pipeline_name)
         self.env['job_script'] = self.job_script_path
-        self.env['cluster_job_script'] = os.path.join(self.cluster_pipeline_directory, cfg['JOB_SCRIPT_FILENAME'])
         self.env['run_pipeline'] = self.run_script_path
         self.env['pipedir'] = self.pipeline_directory
         self.env['archive_pipedir'] = self.staging_pipeline_directory
@@ -131,7 +109,6 @@ class PipelineDefinition(object):
         self.env['log'] = self.pipeline_log
         self.env['lock'] = self.pipeline_lock
         self.env['cmd'] = cfg['PIPELINE_RUN_COMMAND'] % self.env
-        self.env['cluster_cmd'] = cfg['CLUSTER_PIPELINE_RUN_COMMAND'] % self.env
 
     def create_setup_pipeline_script(self):
         self.log.info('... create setup pipeline script ...............................................')
@@ -181,12 +158,7 @@ class PipelineDefinition(object):
                 if not os.path.exists(self.pipeline_ended):
                     if _dependencies_satisfied:
                         if self.env['mode'] == 'local':
-                            if self.pipeline_name == 'alignment' and not os.path.isfile(cfg['ALIGNMENT_DAEMON_PID']):
-                                pid = str(os.getpid())
-                                file(cfg['ALIGNMENT_DAEMON_PID'], 'w').write(pid)
-                                utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
-                            else:
-                                utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
+                            utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
                         else:
                             utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
@@ -221,8 +193,6 @@ class PipelineDefinition(object):
                                 self.log.info("%s pipeline in %s has not finished." % (self.pipeline_name, self.run.run_folder))
                 # pipeline finished
                 else:
-                    if self.env['mode'] == 'local' and self.pipeline_name == 'alignment' and os.path.isfile(cfg['ALIGNMENT_DAEMON_PID']):
-                        os.unlink(cfg['ALIGNMENT_DAEMON_PID'])
                     self.log.info("[***OK***] %s pipeline finished successfully." % self.pipeline_name)
         else:
             self.log.warn("%s is missing" % self.env['run_meta'])
@@ -233,15 +203,13 @@ class PipelineDefinition(object):
 ################################################################################
 class Pipelines(object):
 
-    def __init__(self, run, pipeline_step=None, software_path=cfg['SOFT_PIPELINE_PATH'], cluster_host=None, dry_run=True, use_limsdev=True, is_alignment_active=True, local_mode=False):
+    def __init__(self, run, pipeline_step=None, software_path=cfg['SOFT_PIPELINE_PATH'], dry_run=True, use_limsdev=True, local_mode=False):
         self.log = logging.getLogger(__name__)
         self.run = run
         self.pipeline_step = pipeline_step
         self.software_path = software_path
-        self.cluster_host = cluster_host
         self.dry_run = dry_run
         self.use_limsdev = use_limsdev
-        self.is_alignment_active = is_alignment_active
         self.local_mode = local_mode
 
         self.pipelines = cfg['PIPELINES_DEPENDENCIES']
@@ -257,22 +225,13 @@ class Pipelines(object):
         each of these three steps: setup_pipeline, run_pipeline, and rsync_pipeline
         """
         if self.run.is_ready_for_processing():
-            #for pipeline_name in self.pipelines.keys():
             for pipeline_name in cfg['PIPELINES_ORDER']:
-                if pipeline_name == 'alignment':
-                    if self.is_alignment_active:
-                        # special case for running alignment pipeline locally - just one pipeline at a time
-                        if self.local_mode:
-                            self._execute_steps(pipeline_name)
-                        else:
-                            self._execute_steps(pipeline_name)
-                else:
-                    self._execute_steps(pipeline_name)
+                self._execute_steps(pipeline_name)
             self.register_completion()
 
     def _execute_steps(self, pipeline_name):
         # create pipeline definition
-        pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.cluster_host, self.use_limsdev, cfg['PIPELINES_DEFAULT_MODE'][pipeline_name])
+        pipeline_definition = PipelineDefinition(self.run, pipeline_name, self.software_path, self.use_limsdev, cfg['PIPELINES_DEFAULT_MODE'][pipeline_name])
         pipeline_definition.print_header()
         self.pipeline_definitions[pipeline_name] = pipeline_definition
         # - step 1 - create setup-pipeline script
@@ -619,22 +578,17 @@ class PipelineDefinitionTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir)
         self.run = self.runs.runs_to_analyse[0]
         self.log.debug('Testing logging')
         self.pipeline_definition = PipelineDefinition(run=self.run, pipeline_name='test_local')
         self.pipeline_definition.print_header()
-        self.pipeline_definition_cluster = PipelineDefinition(run=self.run, pipeline_name='test_lsf', cluster_host='uk-cri-test', use_limsdev=False, mode='lsf')
-        self.pipeline_definition_cluster.print_header()
 
     def tearDown(self):
         import shutil
         shutil.rmtree(self.pipeline_definition.pipeline_directory)
-        shutil.rmtree(self.pipeline_definition_cluster.pipeline_directory)
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
-            shutil.rmtree(run.cluster_run_folder)
 
     def test_create_setup_script(self):
         self.assertEqual('test_local', self.pipeline_definition.pipeline_name)
@@ -646,19 +600,6 @@ class PipelineDefinitionTests(unittest.TestCase):
         self.pipeline_definition.create_run_pipeline_script()
         self.assertTrue(os.path.exists(self.pipeline_definition.run_script_path))
 
-    def test_create_setup_script_cluster(self):
-        self.assertEqual('test_lsf', self.pipeline_definition_cluster.pipeline_name)
-        self.pipeline_definition_cluster.create_setup_pipeline_script()
-        self.assertTrue(os.path.exists(os.path.join(self.clusterdir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.pipeline_directory))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.setup_script_path))
-
-    def test_create_run_script_cluster(self):
-        self.assertEqual('test_lsf', self.pipeline_definition_cluster.pipeline_name)
-        self.pipeline_definition_cluster.create_run_pipeline_script()
-        self.assertTrue(os.path.exists(os.path.join(self.clusterdir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.run_script_path))
-
 
 class PipelinesTests(unittest.TestCase):
 
@@ -668,14 +609,12 @@ class PipelinesTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir)
 
     def tearDown(self):
         import shutil
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
-            shutil.rmtree(run.cluster_run_folder)
             for pipeline_name in cfg['PIPELINES_ORDER']:
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
@@ -685,20 +624,9 @@ class PipelinesTests(unittest.TestCase):
 
     def test_execute(self):
         for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+            pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
-            for pipeline_name in pipelines.pipeline_definitions.keys():
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
-
-    def test_execute_without_alignment(self):
-        for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='uk-cri-test', is_alignment_active=False)
-            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
-            pipelines.execute()
-            self.assertFalse(os.path.exists(os.path.join(run.run_folder, 'alignment')))
             for pipeline_name in pipelines.pipeline_definitions.keys():
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
                 self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
@@ -706,7 +634,7 @@ class PipelinesTests(unittest.TestCase):
 
     def test_register_completion(self):
         for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+            pipelines = Pipelines(run=run)
             self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
             pipelines.execute()
             for pipeline_name in pipelines.pipeline_definitions.keys():
@@ -714,120 +642,6 @@ class PipelinesTests(unittest.TestCase):
                 utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_ended)
             pipelines.register_completion()
             self.assertTrue(os.path.isfile(pipelines.all_completed))
-
-    def test_execute_only_fastq(self):
-        for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, pipeline_step='fastq')
-            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
-            pipelines.execute()
-            for pipeline_name in pipelines.pipeline_definitions.keys():
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
-
-
-class PipelineDefinitionSlurmTests(unittest.TestCase):
-
-    def setUp(self):
-        import log as logger
-        self.log = logger.get_custom_logger()
-        self.current_path = os.path.abspath(os.path.dirname(__file__))
-        self.basedir = os.path.join(self.current_path, '../testdata/processing/')
-        self.stagingdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/scratcha/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
-        self.run = self.runs.runs_to_analyse[0]
-        self.log.debug('Testing logging')
-        self.pipeline_definition_cluster = PipelineDefinition(run=self.run, pipeline_name='alignment', cluster_host='clust1-headnode', use_limsdev=False, mode='slurm')
-        self.pipeline_definition_cluster.print_header()
-
-    def tearDown(self):
-        import shutil
-        shutil.rmtree(self.pipeline_definition_cluster.pipeline_directory)
-        for run in self.runs.runs_to_analyse:
-            shutil.rmtree(run.staging_run_folder)
-            # no cluster folder to remove
-
-    def test_create_setup_script_cluster(self):
-        self.assertEqual('alignment', self.pipeline_definition_cluster.pipeline_name)
-        self.pipeline_definition_cluster.create_setup_pipeline_script()
-        self.assertTrue(os.path.exists(os.path.join(self.basedir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertFalse(os.path.exists(os.path.join(self.clusterdir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.pipeline_directory))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.setup_script_path))
-
-    def test_create_run_script_cluster(self):
-        self.assertEqual('alignment', self.pipeline_definition_cluster.pipeline_name)
-        self.pipeline_definition_cluster.create_run_pipeline_script()
-        self.assertTrue(os.path.exists(os.path.join(self.basedir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertFalse(os.path.exists(os.path.join(self.clusterdir, self.run.run_folder_name, self.pipeline_definition_cluster.pipeline_name)))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.run_script_path))
-        self.assertTrue(os.path.exists(self.pipeline_definition_cluster.job_script_path))
-
-
-class PipelinesSlurmTests(unittest.TestCase):
-
-    def setUp(self):
-        import log as logger
-        self.log = logger.get_custom_logger()
-        self.current_path = os.path.abspath(os.path.dirname(__file__))
-        self.basedir = os.path.join(self.current_path, '../testdata/processing/')
-        self.stagingdir = os.path.join(self.current_path, '../testdata/staging4slurm/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/scratcha/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
-
-    def tearDown(self):
-        import shutil
-        for run in self.runs.runs_to_analyse:
-            shutil.rmtree(run.staging_run_folder)
-            #shutil.rmtree(run.cluster_run_folder)
-            for pipeline_name in cfg['PIPELINES_ORDER']:
-                pipeline_folder = os.path.join(run.run_folder, pipeline_name)
-                if os.path.exists(pipeline_folder):
-                    shutil.rmtree(pipeline_folder)
-            if run.run_folder_name == '130417_HWI-ST230_1122_C1YH9ACXX' and os.path.exists(run.analysis_completed):
-                os.remove(run.analysis_completed)
-
-    def test_execute(self):
-        for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='localhost')
-            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
-            pipelines.execute()
-            for pipeline_name in pipelines.pipeline_definitions.keys():
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
-                if pipeline_name == 'alignment':
-                    self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].job_script_path))
-
-    def test_execute_without_alignment(self):
-        for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='localhost', is_alignment_active=False)
-            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
-            pipelines.execute()
-            self.assertFalse(os.path.exists(os.path.join(run.run_folder, 'alignment')))
-            for pipeline_name in pipelines.pipeline_definitions.keys():
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].pipeline_directory))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].setup_script_path))
-                self.assertTrue(os.path.exists(pipelines.pipeline_definitions[pipeline_name].run_script_path))
-
-    def test_register_completion(self):
-        for run in self.runs.runs_to_analyse:
-            pipelines = Pipelines(run=run, cluster_host='localhost')
-            self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
-            pipelines.execute()
-            for pipeline_name in pipelines.pipeline_definitions.keys():
-                utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_started)
-                utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_run_meta)
-                if pipeline_name == 'alignment':
-                    os.makedirs(pipelines.pipeline_definitions[pipeline_name].staging_pipeline_directory)
-                    utils.touch(pipelines.pipeline_definitions[pipeline_name].staging_pipeline_ended)
-                else:
-                    utils.touch(pipelines.pipeline_definitions[pipeline_name].pipeline_ended)
-            pipelines.execute()
-            pipelines.register_completion()
-            if run.run_folder_name == '141006_D00491_0106_C462UANXX':
-                self.assertTrue(os.path.isfile(pipelines.all_completed))
 
     def test_execute_only_fastq(self):
         for run in self.runs.runs_to_analyse:
@@ -848,14 +662,12 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir, '130417_HWI-ST230_1122_C1YH9ACXX')
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir, '130417_HWI-ST230_1122_C1YH9ACXX')
 
     def tearDown(self):
         import shutil
         for run in self.runs.runs_to_analyse:
             shutil.rmtree(run.staging_run_folder)
-            shutil.rmtree(run.cluster_run_folder)
             for pipeline_name in cfg['PIPELINES_ORDER']:
                 pipeline_folder = os.path.join(run.run_folder, pipeline_name)
                 if os.path.exists(pipeline_folder):
@@ -871,7 +683,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def test_execute(self):
         run = self.runs.runs_to_analyse[0]
-        pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+        pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
         for pipeline_name in pipelines.pipeline_definitions.keys():
@@ -881,7 +693,7 @@ class PipelinesOneRunFolderTests(unittest.TestCase):
 
     def test_register_completion(self):
         run = self.runs.runs_to_analyse[0]
-        pipelines = Pipelines(run=run, cluster_host='uk-cri-test')
+        pipelines = Pipelines(run=run)
         self.assertEqual(run.run_folder_name, pipelines.run.run_folder_name)
         pipelines.execute()
         for pipeline_name in pipelines.pipeline_definitions.keys():
@@ -909,8 +721,7 @@ class SyncTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir)
 
     def tearDown(self):
         import shutil
@@ -922,7 +733,6 @@ class SyncTests(unittest.TestCase):
             if os.path.exists(completed):
                 os.remove(completed)
             shutil.rmtree(run.staging_run_folder)
-            shutil.rmtree(run.cluster_run_folder)
 
     def test_execute(self):
         import time
@@ -954,9 +764,8 @@ class ExternalTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing4external/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging4external/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
         self.ftpdir = os.path.join(self.current_path, '../testdata/external')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir)
         self.are_fastq_files_attached = True
 
     def tearDown(self):
@@ -974,7 +783,6 @@ class ExternalTests(unittest.TestCase):
             staging_completed = os.path.join(run.staging_run_folder, cfg['EXTERNAL_COMPLETED'])
             if os.path.exists(staging_completed):
                 os.remove(staging_completed)
-            shutil.rmtree(run.cluster_run_folder)
         if os.path.exists(os.path.join(self.ftpdir, 'tmp')):
             for folder in os.listdir(os.path.join(self.ftpdir, 'tmp')):
                 shutil.rmtree(os.path.join(self.ftpdir, 'tmp', folder))

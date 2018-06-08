@@ -45,11 +45,6 @@ class GlsLims:
         self.log.info('... check sample fastq files ...................................................')
         return self.glsutil.are_sample_fastq_files_attached(run_id)
 
-    def is_alignment_active(self, run_id):
-        # return True if passed QC, not external and project core supported or auto alignment lab
-        self.log.info('... check alignment status .....................................................')
-        return self.glsutil.is_alignment_active(run_id)
-
     def create_auto_pipeline_reports_process(self, run_id):
         """ Create auto analysis process in lims only if sequencing run process exists
         and only if it does not exist yet - Only one single auto analysis process per flow-cell
@@ -106,8 +101,7 @@ class GlsLimsTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing4publishing/')
         self.stagingdir = os.path.join(self.current_path, '../testdata/staging4publishing/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = data.RunFolderList(self.basedir, self.stagingdir, self.clusterdir)
+        self.runs = data.RunFolderList(self.basedir, self.stagingdir)
         self.PUBLISHING_ASSIGNED = cfg['PUBLISHING_ASSIGNED']
         self.are_fastq_files_attached = True
 
@@ -122,7 +116,6 @@ class GlsLimsTests(unittest.TestCase):
             staging_completed = os.path.join(run.staging_run_folder, self.PUBLISHING_ASSIGNED)
             if os.path.exists(staging_completed):
                 os.remove(staging_completed)
-            shutil.rmtree(run.cluster_run_folder)
 
     def test_create_auto_pipeline_reports_process(self):
         run_id = '140815_D00408_0163_C4EYLANXX'
@@ -147,16 +140,12 @@ class GlsLimsTests(unittest.TestCase):
     def test_find_external_data(self):
         # run with external data; fastq files will be removed when archived
         # please test with a run in /staging/ area
-        are_fastq_files_attached = self.glslims.are_fastq_files_attached('161024_K00254_0069_HFVNFBBXX')
+        are_fastq_files_attached = self.glslims.are_fastq_files_attached('180530_K00252_0322_HW5TJBBXX')
         self.log.info(are_fastq_files_attached)
         self.assertTrue(are_fastq_files_attached)
-        data = self.glslims.find_external_data('161024_K00254_0069_HFVNFBBXX')
+        data = self.glslims.find_external_data('180530_K00252_0322_HW5TJBBXX')
         self.log.info(data)
         self.assertIsNotNone(data)
-
-    def test_is_alignment_active(self):
-        self.assertTrue(self.glslims.is_alignment_active('140815_D00408_0163_C4EYLANXX'))
-        self.assertFalse(self.glslims.is_alignment_active('140813_M01712_0104_000000000-A9YBB'))
 
     def test_is_sequencing_run_complete(self):
         self.assertTrue(self.glslims.is_sequencing_run_complete('141022_D00491_0113_C5LTUANXX'))
@@ -164,8 +153,6 @@ class GlsLimsTests(unittest.TestCase):
 
     def test_are_fastq_files_attached(self):
         self.assertTrue(self.glslims.are_fastq_files_attached('161123_M01712_0338_000000000-AWR96'))
-
-
 
 if __name__ == '__main__':
     unittest.main()

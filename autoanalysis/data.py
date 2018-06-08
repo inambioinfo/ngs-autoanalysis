@@ -60,7 +60,7 @@ class RunFolder(Folder):
 === RUN: %(run_folder)s
 ================================================================================"""
 
-    def __init__(self, run_folder, staging_dir=None, cluster_dir=None, do_create_dir=True):
+    def __init__(self, run_folder, staging_dir=None, do_create_dir=True):
         self.log = logging.getLogger(__name__)
         self.run_folder = run_folder
         self.path_to_run_folder = os.path.dirname(self.run_folder)
@@ -73,7 +73,6 @@ class RunFolder(Folder):
         self.do_create_dir = do_create_dir
 
         self.staging_dir = staging_dir
-        self.cluster_dir = cluster_dir
 
         # event files
         self.rta_completed = os.path.join(self.run_folder, cfg['RTA_COMPLETED'])
@@ -88,8 +87,6 @@ class RunFolder(Folder):
 
         # only create run folders when sequencing is complete
         self.staging_run_folder = self.create_runfolder(self.staging_dir)
-        # create run folder on cluster if possible, otherwise only set path to run folder on cluster
-        self.cluster_run_folder = self.create_runfolder(self.cluster_dir)
 
     def get_header(self):
         return RunFolder.RUN_HEADER % {'run_folder': self.run_folder_name}
@@ -199,12 +196,11 @@ class RunFolderList(object):
     RUNFOLDER_GLOB = "%s/??????_*_*_*"
     ONERUNFOLDER_GLOB = "%s/%s"
 
-    def __init__(self, processing_dir, staging_dir, cluster_dir=None, one_run_folder=None, do_create_dir=True):
+    def __init__(self, processing_dir, staging_dir, one_run_folder=None, do_create_dir=True):
         self.log = logging.getLogger(__name__)
         self.do_create_dir = do_create_dir
         self.processing_dir = processing_dir
         self.staging_dir = staging_dir
-        self.cluster_dir = cluster_dir
         self.one_run_folder = one_run_folder
 
         self.run_folders = self.get_folders(self.processing_dir)
@@ -221,7 +217,7 @@ class RunFolderList(object):
         published_runs = []
         for run_folder in self.run_folders:
             self.log.debug(run_folder)
-            run = RunFolder(run_folder, self.staging_dir, self.cluster_dir, do_create_dir=self.do_create_dir)
+            run = RunFolder(run_folder, self.staging_dir, do_create_dir=self.do_create_dir)
             all_runs.append(run)
             if run.is_sequencing_completed_present():
                 completed_runs.append(run)
@@ -242,9 +238,6 @@ class RunFolderList(object):
     def get_destination_runfolders(self):
         return self.get_folders(self.staging_dir)
 
-    def get_cluster_runfolders(self):
-        return self.get_folders(self.cluster_dir)
-
     def get_folders(self, this_dir):
         if self.one_run_folder:
             return glob.glob(RunFolderList.ONERUNFOLDER_GLOB % (this_dir, self.one_run_folder))
@@ -263,16 +256,14 @@ class RunFolderTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
 
         self.run_folder_name = '130417_HWI-ST230_1122_C1YH9ACXX'
         self.run_folder = os.path.join(self.basedir, self.run_folder_name)
-        self.run = RunFolder(self.run_folder, self.destdir, self.clusterdir)
+        self.run = RunFolder(self.run_folder, self.destdir)
 
     def tearDown(self):
         import shutil
         shutil.rmtree(self.run.staging_run_folder)
-        shutil.rmtree(self.run.cluster_run_folder)
 
     def test_run(self):
         self.assertEqual(self.run_folder, self.run.run_folder)
@@ -294,8 +285,6 @@ class RunFolderTests(unittest.TestCase):
     def test_destination_runfolders(self):
         folder = glob.glob("%s/%s" % (self.destdir, '130417_HWI-ST230_1122_C1YH9ACXX'))
         self.assertIsNotNone(folder)
-        folder = glob.glob("%s/%s" % (self.clusterdir, '130417_HWI-ST230_1122_C1YH9ACXX'))
-        self.assertIsNotNone(folder)
 
 
 class RunFolderListTests(unittest.TestCase):
@@ -306,20 +295,16 @@ class RunFolderListTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.clusterdir = os.path.join(self.current_path, '../testdata/lustre/')
-        self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir, cluster_dir=self.clusterdir)
+        self.runs = RunFolderList(processing_dir=self.basedir, staging_dir=self.destdir)
 
     def tearDown(self):
         import shutil
         for folder in self.runs.get_destination_runfolders():
             shutil.rmtree(folder)
-        for folder in self.runs.get_cluster_runfolders():
-            shutil.rmtree(folder)
 
     def test_all_run_folders(self):
         self.assertEqual(self.basedir, self.runs.processing_dir)
         self.assertEqual(self.destdir, self.runs.staging_dir)
-        self.assertEqual(self.clusterdir, self.runs.cluster_dir)
         self.assertEqual(4, len(self.runs.run_folders))
         self.assertEqual(len(self.runs.run_folders), len(self.runs.all_runs))
 
@@ -337,7 +322,7 @@ class RunFolderListTests(unittest.TestCase):
 
     def test_destination_run_folders(self):
         self.assertEqual(3, len(self.runs.get_destination_runfolders()))
-        self.assertEqual(3, len(self.runs.get_cluster_runfolders()))
+
 
 class OneRunFolderTests(unittest.TestCase):
 
@@ -347,7 +332,7 @@ class OneRunFolderTests(unittest.TestCase):
         self.current_path = os.path.abspath(os.path.dirname(__file__))
         self.basedir = os.path.join(self.current_path, '../testdata/processing/')
         self.destdir = os.path.join(self.current_path, '../testdata/staging/')
-        self.runs = RunFolderList(self.basedir, self.destdir, None, '130417_HWI-ST230_1122_C1YH9ACXX')
+        self.runs = RunFolderList(self.basedir, self.destdir, '130417_HWI-ST230_1122_C1YH9ACXX')
 
     def tearDown(self):
         import shutil

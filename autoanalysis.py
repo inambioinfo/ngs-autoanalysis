@@ -40,21 +40,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processingdir", dest="processingdir", action="store", help="processing base directories e.g. '/processing'", required=True)
     parser.add_argument("--stagingdir", dest="stagingdir", action="store", help="staging base directories e.g. '/staging'", required=True)
-    parser.add_argument("--clusterdir", dest="clusterdir", action="store", help="cluster base directory e.g. '/lustre/mib-cri/solexa/Runs'", default=None)
 
     parser.add_argument("--softdir", dest="softdir", action="store", default=cfg['SOFT_PIPELINE_PATH'], help="software base directory where pipelines are installed - default set to %s" % cfg['SOFT_PIPELINE_PATH'])
-    parser.add_argument("--cluster", dest="cluster", action="store", help="cluster hostname e.g. %s" % cfg['CLUSTER_HOST'])
 
     parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--step", dest="step", action="store", choices=list(cfg['PIPELINES_SETUP_OPTIONS'].viewkeys()), help="pipeline step to choose from %s" % cfg['PIPELINES_ORDER'])
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--limsdev", dest="use_limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--donot-run-pipelines", dest="donot_run_pipelines", action="store_true", default=False, help="use this option to DO NOT run the pipelines")
+
     parser.add_argument("--logfile", dest="logfile", action="store", default=None, help="File to print logging information")
     parser.add_argument("--nologemail", dest="nologemail", action="store_true", default=False, help="turn off sending log emails on error")
-
-    parser.add_argument("--noalignment", dest="noalignment", action="store_true", default=False, help="turn off alignment pipeline completely")
-    parser.add_argument("--local", dest="local", action="store_true", default=False, help="run all pipelines locally, overwriting default mode")
 
     options = parser.parse_args()
 
@@ -70,14 +66,9 @@ def main():
     else:
         file(pidfile, 'w').write(pid)
 
-    # unset these variables if all pipelines should run locally
-    if options.local:
-        options.clusterdir = None
-        options.cluster = None
-
     try:
         # loop over all runs that have a Sequencing.completed file in options.processingdir
-        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.clusterdir, options.run_folder)
+        runs = auto_data.RunFolderList(options.processingdir, options.stagingdir, options.run_folder)
         # connect to lims
         glslims = auto_glslims.GlsLims(options.use_limsdev)
         for run in runs.runs_to_analyse:
@@ -88,14 +79,9 @@ def main():
                 are_files_attached = glslims.are_fastq_files_attached(run.run_folder_name)
                 # get external data when lane and sample fastq files are recorded in ClarityFiles DB
                 external_data = glslims.find_external_data(run.run_folder_name)
-                # is alignment active for this run?
-                if options.noalignment:
-                    is_alignment_active = False
-                else:
-                    is_alignment_active = glslims.is_alignment_active(run.run_folder_name)
 
                 # setup and run pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.cluster, options.dry_run, options.use_limsdev, is_alignment_active, options.local)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.dry_run, options.use_limsdev, options.local)
                 if not options.donot_run_pipelines:
                     pipelines.execute()
 

@@ -14,19 +14,14 @@ SUBJECT: New Error From AUTOANALYSIS
 PIPELINES_ORDER:
   - "fastq"
   - "primaryqc"
-  - "alignment"
 
 PIPELINES_DEPENDENCIES:
   primaryqc:
-    - "fastq"
-  alignment:
     - "fastq"
 
 PIPELINES_DEFAULT_MODE:
   fastq: "local"
   primaryqc: "local"
-  #alignment: "lsf"
-  alignment: "slurm"
 
 # Pipeline setup command to generate metadata file
 PIPELINE_SETUP_COMMAND: "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --notifications %(options)s %(flowcell_id)s %(run_meta)s"
@@ -34,13 +29,9 @@ PIPELINE_SETUP_COMMAND: "%(bin_meta)s --mode=%(mode)s --basedir=%(basedir)s --no
 PIPELINES_SETUP_OPTIONS:
   fastq: ""
   primaryqc: "--create-sample-sheet --phix"
-  #alignment: "--queue=solexa --sync --fastq-source-url=soltrans@%s::%s/fastq --reference-data-dir=/lustre/reference_data/mib-cri/reference_genomes"
-  alignment: "--sync --fastq-source-url=soltrans@%s::%s/fastq --sync-target-url=soltrans@sol-srv004::%s"
 
 # Pipeline run command to run pipeline
 PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(run_meta)s"
-CLUSTER_PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(cluster_run_meta)s"
-#PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s --ignore-walltime %(run_meta)s"
 
 # Software pipeline path
 SOFT_PIPELINE_PATH: "/home/solexa/sequencingpipelines"
@@ -67,8 +58,6 @@ PIPELINE_LOCK_FILENAME: rsync.lock
 CREATE_METAFILE_FILENAME: create-metafile
 RUN_META_FILENAME: run-meta.xml
 RUN_PIPELINE_FILENAME: run-pipeline
-
-ALIGNMENT_DAEMON_PID: "/tmp/autoanalysis_alignment_daemon.pid"
 
 ################################################################################
 ### data
