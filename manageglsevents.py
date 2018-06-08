@@ -77,11 +77,13 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
         rsync_ga_cmd = ["rsync", "-avrm", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
         utils.run_process(rsync_ga_cmd, dry_run)
     except CalledProcessError, e:
-        if e.returncode == 24:
-            # This return code means "Partial transfer due to vanished source files"
+        if e.returncode in [23, 24]:
+            # These return codes mean "Partial transfer due to error" and
+            # "Partial transfer due to vanished source files" respectively.
             # See https://lxadm.com/Rsync_exit_codes
             # We get these errors if things are cleaned or moved while one of the rsync
-            # commands above is taking place, and is harmless.
+            # commands above is taking place, and is harmless. If necessary any missing
+            # files will be transferred next time.
             log.warn("rsync had run files removed underneath it during copy to Clarity server:\n%s" % e.output.strip())
         else:
             raise e
@@ -100,7 +102,6 @@ def main():
     # get the options
     parser = argparse.ArgumentParser()
     parser.add_argument("--days", dest="days", action="store", default=THREE_DAYS, help="Number of days files stays on lims servers before being deleted, default is %s" % THREE_DAYS)
-    parser.add_argument("--runfolder", dest="run_folder", action="store", help="run folder e.g. '130114_HWI-ST230_1016_D18MAACXX'")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="use this option to not do any shell command execution, only report actions")
     parser.add_argument("--logfile", dest="logfile", action="store", default=False, help="File to print logging information")
 
@@ -130,15 +131,8 @@ def main():
     for run_folder in run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        ignore_me = os.path.join(run_folder, cfg['IGNORE_ME'])
         try:
-            if run_folder_name == options.run_folder:
-                sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
-            else:
-                if not os.path.exists(ignore_me):
-                    sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
-                else:
-                    log.info('%s is present - run ignored' % ignore_me)
+            sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
         except CalledProcessError, e:
             log_calledprocesserror(log, "rsync command", e)
         except Exception, e:
@@ -174,13 +168,15 @@ def main():
                 try:
                     utils.run_process(delete_runfolder_cmd, options.dry_run)
                 except CalledProcessError, e:
-                    log_calledprocesserror(log, "Remote run folder clean up", e)
+                    if e.errno != 255:
+                        # Error code 255 mostly happens when the run folder does not exist on the server. 
+                        log_calledprocesserror(log, "Remote run folder clean up", e)
                 except Exception, e:
                     log.exception("Unexpected error")
                     log.exception(e)
                     continue
 
-    today = date.today() 
+    today = date.today()
 
     # Copy event files to lims server
     for technology in TECHNOLOGIES:
@@ -207,16 +203,20 @@ def main():
                             # If the copy has worked, all done here. Stop the loop.
                             break
                         except CalledProcessError, e:
-                            attempt -= 1
-                            if attempt <= 0:
-                                # No retries left. Allow the error out.
-                                raise e
-                            # Otherwise, log a warning, pause, then try again.
-                            if e.output:
-                                log.warn("scp command failed, but can retry.")
+                            if not os.path.exists(event_file):
+                                log.info("Event file %s no longer exists." % os.path.basename(event_file))
+                                break
                             else:
-                                log.warn("scp command failed, but can retry: %s" % e.output.strip())
-                            time.sleep(0.5)
+                                attempt -= 1
+                                if attempt <= 0:
+                                    # No retries left. Allow the error out.
+                                    raise e
+                                # Otherwise, log a warning, pause, then try again.
+                                if e.output:
+                                    log.warn("scp command failed, but can retry.")
+                                else:
+                                    log.warn("scp command failed, but can retry: %s" % e.output.strip())
+                                time.sleep(0.5)
                         except IOError, e:
                             # Error number 2 is "file not found". Can happen if things clean up while this
                             # script is iterating. So ignore errors with that error number.

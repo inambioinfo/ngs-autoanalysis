@@ -357,6 +357,7 @@ rm %(lock)s
     "--exclude=temp",
     "--exclude=JobOutputs",
     "--exclude=BCLtoFASTQ",
+    "--exclude=bcl2fastq",
     "--exclude=primaryqc",
     "--exclude=%s" % cfg['PIPELINE_LOCK_FILENAME']
     ]
