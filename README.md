@@ -36,6 +36,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+On sol's servers:
+```bash
+virtualenv --python=/home/mib-cri/software/centos6/python2.7.15/bin/python venv
+source ven/bin/activate
+pip install --upgrade setuptools
+pip install --upgrade urllib3
+pip install -r requirements.txt
+```
 
 ## Configuration
 
