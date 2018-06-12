@@ -81,7 +81,7 @@ def main():
                 external_data = glslims.find_external_data(run.run_folder_name)
 
                 # setup and run pipelines
-                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.dry_run, options.use_limsdev, options.local)
+                pipelines = auto_pipelines.Pipelines(run, options.step, options.softdir, options.dry_run, options.use_limsdev)
                 if not options.donot_run_pipelines:
                     pipelines.execute()
 

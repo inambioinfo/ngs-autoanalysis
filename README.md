@@ -23,7 +23,12 @@ Tools currently in used on four production servers : sol-srv001/2/3/4:
 
 ## Dependencies
 
-- Python Clarity Client API v0.4.3: https://github.com/crukci-bioinformatics/claritypy-client/releases/tag/v0.4.3
+- Python 2.7.15
+
+Installed on sols' servers in `/home/mib-cri/software/centos6/python2.7.15/bin/python`
+
+
+- Python Clarity Client API v0.4.6: https://github.com/crukci-bioinformatics/claritypy-client/releases/tag/v0.4.6
 
 ```bash
 virtualenv venv

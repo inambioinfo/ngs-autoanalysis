@@ -3,16 +3,8 @@
 # Python Clarity Client API
 -e git+https://github.com/crukci-bioinformatics/claritypy-client.git@v0.4.6#egg=claritypy-glsclient
 
-# Specific package versions for security requests.
-cryptography==1.7.2
-cffi==1.9.1
-pycparser==2.17
-pyparsing==2.1.10
-
 # requests security package extra
-requests[security]==2.13.0
+requests[security]
 
 # config
-pyyaml==3.12
-argparse
-
+pyyaml
