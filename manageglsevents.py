@@ -16,6 +16,8 @@ import time
 import socket
 import shutil
 import errno
+import re
+import lxml.etree as et
 
 from datetime import date
 from subprocess import CalledProcessError
@@ -47,8 +49,9 @@ gls_events_xxxx needs to be created at the destination prior to run the script
 ----------
 """
 
-LIMS_SERVER = "glsjboss@genomicsequencing.cruk.cam.ac.uk"
+LIMS_SERVER = "glsjboss@limsdev.cruk.cam.ac.uk"
 RUNFOLDER_GLOB = "%s/??????_*_*_*"
+NOVASEQ_RUNFOLDER = re.compile("^[0-9]{6}_.+_[0-9]+_[AB]?[A-Z0-9]{5}D[MRS]XX$", re.IGNORECASE)
 RUN_HEADER = """
 ================================================================================
 === RUN: %(run_folder)s
@@ -58,6 +61,7 @@ EVENT_HEADER = """
 === EVENT: %s
 ================================================================================"""
 THREE_DAYS = 3
+RSYNC_FLAGS = "-rtm"
 
 TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq']
 
@@ -67,14 +71,14 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
     # Sync runfolder to lims server
     log.info('Synchronising run folder...')
     try:
-        rsync_files_cmd = ["rsync", "-avm", "--include=RunInfo.xml", "--include=runParameters.xml", "--include=RunParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
+        rsync_files_cmd = ["rsync", RSYNC_FLAGS, "--include=RunInfo.xml", "--include=runParameters.xml", "--include=RunParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
         utils.run_process(rsync_files_cmd, dry_run)
-        rsync_bin_cmd = ["rsync", "-avm", "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
+        rsync_interop_cmd = ["rsync", RSYNC_FLAGS, "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
         if os.path.exists(os.path.join(run_folder, 'InterOp')):
-            utils.run_process(rsync_bin_cmd, dry_run)
+            utils.run_process(rsync_interop_cmd, dry_run)
         else:
             log.warning('%s/InterOp no such directory' % run_folder)
-        rsync_ga_cmd = ["rsync", "-avrm", "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
+        rsync_ga_cmd = ["rsync", RSYNC_FLAGS, "--include=*/", "--include=Data/Intensities/RTAConfiguration.xml", "--include=ReadPrep1/RunInfo.xml", "--exclude=*", run_folder, to_path_rsync]
         utils.run_process(rsync_ga_cmd, dry_run)
     except CalledProcessError, e:
         if e.returncode in [23, 24]:
@@ -88,12 +92,78 @@ def sync_runfolder(log, run_folder, to_path_rsync, dry_run):
         else:
             raise e
 
+# NovaSeq runs work in a different way, and thanks to the integration not
+# allowing more than one run folder base, they are not per server. They
+# need the "OutputRunFolder" element changing to be the single path registered
+# in Clarity regardless of which server processed them.
+def sync_novaseq_runfolder(log, run_folder, to_path_rsync, dry_run):
+    run_folder_name = os.path.basename(run_folder)
+    run_parameters = "%s/RunParameters.xml" % run_folder
+    #run_parameters_server = "%s/RunParameters_LIMS.xml" % run_folder
+    run_parameters_server = "%s/RunParameters_LIMS.xml" % "/tmp"
+    # Sync runfolder to lims server
+    log.info('Synchronising run folder...')
+    try:
+        rsync_files_cmd = ["rsync", RSYNC_FLAGS, "--include=RunInfo.xml", "--include=CopyComplete.txt", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
+        utils.run_process(rsync_files_cmd, dry_run)
+
+        if os.path.exists(run_parameters):
+            if not os.path.exists(run_parameters_server):
+                mangle_runparameters(log, run_parameters, run_parameters_server)
+            copy_params_cmd = ["scp", run_parameters_server, "%s/%s/RunParameters.xml" % (to_path_rsync, run_folder_name)]
+            utils.run_process(copy_params_cmd, dry_run)
+        else:
+            log.warning('%s/RunParameters.xml no such file' % run_folder)
+        
+        rsync_lims_cmd = ["rsync", RSYNC_FLAGS, "%s/LIMS" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
+        if os.path.exists(os.path.join(run_folder, 'LIMS')):
+            utils.run_process(rsync_lims_cmd, dry_run)
+        else:
+            log.warning('%s/LIMS no such directory' % run_folder)
+        
+        rsync_interop_cmd = ["rsync", RSYNC_FLAGS, "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
+        if os.path.exists(os.path.join(run_folder, 'InterOp')):
+            utils.run_process(rsync_interop_cmd, dry_run)
+        else:
+            log.warning('%s/InterOp no such directory' % run_folder)
+    except CalledProcessError, e:
+        if e.returncode in [23, 24]:
+            # These return codes mean "Partial transfer due to error" and
+            # "Partial transfer due to vanished source files" respectively.
+            # See https://lxadm.com/Rsync_exit_codes
+            # We get these errors if things are cleaned or moved while one of the rsync
+            # commands above is taking place, and is harmless. If necessary any missing
+            # files will be transferred next time.
+            log.warn("rsync had run files removed underneath it during copy to Clarity server:\n%s" % e.output.strip())
+        else:
+            raise e
+
+# Supports the NovaSeq cludging of RunParameters.xml. Loads the true
+# file up, replaces the OutputRunFolder value to be what Clarity wants,
+# and saves it to a modified file.
+def mangle_runparameters(log, run_parameters, run_parameters_server):
+    run_folder = os.path.dirname(run_parameters)
+    run_folder_name = os.path.basename(run_folder)
+    if os.path.exists(run_parameters):
+        doc = et.parse(run_parameters)
+        for output_folder in doc.xpath('//RunParameters/OutputRunFolder'):
+            output_folder.text = "\\\\sol-srv005.cri.camres.org\\solexa\\%s\\" % run_folder_name
+        doc.write(run_parameters_server, xml_declaration=True)
+        return run_parameters_server
+    else:
+        log.warning('%s does not exist' % run_parameters)
+
+# Check if the run folder is NovaSeq, based on its name.
+def is_novaseq(run_folder):
+    run_folder_name = os.path.basename(run_folder)
+    print run_folder_name
+    return NOVASEQ_RUNFOLDER.search(run_folder_name) is not None
+
 def log_calledprocesserror(log, what, cpe):
     message = ["%s failed with exit code %d:" % (what, cpe.returncode), " ".join(cpe.cmd)]
     if cpe.output:
         message.append(cpe.output.strip())
     log.exception("\n".join(message))
-
 
 ################################################################################
 # MAIN
@@ -122,9 +192,8 @@ def main():
     present = time.time()
 
     # location of run folders on sequencing server and lims server
-    from_path = "/processing/"
-    to_path = "/runs/%s/" % server
-    to_path_for_rsync = "%s:%s" % (LIMS_SERVER, to_path)
+    #from_path = "/processing/"
+    from_path = "/processing/sol-srv005"
 
     # Manage run folders
     run_folders = glob.glob(RUNFOLDER_GLOB % from_path)
@@ -132,7 +201,12 @@ def main():
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
         try:
-            sync_runfolder(log, run_folder, to_path_for_rsync, options.dry_run)
+            if is_novaseq(run_folder):
+                to_path = "%s:/runs/novaseq" % LIMS_SERVER
+                sync_novaseq_runfolder(log, run_folder, to_path, options.dry_run)
+            else:
+                to_path = "%s:/runs/%s" % (LIMS_SERVER, to_path)
+                sync_runfolder(log, run_folder, to_path, options.dry_run)
         except CalledProcessError, e:
             log_calledprocesserror(log, "rsync command", e)
         except Exception, e:
@@ -148,7 +222,12 @@ def main():
     for run_folder in processed_run_folders:
         log.info(RUN_HEADER % {'run_folder': run_folder})
         run_folder_name = os.path.basename(run_folder)
-        sequencing_completed = os.path.join(run_folder, cfg['SEQUENCING_COMPLETED'])
+        if is_novaseq(run_folder):
+            sequencing_completed = os.path.join(run_folder, cfg['COPY_COMPLETED'])
+            to_path = "/runs/novaseq"
+        else:
+            sequencing_completed = os.path.join(run_folder, cfg['SEQUENCING_COMPLETED'])
+            to_path = "/runs/%s" % server
         sequencing_failed = os.path.join(run_folder, cfg['SEQUENCING_FAILED'])
         if os.path.exists(sequencing_completed):
             run_age = present - os.path.getmtime(sequencing_completed)

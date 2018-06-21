@@ -65,6 +65,7 @@ RUN_PIPELINE_FILENAME: run-pipeline
 RTA_COMPLETED: RTAComplete.txt
 SEQUENCING_COMPLETED: SequencingComplete.txt
 SEQUENCING_FAILED: SequencingFail.txt
+COPY_COMPLETED: CopyComplete.txt
 
 IGNORE_ME: ignoreme.txt
 DONT_DELETE: keepme.txt
