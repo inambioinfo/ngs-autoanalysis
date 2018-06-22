@@ -26,6 +26,10 @@ Tools currently in used on four production servers : sol-srv001/2/3/4:
 - Python 2.7.15
 
 Installed on sols' servers in `/home/mib-cri/software/centos6/python2.7.15/bin/python`
+Packages installed on sols's using package manager:
+```bash
+sudo yum install libxml2-devel libxslt-devel
+```
 
 
 - Python Clarity Client API v0.4.6: https://github.com/crukci-bioinformatics/claritypy-client/releases/tag/v0.4.6
@@ -36,10 +40,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-On sol's servers:
+On sol's servers as solexa:
 ```bash
 virtualenv --python=/home/mib-cri/software/centos6/python2.7.15/bin/python venv
-source ven/bin/activate
+source venv/bin/activate
 pip install --upgrade setuptools
 pip install --upgrade urllib3
 pip install -r requirements.txt
