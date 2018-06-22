@@ -75,7 +75,7 @@ def sync_runfolder(log, lims_server, seq_server, run_folder, dry_run):
             run_parameters_server = "%s/RunParameters_LIMS.xml" % run_folder
             if os.path.exists(run_parameters):
                 if not os.path.exists(run_parameters_server):
-                    mangle_runparameters(log, seq_server, run_parameters, run_parameters_server)
+                    mangle_runparameters(log, 'sol-srv005.cri.camres.org', run_parameters, run_parameters_server)
                 copy_params_cmd = ["scp", run_parameters_server, "%s/%s/RunParameters.xml" % (to_path_rsync, run_folder_name)]
                 utils.run_process(copy_params_cmd, dry_run)
             else:
