@@ -50,7 +50,7 @@ TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq']
 
 def sync_runfolder(log, lims_server, seq_server, run_folder, dry_run):
     run_folder_name = os.path.basename(run_folder)
-    to_path_rsync = "%s:/runs/%s/" % (lims_server, get_destination_path(seq_server, run_folder))
+    to_path_rsync = "%s:/%s/" % (lims_server, get_destination_path(seq_server, run_folder))
     # Sync runfolder to lims server
     log.info('Synchronising run folder...')
     try:
