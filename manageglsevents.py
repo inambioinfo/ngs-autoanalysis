@@ -163,7 +163,9 @@ def main():
         lims_server = '%s@%s' % (LIMS_USER, glsclient.TEST_SERVER)
 
     # sequencing server on which this script is running
-    seq_server = socket.gethostname()
+    # Some servers return the qualified host name. This gives just the name, no domain.
+    # See https://stackoverflow.com/a/49840324
+    seq_server = socket.gethostname().split('.', 1)[0]
 
     # setting-up time
     present = time.time()
