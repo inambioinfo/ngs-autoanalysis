@@ -116,7 +116,6 @@ def mangle_runparameters(log, seq_server, run_parameters, run_parameters_server)
 # Check if the run folder is NovaSeq, based on its name.
 def is_novaseq(run_folder):
     run_folder_name = os.path.basename(run_folder)
-    print run_folder_name
     return NOVASEQ_RUNFOLDER.search(run_folder_name) is not None
 
 
