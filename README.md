@@ -28,7 +28,7 @@ Tools currently in used on four production servers : sol-srv001/2/3/4:
 Installed on sols' servers in `/home/mib-cri/software/centos6/python2.7.15/bin/python`
 Packages installed on sols's using package manager:
 ```bash
-sudo yum install python-devel libxml2-devel libxslt-devel postgresql-libs
+sudo yum install python-devel libxml2-devel libxslt-devel postgresql-libs postgresql-devel
 ```
 
 
