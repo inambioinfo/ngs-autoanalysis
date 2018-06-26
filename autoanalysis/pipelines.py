@@ -14,8 +14,6 @@ import os
 import glob
 import logging
 import unittest
-from collections import OrderedDict
-import socket
 
 # autoanalysis modules
 import data

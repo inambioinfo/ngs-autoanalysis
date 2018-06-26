@@ -23,7 +23,6 @@ import sys
 
 # import custom modules
 import autoanalysis.log as logger
-import autoanalysis.utils as utils
 import autoanalysis.data as auto_data
 import autoanalysis.pipelines as auto_pipelines
 import autoanalysis.glslims as auto_glslims

@@ -17,8 +17,6 @@ import logging
 import unittest
 # import genologics client library
 import glsclient.glsclient as glsclient
-# import utils module
-import utils
 
 # Append root project to PYTHONPATH
 ROOT_PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
@@ -34,6 +32,7 @@ class GlsLims:
             self.lims_server = glsclient.TEST_SERVER
         self.glsutil = glsclient.GlsUtil(server=self.lims_server)
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
+        self.log.info('*** using %s' % self.lims_server)
 
     def is_sequencing_run_complete(self, run_id):
         # return True if sequencing process at the end of cycle; False if all lanes qc failed; None otherwise
