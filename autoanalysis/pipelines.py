@@ -93,7 +93,7 @@ class PipelineDefinition(object):
                 self.env['options'] = '--dev'
             else:
                 self.env['options'] = ''
-        self.env['run_id'] = self.run.run_folder
+        self.env['run_id'] = self.run.run_folder_name
         self.env['flowcell_id'] = self.run.flowcell_id
         self.env['run_meta'] = self.pipeline_run_meta
         self.env['mode'] = 'local'
