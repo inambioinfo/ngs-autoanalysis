@@ -82,6 +82,25 @@ python -m unittest --verbose autoanalysis.glslims
 
 ## Usage
 
+```bash
+source venv/bin/activate
+python autoanalysis.py --processingdir=/processing/ --stagingdir=/staging/ --softdir=/home/solexa/sequencingpipelines/ --logfile=/processing/Logs/autoanalysis.log --limsdev
+```
+
+There are four cron scripts used in production for running the automation scripts:
+```
+### auto assign samples (only on sol-srv001)
+0 07,12,14,16 * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-autoassignsamples.sh > /dev/null 2>&1
+
+### manage gls events
+*/5 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-manageglsevents.sh > /dev/null 2>&1
+
+### manage runs
+*/15 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-manageruns.sh > /dev/null 2>&1
+
+### auto analysis
+*/20 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-autoanalysis.sh > /dev/null 2>&1  
+```
 
 ## Updates
 
