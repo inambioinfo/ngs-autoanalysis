@@ -59,6 +59,8 @@ CREATE_METAFILE_FILENAME: create-metafile
 RUN_META_FILENAME: run-meta.xml
 RUN_PIPELINE_FILENAME: run-pipeline
 
+LIMIT_NB_RUN_PIPELINE: 2
+
 ################################################################################
 ### data
 ################################################################################
