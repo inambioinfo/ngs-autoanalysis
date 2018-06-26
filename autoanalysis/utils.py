@@ -16,6 +16,10 @@ import glob
 import logging
 import subprocess
 import unittest
+import psutil
+
+# constants and configurations
+from config import cfg
 
 # logging definition
 log = logging.getLogger(__name__)
@@ -65,14 +69,26 @@ def run_process(cmd, dry_run=True):
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
 
-def run_bg_process(cmd, dry_run=True, logfilename=None):
+def run_bg_process(cmd, dry_run=True, limit=None, logfilename=None):
     if not dry_run:
-        if logfilename:
-            with open(logfilename, "wb") as logfile:
-                subprocess.Popen(cmd, shell=False, stdout=logfile, stderr=subprocess.STDOUT)
+        # limit number of processes to run when limit is set
+        do_run = False
+        if limit:
+            current_runpipeline_nb = [p.info['name'] for p in psutil.process_iter(attrs=['pid', 'name']) if ((p.info['name']) and (cfg['RUN_SCRIPT_FILENAME'] in p.info['name']) and (p.info['status'] == psutil.STATUS_RUNNING))]
+            if len(current_runpipeline_nb) < limit:
+                do_run = True
         else:
-            subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        log.info("command '%s' executed" % " ".join(cmd))
+            do_run = True
+
+        if do_run:
+            if logfilename:
+                with open(logfilename, "wb") as logfile:
+                    subprocess.Popen(cmd, shell=False, stdout=logfile, stderr=subprocess.STDOUT)
+            else:
+                subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            log.info("command '%s' executed" % " ".join(cmd))
+        else:
+            log.info("[run %s process(es) only] command '%s' not executed" % (process_nb, " ".join(cmd)))
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 

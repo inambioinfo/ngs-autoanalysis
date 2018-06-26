@@ -159,7 +159,7 @@ class PipelineDefinition(object):
                 if not os.path.exists(self.pipeline_ended):
                     if _dependencies_satisfied:
                         if self.env['mode'] == 'local':
-                            utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run)
+                            utils.run_bg_process(['sh', '%s' % self.run_script_path], _dry_run, 2)
                         else:
                             utils.run_process(['sh', '%s' % self.run_script_path], _dry_run)
                     else:
