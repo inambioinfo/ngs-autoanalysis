@@ -5,7 +5,7 @@ HOST: smtp.cruk.cam.ac.uk
 SEND_FROM: anne.pajon@cruk.cam.ac.uk
 SEND_TO:
   - Anne.Pajon@cruk.cam.ac.uk
-  #- Richard.Bowers@cruk.cam.ac.uk
+  - Richard.Bowers@cruk.cam.ac.uk
 SUBJECT: New Error From AUTOANALYSIS
 
 ################################################################################
@@ -31,7 +31,7 @@ PIPELINES_SETUP_OPTIONS:
   primaryqc: "--create-sample-sheet --phix"
 
 # Pipeline run command to run pipeline
-PIPELINE_RUN_COMMAND: "%(bin_run)s --mode=%(mode)s %(run_meta)s"
+PIPELINE_RUN_COMMAND: "%(bin_run)s %(run_meta)s"
 
 # Software pipeline path
 SOFT_PIPELINE_PATH: "/home/solexa/sequencingpipelines"
