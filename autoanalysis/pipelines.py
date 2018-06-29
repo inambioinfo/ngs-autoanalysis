@@ -301,6 +301,9 @@ fi
 
 rm %(lock)s
 '''
+    
+    # Flags for run folder rsync. Sorting out the permissions so files are not executable on staging.
+    RUNFOLDER_RSYNC_FLAGS = '''-rltgv --chmod="Da=rx,Fa=r,u+w"'''
 
     # rsync exclude list
     RUNFOLDER_RSYNC_EXCLUDE = [
@@ -331,7 +334,7 @@ rm %(lock)s
         self.pipeline_definition.print_header()
 
         self.env = self.pipeline_definition.env
-        self.env['rsync_options'] = "-av %s %s %s > %s 2>&1" % (" ".join(self.RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.pipeline_definition.pipeline_log)
+        self.env['rsync_options'] = "%s %s %s %s > %s 2>&1" % (RUNFOLDER_RSYNC_FLAGS, " ".join(self.RUNFOLDER_RSYNC_EXCLUDE), self.run.run_folder, os.path.dirname(self.run.staging_run_folder), self.pipeline_definition.pipeline_log)
 
         self.sync_completed = self.run.sync_completed
         self.staging_sync_completed = os.path.join(self.run.staging_run_folder, cfg['SYNC_COMPLETED'])
