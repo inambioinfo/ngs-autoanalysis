@@ -37,7 +37,12 @@ set -v
 '''
 
 # Template for local command
-LOCAL_CMD_TEMPLATE = "cd %(work_dir)s; touch %(started)s; %(cmd)s > %(log)s 2>&1;"
+LOCAL_CMD_TEMPLATE = '''
+cd %(work_dir)s
+touch %(started)s
+%(cmd)s \\
+> %(log)s 2>&1
+'''
 
 
 ################################################################################
