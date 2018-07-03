@@ -79,7 +79,7 @@ def run_bg_process(cmd, dry_run=True, limit=None, logfilename=None):
         # limit number of processes to run when limit is set
         do_run = False
         if limit:
-            current_runpipeline_nb = [p.info['name'] for p in psutil.process_iter(attrs=['pid', 'name']) if ((p.info['name']) and (cfg['RUN_SCRIPT_FILENAME'] in p.info['name']) and (p.info['status'] == psutil.STATUS_RUNNING))]
+            current_runpipeline_nb = [p.info['name'] for p in psutil.process_iter(attrs=['pid', 'name']) if ((p.info['name']) and (cfg['RUN_SCRIPT_FILENAME'] in p.info['name']))]
             if len(current_runpipeline_nb) < limit:
                 do_run = True
         else:
@@ -93,7 +93,7 @@ def run_bg_process(cmd, dry_run=True, limit=None, logfilename=None):
                 subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             log.info("command '%s' executed" % " ".join(cmd))
         else:
-            log.info("[run %s process(es) only] command '%s' not executed" % (process_nb, " ".join(cmd)))
+            log.info("[run %s process(es) only] command '%s' not executed" % (limit, " ".join(cmd)))
     else:
         log.info("[dry-run] command '%s' to run" % " ".join(cmd))
 
