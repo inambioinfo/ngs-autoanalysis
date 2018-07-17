@@ -1,7 +1,7 @@
 # runtime requirements
 
 # Python Clarity Client API
--e git+https://github.com/crukci-bioinformatics/claritypy-client.git@v0.4.8#egg=claritypy-glsclient
+-e git+https://github.com/crukci-bioinformatics/claritypy-client.git@v0.4.9#egg=claritypy-glsclient
 
 # requests security package extra
 requests[security]
