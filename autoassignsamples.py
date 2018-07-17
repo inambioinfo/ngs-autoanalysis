@@ -62,7 +62,7 @@ WORKFLOW_MAPPING = {
     # New NovaSeq workflows
     'NovaSeq': 'N/A',  # key to match sample's UDF workflow but not used to assign workflow in Clarity
     'NovaSeq Standard': 'SLX: NovaSeq Standard Sequencing v1',
-    'NovaSeq Xp': 'SLX: NovaSeq Xp Sequencing v3'
+    'NovaSeq Xp': 'SLX: NovaSeq Xp Sequencing v1'
 }
 
 
