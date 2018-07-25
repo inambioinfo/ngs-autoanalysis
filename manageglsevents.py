@@ -48,14 +48,14 @@ TECHNOLOGIES = ['4000', 'hiseq', 'miseq', 'nextseq']
 
 def sync_runfolder(log, lims_server, seq_server, run_folder, dry_run):
     run_folder_name = os.path.basename(run_folder)
-    to_path_rsync = "%s:/runs/%s/%s" % (lims_server, seq_server, run_folder_name)
+    to_path_rsync = "%s:/runs/%s/" % (lims_server, seq_server)
     # Sync runfolder to lims server
     log.info('Synchronising run folder...')
     try:
         rsync_files_cmd = ["rsync", RSYNC_FLAGS, "--include=RunInfo.xml", "--include=runParameters.xml", "--include=RunParameters.xml", "--include=First_Base_Report.htm", "--exclude=/*/*/", "--exclude=/*/*", run_folder, to_path_rsync]
         utils.run_process(rsync_files_cmd, dry_run)
 
-        rsync_interop_cmd = ["rsync", RSYNC_FLAGS, "%s/InterOp" % run_folder, to_path_rsync]
+        rsync_interop_cmd = ["rsync", RSYNC_FLAGS, "%s/InterOp" % run_folder, "%s/%s" % (to_path_rsync, run_folder_name)]
         if os.path.exists(os.path.join(run_folder, 'InterOp')):
             utils.run_process(rsync_interop_cmd, dry_run)
         else:
