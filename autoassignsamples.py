@@ -130,13 +130,13 @@ def main():
         count = 0
         count_miseqexpress = 0
         count_nextseqdirect = 0
-        count_dismissedsamples = 0
+        count_notassignedsamples = 0
         # MiSeq Express report
         report_miseqexpresssamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         # NextSeq Direct report
         report_nextseqdirectsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
-        # Dismissed samples report
-        report_dismissedsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
+        # not assigned samples report
+        report_notassignedsamples = 'SLX-ID\t| project\t| researcher\t| read length\t| seq. type\n'
         for row in results:
             # projectname,researchername,artifactid,samplename,slxid,workflow,readlength,seqtype,nblanes,flowcelltype,seqinfo,submissiondate,email
             try:
@@ -154,7 +154,7 @@ def main():
 
                 # for reporting sample
                 assigned_sample_info = "%s\t| %s\t| %s\t| %s\t| %s" % (row['slxid'], row['projectname'], row['researcher'], row['readlength'], row['seqtype'])
-                dismissed_sample = assigned_sample_info + "\t| %s" % (row['workflow'])
+                not_assigned_sample = assigned_sample_info + "\t| %s" % (row['workflow'])
                 # assign samples to workflow
                 if row['workflow'] in WORKFLOW_MAPPING.keys():
                     if options.update:
@@ -177,9 +177,9 @@ def main():
                                     log.info("[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], WORKFLOW_MAPPING['NovaSeq Xp']))
                                     artifact = route_sample_to_workflow(log, glsutil, WORKFLOW_MAPPING['NovaSeq Xp'], row['artifactid'])
                             else:
-                                log.warn("[%s,%s,%s,%s,%s,%s] dismissed" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], row['flowcelltype']))
-                                report_dismissedsamples += dismissed_sample + "\trow['flowcelltype']\n"
-                                count_dismissedsamples += 1
+                                log.warn("[%s,%s,%s,%s,%s,%s] not assigned" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], row['flowcelltype']))
+                                report_notassignedsamples += not_assigned_sample + "\trow['flowcelltype']\n"
+                                count_notassignedsamples += 1
                         else:
                             log.info("[%s,%s,%s,%s,%s] to be assigned to workflow '%s'" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow'], WORKFLOW_MAPPING[row['workflow']]))
                             artifact = route_sample_to_workflow(log, glsutil, WORKFLOW_MAPPING[row['workflow']], row['artifactid'])
@@ -193,9 +193,9 @@ def main():
                                 report_nextseqdirectsamples += assigned_sample_info + "\n"
                                 count_nextseqdirect += 1
                 else:
-                    log.warn("[%s,%s,%s,%s,%s] dismissed" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow']))
-                    report_dismissedsamples += dismissed_sample + "\n"
-                    count_dismissedsamples += 1
+                    log.warn("[%s,%s,%s,%s,%s] not assigned" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow']))
+                    report_notassignedsamples += not_assigned_sample + "\n"
+                    count_notassignedsamples += 1
             except:
                 log.exception("Unexpected error")
                 log.error("[%s,%s,%s,%s,%s] ERROR" % (row['artifactid'], row['projectname'], row['samplename'], row['slxid'], row['workflow']))
@@ -215,17 +215,17 @@ def main():
         log.info('NEXTSEQ EXPRESS REPORT')
         log.info(report_nextseqdirectsamples)
 
-        # email sent to genomics for dismissed samples
-        report_dismissedsamples = "%s samples dismissed:\n\n" % count_dismissedsamples + report_dismissedsamples
-        if options.email and count_dismissedsamples > 0:
-            send_email('Dismissed Samples', report_dismissedsamples)
-        log.info('DISMISSED SAMPLES REPORT')
-        log.info(report_dismissedsamples)
+        # email sent to genomics for not assigned samples
+        report_notassignedsamples = "%s samples not assigned:\n\n%s" % (count_notassignedsamples, report_notassignedsamples)
+        if options.email and count_notassignedsamples > 0:
+            send_email('Not assigned Samples', report_notassignedsamples)
+        log.info('NOT ASSIGNED SAMPLES REPORT')
+        log.info(report_notassignedsamples)
 
         log.info("%s samples assigned to workflows over %s" % (count, len(results)))
         log.info("%s samples assigned to MiSeq Express workflow" % count_miseqexpress)
         log.info("%s samples assigned to NextSeq Direct workflow" % count_nextseqdirect)
-        log.info("%s samples dismissed" % count_dismissedsamples)
+        log.info("%s samples not assigned" % count_notassignedsamples)
 
         if not options.update:
             log.info('use --update to perform the operation in the lims')
