@@ -7,7 +7,5 @@
 requests[security]
 
 # config
-# Note : lxml needs libxml2-devel and libxslt-devel installed via the system package manager.
 pyyaml
-lxml
 psutil
