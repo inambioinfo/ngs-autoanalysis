@@ -152,6 +152,8 @@ class GlsLimsTests(unittest.TestCase):
 
     def test_are_fastq_files_attached(self):
         self.assertTrue(self.glslims.are_fastq_files_attached('161123_M01712_0338_000000000-AWR96'))
+        # Includes a V(D)J library in lane 2 which has two or three labels per sample.
+        self.assertTrue(self.glslims.are_fastq_files_attached('180727_K00252_0350_HWTGMBBXX'))
 
 if __name__ == '__main__':
     unittest.main()
