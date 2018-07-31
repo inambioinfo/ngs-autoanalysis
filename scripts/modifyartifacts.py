@@ -64,6 +64,7 @@ AND project.name != 'Controls'
 -- ORDER BY -----------------------------------------------------------------------
 ORDER BY slxid"""
 
+
 def main():
     # get the options
     parser = argparse.ArgumentParser()
@@ -93,21 +94,28 @@ def main():
         # count number of artifacts to modify
         count = 0
 
-       # get all artifacts to modify in results
-        glsutil.db.execute(QUERY)
-        results = glsutil.db.fetchall()
-        for row in results:
+        # get all artifacts to modify in results
+        #glsutil.db.execute(QUERY)
+        #results = glsutil.db.fetchall()
+        results = []
+        with open('artifacts.txt') as data:
+            for luid in data:
+                print(luid.strip())
+                results.append(luid.strip())
+
+        for value in results:
             count += 1
-            artifact = glsutil.api.load('artifact', row['luid'])
+            artifact = glsutil.api.load('artifact', value)
             field_name = 'LPS Billable'
             field_value = None
             for field in artifact.field:
                 if field.name == field_name:
                     field_value = field.value()
-            field_new_value = row['outlpsbillable']
+            #field_new_value = row['outlpsbillable']
+            field_new_value = 'Bill - 10X Single Cell 3GEX'
             log.info("[%s] Retrieved artifact %s, field '%s' value '%s' will be set to '%s'" % (count, artifact.uri, field_name, field_value, field_new_value))
             if options.update:
-                new_field = glsapi.userdefined.field(row['outlpsbillable'])
+                new_field = glsapi.userdefined.field(field_new_value)
                 new_field.name = field_name
                 artifact.field.append(new_field)
                 log.debug(artifact.toxml('utf-8'))
