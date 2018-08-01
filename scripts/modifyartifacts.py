@@ -100,19 +100,20 @@ def main():
         results = []
         with open('artifacts.txt') as data:
             for luid in data:
-                print(luid.strip())
                 results.append(luid.strip())
 
         for value in results:
             count += 1
             artifact = glsutil.api.load('artifact', value)
-            field_name = 'LPS Billable'
+            #field_name = 'LPS Billable'
+            field_name = 'PPMS Order ID'
             field_value = None
             for field in artifact.field:
                 if field.name == field_name:
                     field_value = field.value()
             #field_new_value = row['outlpsbillable']
-            field_new_value = 'Bill - 10X Single Cell 3GEX'
+            #field_new_value = 'Bill - 10X Single Cell 3GEX'
+            field_new_value = ''  # for removing UDF
             log.info("[%s] Retrieved artifact %s, field '%s' value '%s' will be set to '%s'" % (count, artifact.uri, field_name, field_value, field_new_value))
             if options.update:
                 new_field = glsapi.userdefined.field(field_new_value)
