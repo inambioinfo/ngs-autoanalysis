@@ -116,9 +116,6 @@ def main():
     # See https://stackoverflow.com/a/49840324
     seq_server = socket.gethostname().split('.', 1)[0]
     
-    # Temporarily, make sure "bioinf" servers are changed to "sol"...
-    seq_server = seq_server.replace("bioinf", "sol")
-
     # setting-up time
     present = time.time()
 
