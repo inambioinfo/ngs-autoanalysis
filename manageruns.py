@@ -18,7 +18,6 @@ import glob
 import time
 import datetime
 import logging
-import re
 
 # import custom modules
 import autoanalysis.log as logger

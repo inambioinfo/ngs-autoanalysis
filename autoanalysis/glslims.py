@@ -12,6 +12,7 @@ Copyright (c) 2013 __MyCompanyName__. All rights reserved.
 ################################################################################
 import sys
 import os
+import re
 import inspect
 import logging
 import unittest
