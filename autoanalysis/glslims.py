@@ -43,7 +43,7 @@ class GlsLims:
         if re.match('^NovaSeq.*', sequencer_type):
             if run.is_copy_completed_present():
                 is_sequencing_complete = True
-            log.debug("NovaSeq detected. Copy complete present = %s" % is_sequencing_complete)
+            self.log.debug("NovaSeq detected. Copy complete present = %s" % is_sequencing_complete)
         else:
             is_sequencing_complete = self.glsutil.is_sequencing_completed(run.run_folder_name)
         return is_sequencing_complete
