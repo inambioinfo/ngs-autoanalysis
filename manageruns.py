@@ -18,6 +18,7 @@ import glob
 import time
 import datetime
 import logging
+import re
 
 # import custom modules
 import autoanalysis.log as logger
@@ -174,9 +175,14 @@ def main():
         for run in runs.all_runs:
             try:
                 # add SequencingComplete.txt or SequencingFail.txt by retrieving info from lims on run
+                # If NovaSeq, the presence of CopyComplete.txt in the run folder does the same job.
                 if not run.is_sequencing_status_present():
                     log.info('*** %s' % run.run_folder_name)
-                    is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
+                    sequencer_type = glslims.get_sequencer_type_by_run_id(run.run_folder_name)
+                    if re.match('^NovaSeq.*', sequencer_type):
+                        is_sequencing_complete = run.is_copy_completed_present()
+                    else:
+                        is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
                     run.update_sequencing_status(is_sequencing_complete, options.dry_run)
             except Exception, e:
                 log.exception("Unexpected error")

@@ -77,6 +77,7 @@ class RunFolder(Folder):
         # event files
         self.rta_completed = os.path.join(self.run_folder, cfg['RTA_COMPLETED'])
         self.sequencing_completed = os.path.join(self.run_folder, cfg['SEQUENCING_COMPLETED'])
+        self.copy_completed = os.path.join(self.run_folder, cfg['COPY_COMPLETED'])
         self.sequencing_failed = os.path.join(self.run_folder, cfg['SEQUENCING_FAILED'])
         self.analysis_completed = os.path.join(self.run_folder, cfg['ANALYSIS_COMPLETED'])
         self.sync_completed = os.path.join(self.run_folder, cfg['SYNC_COMPLETED'])
@@ -123,6 +124,10 @@ class RunFolder(Folder):
         # check if SequencingComplete.txt is present
         return os.path.exists(self.sequencing_completed)
 
+    def is_copy_completed_present(self):
+        # check if CopyComplete.txt is present (NovaSeq only)
+        return os.path.exists(self.copy_completed)
+
     def is_sequencing_failed_present(self):
         # check if SequencingFail.txt is present
         return os.path.exists(self.sequencing_failed)
@@ -131,13 +136,13 @@ class RunFolder(Folder):
         # check SequencingComplete.txt is present and ignore.me is not present
         if os.path.exists(self.run_folder):
             if os.path.exists(self.sequencing_completed) and not os.path.exists(self.ignore_me):
-                self.log.debug('%s is present' % self.sequencing_completed)
+                self.log.debug('%s is present.' % self.sequencing_completed)
                 return True
             else:
                 if not os.path.exists(self.sequencing_completed):
-                    self.log.debug('%s does not exists' % self.sequencing_completed)
+                    self.log.debug('%s does not exist.' % self.sequencing_completed)
                 if os.path.exists(self.ignore_me):
-                    self.log.debug('%s is present' % self.ignore_me)
+                    self.log.debug('%s is present.' % self.ignore_me)
         return False
 
     def is_to_be_ignored(self):
