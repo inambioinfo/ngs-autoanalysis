@@ -40,7 +40,7 @@ class GlsLims:
         self.log.info('... check sequencing status ....................................................')
         sequencer_type = self.glsutil.get_sequencer_type_by_run_id(run.run_folder_name)
         is_sequencing_complete = None   # Not false - that makes things fail. None means not finished.
-        if re.match('^NovaSeq.*', sequencer_type):
+        if sequencer_type is not null and re.match('^NovaSeq.*', sequencer_type):
             if run.is_copy_completed_present():
                 is_sequencing_complete = True
             self.log.debug("NovaSeq detected. Copy complete present = %s" % is_sequencing_complete)
