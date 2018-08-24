@@ -178,11 +178,7 @@ def main():
                 # If NovaSeq, the presence of CopyComplete.txt in the run folder does the same job.
                 if not run.is_sequencing_status_present():
                     log.info('*** %s' % run.run_folder_name)
-                    sequencer_type = glslims.get_sequencer_type(run.run_folder_name)
-                    if re.match('^NovaSeq.*', sequencer_type):
-                        is_sequencing_complete = run.is_copy_completed_present()
-                    else:
-                        is_sequencing_complete = glslims.is_sequencing_run_complete(run.run_folder_name)
+                    is_sequencing_complete = glslims.is_sequencing_run_complete(run)
                     run.update_sequencing_status(is_sequencing_complete, options.dry_run)
             except Exception, e:
                 log.exception("Unexpected error")
