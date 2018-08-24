@@ -34,6 +34,9 @@ class GlsLims:
         self.log.info('*** CONNECT TO GLS LIMS ********************************************************')
         self.log.info('*** using %s' % self.lims_server)
 
+    def get_sequencer_type(self, run_id):
+        return self.glsutil.get_sequencer_type_by_run_id(run_id)
+
     def is_sequencing_run_complete(self, run_id):
         # return True if sequencing process at the end of cycle; False if all lanes qc failed; None otherwise
         self.log.info('... check sequencing status ....................................................')
