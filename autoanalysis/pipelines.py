@@ -502,8 +502,17 @@ class External(object):
         """
         self.log.info('... create external sync pipeline script .......................................')
         ftp_rsync_command = '''
+        #RSTEMP=/processing/.rsync_tmp
+        RSTEMP=/mnt/comp-ftpdmz001/temp
+        RSTEMP_PARENT=$(dirname $RSTEMP)
+
         touch %(started)s
         touch %(lock)s
+        
+        if [ -d $RSTEMP_PARENT ] && [ ! -d $RSTEMP ]
+        then
+            mkdir $RSTEMP
+        fi
 
         if ( %(rsync_cmd)s )
         then
@@ -527,7 +536,7 @@ class External(object):
             dest = "%s/private/%s/" % (self.ftp_path, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
             if self.ftp_server:
-                cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=/processing/.rsync_tmp/ %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+                cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=$RSTEMP %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             else:
                 # to allow testing without tmp directory
                 cmd = "rsync --verbose --recursive --copy-links --size-only %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
