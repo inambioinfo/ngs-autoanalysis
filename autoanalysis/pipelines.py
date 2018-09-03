@@ -502,8 +502,8 @@ class External(object):
         """
         self.log.info('... create external sync pipeline script .......................................')
         ftp_rsync_command = '''
-        #RSTEMP=/processing/.rsync_tmp
-        RSTEMP=/mnt/comp-ftpdmz001/temp
+        #RSTEMP=/mnt/comp-ftpdmz001/temp
+        RSTEMP=/processing/.rsync_tmp
         RSTEMP_PARENT=$(dirname $RSTEMP)
 
         touch %(started)s
