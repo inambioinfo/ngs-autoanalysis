@@ -303,8 +303,9 @@ rm %(lock)s
 '''
     
     # Flags for run folder rsync. Sorting out the permissions so files are not executable on staging.
-    # RUNFOLDER_RSYNC_FLAGS = '''-rltgv --chmod="Da=rx,Fa=r,u+w"'''
-    RUNFOLDER_RSYNC_FLAGS = '''-rltgv --chmod="D2755,F644"'''
+    # Note: for the --chmod flag to take effect, the -p (--perms) option must be given too.
+    # RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="a=rX,u+w,Dg+s"'''
+    RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="D2755,F644"'''
 
     # rsync exclude list
     RUNFOLDER_RSYNC_EXCLUDE = [
