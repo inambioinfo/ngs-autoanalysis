@@ -304,8 +304,9 @@ rm %(lock)s
     
     # Flags for run folder rsync. Sorting out the permissions so files are not executable on staging.
     # Note: for the --chmod flag to take effect, the -p (--perms) option must be given too.
-    # RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="a=rX,u+w,Dg+s"'''
-    RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="D2755,F644"'''
+    # Effective 755 for directories and 644 for files, directory group sticky. Absolute settings
+    # (as in some web examples, e.g. D2755,F644) do not work.
+    RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="Da=rx,Fa=r,u+w,Dg+s"'''
 
     # rsync exclude list
     RUNFOLDER_RSYNC_EXCLUDE = [
