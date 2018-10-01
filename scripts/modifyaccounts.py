@@ -51,7 +51,7 @@ def main():
         for account in all_accounts.lab:
             lab = glsutil.api.load_by_uri('lab', account.uri)
             try:
-                if lab.billing_address.institution == 'University of Cambridge MRC Cancer Unit':
+                if lab.billing_address.institution == 'CRUK Cambridge Institute':
                     count += 1
                     log.info(lab.billing_address.institution)
                     field_value = None
@@ -60,7 +60,7 @@ def main():
                             field_value = field.value()
                             log.info(field_value)
                     if options.update:
-                        field_new_value = 'ac288@mrc-cu.cam.ac.uk, apjm5@mrc-cu.cam.ac.uk'
+                        field_new_value = 'John.Wells@cruk.cam.ac.uk, Jens.Fuellgrabe@cruk.cam.ac.uk, Fatimah.Bowater@cruk.cam.ac.uk, Paul.Coupland@cruk.cam.ac.uk'
                         new_field = glsapi.userdefined.field(field_new_value)
                         new_field.name = field_name
                         lab.field.append(new_field)
