@@ -60,7 +60,7 @@ def main():
                             field_value = field.value()
                             log.info(field_value)
                     if options.update:
-                        field_new_value = 'John.Wells@cruk.cam.ac.uk, Jens.Fuellgrabe@cruk.cam.ac.uk, Fatimah.Bowater@cruk.cam.ac.uk, Paul.Coupland@cruk.cam.ac.uk'
+                        field_new_value = 'John.Wells@cruk.cam.ac.uk, Emma.Ryley@cruk.cam.ac.uk, Sophie.Duncan@cruk.cam.ac.uk, Jens.Fuellgrabe@cruk.cam.ac.uk, Fatimah.Bowater@cruk.cam.ac.uk, Paul.Coupland@cruk.cam.ac.uk'
                         new_field = glsapi.userdefined.field(field_new_value)
                         new_field.name = field_name
                         lab.field.append(new_field)
