@@ -105,7 +105,7 @@ def route_sample_to_workflow(log, glsutil, workflow_name, artifactid):
 def main():
     # get the options
     parser = argparse.ArgumentParser()
-    parser.add_argument("--update", dest="update", action="store_true", default=False, help="use this option to preform the update and not only report action")
+    parser.add_argument("--update", dest="update", action="store_true", default=False, help="use this option to perform the update and not only report action")
     parser.add_argument("--updatesamples", dest="updatesamples", action="store_true", default=False, help="use this option to set the date received on sample and not only report action")
     parser.add_argument("--limsdev", dest="limsdev", action="store_true", default=False, help="Use the development LIMS url")
     parser.add_argument("--email", dest="email", action="store_true", default=False, help="Send email to genomics on MiSeq Express samples")
