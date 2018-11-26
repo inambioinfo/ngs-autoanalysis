@@ -25,7 +25,7 @@ Tools currently in used on four production servers : sol-srv001/2/3/4:
 
 - Python 2.7.15
 
-Installed on sols' servers in `/home/mib-cri/software/centos6/python2.7.15/bin/python`
+Installed on sols' servers in `/home/bioinformatics/software/centos6/python2.7.15/bin/python`
 Packages installed on sols's using package manager:
 ```bash
 sudo yum install python-devel libxml2-devel libxslt-devel postgresql-libs postgresql-devel
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 On sol's servers as solexa:
 ```bash
-virtualenv --python=/home/mib-cri/software/centos6/python2.7.15/bin/python venv
+virtualenv --python=/home/bioinformatics/software/centos6/python2.7.15/bin/python venv
 source venv/bin/activate
 pip install --upgrade setuptools
 pip install --upgrade urllib3
@@ -90,16 +90,16 @@ python autoanalysis.py --processingdir=/processing/ --stagingdir=/staging/ --sof
 There are four cron scripts used in production for running the automation scripts:
 ```
 ### auto assign samples (only on sol-srv001)
-0 07,12,14,16 * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-autoassignsamples.sh > /dev/null 2>&1
+0 07,12,14,16 * * * /home/bioinformatics/software/ngs-autoanalysis/current/cronscripts/run-autoassignsamples.sh > /dev/null 2>&1
 
 ### manage gls events
-*/5 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-manageglsevents.sh > /dev/null 2>&1
+*/5 * * * * /home/bioinformatics/software/ngs-autoanalysis/current/cronscripts/run-manageglsevents.sh > /dev/null 2>&1
 
 ### manage runs
-*/15 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-manageruns.sh > /dev/null 2>&1
+*/15 * * * * /home/bioinformatics/software/ngs-autoanalysis/current/cronscripts/run-manageruns.sh > /dev/null 2>&1
 
 ### auto analysis
-*/20 * * * * /home/mib-cri/software/ngs-autoanalysis/current/cronscripts/run-autoanalysis.sh > /dev/null 2>&1  
+*/20 * * * * /home/bioinformatics/software/ngs-autoanalysis/current/cronscripts/run-autoanalysis.sh > /dev/null 2>&1  
 ```
 
 ## Updates
