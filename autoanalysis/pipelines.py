@@ -306,7 +306,7 @@ rm %(lock)s
     # Note: for the --chmod flag to take effect, the -p (--perms) option must be given too.
     # Effective 755 for directories and 644 for files, directory group sticky. Absolute settings
     # (as in some web examples, e.g. D2755,F644) do not work.
-    RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --chmod="Da=rx,Fa=r,u+w,Dg+s"'''
+    RUNFOLDER_RSYNC_FLAGS = '''-rltgpv --stats --chmod="Da=rx,Fa=r,u+w,Dg+s"'''
 
     # rsync exclude list
     RUNFOLDER_RSYNC_EXCLUDE = [
@@ -539,10 +539,10 @@ class External(object):
             dest = "%s/private/%s/" % (self.ftp_path, ftpdir)
             rsync_log = "%s/rsync_%s.log" % (self.pipeline_definition.env['archive_pipedir'], ftpdir)
             if self.ftp_server:
-                cmd = "rsync --verbose --recursive --copy-links --size-only --temp-dir=$RSTEMP %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+                cmd = "rsync --verbose --recursive --copy-links --size-only --stats --temp-dir=$RSTEMP %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             else:
                 # to allow testing without tmp directory
-                cmd = "rsync --verbose --recursive --copy-links --size-only %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
+                cmd = "rsync --verbose --recursive --copy-links --size-only --stats %s/ %s > %s 2>&1; " % (src, dest, rsync_log)
             rsync_cmd += cmd
         self.pipeline_definition.env['rsync_cmd'] = rsync_cmd
         utils.create_script(self.pipeline_definition.run_script_path, ftp_rsync_command % self.pipeline_definition.env)
