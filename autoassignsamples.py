@@ -59,6 +59,7 @@ WORKFLOW_MAPPING = {
     '10X Chromium Genome': 'LPS: 10X Phased Genome v1',
     '10X V(D)J Single Cell': 'LPS: 10X Single Cell V(D)J v1',
     '10X Single Cell ATAC': 'LPS: 10X Single Cell ATAC v1',
+    '10X Single Cell v3': 'LPS: 10X Single Cell (v3) v1',
 
     # New NovaSeq workflows
     'NovaSeq': 'N/A',  # key to match sample's UDF workflow but not used to assign workflow in Clarity
